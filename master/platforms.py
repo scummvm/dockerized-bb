@@ -142,6 +142,25 @@ def raspberrypi():
     platforms.append(platform)
 raspberrypi()
 
+def vita():
+    platform = Platform("vita")
+    platform.compatibleBuilds = (builds.ScummVMBuild, )
+    platform.env["CXX"] = "ccache /usr/local/vitasdk/bin/arm-vita-eabi-g++"
+    platform.configureargs.append("--host=psp2")
+    platform.buildconfigureargs = {
+        builds.ScummVMBuild: [ "--disable-engines=lastexpress", "--disable-engines=glk" ],
+        builds.ScummVMStableBuild: [ "--disable-engines=lastexpress" ],
+    }
+    platform.packaging_cmd = "psp2vpk"
+    platform.built_files = {
+        builds.ScummVMBuild: [ "scummvm.vpk" ],
+    }
+    platform.archiveext = "zip"
+    platform.testable = False
+    platform.run_tests = False
+    platforms.append(platform)
+vita()
+
 def windows_x86_64():
     platform = Platform("windows-x86_64")
     platform.env["CXX"] = "ccache x86_64-w64-mingw32-g++"
