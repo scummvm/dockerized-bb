@@ -1,0 +1,14 @@
+/.build/
+/README.html
+/buildbot-data/builds/
+/buildbot-data/ccache/
+/buildbot-data/packages/
+/buildbot-data/src/
+/buildbot-data/triggers/
+/master/__pycache__/
+/master/buildbot.tac
+/master/http.log
+/master/state.sqlite
+/master/twistd.log
+/master/config.py
+/workers/*/Dockerfile.debug

@@ -1,0 +1,18 @@
+[Unit]
+Description=Buildbot Master
+Wants=network.target docker.service
+After=network.target docker.service
+
+[Service]
+User=buildbot
+Group=buildbot
+
+Environment=VENV_PATH="/home/buildbot/buildbot-master"
+WorkingDirectory=/home/buildbot/dockerized-bb/master
+ExecStart=/home/buildbot/dockerized-bb/contrib/buildbot.sh start --nodaemon
+
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
