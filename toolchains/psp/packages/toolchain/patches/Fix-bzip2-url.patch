@@ -1,0 +1,32 @@
+diff --git a/patches/libraries-bzip2.patch b/patches/libraries-bzip2.patch
+new file mode 100644
+index 0000000..4143e8f
+--- /dev/null
++++ b/patches/libraries-bzip2.patch
+@@ -0,0 +1,11 @@
++diff --git a/scripts/bzip2.sh b/scripts/bzip2.sh
++index 701790e..32554f9 100755
++--- a/scripts/bzip2.sh
+++++ b/scripts/bzip2.sh
++@@ -1,5 +1,5 @@
++ BZIP2_VERSION=1.0.6
++ 
++-download_and_extract http://www.bzip.org/$BZIP2_VERSION/bzip2-$BZIP2_VERSION.tar.gz bzip2-$BZIP2_VERSION
+++download_and_extract https://sourceware.org/pub/bzip2/bzip2-$BZIP2_VERSION.tar.gz bzip2-$BZIP2_VERSION
++ apply_patch bzip2-$BZIP2_VERSION-PSP
++ run_make -j `num_cpus`
+diff --git a/scripts/011-psplibraries.sh b/scripts/011-psplibraries.sh
+index be0f1f0..64d1a83 100755
+--- a/scripts/011-psplibraries.sh
++++ b/scripts/011-psplibraries.sh
+@@ -11,8 +11,9 @@
+  ## Download the source code.
+  clone_git_repo github.com pspdev psplibraries
+ 
+- ## Enter the source directory.
++ ## Enter the source directory and patch the source code.
+  cd psplibraries
++ patch -p1 < ../../patches/libraries-bzip2.patch
+ 
+  ## Configure the build.
+  ./libraries.sh

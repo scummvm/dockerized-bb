@@ -310,6 +310,8 @@ class ScummVMStableBuild(ScummVMBuild):
         "./patches/fix-freetype2.patch",
         "./patches/fix-tools-env.patch",
         "./patches/fix-mingw-sdl-FILE.patch",
+        "./patches/fix-psp-libpng.patch",
+        "./patches/fix-psp-debug.patch",
     ]
 
 class ScummVMToolsBuild(StandardBuild):

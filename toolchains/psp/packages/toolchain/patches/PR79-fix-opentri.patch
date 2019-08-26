@@ -1,0 +1,49 @@
+From b25311673f61676bf578d0106e903ed209ed204c Mon Sep 17 00:00:00 2001
+From: iaDRM <drm@localhost>
+Date: Sun, 5 Mar 2017 21:46:47 -0500
+Subject: [PATCH] Issue #72: Failed installing: opentri
+
+---
+ patches/patch-gcc-bug-58158.patch | 18 ++++++++++++++++++
+ scripts/005-gcc-stage2.sh         |  3 +++
+ 2 files changed, 21 insertions(+)
+ create mode 100644 patches/patch-gcc-bug-58158.patch
+
+diff --git a/patches/patch-gcc-bug-58158.patch b/patches/patch-gcc-bug-58158.patch
+new file mode 100644
+index 0000000..5d3818b
+--- /dev/null
++++ b/patches/patch-gcc-bug-58158.patch
+@@ -0,0 +1,18 @@
++diff --git a/mids.md b/mips.md
++index 70f9f7d..9da8337 100644
++--- gcc-4.9.3/gcc/config/mips/mips.md
+++++ gcc-4.9.3-psp/gcc/config/mips/mips.md
++@@ -6960,10 +6960,10 @@
++ 	(if_then_else:GPR (match_dup 5)
++ 			  (match_operand:GPR 2 "reg_or_0_operand")
++ 			  (match_operand:GPR 3 "reg_or_0_operand")))]
++-  "ISA_HAS_CONDMOVE || ISA_HAS_INT_CONDMOVE"
+++  "ISA_HAS_CONDMOVE"
++ {
++-  if (ISA_HAS_INT_CONDMOVE
++-      && GET_MODE_CLASS (GET_MODE (operands[0])) == MODE_FLOAT)
+++  if (!ISA_HAS_FP_CONDMOVE
+++      && !INTEGRAL_MODE_P (GET_MODE (XEXP (operands[1], 0))))
++     FAIL;
++ 
++   mips_expand_conditional_move (operands);
+diff --git a/scripts/005-gcc-stage2.sh b/scripts/005-gcc-stage2.sh
+index 6ee625c..b61d1a1 100755
+--- a/scripts/005-gcc-stage2.sh
++++ b/scripts/005-gcc-stage2.sh
+@@ -23,6 +23,9 @@
+  cd gcc-$GCC_VERSION
+  patch -p1 -i ../../patches/gcc-$GCC_VERSION-PSP.patch
+  patch -p0 -i ../../patches/patch-gcc_cp_cfns.h
++ if [ "$GCC_VERSION" == "4.9.3" ]; then
++     patch -p1 -i ../../patches/patch-gcc-bug-58158.patch
++ fi
+ 
+  ## Unpack the library source code.
+  ln -fs ../gmp-$GMP_VERSION gmp

@@ -118,6 +118,60 @@ def debian_x86_64():
     platforms.append(platform)
 debian_x86_64()
 
+def psp():
+    platform = Platform("psp")
+    platform.compatibleBuilds = (builds.ScummVMBuild, )
+    platform.env["CXX"] = "ccache psp-g++"
+    platform.configureargs.extend(["--host=psp", "--disable-debug", "--enable-plugins", "--default-dynamic"])
+
+    # HACK: The glk engine causes linker errors on psp buildbot, and is disabled.
+    # This was decided after discussion with dreammaster on irc.
+    # Since glk is an interactive fiction engine that requires lots of text entry,
+    # and there's no physical keyboard support on this platform, the engine is
+    # not comfortably usable on the psp anyways.
+    # Unstable engines are disabled because they cause a crash on real hardware when
+    # adding a game (see further comment in the pspfull buildbot target)
+    platform.buildconfigureargs = {
+        builds.ScummVMBuild: [ "--disable-engines=glk", "--disable-all-unstable-engines" ],
+        builds.ScummVMStableBuild: [ ],
+    }
+    platform.built_files = {
+        builds.ScummVMBuild: [
+            "EBOOT.PBP",
+            "plugins",
+        ],
+    }
+    platform.data_files = {
+        builds.ScummVMBuild: [
+            "backends/platform/psp/kbd",
+        ],
+    }
+    platform.archiveext = "tar.xz"
+    platform.testable = False
+    platform.run_tests = False
+    platforms.append(platform)
+
+    # PSP full
+    platform = copy.deepcopy(platform)
+    platform.name = "pspfull"
+
+    # This psp build includes all unstable engines, but crashes when adding a game.
+    # The crash happens while it loads all the plugins to determine the engine
+    # that matches the game. It is a hard crash that requires removing and
+    # reinserting the battery. The crash does not happen on the PPSSPP emulator.
+    #
+    # HACK: The glk engine causes linker errors on psp buildbot, and is disabled.
+    # This was decided after discussion with dreammaster on irc.
+    # Since glk is an interactive fiction engine that requires lots of text entry,
+    # and there's no physical keyboard support on this platform, the engine is
+    # not comfortably usable on the psp anyways.
+    platform.buildconfigureargs = {
+        builds.ScummVMBuild: [ "--disable-engines=glk" ],
+        builds.ScummVMStableBuild: [ ],
+    }
+    platforms.append(platform)
+psp()
+
 def raspberrypi():
     platform = Platform("raspberrypi")
     platform.env["CXX"] = "ccache arm-linux-gnueabihf-g++"
