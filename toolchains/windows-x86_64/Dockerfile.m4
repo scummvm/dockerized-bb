@@ -67,6 +67,10 @@ helpers_package(flac)
 # causes duplicate definitions with mingw-w64, so disable the inlining
 helpers_package(mpeg2dec, , CFLAGS="$CFLAGS -D__CRT__NO_INLINE")
 
+# For some currently unknown reason, inlining functions from stdlib.h fails and
+# causes duplicate definitions with mingw-w64, so disable the inlining
+helpers_package(a52dec, , CFLAGS="$CFLAGS -D__CRT__NO_INLINE")
+
 helpers_package(curl, --without-ssl --with-winssl --with-winidn --disable-pthreads)
 
 helpers_package(freetype)

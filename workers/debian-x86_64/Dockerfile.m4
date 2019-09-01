@@ -3,6 +3,7 @@ m4_include(`debian-builder-base.m4')m4_dnl
 RUN apt-get update && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 		g++ \
+		liba52-dev \
 		libcurl4-openssl-dev \
 		libfaad-dev \
 		libflac-dev \

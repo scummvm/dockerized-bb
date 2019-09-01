@@ -4,6 +4,7 @@ RUN dpkg --add-architecture armhf && \
 	apt-get update && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 		g++-arm-linux-gnueabihf \
+		liba52-dev:armhf \
 		libcurl4-openssl-dev:armhf \
 		libfaad-dev:armhf \
 		libflac-dev:armhf \

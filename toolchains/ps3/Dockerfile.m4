@@ -65,3 +65,5 @@ ENV \
 	STRINGS=$PREFIX/bin/$HOST-strings
 
 helpers_package(mpeg2dec)
+
+helpers_package(a52dec)
