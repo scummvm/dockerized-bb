@@ -118,6 +118,20 @@ def debian_x86_64():
     platforms.append(platform)
 debian_x86_64()
 
+def ps3():
+    platform = Platform("ps3")
+    platform.compatibleBuilds = (builds.ScummVMBuild, )
+    platform.env["CXX"] = "ccache powerpc64-ps3-elf-g++"
+    platform.configureargs.append("--host=ps3")
+    platform.packaging_cmd = "ps3pkg"
+    platform.built_files = {
+        builds.ScummVMBuild: [ "scummvm-ps3.pkg" ],
+    }
+    platform.testable = False
+    platform.run_tests = False
+    platforms.append(platform)
+ps3()
+
 def psp():
     platform = Platform("psp")
     platform.compatibleBuilds = (builds.ScummVMBuild, )
