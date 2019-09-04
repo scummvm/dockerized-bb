@@ -50,6 +50,7 @@ ENV \
 	ACLOCAL_PATH=$PREFIX/share/aclocal \
 	PKG_CONFIG_LIBDIR=$PREFIX/lib \
 	PKG_CONFIG_PATH=$PREFIX/lib/pkgconfig \
+	PATH=$PATH:$PSPDEV/bin:$PREFIX/bin \
 	CC=$PSPDEV/bin/$HOST-gcc \
 	CPP=$PSPDEV/bin/$HOST-cpp \
 	CXX=$PSPDEV/bin/$HOST-c++ \
@@ -60,4 +61,3 @@ ENV \
 	RANLIB=$PSPDEV/bin/$HOST-ranlib \
 	STRIP=$PSPDEV/bin/$HOST-strip \
 	STRINGS=$PSPDEV/bin/$HOST-strings
-
