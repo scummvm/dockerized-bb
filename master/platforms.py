@@ -235,8 +235,12 @@ def vita():
     platform.env["CXX"] = "ccache /usr/local/vitasdk/bin/arm-vita-eabi-g++"
     platform.configureargs.append("--host=psp2")
     platform.buildconfigureargs = {
-        builds.ScummVMBuild: [ "--disable-engines=lastexpress", "--disable-engines=glk" ],
-        builds.ScummVMStableBuild: [ "--disable-engines=lastexpress" ],
+        builds.ScummVMBuild: [
+            "--disable-engines=lastexpress",
+            "--disable-engines=glk",
+            "--disable-engines=dm",
+            "--disable-engines=director",
+        ],
     }
     platform.packaging_cmd = "psp2vpk"
     platform.built_files = {

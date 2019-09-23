@@ -176,6 +176,7 @@ class ScummVMBuild(StandardBuild):
         "dists/engine-data/tony.dat",
         "dists/engine-data/toon.dat",
         "dists/engine-data/wintermute.zip",
+        "dists/networking/wwwroot.zip",
         "dists/pred.dic"
     ]
 
@@ -279,40 +280,7 @@ class ScummVMBuild(StandardBuild):
         )]
 
 class ScummVMStableBuild(ScummVMBuild):
-    DATA_FILES = [
-        "AUTHORS",
-        "COPYING",
-        "COPYING.LGPL",
-        "COPYING.BSD",
-        "COPYRIGHT",
-        "NEWS",
-        "README",
-        "gui/themes/translations.dat",
-        "gui/themes/scummclassic.zip",
-        "gui/themes/scummmodern.zip",
-        "dists/engine-data/access.dat",
-        "dists/engine-data/drascula.dat",
-        "dists/engine-data/hugo.dat",
-        "dists/engine-data/kyra.dat",
-        "dists/engine-data/lure.dat",
-        "dists/engine-data/mort.dat",
-        "dists/engine-data/neverhood.dat",
-        "dists/engine-data/queen.tbl",
-        "dists/engine-data/sky.cpt",
-        "dists/engine-data/teenagent.dat",
-        "dists/engine-data/tony.dat",
-        "dists/engine-data/toon.dat",
-        "dists/engine-data/wintermute.zip",
-        "dists/pred.dic"
-    ]
-
-    PATCHES = [
-        "./patches/fix-freetype2.patch",
-        "./patches/fix-tools-env.patch",
-        "./patches/fix-mingw-sdl-FILE.patch",
-        "./patches/fix-psp-libpng.patch",
-        "./patches/fix-psp-debug.patch",
-    ]
+    pass
 
 class ScummVMToolsBuild(StandardBuild):
     __slots__ = [ 'data_files', 'verbose_build' ]
@@ -417,6 +385,6 @@ class ScummVMToolsBuild(StandardBuild):
 builds = []
 
 builds.append(ScummVMBuild("master", "https://github.com/scummvm/scummvm", "master", verbose_build=True, nightly=(4, 1)))
-builds.append(ScummVMStableBuild("stable", "https://github.com/scummvm/scummvm", "branch-2-0", verbose_build=True, nightly=(4, 1)))
+builds.append(ScummVMStableBuild("stable", "https://github.com/scummvm/scummvm", "branch-2-1", verbose_build=True, nightly=(4, 1)))
 #builds.append(ScummVMBuild("gsoc2012", "https://github.com/digitall/scummvm", "gsoc2012-scalers-cont", verbose_build=True))
 builds.append(ScummVMToolsBuild("tools-master", "https://github.com/scummvm/scummvm-tools", "master", verbose_build=True, nightly=(4, 1)))
