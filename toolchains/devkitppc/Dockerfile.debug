@@ -1,0 +1,111 @@
+FROM toolchains/common AS helpers
+
+
+
+FROM debian:stable-slim
+USER root
+
+WORKDIR /usr/src
+
+RUN apt-get update && \
+	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+		bzip2 \
+		ca-certificates \
+		gnupg \
+		libxml2 \
+		make \
+		pkg-config \
+		wget \
+		xz-utils \
+		&& \
+	rm -rf /var/lib/apt/lists/*
+
+# Copy and execute each step separately to avoid invalidating cache
+COPY --from=helpers /lib-helpers/prepare.sh lib-helpers/
+RUN lib-helpers/prepare.sh
+
+COPY --from=helpers /lib-helpers/functions.sh lib-helpers/
+
+ARG DKP_PACMAN=1.0.1
+
+RUN wget https://github.com/devkitPro/pacman/releases/download/devkitpro-pacman-${DKP_PACMAN}/devkitpro-pacman.deb && \
+	dpkg -i devkitpro-pacman.deb && \
+	rm -f $HOME/.wget-hsts devkitpro-pacman.deb && \
+	rm -rf /opt/devkitpro/pacman/var/cache/pacman/pkg/* /opt/devkitpro/pacman/var/lib/pacman/sync/*
+
+RUN dkp-pacman -Syy --noconfirm gamecube-dev wii-dev wiiu-dev && \
+	rm -rf /opt/devkitpro/pacman/var/cache/pacman/pkg/* /opt/devkitpro/pacman/var/lib/pacman/sync/*
+
+ENV DEVKITPRO=/opt/devkitpro
+ENV DEVKITPPC=${DEVKITPRO}/devkitPPC
+
+COPY packages/libgxflux lib-helpers/packages/libgxflux/
+RUN  lib-helpers/packages/libgxflux/build.sh 
+
+# Define everything only now as libgxflux already handles all of this
+
+ENV PREFIX=${DEVKITPRO}/portlibs/ppc HOST=powerpc-eabi
+
+ENV \
+	GCC=$DEVKITPPC/bin/$HOST-gcc CPP=$DEVKITPPC/bin/$HOST-cpp CXX=$DEVKITPPC/bin/$HOST-c++ AR=$DEVKITPPC/bin/$HOST-ar AS=$DEVKITPPC/bin/$HOST-as CXXFILT=$DEVKITPPC/bin/$HOST-c++filt DUMPBIN=$DEVKITPPC/bin/$HOST-dumpbin LD=$DEVKITPPC/bin/$HOST-ld LINK=$DEVKITPPC/bin/$HOST-link OBJDUMP=$DEVKITPPC/bin/$HOST-objdump RANLIB=$DEVKITPPC/bin/$HOST-ranlib STRIP=$DEVKITPPC/bin/$HOST-strip STRINGS=$DEVKITPPC/bin/$HOST-strings  \
+	ACLOCAL_PATH=$PREFIX/share/aclocal PKG_CONFIG_LIBDIR=$PREFIX/lib PKG_CONFIG_PATH=$PREFIX/lib/pkgconfig \
+        PATH=$PATH:${DEVKITPRO}/tools/bin:${DEVKITPRO}/portlibs/bin
+#ENV \
+#        ACLOCAL_PATH=$PREFIX/share/aclocal \
+#        PKG_CONFIG_LIBDIR=$PREFIX/lib \
+#        PKG_CONFIG_PATH=$PREFIX/lib/pkgconfig \
+#	PATH=$PATH:${DEVKITPRO}/tools/bin:${DEVKITPRO}/portlibs/bin \
+#        CC=$DEVKITPPC/bin/$HOST-gcc \
+#        CPP=$DEVKITPPC/bin/$HOST-cpp \
+#        CXX=$DEVKITPPC/bin/$HOST-c++ \
+#        AR=$DEVKITPPC/bin/$HOST-ar \
+#        AS=$DEVKITPPC/bin/$HOST-as \
+#        CXXFILT=$DEVKITPPC/bin/$HOST-c++filt \
+#	DUMPBIN=$DEVKITPPC/bin/$HOST-dumpbin \
+#        LD=$DEVKITPPC/bin/$HOST-ld \
+#        LINK=$DEVKITPPC/bin/$HOST-link \
+#        OBJDUMP=$DEVKITPPC/bin/$HOST-objdump \
+#        RANLIB=$DEVKITPPC/bin/$HOST-ranlib \
+#        STRIP=$DEVKITPPC/bin/$HOST-strip \
+#        STRINGS=$DEVKITPPC/bin/$HOST-strings
+
+RUN dkp-pacman -Syy --noconfirm ppc-libpng && \
+	rm -rf /opt/devkitpro/pacman/var/cache/pacman/pkg/* /opt/devkitpro/pacman/var/lib/pacman/sync/*
+
+RUN dkp-pacman -Syy --noconfirm ppc-libjpeg-turbo && \
+	rm -rf /opt/devkitpro/pacman/var/cache/pacman/pkg/* /opt/devkitpro/pacman/var/lib/pacman/sync/*
+
+COPY --from=helpers /lib-helpers/packages/faad2 lib-helpers/packages/faad2/
+RUN  lib-helpers/packages/faad2/build.sh 
+
+RUN dkp-pacman -Syy --noconfirm ppc-libmad && \
+	rm -rf /opt/devkitpro/pacman/var/cache/pacman/pkg/* /opt/devkitpro/pacman/var/lib/pacman/sync/*
+
+RUN dkp-pacman -Syy --noconfirm ppc-libogg && \
+	rm -rf /opt/devkitpro/pacman/var/cache/pacman/pkg/* /opt/devkitpro/pacman/var/lib/pacman/sync/*
+
+COPY --from=helpers /lib-helpers/packages/libtheora lib-helpers/packages/libtheora/
+RUN  lib-helpers/packages/libtheora/build.sh 
+
+RUN dkp-pacman -Syy --noconfirm ppc-libvorbisidec && \
+	rm -rf /opt/devkitpro/pacman/var/cache/pacman/pkg/* /opt/devkitpro/pacman/var/lib/pacman/sync/*
+
+# Prevent FORTIFY to be used by FLAC as SDK doesn't seem to support it
+# Disable AltiVec as it's not supported by targets and SSE2 because configure script enables it
+# Copy specific patch
+COPY packages/flac lib-helpers/packages/flac
+COPY --from=helpers /lib-helpers/packages/flac lib-helpers/packages/flac/
+RUN CFLAGS="$CFLAGS -D_FORTIFY_SOURCE=0" lib-helpers/packages/flac/build.sh --disable-altivec
+
+COPY --from=helpers /lib-helpers/packages/mpeg2dec lib-helpers/packages/mpeg2dec/
+RUN CFLAGS="$CFLAGS -mno-altivec" lib-helpers/packages/mpeg2dec/build.sh 
+
+COPY --from=helpers /lib-helpers/packages/a52dec lib-helpers/packages/a52dec/
+RUN  lib-helpers/packages/a52dec/build.sh 
+
+# curl
+
+RUN dkp-pacman -Syy --noconfirm ppc-freetype && \
+	rm -rf /opt/devkitpro/pacman/var/cache/pacman/pkg/* /opt/devkitpro/pacman/var/lib/pacman/sync/*
+
+# No fluidsynth

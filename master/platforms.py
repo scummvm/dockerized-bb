@@ -118,6 +118,25 @@ def debian_x86_64():
     platforms.append(platform)
 debian_x86_64()
 
+def gamecube():
+    platform = Platform("gamecube")
+    platform.workerimage = "devkitppc"
+    platform.compatibleBuilds = (builds.ScummVMBuild, )
+    platform.env["CXX"] = "ccache /opt/devkitpro/devkitPPC/bin/powerpc-eabi-c++"
+    platform.configureargs.append("--host=gamecube")
+    platform.buildconfigureargs = {
+        builds.ScummVMBuild: [ "--enable-plugins", "--default-dynamic", "--enable-vkeybd" ],
+    }
+    platform.packaging_cmd = "wiidist"
+    platform.built_files = {
+        builds.ScummVMBuild: [ "wiidist/scummvm" ],
+    }
+    platform.archiveext = "tar.xz"
+    platform.testable = False
+    platform.run_tests = False
+    platforms.append(platform)
+gamecube()
+
 def ps3():
     platform = Platform("ps3")
     platform.compatibleBuilds = (builds.ScummVMBuild, )
@@ -228,6 +247,25 @@ def vita():
     platform.run_tests = False
     platforms.append(platform)
 vita()
+
+def wii():
+    platform = Platform("wii")
+    platform.workerimage = "devkitppc"
+    platform.compatibleBuilds = (builds.ScummVMBuild, )
+    platform.env["CXX"] = "ccache /opt/devkitpro/devkitPPC/bin/powerpc-eabi-c++"
+    platform.configureargs.append("--host=wii")
+    platform.buildconfigureargs = {
+        builds.ScummVMBuild: [ "--enable-plugins", "--default-dynamic", "--enable-vkeybd" ],
+    }
+    platform.packaging_cmd = "wiidist"
+    platform.built_files = {
+        builds.ScummVMBuild: [ "wiidist/scummvm" ],
+    }
+    platform.archiveext = "tar.xz"
+    platform.testable = False
+    platform.run_tests = False
+    platforms.append(platform)
+wii()
 
 def windows_x86_64():
     platform = Platform("windows-x86_64")

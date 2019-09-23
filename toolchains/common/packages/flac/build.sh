@@ -9,7 +9,7 @@ do_make_bdir
 do_pkg_fetch flac
 
 autoreconf -fi
-do_configure --disable-doxygen-docs --disable-xmms-plugin --disable-cpplibs --disable-ogg
+do_configure --disable-doxygen-docs --disable-xmms-plugin --disable-cpplibs --disable-ogg "$@"
 do_make -C src/libFLAC
 do_make -C src/libFLAC install
 # No need to build includes

@@ -1,0 +1,258 @@
+From 0a636b8fd82052a17f1bc15d2a5e3b5f65bde3e6 Mon Sep 17 00:00:00 2001
+From: Carsten Teibes <dev@f4ke.de>
+Date: Sun, 2 Oct 2016 05:56:47 +0200
+Subject: [PATCH] Small style fixes Implementation files do not need C++
+ guards, just the headers. Names for include guards starting with underscore
+ are reserved for standard library implementations.
+
+---
+ src/gfx.c          | 9 ---------
+ src/gfx.h          | 5 ++---
+ src/gfx_color.c    | 9 ---------
+ src/gfx_color.h    | 5 ++---
+ src/gfx_con.c      | 9 ---------
+ src/gfx_con.h      | 5 ++---
+ src/gfx_con_esc.h  | 5 ++---
+ src/gfx_con_font.c | 9 ---------
+ src/gfx_tex.c      | 9 ---------
+ src/gfx_tex.h      | 5 ++---
+ src/gfx_types.h    | 5 ++---
+ 11 files changed, 12 insertions(+), 63 deletions(-)
+
+diff --git a/src/gfx.c b/src/gfx.c
+index a83a94b..4f1666b 100644
+--- a/src/gfx.c
++++ b/src/gfx.c
+@@ -14,10 +14,6 @@
+ 
+ #include "gfx.h"
+ 
+-#ifdef __cplusplus
+-extern "C" {
+-#endif
+-
+ #define FIFO_SIZE (512 * 1024)
+ #define ORIGIN_Z (-500.0)
+ 
+@@ -569,8 +565,3 @@ void gfx_draw_tile_by_index(gfx_tiles_t *tiles, gfx_screen_coords_t *coords,
+ 	_quad(coords->x, coords->y, coords->w, coords->h, tile->s1, tile->t1,
+ 			tile->s2, tile->t2);
+ }
+-
+-#ifdef __cplusplus
+-}
+-#endif
+-
+diff --git a/src/gfx.h b/src/gfx.h
+index ca0fafa..ce2fb96 100644
+--- a/src/gfx.h
++++ b/src/gfx.h
+@@ -8,8 +8,8 @@
+  *
+  */
+ 
+-#ifndef __GFX_H__
+-#define __GFX_H__
++#ifndef GFX_H
++#define GFX_H
+ 
+ #include "gfx_types.h"
+ #include "gfx_color.h"
+@@ -56,4 +56,3 @@ void gfx_draw_tile_by_index(gfx_tiles_t *tiles, gfx_screen_coords_t *coords,
+ #endif
+ 
+ #endif
+-
+diff --git a/src/gfx_color.c b/src/gfx_color.c
+index c70ccbd..036216b 100644
+--- a/src/gfx_color.c
++++ b/src/gfx_color.c
+@@ -10,10 +10,6 @@
+ 
+ #include "gfx_color.h"
+ 
+-#ifdef __cplusplus
+-extern "C" {
+-#endif
+-
+ // TODO add some more
+ const GXColor gfx_color_none	=	{	0,		0,		0,		0		};
+ const GXColor gfx_color_black	=	{	0,		0,		0,		0xff	};
+@@ -21,8 +17,3 @@ const GXColor gfx_color_red		=	{	0xff,	0,		0,		0xff	};
+ const GXColor gfx_color_green	=	{	0,		0xff,	0,		0xff	};
+ const GXColor gfx_color_blue	=	{	0,		0,		0xff,	0xff	};
+ const GXColor gfx_color_white	=	{	0xff,	0xff,	0xff,	0xff	};
+-
+-#ifdef __cplusplus
+-}
+-#endif
+-
+diff --git a/src/gfx_color.h b/src/gfx_color.h
+index 4418351..76d5cfb 100644
+--- a/src/gfx_color.h
++++ b/src/gfx_color.h
+@@ -8,8 +8,8 @@
+  *
+  */
+ 
+-#ifndef __GFX_COLOR_H__
+-#define __GFX_COLOR_H__
++#ifndef GFX_COLOR_H
++#define GFX_COLOR_H
+ 
+ #include "gfx_types.h"
+ 
+@@ -37,4 +37,3 @@ static inline u32 gfx_color_u32(const GXColor c) {
+ #endif
+ 
+ #endif
+-
+diff --git a/src/gfx_con.c b/src/gfx_con.c
+index 14efe3f..7f950f7 100644
+--- a/src/gfx_con.c
++++ b/src/gfx_con.c
+@@ -37,10 +37,6 @@
+ extern unsigned int gfx_con_font_len;
+ extern unsigned char gfx_con_font[];
+ 
+-#ifdef __cplusplus
+-extern "C" {
+-#endif
+-
+ static ssize_t _con_write(struct _reent *r, int fd, const char *ptr,
+ 							size_t len);
+ static ssize_t _con_read(struct _reent *r, int fd, char *ptr, size_t len);
+@@ -598,8 +594,3 @@ void gfx_con_draw(void) {
+ 	gfx_set_colorop(COLOROP_NONE, gfx_color_none, gfx_color_none);
+ 	gfx_enable_viewport(vp);
+ }
+-
+-#ifdef __cplusplus
+-}
+-#endif
+-
+diff --git a/src/gfx_con.h b/src/gfx_con.h
+index 66a1186..6b909fa 100644
+--- a/src/gfx_con.h
++++ b/src/gfx_con.h
+@@ -8,8 +8,8 @@
+  *
+  */
+ 
+-#ifndef __GFX_CON_H__
+-#define __GFX_CON_H__
++#ifndef GFX_CON_H
++#define GFX_CON_H
+ 
+ #include <stdio.h>
+ 
+@@ -97,4 +97,3 @@ static inline void gfx_con_reset_colors(void) {
+ #endif
+ 
+ #endif
+-
+diff --git a/src/gfx_con_esc.h b/src/gfx_con_esc.h
+index 5cc2fd1..29ee667 100644
+--- a/src/gfx_con_esc.h
++++ b/src/gfx_con_esc.h
+@@ -1,5 +1,5 @@
+-#ifndef __GFX_CON_ESC_H__
+-#define __GFX_CON_ESC_H__
++#ifndef GFX_CON_ESC_H
++#define GFX_CON_ESC_H
+ 
+ #define CON_RESET				"\ec"
+ 
+@@ -67,4 +67,3 @@
+ #define S_IWHITE(s)				C_IWHITE s CON_COLRESET
+ 
+ #endif
+-
+diff --git a/src/gfx_con_font.c b/src/gfx_con_font.c
+index 1f73c47..b251920 100644
+--- a/src/gfx_con_font.c
++++ b/src/gfx_con_font.c
+@@ -12,10 +12,6 @@
+  *
+  */
+ 
+-#ifdef __cplusplus
+-extern "C" {
+-#endif
+-
+ unsigned int gfx_con_font_len = 11520;
+ 
+ unsigned char gfx_con_font[] = {
+@@ -980,8 +976,3 @@ unsigned char gfx_con_font[] = {
+   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+ };
+-
+-#ifdef __cplusplus
+-}
+-#endif
+-
+diff --git a/src/gfx_tex.c b/src/gfx_tex.c
+index 90c216c..7ce0ff7 100644
+--- a/src/gfx_tex.c
++++ b/src/gfx_tex.c
+@@ -14,10 +14,6 @@
+ 
+ #include "gfx.h"
+ 
+-#ifdef __cplusplus
+-extern "C" {
+-#endif
+-
+ void gfx_coords(gfx_screen_coords_t *coords, gfx_tex_t *tex, gfx_coord_t type) {
+ 	f32 ar_efb, ar_tex;
+ 	u16 sw, sh;
+@@ -368,8 +364,3 @@ void gfx_tiles_deinit(gfx_tiles_t *tiles) {
+ 	free(tiles->tiles);
+ 	memset(tiles, 0, sizeof(gfx_tiles_t));
+ }
+-
+-#ifdef __cplusplus
+-}
+-#endif
+-
+diff --git a/src/gfx_tex.h b/src/gfx_tex.h
+index 086ad26..0b6dd94 100644
+--- a/src/gfx_tex.h
++++ b/src/gfx_tex.h
+@@ -8,8 +8,8 @@
+  *
+  */
+ 
+-#ifndef __GFX_TEX_H__
+-#define __GFX_TEX_H__
++#ifndef GFX_TEX_H
++#define GFX_TEX_H
+ 
+ #include "gfx_types.h"
+ 
+@@ -38,4 +38,3 @@ void gfx_tiles_deinit(gfx_tiles_t *tiles);
+ #endif
+ 
+ #endif
+-
+diff --git a/src/gfx_types.h b/src/gfx_types.h
+index c34be9c..20878d6 100644
+--- a/src/gfx_types.h
++++ b/src/gfx_types.h
+@@ -8,8 +8,8 @@
+  *
+  */
+ 
+-#ifndef __GFX_TYPES_H__
+-#define __GFX_TYPES_H__
++#ifndef GFX_TYPES_H
++#define GFX_TYPES_H
+ 
+ #include <gccore.h>
+ 
+@@ -88,4 +88,3 @@ typedef enum {
+ #endif
+ 
+ #endif
+-

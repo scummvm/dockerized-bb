@@ -6,12 +6,10 @@ HELPERS_DIR=$PACKAGE_DIR/../..
 
 do_make_bdir
 
-do_pkg_fetch mpeg2dec
+do_http_fetch libgxflux \
+	'https://repo.or.cz/libgxflux.git/snapshot/dd10b75242684165bc4b962f770eace08f426756.tar.gz' 'tar xzf'
 
-do_configure
-do_make -C libmpeg2
-do_make -C libmpeg2 install
-# No need to build includes
-do_make -C include install
+do_make lib
+do_make install
 
 do_clean_bdir
