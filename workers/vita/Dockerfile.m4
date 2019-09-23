@@ -1,5 +1,7 @@
 FROM toolchains/vita AS toolchain
 
+m4_include(`paths.m4')m4_dnl
+
 m4_include(`debian-builder-base.m4')m4_dnl
 
 ENV VITASDK=/usr/local/vitasdk HOST=arm-vita-eabi
@@ -14,22 +16,13 @@ RUN apt-get update && \
 
 COPY --from=toolchain $VITASDK $VITASDK/
 
-# We add PATH here for *-config and vita specific binaries
+# We add PATH here for *-config and platform specific binaries
 ENV \
-	ACLOCAL_PATH=$PREFIX/share/aclocal \
-	PKG_CONFIG_LIBDIR=$PREFIX/lib \
-	PKG_CONFIG_PATH=$PREFIX/lib/pkgconfig \
-	PATH=$PATH:$VITASDK/bin:$PREFIX/bin \
-	CC=$VITASDK/bin/$HOST-gcc \
-	CPP=$VITASDK/bin/$HOST-cpp \
-	CXX=$VITASDK/bin/$HOST-c++ \
-	AR=$VITASDK/bin/$HOST-ar \
-	AS=$VITASDK/bin/$HOST-as \
-	CXXFILT=$VITASDK/bin/$HOST-c++filt \
-	GPROF=$VITASDK/bin/$HOST-gprof \
-	LD=$VITASDK/bin/$HOST-ld \
-	RANLIB=$VITASDK/bin/$HOST-ranlib \
-	STRIP=$VITASDK/bin/$HOST-strip \
-	STRINGS=$VITASDK/bin/$HOST-strings
+	def_binaries(`${VITASDK}/bin/${HOST}-', `ar, as, c++filt, ld, nm, objcopy, objdump, ranlib, readelf, strings, strip') \
+	def_binaries(`${VITASDK}/bin/${HOST}-', `gcc, cpp, c++') \
+	CC=${VITASDK}/bin/${HOST}-gcc \
+	def_aclocal(`${PREFIX}') \
+	def_pkg_config(`${PREFIX}') \
+        PATH=$PATH:${VITASDK}/bin:${PREFIX}/bin
 
 m4_include(`run-buildbot.m4')m4_dnl

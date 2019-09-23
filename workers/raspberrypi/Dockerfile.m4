@@ -1,3 +1,5 @@
+m4_include(`paths.m4')m4_dnl
+
 m4_include(`debian-builder-base.m4')m4_dnl
 
 RUN dpkg --add-architecture armhf && \
@@ -28,19 +30,11 @@ ENV RPI_ROOT=/
 ENV HOST=arm-linux-gnueabihf
 
 ENV \
-	ACLOCAL_PATH=/usr/share/aclocal \
+	def_binaries(`/usr/bin/${HOST}-', `ar, as, c++filt, ld, link, nm, objcopy, objdump, ranlib, readelf, strings, strip') \
+	def_binaries(`/usr/bin/${HOST}-', `gcc, cpp, c++') \
+	CC=/usr/bin/${HOST}-gcc \
+	def_aclocal(`/usr') \
 	PKG_CONFIG_LIBDIR=/usr/lib/$HOST \
-	PKG_CONFIG_PATH=/usr/lib/$HOST/pkgconfig \
-	CC=/usr/bin/$HOST-gcc \
-	CPP=/usr/bin/$HOST-cpp \
-	CXX=/usr/bin/$HOST-c++ \
-	AR=/usr/bin/$HOST-ar \
-	AS=/usr/bin/$HOST-as \
-	CXXFILT=/usr/bin/$HOST-c++filt \
-	GPROF=/usr/bin/$HOST-gprof \
-	LD=/usr/bin/$HOST-ld \
-	RANLIB=/usr/bin/$HOST-ranlib \
-	STRIP=/usr/bin/$HOST-strip \
-	STRINGS=/usr/bin/$HOST-strings
+	PKG_CONFIG_PATH=/usr/lib/$HOST/pkgconfig
 
 m4_include(`run-buildbot.m4')m4_dnl

@@ -1,5 +1,7 @@
 FROM toolchains/common AS helpers
 
+m4_include(`paths.m4')m4_dnl
+
 m4_include(`packages.m4')m4_dnl
 
 FROM debian:stable-slim
@@ -20,25 +22,16 @@ RUN apt-get update && \
 	rm $PREFIX/lib/libz.dll.a
 # Remove dynamic zlib as we never want to link dynamically with it
 
+# We add PATH here for *-config and platform specific binaries
 ENV \
-	ACLOCAL_PATH=$PREFIX/share/aclocal \
-	PKG_CONFIG_LIBDIR=$PREFIX/lib \
-	PKG_CONFIG_PATH=$PREFIX/lib/pkgconfig \
-	CC=/usr/bin/$HOST-gcc \
-	CPP=/usr/bin/$HOST-cpp \
-	CXX=/usr/bin/$HOST-c++ \
-	AR=/usr/bin/$HOST-ar \
-	AS=/usr/bin/$HOST-as \
-	CXXFILT=/usr/bin/$HOST-c++filt \
-	GPROF=/usr/bin/$HOST-gprof \
-	LD=/usr/bin/$HOST-ld \
-	PKG_CONFIG=/usr/bin/$HOST-pkg-config \
-	RANLIB=/usr/bin/$HOST-ranlib \
-	STRIP=/usr/bin/$HOST-strip \
-	STRINGS=/usr/bin/$HOST-strings \
-	WIDL=/usr/bin/$HOST-widl \
-	WINDMC=/usr/bin/$HOST-windmc \
-	WINDRES=/usr/bin/$HOST-windres
+	def_binaries(`/usr/bin/${HOST}-', `ar, as, c++filt, ld, nm, objcopy, objdump, ranlib, readelf, strings, strip') \
+	def_binaries(`/usr/bin/${HOST}-', `widl, windmc, windres') \
+	def_binaries(`/usr/bin/${HOST}-', `gcc, cpp, c++') \
+	def_binaries(`/usr/bin/${HOST}-', `pkg-config') \
+	CC=/usr/bin/${HOST}-gcc \
+	def_aclocal(`${PREFIX}') \
+	def_pkg_config(`${PREFIX}') \
+        PATH=$PATH:${PREFIX}/bin
 
 # Copy and execute each step separately to avoid invalidating cache
 COPY --from=helpers /lib-helpers/prepare.sh lib-helpers/

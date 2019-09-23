@@ -1,5 +1,7 @@
 FROM toolchains/common AS helpers
 
+m4_include(`paths.m4')m4_dnl
+
 m4_include(`packages.m4')m4_dnl
 
 FROM debian:stable-slim
@@ -47,22 +49,17 @@ local_package(toolchain)
 
 local_package(sdl_psl1ght)
 
-# Define everything at the end because toolchain and sdl_psl1ght handle everything themselves already
-ENV HOST=powerpc64-ps3-elf PREFIX=$PS3DEV/ppu
+# Define everything now because toolchain and sdl_psl1ght handle everything themselves already
+ENV HOST=powerpc64-ps3-elf PREFIX=$PS3DEV/portlibs/ppu
+
+# We add PATH here for *-config and platform specific binaries
 ENV \
-	ACLOCAL_PATH=$PS3DEV/portlibs/ppu/share/aclocal \
-	PKG_CONFIG_LIBDIR=$PS3DEV/portlibs/ppu/lib \
-	PKG_CONFIG_PATH=$PS3DEV/portlibs/ppu/lib/pkgconfig \
-	CC=$PREFIX/bin/$HOST-gcc \
-	CPP=$PREFIX/bin/$HOST-cpp \
-	CXX=$PREFIX/bin/$HOST-c++ \
-	AR=$PREFIX/bin/$HOST-ar \
-	AS=$PREFIX/bin/$HOST-as \
-	CXXFILT=$PREFIX/bin/$HOST-c++filt \
-	LD=$PREFIX/bin/$HOST-ld \
-	RANLIB=$PREFIX/bin/$HOST-ranlib \
-	STRIP=$PREFIX/bin/$HOST-strip \
-	STRINGS=$PREFIX/bin/$HOST-strings
+	def_binaries(`${PS3DEV}/ppu/bin/${HOST}-', `ar, as, c++filt, ld, nm, objcopy, objdump, ranlib, readelf, strings, strip') \
+	def_binaries(`${PS3DEV}/ppu/bin/${HOST}-', `gcc, cpp, c++') \
+	CC=${PS3DEV}/ppu/bin/${HOST}-gcc \
+	def_aclocal(`${PREFIX}') \
+	def_pkg_config(`${PREFIX}') \
+        PATH=$PATH:${PS3DEV}/bin:${PS3DEV}/ppu/bin:${PS3DEV}/spu/bin:${PS3DEV}/portlibs/ppu/bin
 
 helpers_package(mpeg2dec)
 
