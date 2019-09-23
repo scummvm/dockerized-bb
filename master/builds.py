@@ -83,7 +83,7 @@ class StandardBuild(Build):
             ret.append(ForceScheduler(name = "force-scheduler-{0}-fetch".format(self.name),
                 reason=StringParameter(name="reason", label="Reason:", required=True, size=80),
                 builderNames = [ "fetch-{0}".format(self.name) ],
-                properties = []))
+                properties = [ BooleanParameter(name="package", label="Package", default=False) ]))
             ret.append(ForceScheduler(name = "force-scheduler-{0}-build".format(self.name),
                 reason=StringParameter(name="reason", label="Reason:", required=True, size=80),
                 builderNames = comp_builders,
