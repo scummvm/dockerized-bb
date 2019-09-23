@@ -242,7 +242,7 @@ def windows_x86_64():
     platform.configureargs.append("--enable-sdlnet")
     platform.built_files = {
         # SDL2 is not really built but we give there an absolute path that must not be appended to src path
-        builds.ScummVMBuild: [ "scummvm.exe", "/usr/x86_64-w64-mingw32/bin/SDL2.dll" ],
+        builds.ScummVMBuild: [ "scummvm.exe", "/usr/x86_64-w64-mingw32/bin/SDL2.dll", "/usr/x86_64-w64-mingw32/bin/WinSparkle.dll" ],
         builds.ScummVMToolsBuild: [
             "construct_mohawk.exe",
             "create_sjisfnt.exe",

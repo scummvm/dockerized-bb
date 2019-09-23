@@ -11,13 +11,15 @@ do_http_fetch WinSparkle 'https://github.com/vslavik/winsparkle/releases/downloa
 # Remove PDB files
 rm -f Release/*.pdb x64/Release/*.pdb
 
-mkdir -p $DESTDIR/$PREFIX/lib $DESTDIR/$PREFIX/include
+mkdir -p $DESTDIR/$PREFIX/lib $DESTDIR/$PREFIX/bin $DESTDIR/$PREFIX/include
 case "$HOST" in
 	x86_64*)
-		cp -a x64/Release/* $DESTDIR/$PREFIX/lib
+		cp -a x64/Release/*.lib $DESTDIR/$PREFIX/lib
+		cp -a x64/Release/*.dll $DESTDIR/$PREFIX/bin
 		;;
 	i686*)
-		cp -a Release/* $DESTDIR/$PREFIX/lib
+		cp -a Release/*.lib $DESTDIR/$PREFIX/lib
+		cp -a Release/*.dll $DESTDIR/$PREFIX/bin
 		;;
 esac
 cp -a include/* $DESTDIR/$PREFIX/include
