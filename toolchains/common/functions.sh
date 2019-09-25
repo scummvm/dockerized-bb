@@ -52,6 +52,15 @@ __do_http_fetch () {
 	do_patch
 }
 
+__do_svn_fetch () {
+	if [ -d "$1"*/ ]; then
+		rm -rf "$1"*/
+	fi
+	svn co "$2" "$1"
+	cd "$1"*/
+	do_patch
+}
+
 __do_configure () {
 	./configure --prefix=$PREFIX --host=$HOST --disable-shared "$@"
 }
@@ -81,7 +90,7 @@ __error () {
 # Create wrapper functions so that functions-platform.sh can override functions
 # but still use base function (Poor man's inheritance)
 # Aliases are expanded at definition time so that's not the good way
-for f in do_make_bdir do_clean_bdir do_patch do_pkg_fetch do_http_fetch \
+for f in do_make_bdir do_clean_bdir do_patch do_pkg_fetch do_http_fetch do_svn_fetch \
 	do_configure do_cmake do_make log error; do
 	eval "$f () { __$f \"\$@\"; }"
 done
