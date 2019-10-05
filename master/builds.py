@@ -150,6 +150,10 @@ class StandardBuild(Build):
 class ScummVMBuild(StandardBuild):
     __slots__ = [ 'data_files', 'verbose_build' ]
 
+    PATCHES = [
+        "./patches/fix-devkitppc.patch",
+    ]
+
     DATA_FILES = [
         "AUTHORS",
         "COPYING",
@@ -280,7 +284,9 @@ class ScummVMBuild(StandardBuild):
         )]
 
 class ScummVMStableBuild(ScummVMBuild):
-    pass
+    PATCHES = [
+        "./patches/fix-devkitppc.patch",
+    ]
 
 class ScummVMToolsBuild(StandardBuild):
     __slots__ = [ 'data_files', 'verbose_build' ]

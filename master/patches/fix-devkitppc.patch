@@ -1,0 +1,125 @@
+diff --git a/backends/fs/wii/wii-fs-factory.cpp b/backends/fs/wii/wii-fs-factory.cpp
+index f234c1e300..ca4c3d3d88 100644
+--- a/backends/fs/wii/wii-fs-factory.cpp
++++ b/backends/fs/wii/wii-fs-factory.cpp
+@@ -24,6 +24,7 @@
+ 
+ #define FORBIDDEN_SYMBOL_EXCEPTION_printf
+ #define FORBIDDEN_SYMBOL_EXCEPTION_getcwd
++#define FORBIDDEN_SYMBOL_EXCEPTION_time_h
+ 
+ #include <unistd.h>
+ 
+diff --git a/backends/platform/wii/main.cpp b/backends/platform/wii/main.cpp
+index 35d800a527..b1a4b32986 100644
+--- a/backends/platform/wii/main.cpp
++++ b/backends/platform/wii/main.cpp
+@@ -33,6 +33,7 @@
+ #include "backends/plugins/wii/wii-provider.h"
+ 
+ #include <ogc/machine/processor.h>
++#include <ogc/libversion.h>
+ #include <fat.h>
+ #ifndef GAMECUBE
+ #include <wiiuse/wpad.h>
+@@ -52,7 +53,13 @@ extern "C" {
+ bool reset_btn_pressed = false;
+ bool power_btn_pressed = false;
+ 
++#if ((_V_MAJOR_ > 1) || \
++        (_V_MAJOR_ == 1 && _V_MINOR_ > 8 ) || \
++        (_V_MAJOR_ == 1 && _V_MINOR_ == 8 && _V_PATCH_ >= 18))
++void reset_cb(u32, void *) {
++#else
+ void reset_cb(void) {
++#endif
+ #ifdef DEBUG_WII_GDB
+ 	printf("attach gdb now\n");
+ 	_break();
+@@ -223,6 +230,9 @@ int main(int argc, char *argv[]) {
+ 	res = scummvm_main(argc, argv);
+ 	g_system->quit();
+ 
++	g_system->destroy();
++	g_system = nullptr;
++
+ 	printf("shutdown\n");
+ 
+ 	SYS_UnregisterResetFunc(&resetinfo);
+diff --git a/backends/platform/wii/osystem.cpp b/backends/platform/wii/osystem.cpp
+index c2751f6ef4..54427bd20c 100644
+--- a/backends/platform/wii/osystem.cpp
++++ b/backends/platform/wii/osystem.cpp
+@@ -145,7 +145,16 @@ void OSystem_Wii::initBackend() {
+ }
+ 
+ void OSystem_Wii::quit() {
++	/* Delete _timerManager before deinitializing events as it's tied */
++	delete _timerManager;
++	_timerManager = nullptr;
++
+ 	deinitEvents();
++
++	/* Delete _eventManager before destroying FS to avoid problems when releasing virtual keyboard data */
++	delete _eventManager;
++	_eventManager = nullptr;
++
+ 	deinitSfx();
+ 	deinitGfx();
+ 
+diff --git a/backends/plugins/elf/elf32.h b/backends/plugins/elf/elf32.h
+index 9f6f92fe95..aae92b12d4 100644
+--- a/backends/plugins/elf/elf32.h
++++ b/backends/plugins/elf/elf32.h
+@@ -236,6 +236,7 @@ typedef struct {
+ #define R_ARM_V4BX 			40
+ 
+ // PPC relocation types
++#define R_PPC_NONE			0
+ #define R_PPC_ADDR32		1
+ #define R_PPC_ADDR16_LO		4
+ #define R_PPC_ADDR16_HI		5
+diff --git a/backends/plugins/elf/ppc-loader.cpp b/backends/plugins/elf/ppc-loader.cpp
+index dffd95993b..8315a6a088 100644
+--- a/backends/plugins/elf/ppc-loader.cpp
++++ b/backends/plugins/elf/ppc-loader.cpp
+@@ -61,6 +61,9 @@ bool PPCDLObject::relocate(Elf32_Off offset, Elf32_Word size, byte *relSegment)
+ 		//debug(8, "elfloader: i=%05d %p +0x%04x: (0x%08x) 0x%08x ", i, src, rel[i].r_addend, sym->st_value, *src);
+ 
+ 		switch (REL_TYPE(rel[i].r_info)) {
++		case R_PPC_NONE:
++			debug(8, "elfloader: R_PPC_NONE");
++			break;
+ 		case R_PPC_ADDR32:
+ 			*src = value;
+ 			debug(8, "elfloader: R_PPC_ADDR32 -> 0x%08x", *src);
+diff --git a/configure b/configure
+index aa1f446e3a..ca8b7fcccb 100755
+--- a/configure
++++ b/configure
+@@ -2811,10 +2811,12 @@ case $_host_os in
+ 		append_var CXXFLAGS "-fmodulo-sched"
+ 		append_var CXXFLAGS "-fuse-cxa-atexit"
+ 		append_var CXXFLAGS "-I$DEVKITPRO/libogc/include"
++		append_var CXXFLAGS "-I$DEVKITPRO/portlibs/ppc/include"
+ 		# libogc is required to link the cc tests (includes _start())
+ 		append_var LDFLAGS "-mogc"
+ 		append_var LDFLAGS "-mcpu=750"
+ 		append_var LDFLAGS "-L$DEVKITPRO/libogc/lib/cube"
++		append_var LDFLAGS "-L$DEVKITPRO/portlibs/ppc/lib"
+ 		append_var LDFLAGS "-logc"
+ 		if test "$_dynamic_modules" = "yes" ; then
+ 			# retarded toolchain patch forces --gc-sections, overwrite it
+@@ -3007,10 +3009,12 @@ case $_host_os in
+ 		append_var CXXFLAGS "-fmodulo-sched"
+ 		append_var CXXFLAGS "-fuse-cxa-atexit"
+ 		append_var CXXFLAGS "-I$DEVKITPRO/libogc/include"
++		append_var CXXFLAGS "-I$DEVKITPRO/portlibs/ppc/include"
+ 		# libogc is required to link the cc tests (includes _start())
+ 		append_var LDFLAGS "-mrvl"
+ 		append_var LDFLAGS "-mcpu=750"
+ 		append_var LDFLAGS "-L$DEVKITPRO/libogc/lib/wii"
++		append_var LDFLAGS "-L$DEVKITPRO/portlibs/ppc/lib"
+ 		append_var LDFLAGS "-logc"
+ 		if test "$_dynamic_modules" = "yes" ; then
+ 			# retarded toolchain patch forces --gc-sections, overwrite it
