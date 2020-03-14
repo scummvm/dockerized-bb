@@ -151,7 +151,6 @@ class ScummVMBuild(StandardBuild):
     __slots__ = [ 'data_files', 'verbose_build' ]
 
     PATCHES = [
-        "./patches/fix-devkitppc.patch",
     ]
 
     DATA_FILES = [
