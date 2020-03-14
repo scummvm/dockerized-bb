@@ -13,6 +13,9 @@ COPY --from=toolchain ${DEVKITPRO}/portlibs ${DEVKITPRO}/portlibs/
 COPY --from=toolchain ${DEVKITPRO}/libogc ${DEVKITPRO}/libogc/
 COPY --from=toolchain ${DEVKITPRO}/tools ${DEVKITPRO}/tools/
 
+# Add a symlink for elf2dol to please wii.mk, that should be changed
+RUN ln -s ${DEVKITPRO}/tools/bin/elf2dol ${DEVKITPPC}/bin/
+
 # We add PATH here for *-config and platform specific binaries
 ENV \
 	def_binaries(`${DEVKITPPC}/bin/${HOST}-', `ar, as, c++filt, ld, link, nm, objcopy, objdump, ranlib, readelf, strings, strip') \
