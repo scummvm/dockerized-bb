@@ -1,6 +1,6 @@
 #! /bin/sh
 
-PKG=master-linux-v1058/vitasdk-x86_64-linux-gnu-2019-08-20_10-35-30.tar.bz2
+PKG=master-linux-v1097/vitasdk-x86_64-linux-gnu-2020-02-16_12-00-03.tar.bz2
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..
