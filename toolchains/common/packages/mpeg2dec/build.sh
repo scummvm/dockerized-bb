@@ -8,6 +8,9 @@ do_make_bdir
 
 do_pkg_fetch mpeg2dec
 
+# Apply patches to configure.ac brought by Debian
+autoreconf -fi
+
 do_configure
 do_make -C libmpeg2
 do_make -C libmpeg2 install
