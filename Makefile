@@ -31,6 +31,9 @@ status:
 	@echo "All workers: " $(WORKERS)
 	@echo "Workers timestamps: " $(WORKERS_TS)
 
+ccache-stats:
+	@CCACHE_DIR=buildbot-data/ccache ccache -s
+
 # Master rules
 
 master: $(BUILDDIR)/buildbot_installed master/buildbot.tac
@@ -110,4 +113,4 @@ clean-workers:
 	docker rmi $(WORKERS)
 	rm -f $(WORKERS_TS)
 
-.PHONY: nothing master status toolchains $(TOOLCHAINS) clean-toolchains workers $(WORKERS) clean-workers
+.PHONY: nothing master status toolchains $(TOOLCHAINS) clean-toolchains workers $(WORKERS) clean-workers ccache-stats
