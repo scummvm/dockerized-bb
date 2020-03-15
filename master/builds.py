@@ -3,11 +3,12 @@ import os, sys
 from buildbot.config import BuilderConfig
 from buildbot.changes.filter import ChangeFilter
 from buildbot.locks import MasterLock, WorkerLock
-from buildbot.process import factory
+from buildbot.process import factory, results
 from buildbot.process.properties import Property
-from buildbot.scheduler import Nightly, Triggerable
+from buildbot.scheduler import Triggerable
+from buildbot.schedulers.timed import NightlyTriggerable
 from buildbot.schedulers.basic import SingleBranchScheduler
-from buildbot.schedulers.forcesched import ForceScheduler, StringParameter, BooleanParameter
+from buildbot.schedulers.forcesched import ForceScheduler, CodebaseParameter, StringParameter, BooleanParameter
 from buildbot.steps.source.git import Git
 from buildbot.steps.trigger import Trigger
 from buildbot.steps.shell import Configure, Compile, Test
@@ -63,9 +64,11 @@ class StandardBuild(Build):
                 treeStableTimer = 5,
                 builderNames = [ "fetch-{0}".format(self.name) ]))
 
-        # Nightly scheduler (triggered by time)
+        # Nightly scheduler (started by time)
+        # It's triggered after regular builds to take note of the last fetched source
+        # Note that build is not started by trigger
         if self.nightly is not None:
-            ret.append(Nightly(name = "nightly-{0}".format(self.name),
+            ret.append(NightlyTriggerable(name = "nightly-{0}".format(self.name),
                 branch = self.branch,
                 builderNames = [ "nightly-{0}".format(self.name) ],
                 hour = self.nightly[0],
@@ -83,16 +86,19 @@ class StandardBuild(Build):
             ret.append(ForceScheduler(name = "force-scheduler-{0}-fetch".format(self.name),
                 reason=StringParameter(name="reason", label="Reason:", required=True, size=80),
                 builderNames = [ "fetch-{0}".format(self.name) ],
-                properties = [ BooleanParameter(name="package", label="Package", default=False) ]))
+                codebases = [CodebaseParameter(codebase='', hide=True)],
+                properties = [
+                    BooleanParameter(name="clean", label="Clean", default=False),
+                    BooleanParameter(name="package", label="Package", default=False),
+                    ]))
             ret.append(ForceScheduler(name = "force-scheduler-{0}-build".format(self.name),
                 reason=StringParameter(name="reason", label="Reason:", required=True, size=80),
                 builderNames = comp_builders,
-                properties = [ BooleanParameter(name="package", label="Package", default=False) ]))
-            if self.nightly:
-                ret.append(ForceScheduler(name = "force-scheduler-{0}-nightly".format(self.name),
-                    reason=StringParameter(name="reason", label="Reason:", required=True, size=80),
-                    builderNames = [ "nightly-{0}".format(self.name) ],
-                    properties = []))
+                codebases = [CodebaseParameter(codebase='', hide=True)],
+                properties = [
+                    BooleanParameter(name="clean", label="Clean", default=False),
+                    BooleanParameter(name="package", label="Package", default=False),
+                    ]))
 
         return ret
 
@@ -112,8 +118,12 @@ class StandardBuild(Build):
                 workdir = ".",
                 locks = [ self.lock_src.access("exclusive") ],
             ))
-        f.addStep(Trigger(schedulerNames = [ self.name ],
-                            copy_properties = [ 'got_revision' ],
+        if self.nightly is not None:
+            # Trigger nightly scheduler to let it know the source stamp
+            f.addStep(Trigger(name="Updating source stamp", hideStepIf=(lambda r, s: r == results.SUCCESS),
+                schedulerNames = [ "nightly-{0}".format(self.name) ]))
+        f.addStep(Trigger(name="Building all platforms", schedulerNames = [ self.name ],
+                            copy_properties = [ 'got_revision', 'clean', 'package' ],
                             updateSourceStamp = True,
                             waitForFinish = True))
 
@@ -129,11 +139,12 @@ class StandardBuild(Build):
         if self.nightly is not None:
             f = factory.BuildFactory()
             f.addStep(Trigger(schedulerNames = [ self.name ],
+                copy_properties = [ 'got_revision' ],
                 updateSourceStamp = True,
                 waitForFinish = True,
                 set_properties = {
-                    "nightly": True,
-                    "package": True }))
+                    'clean': True,
+                    'package': True }))
 
             ret.append(BuilderConfig(
                 name = "nightly-{0}".format(self.name),
@@ -211,7 +222,7 @@ class ScummVMBuild(StandardBuild):
 
         f.addStep(steps.Clean(
             dir = "",
-            doStepIf = Property("nightly", False)
+            doStepIf = Property("clean", False)
         ))
 
         f.addStep(steps.SetPropertyIfOlder(
@@ -326,7 +337,7 @@ class ScummVMToolsBuild(StandardBuild):
         
         f.addStep(steps.Clean(
             dir = "",
-            doStepIf = Property("nightly", False)
+            doStepIf = Property("clean", False)
         ))
 
         f.addStep(steps.SetPropertyIfOlder(
@@ -390,6 +401,7 @@ class ScummVMToolsBuild(StandardBuild):
 builds = []
 
 builds.append(ScummVMBuild("master", "https://github.com/scummvm/scummvm", "master", verbose_build=True, nightly=(4, 1)))
-builds.append(ScummVMStableBuild("stable", "https://github.com/scummvm/scummvm", "branch-2-1", verbose_build=True, nightly=(4, 1)))
+builds.append(ScummVMBuild("stable", "https://github.com/scummvm/scummvm", "eaa487fcd442c78c8949e225627b632a8c52df9a", verbose_build=True, nightly=(4, 1)))
+#builds.append(ScummVMStableBuild("stable", "https://github.com/scummvm/scummvm", "branch-2-1", verbose_build=True, nightly=(4, 1)))
 #builds.append(ScummVMBuild("gsoc2012", "https://github.com/digitall/scummvm", "gsoc2012-scalers-cont", verbose_build=True))
 builds.append(ScummVMToolsBuild("tools-master", "https://github.com/scummvm/scummvm-tools", "master", verbose_build=True, nightly=(4, 1)))
