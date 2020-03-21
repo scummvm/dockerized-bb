@@ -55,7 +55,14 @@ ENV \
 	CC=${DEVKITPPC}/bin/${HOST}-gcc \
 	def_aclocal(`${PREFIX}') \
 	def_pkg_config(`${PREFIX}') \
-        PATH=$PATH:${DEVKITPRO}/tools/bin:${DEVKITPRO}/portlibs/bin
+        PATH=$PATH:${DEVKITPRO}/tools/bin:${DEVKITPRO}/portlibs/ppc/bin
+
+# From pkgbuild-scripts/ppcvars.sh
+ENV \
+	CFLAGS="-O2 -mcpu=750 -meabi -mhard-float -ffunction-sections -fdata-sections" \
+	CXXFLAGS="-O2 -mcpu=750 -meabi -mhard-float -ffunction-sections -fdata-sections" \
+	CPPFLAGS="-DGEKKO -I${PREFIX}/include" \
+	LDFLAGS="-L${PREFIX}/lib"
 
 pacman_package(ppc-libpng)
 

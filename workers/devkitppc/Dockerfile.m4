@@ -23,6 +23,6 @@ ENV \
 	CC=${DEVKITPPC}/bin/${HOST}-gcc \
 	def_aclocal(`${PREFIX}') \
 	def_pkg_config(`${PREFIX}') \
-        PATH=$PATH:${DEVKITPRO}/tools/bin:${DEVKITPRO}/portlibs/bin
+        PATH=$PATH:${DEVKITPRO}/tools/bin:${DEVKITPRO}/portlibs/ppc/bin
 
 m4_include(`run-buildbot.m4')m4_dnl
