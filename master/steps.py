@@ -173,7 +173,9 @@ def Package(disttarget, srcpath, dstpath, data_files,
 
         commands.append(ShellArg(["mkdir", name],
             logfile="stdio", haltOnFailure=True))
-        commands.append(ShellArg(["cp", "-r"] + files + ["{0}/".format(name)],
+        # Use a string for cp to allow shell globbing
+        # WARNING: files aren't surrounded with quotes to let it happen
+        commands.append(ShellArg('cp -r ' + ' '.join(files) + ' "{0}/"'.format(name),
             logfile="stdio", haltOnFailure=True))
         commands.append(ShellArg(archive_command,
             logfile="stdio", haltOnFailure=True))

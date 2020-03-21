@@ -167,8 +167,10 @@ class ScummVMBuild(StandardBuild):
     DATA_FILES = [
         "AUTHORS",
         "COPYING",
-        "COPYING.LGPL",
         "COPYING.BSD",
+        "COPYING.FREEFONT",
+        "COPYING.LGPL",
+        "COPYING.OFL",
         "COPYRIGHT",
         "NEWS.md",
         "README.md",
