@@ -8,6 +8,7 @@ do_make_bdir
 
 do_pkg_fetch a52dec
 
+autoreconf -fi
 do_configure
 do_make -C liba52
 do_make -C liba52 install
