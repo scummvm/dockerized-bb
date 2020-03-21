@@ -266,6 +266,22 @@ def raspberrypi():
     platforms.append(platform)
 raspberrypi()
 
+def switch():
+    platform = Platform("switch")
+    platform.workerimage = "devkitswitch"
+    platform.compatibleBuilds = (builds.ScummVMBuild, )
+    platform.env["CXX"] = "ccache /opt/devkitpro/devkitA64/bin/aarch64-none-elf-c++"
+    platform.configureargs.append("--host=switch")
+    platform.packaging_cmd = "switch_release"
+    platform.built_files = {
+        builds.ScummVMBuild: [ "switch_release/*" ],
+    }
+    platform.archiveext = "zip"
+    platform.testable = False
+    platform.run_tests = False
+    platforms.append(platform)
+switch()
+
 def vita():
     platform = Platform("vita")
     platform.compatibleBuilds = (builds.ScummVMBuild, )
