@@ -93,6 +93,25 @@ class Platform:
 
 platforms = []
 
+def _3ds():
+    platform = Platform("3ds")
+    platform.workerimage = "devkit3ds"
+    platform.compatibleBuilds = (builds.ScummVMBuild, )
+    platform.env["CXX"] = "ccache /opt/devkitpro/devkitARM/bin/arm-none-eabi-c++"
+    platform.configureargs.append("--host=3ds")
+    platform.buildconfigureargs = {
+        builds.ScummVMBuild: [ "--enable-plugins", "--default-dynamic" ],
+    }
+    platform.packaging_cmd = "dist_3ds"
+    platform.built_files = {
+        builds.ScummVMBuild: [ "dist_3ds/*" ],
+    }
+    platform.archiveext = "zip"
+    platform.testable = False
+    platform.run_tests = False
+    platforms.append(platform)
+_3ds()
+
 def debian_x86_64():
     platform = Platform("debian-x86_64")
     platform.env["CXX"] = "ccache g++"

@@ -77,6 +77,7 @@ $(foreach i,$(TOOLCHAINS),$(eval $(call MAKE_DEPS,$(i))))
 $(foreach i,$(TOOLCHAINS),$(eval $(call DEPEND_COMMON,$(i))))
 
 # Add here all dependencies between toolchains
+$(BUILDDIR)/toolchains/devkit3ds: $(BUILDDIR)/toolchains/devkitarm
 $(BUILDDIR)/toolchains/devkitnds: $(BUILDDIR)/toolchains/devkitarm
 
 clean-toolchains:
