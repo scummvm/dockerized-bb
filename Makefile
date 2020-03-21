@@ -76,6 +76,9 @@ endif
 $(foreach i,$(TOOLCHAINS),$(eval $(call MAKE_DEPS,$(i))))
 $(foreach i,$(TOOLCHAINS),$(eval $(call DEPEND_COMMON,$(i))))
 
+# Add here all dependencies between toolchains
+$(BUILDDIR)/toolchains/devkitnds: $(BUILDDIR)/toolchains/devkitarm
+
 clean-toolchains:
 	docker rmi $(TOOLCHAINS)
 	rm -f $(TOOLCHAINS_TS)

@@ -137,6 +137,24 @@ def gamecube():
     platforms.append(platform)
 gamecube()
 
+def nds():
+    platform = Platform("nds")
+    platform.workerimage = "devkitnds"
+    platform.compatibleBuilds = (builds.ScummVMBuild, )
+    platform.env["CXX"] = "ccache /opt/devkitpro/devkitARM/bin/arm-none-eabi-c++"
+    platform.configureargs.append("--host=ds")
+    platform.buildconfigureargs = {
+        builds.ScummVMBuild: [ "--enable-plugins", "--default-dynamic" ],
+    }
+    platform.built_files = {
+        builds.ScummVMBuild: [ "scummvm.nds", "plugins" ],
+    }
+    platform.archiveext = "tar.xz"
+    platform.testable = False
+    platform.run_tests = False
+    platforms.append(platform)
+nds()
+
 def ps3():
     platform = Platform("ps3")
     platform.compatibleBuilds = (builds.ScummVMBuild, )
