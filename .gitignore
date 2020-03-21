@@ -11,4 +11,5 @@
 /master/state.sqlite*
 /master/twistd.log
 /master/config.py
+/toolchains/*/Dockerfile.debug
 /workers/*/Dockerfile.debug
