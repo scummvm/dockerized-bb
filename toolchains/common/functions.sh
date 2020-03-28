@@ -22,6 +22,42 @@ __do_patch () {
 	fi
 }
 
+# This function is a private helper and should not be unprefixed
+__do_verify () {
+	local hsh
+
+	if [ -z "$2" ]; then
+		# No verification method
+		return
+	fi
+
+	case $2 in
+		'gpgurl:'*)
+			wget --no-hsts --progress=dot "${2#gpgurl:}" -O "$1.sig"
+			if gpg --verify "$1.sig" "$1"; then
+				return
+			fi
+			;;
+		'sha1:'*)
+			hsh=$(sha1sum "$1" |cut -f1 -d' ')
+			if [ "$hsh" = "${2#sha1:}" ]; then
+				return
+			fi
+			;;
+		'sha256:'*)
+			hsh=$(sha256sum "$1" |cut -f1 -d' ')
+			if [ "$hsh" = "${2#sha256:}" ]; then
+				return
+			fi
+			;;
+		*)
+			error "Verification method not supported: $2"
+			;;
+	esac
+
+	error "BUG"
+}
+
 __do_pkg_fetch () {
 	if [ -d "$1"*/ ]; then
 		rm -rf "$1"*/
@@ -41,12 +77,8 @@ __do_http_fetch () {
 	fname=$(basename $2)
 	wget --no-hsts --progress=dot "$2" -O "$fname"
 
-	if [ -n "$4" ]; then
-		wget --no-hsts --progress=dot "$4" -O "$fname.sig"
-		if ! gpg --verify "$fname.sig" "$fname"; then
-			exit 1
-		fi
-	fi
+	__do_verify "$fname" "$4"
+
 	$3 "$fname"
 	cd "$1"*/
 	do_patch
