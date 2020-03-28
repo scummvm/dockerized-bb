@@ -55,7 +55,7 @@ local_package(flac)
 
 helpers_package(faad2)
 
-helpers_package(mpeg2dec, , CFLAGS="$CFLAGS -D__CRT__NO_INLINE")
+local_package(libmpeg2)
 
 local_package(openssl)
 
