@@ -9,7 +9,12 @@ USER root
 
 WORKDIR /usr/src
 
-ENV PREFIX=/usr/x86_64-w64-mingw32 HOST=x86_64-w64-mingw32
+# Copy and execute each step separately to avoid invalidating cache
+COPY --from=helpers /lib-helpers/prepare.sh lib-helpers/
+RUN lib-helpers/prepare.sh
+
+COPY --from=helpers /lib-helpers/functions.sh lib-helpers/
+COPY functions-platform.sh lib-helpers/
 
 RUN apt-get update && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
@@ -19,8 +24,10 @@ RUN apt-get update && \
 		nasm \
 		libz-mingw-w64-dev && \
 	rm -rf /var/lib/apt/lists/* && \
-	rm $PREFIX/lib/libz.dll.a
+	rm /usr/x86_64-w64-mingw32/lib/libz.dll.a
 # Remove dynamic zlib as we never want to link dynamically with it
+
+ENV PREFIX=/usr/x86_64-w64-mingw32 HOST=x86_64-w64-mingw32
 
 # We add PATH here for *-config and platform specific binaries
 ENV \
@@ -32,13 +39,6 @@ ENV \
 	def_aclocal(`${PREFIX}') \
 	def_pkg_config(`${PREFIX}') \
         PATH=$PATH:${PREFIX}/bin
-
-# Copy and execute each step separately to avoid invalidating cache
-COPY --from=helpers /lib-helpers/prepare.sh lib-helpers/
-RUN lib-helpers/prepare.sh
-
-COPY --from=helpers /lib-helpers/functions.sh lib-helpers/
-COPY functions-platform.sh lib-helpers/
 
 helpers_package(libpng1.6)
 

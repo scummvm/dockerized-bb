@@ -9,8 +9,12 @@ USER root
 
 WORKDIR /usr/src
 
-ENV VITASDK=/usr/local/vitasdk HOST=arm-vita-eabi
-ENV PREFIX=$VITASDK/$HOST
+# Copy and execute each step separately to avoid invalidating cache
+COPY --from=helpers /lib-helpers/prepare.sh lib-helpers/
+RUN lib-helpers/prepare.sh
+
+COPY --from=helpers /lib-helpers/functions.sh lib-helpers/
+COPY functions-platform.sh lib-helpers/
 
 RUN apt-get update && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
@@ -19,12 +23,8 @@ RUN apt-get update && \
 		lib32gcc1 && \
 	rm -rf /var/lib/apt/lists/*
 
-# Copy and execute each step separately to avoid invalidating cache
-COPY --from=helpers /lib-helpers/prepare.sh lib-helpers/
-RUN lib-helpers/prepare.sh
-
-COPY --from=helpers /lib-helpers/functions.sh lib-helpers/
-COPY functions-platform.sh lib-helpers/
+ENV VITASDK=/usr/local/vitasdk HOST=arm-vita-eabi
+ENV PREFIX=$VITASDK/$HOST
 
 local_package(toolchain)
 

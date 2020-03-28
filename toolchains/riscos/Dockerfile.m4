@@ -9,9 +9,12 @@ USER root
 
 WORKDIR /usr/src
 
-ENV GCCSDK_INSTALL_CROSSBIN=/usr/local/gccsdk/cross/bin HOST=arm-unknown-riscos
-ENV GCCSDK_INSTALL_ENV=/usr/local/gccsdk/env
-ENV PREFIX=$GCCSDK_INSTALL_ENV
+# Copy and execute each step separately to avoid invalidating cache
+COPY --from=helpers /lib-helpers/prepare.sh lib-helpers/
+RUN lib-helpers/prepare.sh
+
+COPY --from=helpers /lib-helpers/functions.sh lib-helpers/
+COPY functions-platform.sh lib-helpers/
 
 RUN apt-get update && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
@@ -34,12 +37,9 @@ RUN apt-get update && \
 		pandoc && \
 	rm -rf /var/lib/apt/lists/*
 
-# Copy and execute each step separately to avoid invalidating cache
-COPY --from=helpers /lib-helpers/prepare.sh lib-helpers/
-RUN lib-helpers/prepare.sh
-
-COPY --from=helpers /lib-helpers/functions.sh lib-helpers/
-COPY functions-platform.sh lib-helpers/
+ENV GCCSDK_INSTALL_CROSSBIN=/usr/local/gccsdk/cross/bin HOST=arm-unknown-riscos
+ENV GCCSDK_INSTALL_ENV=/usr/local/gccsdk/env
+ENV PREFIX=$GCCSDK_INSTALL_ENV
 
 local_package(toolchain)
 

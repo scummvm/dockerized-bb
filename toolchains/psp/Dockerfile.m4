@@ -9,8 +9,10 @@ USER root
 
 WORKDIR /usr/src
 
-ENV PSPDEV=/usr/local/pspdev HOST=psp
-ENV PREFIX=$PSPDEV/$HOST
+# Don't need to run prepare as everything we need is already installed (we don't use all build stuff, just fetch)
+
+# Copy and execute each step separately to avoid invalidating cache
+COPY --from=helpers /lib-helpers/functions.sh lib-helpers/
 
 RUN apt-get update && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
@@ -41,10 +43,8 @@ RUN apt-get update && \
 	rmdir /usr/share/man/man1 && \
 	rm -rf /var/lib/apt/lists/*
 
-# Don't need to run prepare as everything we need is already installed (we don't use all build stuff, just fetch)
-
-# Copy and execute each step separately to avoid invalidating cache
-COPY --from=helpers /lib-helpers/functions.sh lib-helpers/
+ENV PSPDEV=/usr/local/pspdev HOST=psp
+ENV PREFIX=$PSPDEV/$HOST
 
 local_package(toolchain)
 

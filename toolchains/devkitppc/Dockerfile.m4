@@ -11,6 +11,12 @@ USER root
 
 WORKDIR /usr/src
 
+# Copy and execute each step separately to avoid invalidating cache
+COPY --from=helpers /lib-helpers/prepare.sh lib-helpers/
+RUN lib-helpers/prepare.sh
+
+COPY --from=helpers /lib-helpers/functions.sh lib-helpers/
+
 RUN apt-get update && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 		bzip2 \
@@ -23,12 +29,6 @@ RUN apt-get update && \
 		xz-utils \
 		&& \
 	rm -rf /var/lib/apt/lists/*
-
-# Copy and execute each step separately to avoid invalidating cache
-COPY --from=helpers /lib-helpers/prepare.sh lib-helpers/
-RUN lib-helpers/prepare.sh
-
-COPY --from=helpers /lib-helpers/functions.sh lib-helpers/
 
 ARG DKP_PACMAN=1.0.1
 
