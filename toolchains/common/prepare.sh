@@ -12,6 +12,7 @@ DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 	cmake \
 	debhelper \
 	dpkg-dev \
+	git \
 	gnupg \
 	libtool \
 	make \

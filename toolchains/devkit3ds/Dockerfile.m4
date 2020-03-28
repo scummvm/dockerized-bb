@@ -12,11 +12,8 @@ FROM toolchains/devkitarm
 RUN apt-get update && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 		g++ \
-		git \
 		zip && \
 	rm -rf /var/lib/apt/lists/*
-
-COPY functions-platform.sh lib-helpers/
 
 # We need to compile tools before setting environment for all other packages
 # We do this now !
