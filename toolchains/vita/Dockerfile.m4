@@ -16,6 +16,9 @@ RUN lib-helpers/prepare.sh
 COPY --from=helpers /lib-helpers/functions.sh lib-helpers/
 COPY functions-platform.sh lib-helpers/
 
+# Use a common build script for vdpm packages
+COPY packages/common lib-helpers/packages/common/
+
 RUN apt-get update && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 		libc6-i386 \
