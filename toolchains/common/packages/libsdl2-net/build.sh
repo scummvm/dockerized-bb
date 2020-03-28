@@ -7,7 +7,7 @@ HELPERS_DIR=$PACKAGE_DIR/../..
 do_make_bdir
 
 do_pkg_fetch libsdl2-net
-do_configure --with-sdl-prefix=$PREFIX
+do_configure
 
 # showinterfaces.c indirectly includes SDL_main.h which #defines main to
 # SDL_main when __ANDROID__ is defined, so it won't compile in the usual manner,
