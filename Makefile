@@ -104,7 +104,7 @@ $(WORKERS_DOC_TS): $(BUILDDIR)/%: %/Dockerfile
 $(WORKERS_M4_TS): $(BUILDDIR)/%: %/Dockerfile.m4 $(shell find workers/m4 -type f)
 	@echo "Building $*"
 ifeq ($(VERBOSE),1)
-	m4 -P -EE -I workers/m4 workers/m4/library.m4 $< -o $(<D)/Dockerfile.debug
+	m4 -P -EE -I workers/m4 workers/m4/library.m4 $< > $(<D)/Dockerfile.debug
 endif
 	m4 -P -EE -I workers/m4 workers/m4/library.m4 $< | \
 		docker build --build-arg BUILDBOT_VERSION=$(BUILDBOT_VERSION) -t $* -f - $(<D)
