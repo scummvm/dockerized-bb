@@ -1,5 +1,7 @@
 #! /bin/sh
 
+BANNERTOOL_VERSION=5f297e49c8c72610caedd615958b960ec2bb0ab3
+
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..
 . $HELPERS_DIR/functions.sh
@@ -7,7 +9,7 @@ HELPERS_DIR=$PACKAGE_DIR/../..
 do_make_bdir
 
 do_git_fetch bannertool \
-	'https://github.com/Steveice10/bannertool.git' '5f297e49c8c72610caedd615958b960ec2bb0ab3'
+	'https://github.com/Steveice10/bannertool.git' "${BANNERTOOL_VERSION}"
 
 do_make
 

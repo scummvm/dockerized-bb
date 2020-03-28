@@ -1,5 +1,8 @@
 #! /bin/sh
 
+# This commit is in fbo branch
+VITA2DLIB_VERSION=58fca1aef30c01035876b73ae3f0fe5a056f203f
+
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..
 . $HELPERS_DIR/functions.sh
@@ -7,7 +10,7 @@ HELPERS_DIR=$PACKAGE_DIR/../..
 do_make_bdir
 
 do_http_fetch vita2dlib \
-	'https://github.com/frangarcj/vita2dlib/archive/fbo.tar.gz' 'tar xzf'
+	"https://github.com/frangarcj/vita2dlib/archive/${VITA2DLIB_VERSION}.tar.gz" 'tar xzf'
 
 # Makefile is bad coded and overrides CC and AR variables
 PATH="$VITASDK/bin:$PATH" do_make -C libvita2d

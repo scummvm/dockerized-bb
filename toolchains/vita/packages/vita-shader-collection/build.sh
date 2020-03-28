@@ -1,5 +1,7 @@
 #! /bin/sh
 
+VITA_SHDR_COLL_VERSION=gtu-0.1-v74
+
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..
 . $HELPERS_DIR/functions.sh
@@ -16,7 +18,7 @@ cd "$PKG"
 
 # Don't use do_http_get as the archive doesn't have a root directory
 wget --no-hsts --progress=dot \
-	'https://github.com/frangarcj/vita-shader-collection/releases/download/gtu-0.1-v74/vita-shader-collection.tar.gz' -O - | \
+	"https://github.com/frangarcj/vita-shader-collection/releases/download/${VITA_SHDR_COLL_VERSION}/vita-shader-collection.tar.gz" -O - | \
 	tar --no-same-owner --no-same-permissions -xz
 
 cp -a lib/. $DESTDIR/$PREFIX/lib/
