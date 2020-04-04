@@ -12,8 +12,8 @@ do_make_bdir
 
 # GPG key of Sam Lantinga
 gpg --keyserver hkps://hkps.pool.sks-keyservers.net --recv-keys 0xA7763BE6
-do_http_fetch SDL2 "https://www.libsdl.org/release/SDL2-${SDL_VERSION}.tar.gz" 'tar xzf' \
-	"gpgurl:https://www.libsdl.org/release/SDL2-${SDL_VERSION}.tar.gz.sig"
+do_http_fetch SDL2 "http://www.libsdl.org/release/SDL2-${SDL_VERSION}.tar.gz" 'tar xzf' \
+	"gpgurl:http://www.libsdl.org/release/SDL2-${SDL_VERSION}.tar.gz.sig"
 rm -Rf $HOME/.gnupg
 
 do_configure --enable-shared --disable-static
