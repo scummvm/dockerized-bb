@@ -60,6 +60,9 @@ helpers_package(faad2)
 
 local_package(libmpeg2)
 
+# These functions aren't implemented on Vita but they are not needed either
+helpers_package(libiconv, , ac_cv_func_sigprocmask=yes ac_cv_func_getprogname=yes)
+
 local_package(openssl)
 
 local_package(curl)
