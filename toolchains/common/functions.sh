@@ -129,7 +129,7 @@ for f in do_make_bdir do_clean_bdir do_patch do_pkg_fetch do_http_fetch \
 	eval "$f () { __$f \"\$@\"; }"
 done
 
-if [ -f "$HELPERS_DIR"/functions-platform.sh ]; then
+if [ -z "$NO_FUNCTIONS_PLATFORM" -a -f "$HELPERS_DIR"/functions-platform.sh ]; then
 	. "$HELPERS_DIR"/functions-platform.sh
 fi
 
