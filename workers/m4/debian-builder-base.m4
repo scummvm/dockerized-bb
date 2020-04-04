@@ -16,8 +16,9 @@ RUN apt-get update && \
                 && \
         rm -rf /var/lib/apt/lists/*
 
-RUN mkdir -p /data/ccache /data/src /data/builds && chown buildbot:buildbot /data/ccache /data/src /data/builds
-VOLUME /data/ccache /data/src /data/builds
+RUN mkdir -p /data/ccache /data/src /data/builds /data/packages /data/bshomes && \
+	chown buildbot:buildbot /data/ccache /data/src /data/builds /data/packages /data/bshomes
+VOLUME /data/ccache /data/src /data/builds /data/packages /data/bshomes
 
 ENV CCACHE_DIR=/data/ccache
 

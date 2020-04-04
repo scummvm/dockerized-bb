@@ -19,7 +19,13 @@ import steps
 # Lock to avoid running more than 1 build at the same time on a worker
 lock_build = WorkerLock("worker", maxCount = 1)
 
-for data_dir in ["builds", "ccache", "packages", "src", "triggers", ]:
+# builds contains all build trees
+# ccache is the cache for compiled objects used by ccache
+# packages contains all final packages generated
+# src contains the source trees
+# triggers is some working directory needed by triggers
+# bshomes is used for various build systems (like Gradle) to avoid downloading things at each run
+for data_dir in ["builds", "ccache", "packages", "src", "triggers", "bshomes" ]:
         os.makedirs(os.path.join(config.buildbot_data_dir, data_dir), exist_ok=True)
 
 class Build:

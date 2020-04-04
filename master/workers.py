@@ -42,6 +42,7 @@ def StandardBuilderWorker(name, **kwargs):
             '{0}/src:/data/src:ro'.format(config.buildbot_data_dir),
             '{0}/builds:/data/builds'.format(config.buildbot_data_dir, name),
             '{0}/packages:/data/packages'.format(config.buildbot_data_dir),
+            '{0}/bshomes:/data/bshomes'.format(config.buildbot_data_dir),
         ],
         hostconfig={
             'network_mode': 'workers-net',

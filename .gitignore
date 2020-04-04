@@ -1,5 +1,6 @@
 /.build/
 /README.html
+/buildbot-data/bshomes/
 /buildbot-data/builds/
 /buildbot-data/ccache/
 /buildbot-data/packages/
