@@ -97,4 +97,6 @@ pacman_package(switch-sdl2_net)
 # CMake can't determine endinanness of Switch by running tests
 # CMake platform files expect to have compilers in PATH
 # CMake don't use CPPFLAGS so add them to CFLAGS
+# Copy specific Switch support
+COPY packages/fluidsynth-lite lib-helpers/packages/fluidsynth-lite
 helpers_package(fluidsynth-lite, -DCMAKE_TOOLCHAIN_FILE=${DEVKITPRO}/switch.cmake -DHAVE_WORDS_BIGENDIAN=true, CFLAGS="${CPPFLAGS} ${CFLAGS}" PATH="${PATH}:${DEVKITA64}/bin")
