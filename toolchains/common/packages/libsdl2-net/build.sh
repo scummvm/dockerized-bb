@@ -7,6 +7,8 @@ HELPERS_DIR=$PACKAGE_DIR/../..
 do_make_bdir
 
 do_pkg_fetch libsdl2-net
+
+./autogen.sh
 do_configure
 
 # showinterfaces.c indirectly includes SDL_main.h which #defines main to
