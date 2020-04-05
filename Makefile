@@ -68,9 +68,9 @@ $(TOOLCHAINS_DOC_TS): $(BUILDDIR)/%: %/Dockerfile
 $(TOOLCHAINS_M4_TS): $(BUILDDIR)/%: %/Dockerfile.m4 $(shell find toolchains/m4 -type f)
 	@echo "Building $*"
 ifeq ($(VERBOSE),1)
-	m4 -P -EE $(M4_DEBUG) -I toolchains/m4 toolchains/m4/library.m4 $< 2>&1 > $(<D)/Dockerfile.debug
+	m4 -P -EE $(M4_DEBUG) -I toolchains/m4 -I $(<D) toolchains/m4/library.m4 $< > $(<D)/Dockerfile.debug 2>&1
 endif
-	m4 -P -EE -I toolchains/m4 toolchains/m4/library.m4 $< | \
+	m4 -P -EE -I toolchains/m4 -I $(<D) toolchains/m4/library.m4 $< | \
 		docker build -t $* -f - $(<D)
 	touch "$@"
 
@@ -105,9 +105,9 @@ $(WORKERS_DOC_TS): $(BUILDDIR)/%: %/Dockerfile
 $(WORKERS_M4_TS): $(BUILDDIR)/%: %/Dockerfile.m4 $(shell find workers/m4 -type f)
 	@echo "Building $*"
 ifeq ($(VERBOSE),1)
-	m4 -P -EE $(M4_DEBUG) -I workers/m4 workers/m4/library.m4 $< 2>&1 > $(<D)/Dockerfile.debug
+	m4 -P -EE $(M4_DEBUG) -I workers/m4 -I $(<D) workers/m4/library.m4 $< > $(<D)/Dockerfile.debug 2>&1
 endif
-	m4 -P -EE -I workers/m4 workers/m4/library.m4 $< | \
+	m4 -P -EE -I workers/m4 -I $(<D) workers/m4/library.m4 $< | \
 		docker build --build-arg BUILDBOT_VERSION=$(BUILDBOT_VERSION) -t $* -f - $(<D)
 	touch "$@"
 
