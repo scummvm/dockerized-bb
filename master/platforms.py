@@ -112,6 +112,95 @@ def _3ds():
     platforms.append(platform)
 _3ds()
 
+def android(suffix, scummvm_target, ndk_target, cxx_target, abi_version,
+        android_master_root = "/opt/android/master",
+        android_stable_root = "/opt/android/stable"):
+    android_master_toolchain = "{0}/ndk/toolchains/llvm/prebuilt/linux-x86_64".format(
+            android_master_root)
+    android_stable_toolchain = "{0}/toolchain".format(android_stable_root)
+    platform = Platform("android_{0}".format(suffix))
+    platform.workerimage = "android"
+    platform.compatibleBuilds = (builds.ScummVMBuild, )
+    platform.buildenv = {
+        builds.ScummVMBuild: {
+            "ANDROID_NDK_ROOT": "{0}/ndk".format(android_master_root),
+            # configure script will find everything from this
+            "ANDROID_TOOLCHAIN": "{0}".format(android_master_toolchain),
+            # We keep SDK and gradle dynamic and outside the container
+            # Their versions can change without the need to regenerate the image
+            # Android build system can be shared across all versions so we don't specialize
+            # the directory in /data/bshomes
+            "ANDROID_SDK_ROOT": "/data/bshomes/android/sdk",
+            "ANDROID_SDK_HOME": "/data/bshomes/android/sdk-home",
+            "GRADLE_USER_HOME": "/data/bshomes/android/gradle",
+            "CXX": "ccache {0}/bin/{1}{2}-clang++".format(
+                android_master_toolchain, cxx_target, abi_version),
+            # Worker has all libraries installed in the NDK sysroot
+            "PKG_CONFIG_LIBDIR": "{0}/sysroot/usr/lib/{1}/{2}/pkgconfig".format(
+                android_master_toolchain, ndk_target, abi_version),
+        },
+        builds.ScummVMStableBuild: {
+            "ANDROID_NDK": "{0}/ndk".format(android_stable_root),
+            "ANDROID_SDK": "{0}/sdk".format(android_stable_root),
+            "ANDROID_SDK_HOME": "/data/bshomes/android/sdk-home",
+            "AR": "{0}/bin/{1}-ar".format(
+                android_stable_toolchain, ndk_target),
+            "AS": "{0}/bin/{1}-as".format(
+                android_stable_toolchain, ndk_target),
+            "RANLIB": "{0}/bin/{1}-ranlib".format(
+                android_stable_toolchain, ndk_target),
+            "STRIP": "{0}/bin/{1}-strip".format(
+                android_stable_toolchain, ndk_target),
+            "STRINGS": "{0}/bin/{1}-strings".format(
+                android_stable_toolchain, ndk_target),
+            "CXX": "ccache {0}/bin/{1}-clang++".format(
+                android_stable_toolchain, ndk_target),
+            "CC": "ccache {0}/bin/{1}-clang".format(
+                android_stable_toolchain, ndk_target),
+            # Worker has all libraries installed in the toolchain
+            "PKG_CONFIG_LIBDIR": "{0}/sysroot/usr/lib/{1}/pkgconfig".format(
+                android_stable_toolchain, ndk_target),
+        }
+    }
+    platform.configureargs.append("--host=android-{0}".format(scummvm_target))
+    platform.buildconfigureargs = {
+        builds.ScummVMBuild: [ "--enable-debug",
+            # libcurl is detected using curl-config. Instead of modifying PATH just provide path to it to configure.
+            "--with-libcurl-prefix={0}/sysroot/usr/bin/{1}/{2}".format(android_master_toolchain, ndk_target, abi_version)],
+        builds.ScummVMStableBuild: [ "--enable-debug",
+            # libcurl is detected using curl-config. Instead of modifying PATH just provide path to it to configure.
+            "--with-libcurl-prefix={0}/sysroot/usr/bin/{1}".format(android_stable_toolchain, ndk_target)],
+    }
+    platform.packaging_cmd = "androiddistdebug"
+    platform.built_files = {
+        builds.ScummVMBuild: [ "debug" ],
+    }
+    platform.archiveext = "zip"
+    platform.testable = False
+    platform.run_tests = False
+    platforms.append(platform)
+
+android(suffix="arm",
+        scummvm_target="arm-v7a",
+        ndk_target="arm-linux-androideabi",
+        cxx_target="armv7a-linux-androideabi",
+        abi_version=16)
+android(suffix="arm64",
+        scummvm_target="arm64-v8a",
+        ndk_target="aarch64-linux-android",
+        cxx_target="aarch64-linux-android",
+        abi_version=21)
+android(suffix="x86",
+        scummvm_target="x86",
+        ndk_target="i686-linux-android",
+        cxx_target="i686-linux-android",
+        abi_version=16)
+android(suffix="x86_64",
+        scummvm_target="x86_64",
+        ndk_target="x86_64-linux-android",
+        cxx_target="x86_64-linux-android",
+        abi_version=21)
+
 def debian_x86_64():
     platform = Platform("debian-x86_64")
     platform.env["CXX"] = "ccache g++"
