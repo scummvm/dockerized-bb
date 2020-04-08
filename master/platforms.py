@@ -17,7 +17,7 @@ def _getFromBuild(data, build):
             return data[cls]
     if None in data:
         return data[None]
-    
+
 def _buildInData(data, build):
     if data is None:
         return True
@@ -31,7 +31,7 @@ def _buildInData(data, build):
     return False
 
 class Platform:
-    __slots__ = ['name', 'compatibleBuilds', 
+    __slots__ = ['name', 'compatibleBuilds',
             'env', 'buildenv',
             'configureargs', 'buildconfigureargs',
             'packageable', 'built_files', 'data_files',
@@ -89,6 +89,8 @@ class Platform:
         return _getFromBuild(self.testable, build)
     def canRunTests(self, build):
         return _getFromBuild(self.run_tests, build)
+    def getWorkerImage(self, build):
+        return _getFromBuild(self.workerimage, build)
 
 
 platforms = []

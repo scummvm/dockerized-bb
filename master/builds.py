@@ -297,7 +297,7 @@ class ScummVMBuild(StandardBuild):
             tags = [self.name],
             properties = {
                 "platformname": platform.name,
-                "workerimage": platform.workerimage,
+                "workerimage": platform.getWorkerImage(self),
             },
         )]
 
@@ -402,7 +402,7 @@ class ScummVMToolsBuild(StandardBuild):
             tags = [self.name],
             properties = {
                 "platformname": platform.name,
-                "workerimage": platform.workerimage,
+                "workerimage": platform.getWorkerImage(self),
             },
         )]
 
