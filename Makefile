@@ -80,6 +80,8 @@ $(foreach i,$(TOOLCHAINS),$(eval $(call DEPEND_COMMON,$(i))))
 # Add here all dependencies between toolchains
 $(BUILDDIR)/toolchains/devkit3ds: $(BUILDDIR)/toolchains/devkitarm
 $(BUILDDIR)/toolchains/devkitnds: $(BUILDDIR)/toolchains/devkitarm
+$(BUILDDIR)/toolchains/android: $(BUILDDIR)/toolchains/android-common
+$(BUILDDIR)/toolchains/android-old: $(BUILDDIR)/toolchains/android-common
 
 clean-toolchains:
 	docker rmi $(TOOLCHAINS)

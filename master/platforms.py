@@ -114,65 +114,51 @@ def _3ds():
     platforms.append(platform)
 _3ds()
 
-def android(suffix, scummvm_target, ndk_target, cxx_target, abi_version,
-        android_master_root = "/opt/android/master",
-        android_stable_root = "/opt/android/stable"):
-    android_master_toolchain = "{0}/ndk/toolchains/llvm/prebuilt/linux-x86_64".format(
-            android_master_root)
-    android_stable_toolchain = "{0}/toolchain".format(android_stable_root)
+def android(suffix, scummvm_target, ndk_target, cxx_target, abi_version):
     platform = Platform("android_{0}".format(suffix))
-    platform.workerimage = "android"
     platform.compatibleBuilds = (builds.ScummVMBuild, )
+
+    platform.workerimage = {
+        builds.ScummVMBuild: "android",
+        builds.ScummVMStableBuild: "android-old",
+    }
     platform.buildenv = {
         builds.ScummVMBuild: {
-            "ANDROID_NDK_ROOT": "{0}/ndk".format(android_master_root),
-            # configure script will find everything from this
-            "ANDROID_TOOLCHAIN": "{0}".format(android_master_toolchain),
-            # We keep SDK and gradle dynamic and outside the container
-            # Their versions can change without the need to regenerate the image
-            # Android build system can be shared across all versions so we don't specialize
-            # the directory in /data/bshomes
-            "ANDROID_SDK_ROOT": "/data/bshomes/android/sdk",
-            "ANDROID_SDK_HOME": "/data/bshomes/android/sdk-home",
-            "GRADLE_USER_HOME": "/data/bshomes/android/gradle",
-            "CXX": "ccache {0}/bin/{1}{2}-clang++".format(
-                android_master_toolchain, cxx_target, abi_version),
+            "CXX": "ccache ${{ANDROID_TOOLCHAIN}}/bin/{0}{1}-clang++".format(
+                cxx_target, abi_version),
             # Worker has all libraries installed in the NDK sysroot
-            "PKG_CONFIG_LIBDIR": "{0}/sysroot/usr/lib/{1}/{2}/pkgconfig".format(
-                android_master_toolchain, ndk_target, abi_version),
+            "PKG_CONFIG_LIBDIR": "${{ANDROID_TOOLCHAIN}}/sysroot/usr/lib/{0}/{1}/pkgconfig".format(
+                ndk_target, abi_version),
+            # Altering PATH for curl-config, that lets us reuse environment variables instead of using configure args
+            "PATH": [ "${PATH}", "${{ANDROID_TOOLCHAIN}}/sysroot/usr/bin/{0}/{1}".format(
+                ndk_target, abi_version)],
         },
         builds.ScummVMStableBuild: {
-            "ANDROID_NDK": "{0}/ndk".format(android_stable_root),
-            "ANDROID_SDK": "{0}/sdk".format(android_stable_root),
-            "ANDROID_SDK_HOME": "/data/bshomes/android/sdk-home",
-            "AR": "{0}/bin/{1}-ar".format(
-                android_stable_toolchain, ndk_target),
-            "AS": "{0}/bin/{1}-as".format(
-                android_stable_toolchain, ndk_target),
-            "RANLIB": "{0}/bin/{1}-ranlib".format(
-                android_stable_toolchain, ndk_target),
-            "STRIP": "{0}/bin/{1}-strip".format(
-                android_stable_toolchain, ndk_target),
-            "STRINGS": "{0}/bin/{1}-strings".format(
-                android_stable_toolchain, ndk_target),
-            "CXX": "ccache {0}/bin/{1}-clang++".format(
-                android_stable_toolchain, ndk_target),
-            "CC": "ccache {0}/bin/{1}-clang".format(
-                android_stable_toolchain, ndk_target),
+            "AR": "${{ANDROID_TOOLCHAIN}}/bin/{0}-ar".format(
+                ndk_target),
+            "AS": "${{ANDROID_TOOLCHAIN}}/bin/{0}-as".format(
+                ndk_target),
+            "RANLIB": "${{ANDROID_TOOLCHAIN}}/bin/{0}-ranlib".format(
+                ndk_target),
+            "STRIP": "${{ANDROID_TOOLCHAIN}}/bin/{0}-strip".format(
+                ndk_target),
+            "STRINGS": "${{ANDROID_TOOLCHAIN}}/bin/{0}-strings".format(
+                ndk_target),
+            "CXX": "ccache ${{ANDROID_TOOLCHAIN}}/bin/{0}-clang++".format(
+                ndk_target),
+            "CC": "ccache ${{ANDROID_TOOLCHAIN}}/bin/{0}-clang".format(
+                ndk_target),
             # Worker has all libraries installed in the toolchain
-            "PKG_CONFIG_LIBDIR": "{0}/sysroot/usr/lib/{1}/pkgconfig".format(
-                android_stable_toolchain, ndk_target),
+            "PKG_CONFIG_LIBDIR": "${{ANDROID_TOOLCHAIN}}/sysroot/usr/lib/{0}/pkgconfig".format(
+                ndk_target),
+            # Altering PATH for curl-config, that lets us reuse environment variables instead of using configure args
+            "PATH": [ "${PATH}", "${{ANDROID_TOOLCHAIN}}/sysroot/usr/bin/{0}".format(
+                ndk_target)],
         }
     }
+
     platform.configureargs.append("--host=android-{0}".format(scummvm_target))
-    platform.buildconfigureargs = {
-        builds.ScummVMBuild: [ "--enable-debug",
-            # libcurl is detected using curl-config. Instead of modifying PATH just provide path to it to configure.
-            "--with-libcurl-prefix={0}/sysroot/usr/bin/{1}/{2}".format(android_master_toolchain, ndk_target, abi_version)],
-        builds.ScummVMStableBuild: [ "--enable-debug",
-            # libcurl is detected using curl-config. Instead of modifying PATH just provide path to it to configure.
-            "--with-libcurl-prefix={0}/sysroot/usr/bin/{1}".format(android_stable_toolchain, ndk_target)],
-    }
+    platform.configureargs.append("--enable-debug")
     platform.packaging_cmd = "androiddistdebug"
     platform.built_files = {
         builds.ScummVMBuild: [ "debug" ],

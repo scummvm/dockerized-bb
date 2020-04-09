@@ -1,4 +1,4 @@
-FROM toolchains/android AS toolchain
+FROM toolchains/android-old AS toolchain
 
 m4_include(`debian-builder-base.m4')m4_dnl
 
@@ -12,6 +12,17 @@ RUN for i in $(seq 1 8); do mkdir -p "/usr/share/man/man${i}"; done && \
 		nasm && \
 	rm -rf /var/lib/apt/lists/*
 
+# Split to keep the previous rule the same as the android one
+# Ant is needed by old Android build system
+# file is needed by ndk-build
+# libncurses5 is needed by all binaries
+RUN apt-get update && \
+	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+		ant \
+		file \
+		libncurses5 && \
+	rm -rf /var/lib/apt/lists/*
+
 ENV RO_ANDROID_ROOT=/opt/android \
 	ANDROID_EXTERNAL_ROOT=/data/bshomes/android \
 	HOST_TAG=linux-x86_64
@@ -21,11 +32,10 @@ COPY --from=toolchain ${RO_ANDROID_ROOT} ${RO_ANDROID_ROOT}/
 # Copy the wrapper script in charge of copying the licenses at the right place
 COPY setup_wrapper.sh ${RO_ANDROID_ROOT}/
 
-ENV ANDROID_NDK_ROOT=${RO_ANDROID_ROOT}/ndk \
-	ANDROID_TOOLCHAIN=${RO_ANDROID_ROOT}/ndk/toolchains/llvm/prebuilt/linux-x86_64 \
-	ANDROID_SDK_ROOT=${ANDROID_EXTERNAL_ROOT}/sdk \
-	ANDROID_SDK_HOME=${ANDROID_EXTERNAL_ROOT}/sdk-home \
-	GRADLE_USER_HOME=${ANDROID_EXTERNAL_ROOT}/gradle
+ENV ANDROID_NDK=${RO_ANDROID_ROOT}/ndk \
+	ANDROID_TOOLCHAIN=${RO_ANDROID_ROOT}/toolchain \
+	ANDROID_SDK=${RO_ANDROID_ROOT}/sdk \
+	ANDROID_SDK_HOME=${ANDROID_EXTERNAL_ROOT}/sdk-home
 
 # Don't forget quotes for the ENTRYPOINT as it's a list of strings
 # We can't use RO_ANDROID_ROOT there as it's not expanded when running

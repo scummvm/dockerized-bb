@@ -10,9 +10,9 @@ NO_FUNCTIONS_PLATFORM=yes
 
 . $HELPERS_DIR/functions.sh
 
-export ANDROID_SDK_HOME=$(pwd)
-
 do_make_bdir
+
+export ANDROID_SDK_HOME=$(pwd)
 
 do_http_fetch tools "https://dl.google.com/android/repository/tools_r${SDK_VERSION}-${HOST_TAG%-*}.zip" 'unzip' \
 	"sha1:${SDK_SHA1}"
@@ -46,6 +46,14 @@ sed -ie 's#<property name="java.\(target\|source\)" value="1.5" />#<property nam
 
 # OpenJDK 11 doesn't have sun.misc.Base64Encoder anymore, provide it and patch sdklibs.jar
 cp $PACKAGE_DIR/sun_misc_base64.jar ./lib/
+
+# Install JDK and remove it just after to make final image lighter
+# Do it like we do in Dockerfiles
+apt-get update && \
+	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+		default-jdk-headless && \
+	rm -rf /var/lib/apt/lists/*
+
 # Spawn a subshell to not alter working directory
 (DIR=$(pwd) && \
 	cd .. && \
@@ -53,6 +61,9 @@ cp $PACKAGE_DIR/sun_misc_base64.jar ./lib/
 	sed -i -e 's/^Class-Path: /Class-Path: sun_misc_base64.jar /' -e '/^Manifest-Version:/d' META-INF/MANIFEST.MF && \
 	jar ufm "$DIR/lib/sdklib.jar" META-INF/MANIFEST.MF && \
 	rm -rf META-INF)
+
+DEBIAN_FRONTEND=noninteractive apt-get autoremove --purge -y \
+		default-jdk-headless
 
 mkdir -p "${ANDROID_SDK_ROOT}"
 
