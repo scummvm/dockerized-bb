@@ -6,7 +6,7 @@ import builds
 import workers
 
 def _getFromBuild(data, build):
-    if type(data) is not dict:
+    if not isinstance(data, dict):
         return data
     if len(data) == 0:
         return None
