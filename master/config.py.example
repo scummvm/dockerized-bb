@@ -15,10 +15,6 @@ docker_workers_net = 'workers-net'
 # Environment shared by all builds and builders
 common_env = {
     "LC_ALL": "C.utf-8",
-    "CXX": "",
-    "CXXFLAGS": "",
-    "CPPFLAGS": "",
-    "LDFLAGS": "",
     "CCACHE_COMPRESS": "1",
 }
 
