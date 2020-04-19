@@ -27,6 +27,7 @@ To setup the whole thing:
  - `. buildbot-master/bin/activate`
  - `git clone repo`
  - `cd dockerized-bb`
+ - `cp master/config.py.example master/config.py` and edit config.py to fit your needs
  - `make master`
  - `make workers`
  - `cp contrib/buildbot.service /etc/systemd/system/buildbot.service` and adapt paths and user

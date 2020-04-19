@@ -5,6 +5,10 @@ def init(base_dir):
     buildbot_base_dir = os.path.expanduser(base_dir)
     buildbot_data_dir = os.path.normpath(os.path.join(buildbot_base_dir, "..", "buildbot-data"))
 
+db = {
+    "db_url": "sqlite:///state.sqlite"
+}
+
 docker_socket = 'unix:///var/run/docker.sock'
 docker_workers_net = 'workers-net'
 
