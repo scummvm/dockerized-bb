@@ -50,7 +50,14 @@ ccache-stats:
 
 # Prerequisites are quite redundant but that makes no harm
 master: $(BUILDDIR)/buildbot_installed master/buildbot.tac
-.PHONY: master
+
+# Shortcut to check if config OK for buildbot
+# That avoids any downtime at restart if it was bad
+master-check: master/buildbot.tac
+	cd master && \
+		buildbot checkconfig
+
+.PHONY: master master-check
 
 # buildbot depend on Makefile as we modify version here
 $(BUILDDIR)/buildbot_installed: Makefile | $(BUILDDIR)
