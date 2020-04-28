@@ -16,7 +16,7 @@ dh_quilt_patch
 touch NEWS AUTHORS ChangeLog
 autoreconf -fi
 
-do_configure
+do_configure "$@"
 do_make
 do_make install
 
