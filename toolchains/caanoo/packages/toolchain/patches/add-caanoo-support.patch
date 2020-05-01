@@ -1,0 +1,1769 @@
+diff --git a/config/libc/glibc.in b/config/libc/glibc.in
+index 4138707f..baff312b 100644
+--- a/config/libc/glibc.in
++++ b/config/libc/glibc.in
+@@ -5,7 +5,7 @@
+ ## select LIBC_SUPPORT_THREADS_NATIVE
+ ## select CC_CORE_PASSES_NEEDED
+ # TBD: select GETTEXT for build only, not for host
+-## select GETTEXT_NEEDED
++## select GETTEXT_NEEDED if !GLIBC_V_2_7
+ ## select BINUTILS_FORCE_LD_BFD_DEFAULT
+ 
+ ## help The de-facto standard for Linux distributions.
+diff --git a/packages/glibc-ports/2.7/000-Fix-ARM-build-with-GCC-trunk.patch b/packages/glibc-ports/2.7/000-Fix-ARM-build-with-GCC-trunk.patch
+new file mode 100644
+index 00000000..2ad6c464
+--- /dev/null
++++ b/packages/glibc-ports/2.7/000-Fix-ARM-build-with-GCC-trunk.patch
+@@ -0,0 +1,56 @@
++Index: glibc-ports-2.7/sysdeps/unix/sysv/linux/arm/eabi/nptl/unwind-forcedunwind.c
++===================================================================
++--- glibc-ports-2.7.orig/sysdeps/unix/sysv/linux/arm/eabi/nptl/unwind-forcedunwind.c
+++++ glibc-ports-2.7/sysdeps/unix/sysv/linux/arm/eabi/nptl/unwind-forcedunwind.c
++@@ -22,7 +22,8 @@
++ #include <unwind.h>
++ #include <pthreadP.h>
++ 
++-static void (*libgcc_s_resume) (struct _Unwind_Exception *exc);
+++static void (*libgcc_s_resume) (struct _Unwind_Exception *exc)
+++	__attribute_used__;
++ static _Unwind_Reason_Code (*libgcc_s_personality)
++   (_Unwind_State, struct _Unwind_Exception *, struct _Unwind_Context *);
++ static _Unwind_Reason_Code (*libgcc_s_forcedunwind)
++Index: glibc-ports-2.7/sysdeps/unix/sysv/linux/arm/eabi/nptl/unwind-resume.c
++===================================================================
++--- glibc-ports-2.7.orig/sysdeps/unix/sysv/linux/arm/eabi/nptl/unwind-resume.c
+++++ glibc-ports-2.7/sysdeps/unix/sysv/linux/arm/eabi/nptl/unwind-resume.c
++@@ -21,7 +21,8 @@
++ #include <stdio.h>
++ #include <unwind.h>
++ 
++-static void (*libgcc_s_resume) (struct _Unwind_Exception *exc);
+++static void (*libgcc_s_resume) (struct _Unwind_Exception *exc)
+++	__attribute_used__;
++ static _Unwind_Reason_Code (*libgcc_s_personality)
++   (_Unwind_State, struct _Unwind_Exception *, struct _Unwind_Context *);
++ 
++Index: glibc-ports-2.7/sysdeps/unix/sysv/linux/arm/nptl/unwind-forcedunwind.c
++===================================================================
++--- glibc-ports-2.7.orig/sysdeps/unix/sysv/linux/arm/nptl/unwind-forcedunwind.c
+++++ glibc-ports-2.7/sysdeps/unix/sysv/linux/arm/nptl/unwind-forcedunwind.c
++@@ -22,7 +22,8 @@
++ #include <unwind.h>
++ #include <pthreadP.h>
++ 
++-static void (*libgcc_s_resume) (struct _Unwind_Exception *exc);
+++static void (*libgcc_s_resume) (struct _Unwind_Exception *exc)
+++	__attribute_used__;
++ static _Unwind_Reason_Code (*libgcc_s_personality)
++   (int, _Unwind_Action, _Unwind_Exception_Class, struct _Unwind_Exception *,
++    struct _Unwind_Context *);
++Index: glibc-ports-2.7/sysdeps/unix/sysv/linux/arm/nptl/unwind-resume.c
++===================================================================
++--- glibc-ports-2.7.orig/sysdeps/unix/sysv/linux/arm/nptl/unwind-resume.c
+++++ glibc-ports-2.7/sysdeps/unix/sysv/linux/arm/nptl/unwind-resume.c
++@@ -21,7 +21,8 @@
++ #include <stdio.h>
++ #include <unwind.h>
++ 
++-static void (*libgcc_s_resume) (struct _Unwind_Exception *exc);
+++static void (*libgcc_s_resume) (struct _Unwind_Exception *exc)
+++	__attribute_used__;
++ static _Unwind_Reason_Code (*libgcc_s_personality)
++   (int, _Unwind_Action, _Unwind_Exception_Class, struct _Unwind_Exception *,
++    struct _Unwind_Context *);
+diff --git a/packages/glibc-ports/2.7/100-ARM-asm_page_h.patch b/packages/glibc-ports/2.7/100-ARM-asm_page_h.patch
+new file mode 100644
+index 00000000..59d7c4fd
+--- /dev/null
++++ b/packages/glibc-ports/2.7/100-ARM-asm_page_h.patch
+@@ -0,0 +1,10 @@
++--- a/sysdeps/unix/sysv/linux/arm/ioperm.c
+++++ b/sysdeps/unix/sysv/linux/arm/ioperm.c
++@@ -45,7 +45,6 @@
++ #include <sys/mman.h>
++ 
++ #include <linux/version.h>
++-#include <asm/page.h>
++ #include <sys/sysctl.h>
++ 
++ #define PATH_ARM_SYSTYPE	"/etc/arm_systype"
+diff --git a/packages/glibc-ports/2.7/110-ARM-NPTL.patch b/packages/glibc-ports/2.7/110-ARM-NPTL.patch
+new file mode 100644
+index 00000000..110ebb5a
+--- /dev/null
++++ b/packages/glibc-ports/2.7/110-ARM-NPTL.patch
+@@ -0,0 +1,12 @@
++--- a/sysdeps/unix/sysv/linux/arm/nptl/sysdep-cancel.h
+++++ a/sysdeps/unix/sysv/linux/arm/nptl/sysdep-cancel.h
++@@ -73,6 +73,9 @@
++ # define DOCARGS_5	DOCARGS_4
++ # define UNDOCARGS_5	UNDOCARGS_4
++ 
+++# define DOCARGS_6    DOCARGS_5
+++# define UNDOCARGS_6  UNDOCARGS_5
+++
++ # ifdef IS_IN_libpthread
++ #  define CENABLE	bl PLTJMP(__pthread_enable_asynccancel)
++ #  define CDISABLE	bl PLTJMP(__pthread_disable_asynccancel)
+diff --git a/packages/glibc-ports/2.7/chksum b/packages/glibc-ports/2.7/chksum
+new file mode 100644
+index 00000000..fe3547bf
+--- /dev/null
++++ b/packages/glibc-ports/2.7/chksum
+@@ -0,0 +1,8 @@
++md5 glibc-ports-2.7.tar.bz2 eaeb8527b8fa286c2d887157214f9998
++sha1 glibc-ports-2.7.tar.bz2 2186eac2248f1dd604f20a9dc8215ce12319d273
++sha256 glibc-ports-2.7.tar.bz2 3e481996259af87c3581da23481970a27de679e3c87cfa9a5a59751cd20c7b44
++sha512 glibc-ports-2.7.tar.bz2 4723dafae5c07bc8177bfac888a43c5cf324a066631fcdb702a24a5fd5949332c0465de1fc10e454672333b448f4342a27199422786cd24b689679b4cd1787f9
++md5 glibc-ports-2.7.tar.gz f6a3b50891fd2558b2a84b55c5a5829f
++sha1 glibc-ports-2.7.tar.gz cf900ff6d9eeb7a7cfe8b475c05596d53fb6d149
++sha256 glibc-ports-2.7.tar.gz 2eb8b28dd28f056863cd382bf887b104b60c6c15695122246623a4e6aa9287a9
++sha512 glibc-ports-2.7.tar.gz f7f5e8a280c3ec90448b664244e57c4b966d777133c49b37537cecf76e9e2b04b17fc2c7d6b9fd68fe2b3f8a804ee1ad835e05bc6d00eac5459516b829349416
+diff --git a/packages/glibc-ports/2.7/version.desc b/packages/glibc-ports/2.7/version.desc
+new file mode 100644
+index 00000000..d44e333b
+--- /dev/null
++++ b/packages/glibc-ports/2.7/version.desc
+@@ -0,0 +1 @@
++archive_formats='.tar.bz2 .tar.gz'
+diff --git a/packages/glibc/2.7/000-fix-configure-versions.patch b/packages/glibc/2.7/000-fix-configure-versions.patch
+new file mode 100644
+index 00000000..5c7790e0
+--- /dev/null
++++ b/packages/glibc/2.7/000-fix-configure-versions.patch
+@@ -0,0 +1,105 @@
++Index: glibc-2.7/configure
++===================================================================
++--- glibc-2.7.orig/configure
+++++ glibc-2.7/configure
++@@ -4527,7 +4527,7 @@ echo $ECHO_N "checking version of $AS...
++   ac_prog_version=`$AS --version 2>&1 | sed -n 's/^.*GNU assembler.* \([0-9]*\.[0-9.]*\).*$/\1/p'`
++   case $ac_prog_version in
++     '') ac_prog_version="v. ?.??, bad"; ac_verc_fail=yes;;
++-    2.1[3-9]*)
+++    2.1[0-9][0-9]*|2.1[3-9]*|2.[2-9]*|[3-9].*|[1-9][0-9]*)
++        ac_prog_version="$ac_prog_version, ok"; ac_verc_fail=no;;
++     *) ac_prog_version="$ac_prog_version, bad"; ac_verc_fail=yes;;
++ 
++@@ -4590,7 +4590,7 @@ echo $ECHO_N "checking version of $LD...
++   ac_prog_version=`$LD --version 2>&1 | sed -n 's/^.*GNU ld.* \([0-9][0-9]*\.[0-9.]*\).*$/\1/p'`
++   case $ac_prog_version in
++     '') ac_prog_version="v. ?.??, bad"; ac_verc_fail=yes;;
++-    2.1[3-9]*)
+++    2.1[0-9][0-9]*|2.1[3-9]*|2.[2-9]*|[3-9].*|[1-9][0-9]*)
++        ac_prog_version="$ac_prog_version, ok"; ac_verc_fail=no;;
++     *) ac_prog_version="$ac_prog_version, bad"; ac_verc_fail=yes;;
++ 
++@@ -4708,7 +4708,7 @@ echo $ECHO_N "checking version of $CC...
++   ac_prog_version=`$CC -v 2>&1 | sed -n 's/^.*version \([egcygnustpi-]*[0-9.]*\).*$/\1/p'`
++   case $ac_prog_version in
++     '') ac_prog_version="v. ?.??, bad"; ac_verc_fail=yes;;
++-    3.4* | 4.[0-9]* )
+++    3.4* | [4-9].[0-9]* | [0-9][0-9].[0-9]* )
++        ac_prog_version="$ac_prog_version, ok"; ac_verc_fail=no;;
++     *) ac_prog_version="$ac_prog_version, bad"; ac_verc_fail=yes;;
++ 
++@@ -4771,7 +4771,7 @@ echo $ECHO_N "checking version of $MAKE.
++   ac_prog_version=`$MAKE --version 2>&1 | sed -n 's/^.*GNU Make[^0-9]*\([0-9][0-9.]*\).*$/\1/p'`
++   case $ac_prog_version in
++     '') ac_prog_version="v. ?.??, bad"; ac_verc_fail=yes;;
++-    3.79* | 3.[89]*)
+++    3.79* | 3.[89]* | [4-9].* | [1-9][0-9]*)
++        ac_prog_version="$ac_prog_version, ok"; ac_verc_fail=no;;
++     *) ac_prog_version="$ac_prog_version, bad"; ac_verc_fail=yes;;
++ 
++@@ -4898,7 +4898,7 @@ echo $ECHO_N "checking version of $MAKEI
++   ac_prog_version=`$MAKEINFO --version 2>&1 | sed -n 's/^.*GNU texinfo.* \([0-9][0-9.]*\).*$/\1/p'`
++   case $ac_prog_version in
++     '') ac_prog_version="v. ?.??, bad"; ac_verc_fail=yes;;
++-    4.*)
+++    [4-9].*)
++        ac_prog_version="$ac_prog_version, ok"; ac_verc_fail=no;;
++     *) ac_prog_version="$ac_prog_version, bad"; ac_verc_fail=yes;;
++ 
++@@ -4958,7 +4958,7 @@ else
++   # Found it, now check the version.
++   { echo "$as_me:$LINENO: checking version of $SED" >&5
++ echo $ECHO_N "checking version of $SED... $ECHO_C" >&6; }
++-  ac_prog_version=`$SED --version 2>&1 | sed -n 's/^.*GNU sed version \([0-9]*\.[0-9.]*\).*$/\1/p'`
+++  ac_prog_version=`$SED --version 2>&1 | sed -n 's/^.*GNU sed[^0-9]* \([0-9]*\.[0-9.]*\).*$/\1/p'`
++   case $ac_prog_version in
++     '') ac_prog_version="v. ?.??, bad"; ac_verc_fail=yes;;
++     3.0[2-9]*|3.[1-9]*|[4-9]*)
++Index: glibc-2.7/configure.in
++===================================================================
++--- glibc-2.7.orig/configure.in
+++++ glibc-2.7/configure.in
++@@ -842,10 +842,12 @@ AC_SUBST(MIG)dnl Needed by sysdeps/mach/
++ # Accept binutils 2.13 or newer.
++ AC_CHECK_PROG_VER(AS, $AS, --version,
++ 		  [GNU assembler.* \([0-9]*\.[0-9.]*\)],
++-		  [2.1[3-9]*], AS=: critic_missing="$critic_missing as")
+++		  [2.1[0-9][0-9]*|2.1[3-9]*|2.[2-9]*|[3-9].*|[1-9][0-9]*],
+++		  AS=: critic_missing="$critic_missing as")
++ AC_CHECK_PROG_VER(LD, $LD, --version,
++ 		  [GNU ld.* \([0-9][0-9]*\.[0-9.]*\)],
++-		  [2.1[3-9]*], LD=: critic_missing="$critic_missing ld")
+++		  [2.1[0-9][0-9]*|2.1[3-9]*|2.[2-9]*|[3-9].*|[1-9][0-9]*],
+++		  LD=: critic_missing="$critic_missing ld")
++ 
++ # We need the physical current working directory.  We cannot use the
++ # "pwd -P" shell builtin since that's not portable.  Instead we try to
++@@ -860,11 +862,12 @@ fi
++ # These programs are version sensitive.
++ AC_CHECK_TOOL_PREFIX
++ AC_CHECK_PROG_VER(CC, ${ac_tool_prefix}gcc ${ac_tool_prefix}cc, -v,
++-  [version \([egcygnustpi-]*[0-9.]*\)], [3.4* | 4.[0-9]* ],
+++  [version \([egcygnustpi-]*[0-9.]*\)],
+++  [3.4* | [4-9].[0-9]* | [0-9][0-9].[0-9]*],
++   critic_missing="$critic_missing gcc")
++ AC_CHECK_PROG_VER(MAKE, gnumake gmake make, --version,
++   [GNU Make[^0-9]*\([0-9][0-9.]*\)],
++-  [3.79* | 3.[89]*], critic_missing="$critic_missing make")
+++  3.79* | 3.[89]* | [[4-9].* | [1-9][0-9]*], critic_missing="$critic_missing make")
++ 
++ AC_CHECK_PROG_VER(MSGFMT, gnumsgfmt gmsgfmt msgfmt, --version,
++   [GNU gettext.* \([0-9]*\.[0-9.]*\)],
++@@ -872,10 +875,10 @@ AC_CHECK_PROG_VER(MSGFMT, gnumsgfmt gmsg
++   MSGFMT=: aux_missing="$aux_missing msgfmt")
++ AC_CHECK_PROG_VER(MAKEINFO, makeinfo, --version,
++   [GNU texinfo.* \([0-9][0-9.]*\)],
++-  [4.*],
+++  [[4-9].*],
++   MAKEINFO=: aux_missing="$aux_missing makeinfo")
++ AC_CHECK_PROG_VER(SED, sed, --version,
++-  [GNU sed version \([0-9]*\.[0-9.]*\)],
+++  [GNU sed[^0-9]* \([0-9]*\.[0-9.]*\)],
++   [3.0[2-9]*|3.[1-9]*|[4-9]*],
++   SED=: aux_missing="$aux_missing sed")
++ 
+diff --git a/packages/glibc/2.7/001-fix-recent-make.patch b/packages/glibc/2.7/001-fix-recent-make.patch
+new file mode 100644
+index 00000000..83692108
+--- /dev/null
++++ b/packages/glibc/2.7/001-fix-recent-make.patch
+@@ -0,0 +1,17 @@
++Index: glibc-2.7/manual/Makefile
++===================================================================
++--- glibc-2.7.orig/manual/Makefile
+++++ glibc-2.7/manual/Makefile
++@@ -232,7 +232,11 @@ ifdef objpfx
++ .PHONY: stubs
++ stubs: $(objpfx)stubs
++ endif
++-$(objpfx)stubs ../po/manual.pot $(objpfx)stamp%:
+++$(objpfx)stubs ../po/manual.pot:
+++	$(make-target-directory)
+++	touch $@
+++
+++$(objpfx)stamp%:
++ 	$(make-target-directory)
++ 	touch $@
++ 
+diff --git a/packages/glibc/2.7/002-fix-dl-sysdep-build.patch b/packages/glibc/2.7/002-fix-dl-sysdep-build.patch
+new file mode 100644
+index 00000000..ef580390
+--- /dev/null
++++ b/packages/glibc/2.7/002-fix-dl-sysdep-build.patch
+@@ -0,0 +1,21 @@
++Index: glibc-2.7/sysdeps/unix/sysv/linux/dl-sysdep.c
++===================================================================
++--- glibc-2.7.orig/sysdeps/unix/sysv/linux/dl-sysdep.c
+++++ glibc-2.7/sysdeps/unix/sysv/linux/dl-sysdep.c
++@@ -24,7 +24,8 @@
++ #include <ldsodefs.h>
++ #include <kernel-features.h>
++ 
++-#define DL_SYSDEP_INIT frob_brk ()
+++#ifdef SHARED
+++# define DL_SYSDEP_INIT frob_brk ()
++ 
++ static inline void
++ frob_brk (void)
++@@ -53,4 +54,5 @@ frob_brk (void)
++ #endif
++ }
++ 
++-#include <elf/dl-sysdep.c>
+++# include <elf/dl-sysdep.c>
+++#endif
+diff --git a/packages/glibc/2.7/100-cygwin.patch b/packages/glibc/2.7/100-cygwin.patch
+new file mode 100644
+index 00000000..030361f9
+--- /dev/null
++++ b/packages/glibc/2.7/100-cygwin.patch
+@@ -0,0 +1,185 @@
++Fixes
++elf/librtld.os: In function `process_envvars': : undefined reference to `__access'
++...
++when building glibc-2.3.x on cygwin
++
++Idea from
++http://sources.redhat.com/ml/bug-glibc/2002-01/msg00071/glibc-2.2-cygin-shared.patch
++Basically, make glibc use .oST as suffix for 'object static'
++instead of .oS, since cygwin has trouble distinguishing .os from .oS
++(Original patch had .on, but .oST is more mnemonic for 'object static')
++
++glibc-linuxthreads-2.3.5 also requires a patch, see
++../glibc-linuxthreads-2.3.5/glibc-linuxthreads-2.3.5-cygwin.patch
++
++[ forward ported to glibc-2.3.5 by Petr Cvachoucek:
++
++Message-ID: <4282FCBA.3040000@unicontrols.cz>
++Date: Thu, 12 May 2005 08:50:34 +0200
++From: Petr Cvachoucek <cvachoucek@unicontrols.cz>
++To: Dan Kegel <dank@kegel.com>
++CC:  crossgcc@sources.redhat.com
++Subject: Patches to build gcc 3.4.3 / glibc 2.3.5 on cygwin
++
++Hi Dan,
++following patches are needed to build gcc-3.4.3/glibc-2.3.5 toolchain
++on cygwin. Tested to build toolchains for powerpc 604 and 750 targets.
++
++--
++                     Petr Cvachoucek
++                     Unicontrols a.s.
++                     http://www.unicontrols.cz
++]
++
++diff -aur glibc-2.3.5/Makeconfig glibc-2.3.5-cygwin/Makeconfig
++--- glibc-2.3.5/Makeconfig	2005-02-16 11:50:19.000000000 +0100
+++++ glibc-2.3.5-cygwin/Makeconfig	2005-05-11 08:24:51.046875000 +0200
++@@ -470,7 +470,7 @@
++ # run the linked programs.
++ link-libc = -Wl,-rpath-link=$(rpath-link) \
++ 	    $(common-objpfx)libc.so$(libc.so-version) \
++-	    $(common-objpfx)$(patsubst %,$(libtype.oS),c) $(gnulib)
+++	    $(common-objpfx)$(patsubst %,$(libtype.oST),c) $(gnulib)
++ # This is how to find at build-time things that will be installed there.
++ rpath-dirs = math elf dlfcn nss nis rt resolv crypt
++ endif
++@@ -691,7 +691,7 @@
++ # The compilation rules use $(CPPFLAGS-${SUFFIX}) and $(CFLAGS-${SUFFIX})
++ # to pass different flags for each flavor.
++ libtypes = $(foreach o,$(object-suffixes-for-libc),$(libtype$o))
++-all-object-suffixes := .o .os .op .og .ob .oS
+++all-object-suffixes := .o .os .op .og .ob .oST
++ object-suffixes :=
++ CPPFLAGS-.o = $(pic-default)
++ CFLAGS-.o = $(filter %frame-pointer,$(+cflags))
++@@ -747,14 +747,14 @@
++
++ ifeq (yes,$(build-shared))
++ # Build special library that contains the static-only routines for libc.
++-object-suffixes-for-libc += .oS
+++object-suffixes-for-libc += .oST
++
++ # Must build the routines as PIC, though, because they can end up in (users')
++ # shared objects.  We don't want to use CFLAGS-os because users may, for
++ # example, make that processor-specific.
++-CFLAGS-.oS = $(CFLAGS-.o) $(PIC-ccflag)
++-CPPFLAGS-.oS = $(CPPFLAGS-.o) -DPIC -DLIBC_NONSHARED=1
++-libtype.oS = lib%_nonshared.a
+++CFLAGS-.oST = $(CFLAGS-.o) $(PIC-ccflag)
+++CPPFLAGS-.oST = $(CPPFLAGS-.o) -DPIC -DLIBC_NONSHARED=1
+++libtype.oST = lib%_nonshared.a
++ endif
++
++ # The assembler can generate debug information too.
++diff -aur glibc-2.3.5/Makerules glibc-2.3.5-cygwin/Makerules
++--- glibc-2.3.5/Makerules	2004-12-15 19:52:39.000000000 +0100
+++++ glibc-2.3.5-cygwin/Makerules	2005-05-11 08:25:33.578125000 +0200
++@@ -417,7 +417,7 @@
++ # Bounded pointer thunks are only built for *.ob
++ elide-bp-thunks = $(addprefix $(bppfx),$(bp-thunks))
++
++-elide-routines.oS += $(filter-out $(static-only-routines),\
+++elide-routines.oST += $(filter-out $(static-only-routines),\
++ 				  $(routines) $(aux) $(sysdep_routines)) \
++ 		     $(elide-bp-thunks)
++ elide-routines.os += $(static-only-routines) $(elide-bp-thunks)
++@@ -984,7 +984,7 @@
++ install: $(inst_libdir)/libc.so
++ $(inst_libdir)/libc.so: $(common-objpfx)format.lds \
++ 			$(common-objpfx)libc.so$(libc.so-version) \
++-			$(inst_libdir)/$(patsubst %,$(libtype.oS),\
+++			$(inst_libdir)/$(patsubst %,$(libtype.oST),\
++ 						  $(libprefix)$(libc-name)) \
++ 			$(+force)
++ 	(echo '/* GNU ld script';\
++@@ -992,7 +992,7 @@
++ 	 echo '   the static library, so try that secondarily.  */';\
++ 	 cat $<; \
++ 	 echo 'GROUP ( $(slibdir)/libc.so$(libc.so-version)' \
++-	      '$(libdir)/$(patsubst %,$(libtype.oS),$(libprefix)$(libc-name))'\
+++	      '$(libdir)/$(patsubst %,$(libtype.oST),$(libprefix)$(libc-name))'\
++	      ' AS_NEEDED (' $(slibdir)/$(rtld-installed-name) ') )' \
++ 	) > $@.new
++	mv -f $@.new $@
++diff -aur glibc-2.3.5/extra-lib.mk glibc-2.3.5-cygwin/extra-lib.mk
++--- glibc-2.3.5/extra-lib.mk	2004-12-02 23:54:47.000000000 +0100
+++++ glibc-2.3.5-cygwin/extra-lib.mk	2005-05-11 08:27:28.156250000 +0200
++@@ -13,7 +13,7 @@
++
++ ifneq (,$($(lib)-static-only-routines))
++ ifneq (,$(filter yesyes%,$(build-shared)$(elf)$($(lib).so-version)))
++-object-suffixes-$(lib) += $(filter-out $($(lib)-inhibit-o),.oS)
+++object-suffixes-$(lib) += $(filter-out $($(lib)-inhibit-o),.oST)
++ endif
++ endif
++
++@@ -29,7 +29,7 @@
++
++ # Add each flavor of library to the lists of things to build and install.
++ install-lib += $(foreach o,$(object-suffixes-$(lib)),$(lib:lib%=$(libtype$o)))
++-extra-objs += $(foreach o,$(filter-out .os .oS,$(object-suffixes-$(lib))),\
+++extra-objs += $(foreach o,$(filter-out .os .oST,$(object-suffixes-$(lib))),\
++ 			$(patsubst %,%$o,$(filter-out \
++ 					   $($(lib)-shared-only-routines),\
++ 					   $(all-$(lib)-routines))))
++@@ -57,7 +57,7 @@
++
++
++ # Use o-iterator.mk to generate a rule for each flavor of library.
++-ifneq (,$(filter-out .os .oS,$(object-suffixes-$(lib))))
+++ifneq (,$(filter-out .os .oST,$(object-suffixes-$(lib))))
++ define o-iterator-doit
++ $(objpfx)$(patsubst %,$(libtype$o),$(lib:lib%=%)): \
++   $(patsubst %,$(objpfx)%$o,\
++@@ -65,7 +65,7 @@
++ 			  $(all-$(lib)-routines))); \
++ 	$$(build-extra-lib)
++ endef
++-object-suffixes-left = $(filter-out .os .oS,$(object-suffixes-$(lib)))
+++object-suffixes-left = $(filter-out .os .oST,$(object-suffixes-$(lib)))
++ include $(patsubst %,$(..)o-iterator.mk,$(object-suffixes-left))
++ endif
++
++@@ -77,9 +77,9 @@
++ 	$(build-extra-lib)
++ endif
++
++-ifneq (,$(filter .oS,$(object-suffixes-$(lib))))
++-$(objpfx)$(patsubst %,$(libtype.oS),$(lib:lib%=%)): \
++-  $(patsubst %,$(objpfx)%.oS,\
+++ifneq (,$(filter .oST,$(object-suffixes-$(lib))))
+++$(objpfx)$(patsubst %,$(libtype.oST),$(lib:lib%=%)): \
+++  $(patsubst %,$(objpfx)%.oST,\
++ 	     $(filter $($(lib)-static-only-routines),\
++ 		      $(all-$(lib)-routines)))
++ 	$(build-extra-lib)
++diff -aur glibc-2.3.5/nptl/Makefile glibc-2.3.5-cygwin/nptl/Makefile
++--- glibc-2.3.5/nptl/Makefile	2005-02-16 09:45:56.000000000 +0100
+++++ glibc-2.3.5-cygwin/nptl/Makefile	2005-05-11 08:26:01.812500000 +0200
++@@ -375,7 +375,7 @@
++
++ $(inst_libdir)/libpthread.so: $(common-objpfx)format.lds \
++ 			      $(objpfx)libpthread.so$(libpthread.so-version) \
++-			      $(inst_libdir)/$(patsubst %,$(libtype.oS),\
+++			      $(inst_libdir)/$(patsubst %,$(libtype.oST),\
++ 							$(libprefix)pthread) \
++ 			      $(+force)
++ 	(echo '/* GNU ld script';\
++@@ -383,7 +383,7 @@
++ 	 echo '   the static library, so try that secondarily.  */';\
++ 	 cat $<; \
++ 	 echo 'GROUP ( $(slibdir)/libpthread.so$(libpthread.so-version)' \
++-	      '$(libdir)/$(patsubst %,$(libtype.oS),$(libprefix)pthread)'\
+++	      '$(libdir)/$(patsubst %,$(libtype.oST),$(libprefix)pthread)'\
++ 	      ')' \
++ 	) > $@.new
++ 	mv -f $@.new $@
++diff -aur glibc-2.3.5/sysdeps/sparc/sparc32/sparcv9/Makefile glibc-2.3.5-cygwin/sysdeps/sparc/sparc32/sparcv9/Makefile
++--- glibc-2.3.5/sysdeps/sparc/sparc32/sparcv9/Makefile	2004-08-16 08:46:14.000000000 +0200
+++++ glibc-2.3.5-cygwin/sysdeps/sparc/sparc32/sparcv9/Makefile	2005-05-11 08:26:25.937500000 +0200
++@@ -10,4 +10,4 @@
++ ASFLAGS-.op += -Wa,-Av9a
++ ASFLAGS-.og += -Wa,-Av9a
++ ASFLAGS-.ob += -Wa,-Av9a
++-ASFLAGS-.oS += -Wa,-Av9a
+++ASFLAGS-.oST += -Wa,-Av9a
+diff --git a/packages/glibc/2.7/110-configure-apple-as.patch b/packages/glibc/2.7/110-configure-apple-as.patch
+new file mode 100644
+index 00000000..264a5df9
+--- /dev/null
++++ b/packages/glibc/2.7/110-configure-apple-as.patch
+@@ -0,0 +1,26 @@
++http://in3www.epfl.ch/~schaffne/glibc-configure-apple-as.patch
++http://sources.redhat.com/ml/crossgcc/2004-02/msg00151.html
++
++The following makes it possible to configure glibc-2.3.2 on Mac OS X,
++where the assembler but doesn't understand the --version flag.
++
++Fixes the symptom
++checking whether ld is GNU ld... no
++checking for /usr/libexec/gcc/darwin/ppc/as... /usr/libexec/gcc/darwin/ppc/as
++checking version of /usr/libexec/gcc/darwin/ppc/as...
++<PAUSES HERE AND JUST SITS THERE DOING NOTHING>
++
++NOTE:  This patch should apparently be pushed upstream so we don't need to
++keep adding it here.
++
++--- glibc-2.3.2/configure~	Wed Feb 26 09:20:48 2003
+++++ glibc-2.3.2/configure	Fri Feb 27 13:12:53 2004
++@@ -4524,7 +4524,7 @@
++   # Found it, now check the version.
++   { echo "$as_me:$LINENO: checking version of $AS" >&5
++ echo $ECHO_N "checking version of $AS... $ECHO_C" >&6; }
++-  ac_prog_version=`$AS --version 2>&1 | sed -n 's/^.*GNU assembler.* \([0-9]*\.[0-9.]*\).*$/\1/p'`
+++  ac_prog_version=`$AS -v </dev/null 2>&1 | sed -n 's/^.*GNU assembler.* \([0-9]*\.[0-9.]*\).*$/\1/p'`
++   case $ac_prog_version in
++     '') ac_prog_version="v. ?.??, bad"; ac_verc_fail=yes;;
++     2.1[3-9]*)
+diff --git a/packages/glibc/2.7/120-fix-pr631.patch b/packages/glibc/2.7/120-fix-pr631.patch
+new file mode 100644
+index 00000000..4e549fd9
+--- /dev/null
++++ b/packages/glibc/2.7/120-fix-pr631.patch
+@@ -0,0 +1,43 @@
++From dank@kegel.com
++Wed Jun 15 09:12:43 PDT 2005
++
++Fixes
++
++build-glibc/libc.a(nsswitch.o)(.data+0x64): undefined reference to `_nss_files_getaliasent_r'
++build-glibc/libc.a(nsswitch.o)(.data+0x6c): undefined reference to `_nss_files_endaliasent'
++... 53 lines deleted ...
++build-glibc/libc.a(nsswitch.o)(.data+0x21c): undefined reference to `_nss_files_getspnam_r'
++collect2: ld returned 1 exit status
++make[2]: *** [/build/gcc-3.4.3-glibc-2.3.5-hdrs-2.6.11.2/i686-unknown-linux-gnu/build-glibc/elf/ldconfig] Error 1
++
++when building glibc with --enable-static-nss.
++
++See http://sources.redhat.com/bugzilla/show_bug.cgi?id=631
++
++--- glibc-2.3.5/Makeconfig.old	Wed Jun 15 08:13:12 2005
+++++ glibc-2.3.5/Makeconfig	Wed Jun 15 08:13:14 2005
++@@ -508,7 +508,7 @@
++
++ # The static libraries.
++ ifeq (yes,$(build-static))
++-link-libc-static = $(common-objpfx)libc.a $(static-gnulib) $(common-objpfx)libc.a
+++link-libc-static = $(common-objpfx)libc.a $(static-gnulib) $(otherlibs) $(common-objpfx)libc.a
++ else
++ ifeq (yes,$(build-shared))
++ # We can try to link the programs with lib*_pic.a...
++--- glibc-2.3.5/elf/Makefile.old	Wed Jun 15 07:46:49 2005
+++++ glibc-2.3.5/elf/Makefile	Wed Jun 15 08:14:00 2005
++@@ -120,6 +120,13 @@
++ install-bin-script = ldd
++ endif
++
+++ifeq (yes,$(build-static-nss))
+++nssobjdir := $(patsubst ../$(subdir),.,$(common-objpfx)nss)
+++resolvobjdir := $(patsubst ../$(subdir),.,$(common-objpfx)resolv)
+++otherlibs += $(nssobjdir)/libnss_files.a $(resolvobjdir)/libnss_dns.a \
+++	     $(resolvobjdir)/libresolv.a
+++endif
+++
++ others		= sprof sln
++ install-bin	= sprof
++ others-static   = sln
+diff --git a/packages/glibc/2.7/130-i686-assembler.patch b/packages/glibc/2.7/130-i686-assembler.patch
+new file mode 100644
+index 00000000..09c87544
+--- /dev/null
++++ b/packages/glibc/2.7/130-i686-assembler.patch
+@@ -0,0 +1,43 @@
++If gcc is configured to generate i686 code or better by default (like
++when using the --with-arch=pentium3 configure option), then the __i686
++macro will always be defined automatically and thus screw up the
++compilation of some .S files.
++
++http://bugs.gentoo.org/131108
++http://sourceware.org/ml/libc-alpha/2006-04/msg00090.html
++
++2006-04-25  Mike Frysinger  <vapier@gentoo.org>
++
++	* sysdeps/i386/sysdep.h (__i686): Undefine.
++
++Index: glibc-2.4/sysdeps/unix/sysv/linux/i386/sysdep.h
++===================================================================
++--- glibc-2.4/sysdeps/unix/sysv/linux/i386/sysdep.h	(revision 1469)
+++++ glibc-2.4/sysdeps/unix/sysv/linux/i386/sysdep.h	(working copy)
++@@ -29,6 +29,10 @@
++ #include <dl-sysdep.h>
++ #include <tls.h>
++
+++#if defined __i686 && defined __ASSEMBLER__
+++#undef __i686
+++#define __i686 __i686
+++#endif
++
++ /* For Linux we can use the system call table in the header file
++ 	/usr/include/asm/unistd.h
++Index: glibc-2.4/nptl/sysdeps/pthread/pt-initfini.c
++===================================================================
++--- glibc-2.4/nptl/sysdeps/pthread/pt-initfini.c	(revision 1469)
+++++ glibc-2.4/nptl/sysdeps/pthread/pt-initfini.c	(working copy)
++@@ -45,6 +45,11 @@
++ /* Embed an #include to pull in the alignment and .end directives. */
++ asm ("\n#include \"defs.h\"");
++
+++asm ("\n#if defined __i686 && defined __ASSEMBLER__");
+++asm ("\n#undef __i686");
+++asm ("\n#define __i686 __i686");
+++asm ("\n#endif");
+++
++ /* The initial common code ends here. */
++ asm ("\n/*@HEADER_ENDS*/");
++
+diff --git a/packages/glibc/2.7/140-i386-preferred-stack-boundary.patch b/packages/glibc/2.7/140-i386-preferred-stack-boundary.patch
+new file mode 100644
+index 00000000..449821d8
+--- /dev/null
++++ b/packages/glibc/2.7/140-i386-preferred-stack-boundary.patch
+@@ -0,0 +1,18 @@
++(C) 2007 Yann E. MORIN <yann.morin.1998@anciens.enib.fr>
++License: LGPL v2.1
++
++Shut off a stupid warning: preffered-stack-boundary must be between 4 ad 12,
++and 2 is not.
++
++diff -dur glibc-2.5.orig/sysdeps/i386/Makefile glibc-2.5/sysdeps/i386/Makefile
++--- glibc-2.5.orig/sysdeps/i386/Makefile	2005-03-06 01:18:16.000000000 +0100
+++++ glibc-2.5/sysdeps/i386/Makefile	2007-05-27 17:49:37.000000000 +0200
++@@ -36,7 +36,7 @@
++ ifeq ($(subdir),csu)
++ sysdep-CFLAGS += -mpreferred-stack-boundary=4
++ else
++-sysdep-CFLAGS += -mpreferred-stack-boundary=2
+++sysdep-CFLAGS += -mpreferred-stack-boundary=4
++ # Likewise, any function which calls user callbacks
++ uses-callbacks += -mpreferred-stack-boundary=4
++ # Likewise, any stack alignment tests
+diff --git a/packages/glibc/2.7/150-alpha-asm_page.patch b/packages/glibc/2.7/150-alpha-asm_page.patch
+new file mode 100644
+index 00000000..b198b367
+--- /dev/null
++++ b/packages/glibc/2.7/150-alpha-asm_page.patch
+@@ -0,0 +1,26 @@
++2008-06-07  Mike Frysinger  <vapier@gentoo.org>
++
++	* sysdeps/unix/sysv/linux/alpha/sys/user.h: Copy page.h definitions
++	from the kernel header to sys/user.h and remove the #include of
++	sys/user.h.
++
++--- a/sysdeps/unix/sysv/linux/alpha/sys/user.h
+++++ b/sysdeps/unix/sysv/linux/alpha/sys/user.h
++@@ -23,7 +23,6 @@
++    only. Don't read too much into it. Don't use it for anything other
++    than gdb/strace unless you know what you are doing. */
++ 
++-#include <asm/page.h>
++ #include <asm/reg.h>
++ 
++ struct user
++@@ -41,6 +40,9 @@ struct user
++   char u_comm[32];				/* user command name */
++ };
++ 
+++#define PAGE_SHIFT		13
+++#define PAGE_SIZE		(1 << PAGE_SHIFT)
+++#define PAGE_MASK		(~(PAGE_SIZE-1))
++ #define NBPG			PAGE_SIZE
++ #define UPAGES			1
++ #define HOST_TEXT_START_ADDR	(u.start_code)
+diff --git a/packages/glibc/2.7/160-build_wcs_upper_buffer.patch b/packages/glibc/2.7/160-build_wcs_upper_buffer.patch
+new file mode 100644
+index 00000000..72cde922
+--- /dev/null
++++ b/packages/glibc/2.7/160-build_wcs_upper_buffer.patch
+@@ -0,0 +1,22 @@
++Matthias Kaehlcke <matthias at kaehlcke dot net> writes:
++
++A compilation of an ARM toolchain with glibc 2.7 using crosstool-ng
++failed with a gcc error in glibc-2.7/posix/regex_internal.c, more
++concretly in the function build_wcs_upper_buffer(). The return type of
++the function prototype in regex_internal.h doesn't correspond with the
++return type of this function in regex_internal.c.
++
++The attached patch corrects the return type of the function prototype
++in regex_internal.h
++
++--- glibc-2.7/posix/regex_internal.h.org	2008-05-30 11:16:01.000000000 +0200
+++++ glibc-2.7/posix/regex_internal.h	2008-05-30 11:16:35.000000000 +0200
++@@ -391,7 +391,7 @@
++      internal_function;
++ # ifdef RE_ENABLE_I18N
++ static void build_wcs_buffer (re_string_t *pstr) internal_function;
++-static int build_wcs_upper_buffer (re_string_t *pstr) internal_function;
+++static reg_errcode_t build_wcs_upper_buffer (re_string_t *pstr) internal_function;
++ # endif /* RE_ENABLE_I18N */
++ static void build_upper_buffer (re_string_t *pstr) internal_function;
++ static void re_string_translate_buffer (re_string_t *pstr) internal_function;
+diff --git a/packages/glibc/2.7/170-use_short_for_fnstsw.patch b/packages/glibc/2.7/170-use_short_for_fnstsw.patch
+new file mode 100644
+index 00000000..722f8d2b
+--- /dev/null
++++ b/packages/glibc/2.7/170-use_short_for_fnstsw.patch
+@@ -0,0 +1,18 @@
++Original patch from H.J. Lu, as reported there:
++http://www.nabble.com/PATCH:-Use-short-for-fnstsw-td14775171.html
++
++fnstsw stores 16bit into %ax. The upper 16bit of %eax is unchanged.
++The new assembler (binutils-2.18.50.0.4 and up) will disallow "fnstsw %eax".
++
++diff -dur glibc-2.7.orig/sysdeps/i386/fpu/ftestexcept.c glibc-2.7/sysdeps/i386/fpu/ftestexcept.c
++--- glibc-2.7.orig/sysdeps/i386/fpu/ftestexcept.c	2004-03-05 11:14:48.000000000 +0100
+++++ glibc-2.7/sysdeps/i386/fpu/ftestexcept.c	2008-06-24 10:54:43.000000000 +0200
++@@ -26,7 +26,7 @@
++ int
++ fetestexcept (int excepts)
++ {
++-  int temp;
+++  short temp;
++   int xtemp = 0;
++ 
++   /* Get current exceptions.  */
+diff --git a/packages/glibc/2.7/180-gcc-4.3-sysinclude-path.patch b/packages/glibc/2.7/180-gcc-4.3-sysinclude-path.patch
+new file mode 100644
+index 00000000..7af09a42
+--- /dev/null
++++ b/packages/glibc/2.7/180-gcc-4.3-sysinclude-path.patch
+@@ -0,0 +1,50 @@
++Patch pointed to by Ryan ARNOLD on the libc-help ML.
++See: http://sourceware.org/ml/libc-help/2008-06/msg00063.html
++
++Forwarded to crosstool-NG by Ioannis E. VENETIS:
++See: http://sourceware.org/ml/libc-help/2008-06/msg00063.html
++
++GCC 4.3 changed the location of some of the header files.  I don't
++understand why you'd be getting these errors while building GCC since
++it provides them.
++
++With regard to GLIBC, Roland checked in some changes so that the GLIBC
++build system could find the new locations of the GCC provided header
++files.
++
++diff -durN glibc-2.7.orig/configure.in glibc-2.7/configure.in
++--- glibc-2.7.orig/configure.in	2007-06-08 05:16:36.000000000 +0200
+++++ glibc-2.7/configure.in	2008-06-24 18:38:46.000000000 +0200
++@@ -911,8 +911,12 @@
++ # header directory and add that to the list.  NOTE: Only does the right
++ # thing on a system that doesn't need fixincludes.  (Not presently a problem.)
++ if test -n "$sysheaders"; then
++-  ccheaders=`$CC -print-file-name=include`
++-  SYSINCLUDES="-nostdinc -isystem $ccheaders \
+++  SYSINCLUDES=-nostdinc
+++  for d in include include-fixed; do
+++    i=`$CC -print-file-name="$d"` && test "x$i" != x && test "x$i" != "x$d" &&
+++    SYSINCLUDES="$SYSINCLUDES -isystem $i"
+++  done
+++  SYSINCLUDES="$SYSINCLUDES \
++ -isystem `echo $sysheaders | sed 's/:/ -isystem /g'`"
++   if test -n "$CXX"; then
++     cxxversion=`$CXX -dumpversion 2>&AS_MESSAGE_LOG_FD` &&
++diff -durN glibc-2.7.orig/configure glibc-2.7/configure
++--- glibc-2.7.orig/configure	2008-06-24 18:35:34.000000000 +0200
+++++ glibc-2.7/configure	2008-06-24 18:38:46.000000000 +0200
++@@ -5062,8 +5062,12 @@
++ # header directory and add that to the list.  NOTE: Only does the right
++ # thing on a system that doesn't need fixincludes.  (Not presently a problem.)
++ if test -n "$sysheaders"; then
++-  ccheaders=`$CC -print-file-name=include`
++-  SYSINCLUDES="-nostdinc -isystem $ccheaders \
+++  SYSINCLUDES=-nostdinc
+++  for d in include include-fixed; do
+++    i=`$CC -print-file-name="$d"` && test "x$i" != "x$d" &&
+++    SYSINCLUDES="$SYSINCLUDES -isystem $i"
+++  done
+++  SYSINCLUDES="$SYSINCLUDES \
++ -isystem `echo $sysheaders | sed 's/:/ -isystem /g'`"
++   if test -n "$CXX"; then
++     cxxversion=`$CXX -dumpversion 2>&5` &&
+diff --git a/packages/glibc/2.7/190-alpha-asm_elf.patch b/packages/glibc/2.7/190-alpha-asm_elf.patch
+new file mode 100644
+index 00000000..b9d709e4
+--- /dev/null
++++ b/packages/glibc/2.7/190-alpha-asm_elf.patch
+@@ -0,0 +1,171 @@
++since the kernel no longer provides asm/elf.h, the sys/procfs.h from the 
++common code, alpha, and sh fail when used.  this should things up.
++-mike
++
++2008-06-07  Mike Frysinger  <vapier@gentoo.org>
++
++	* sysdeps/unix/sysv/linux/sys/procfs.h: Replace with #error stub.
++	* sysdeps/unix/sysv/linux/alpha/sys/procfs.h: Copy some asm/elf.h
++	definitions from the kernel header to sys/procfs.h and remove the
++	#include of asm/elf.h.
++	* sysdeps/unix/sysv/linux/sh/sys/procfs.h: Likewise.
++
++*Attachment: signature.asc <msg00012/signature.asc>*
++/Description:/ This is a digitally signed message part.
++
++2008-06-07  Mike Frysinger  <vapier@gentoo.org>
++
++	* sysdeps/unix/sysv/linux/sys/procfs.h: Replace with #error stub.
++	* sysdeps/unix/sysv/linux/alpha/sys/procfs.h: Copy some asm/elf.h
++	definitions from the kernel header to sys/procfs.h and remove the
++	#include of asm/elf.h.
++	* sysdeps/unix/sysv/linux/sh/sys/procfs.h: Likewise.
++
++--- a/sysdeps/unix/sysv/linux/alpha/sys/procfs.h
+++++ b/sysdeps/unix/sysv/linux/alpha/sys/procfs.h
++@@ -29,10 +29,23 @@
++ #include <sys/types.h>
++ #include <sys/ucontext.h>
++ #include <sys/user.h>
++-#include <asm/elf.h>
++ 
++ __BEGIN_DECLS
++ 
+++/*
+++ * The OSF/1 version of <sys/procfs.h> makes gregset_t 46 entries long.
+++ * I have no idea why that is so.  For now, we just leave it at 33
+++ * (32 general regs + processor status word).
+++ */
+++#define ELF_NGREG  33
+++#define ELF_NFPREG 32
+++
+++typedef unsigned long elf_greg_t;
+++typedef elf_greg_t elf_gregset_t[ELF_NGREG];
+++
+++typedef double elf_fpreg_t;
+++typedef elf_fpreg_t elf_fpregset_t[ELF_NFPREG];
+++
++ struct elf_siginfo
++   {
++     int si_signo;			/* Signal number.  */
++--- a/sysdeps/unix/sysv/linux/sys/procfs.h
+++++ b/sysdeps/unix/sysv/linux/sys/procfs.h
++@@ -1,115 +1,2 @@
++-/* Copyright (C) 1996, 1997, 1999 Free Software Foundation, Inc.
++-   This file is part of the GNU C Library.
++-
++-   The GNU C Library is free software; you can redistribute it and/or
++-   modify it under the terms of the GNU Lesser General Public
++-   License as published by the Free Software Foundation; either
++-   version 2.1 of the License, or (at your option) any later version.
++-
++-   The GNU C Library is distributed in the hope that it will be useful,
++-   but WITHOUT ANY WARRANTY; without even the implied warranty of
++-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++-   Lesser General Public License for more details.
++-
++-   You should have received a copy of the GNU Lesser General Public
++-   License along with the GNU C Library; if not, write to the Free
++-   Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
++-   02111-1307 USA.  */
++-
++-#ifndef _SYS_PROCFS_H
++-#define _SYS_PROCFS_H	1
++-
++-/* This is somehow modelled after the file of the same name on SysVr4
++-   systems.  It provides a definition of the core file format for ELF
++-   used on Linux.  */
++-
++-#include <features.h>
++-#include <signal.h>
++-#include <sys/time.h>
++-#include <sys/types.h>
++-#include <sys/ucontext.h>
++-#include <sys/user.h>
++-#include <asm/elf.h>
++-
++-__BEGIN_DECLS
++-
++-struct elf_siginfo
++-  {
++-    int si_signo;			/* Signal number.  */
++-    int si_code;			/* Extra code.  */
++-    int si_errno;			/* Errno.  */
++-  };
++-
++-/* Definitions to generate Intel SVR4-like core files.  These mostly
++-   have the same names as the SVR4 types with "elf_" tacked on the
++-   front to prevent clashes with linux definitions, and the typedef
++-   forms have been avoided.  This is mostly like the SVR4 structure,
++-   but more Linuxy, with things that Linux does not support and which
++-   gdb doesn't really use excluded.  Fields present but not used are
++-   marked with "XXX".  */
++-struct elf_prstatus
++-  {
++-#if 0
++-    long int pr_flags;			/* XXX Process flags.  */
++-    short int pr_why;			/* XXX Reason for process halt.  */
++-    short int pr_what;			/* XXX More detailed reason.  */
++-#endif
++-    struct elf_siginfo pr_info;		/* Info associated with signal.  */
++-    short int pr_cursig;		/* Current signal.  */
++-    unsigned long int pr_sigpend;	/* Set of pending signals.  */
++-    unsigned long int pr_sighold;	/* Set of held signals.  */
++-#if 0
++-    struct sigaltstack pr_altstack;	/* Alternate stack info.  */
++-    struct sigaction pr_action;		/* Signal action for current sig.  */
++-#endif
++-    __pid_t pr_pid;
++-    __pid_t pr_ppid;
++-    __pid_t pr_pgrp;
++-    __pid_t pr_sid;
++-    struct timeval pr_utime;		/* User time.  */
++-    struct timeval pr_stime;		/* System time.  */
++-    struct timeval pr_cutime;		/* Cumulative user time.  */
++-    struct timeval pr_cstime;		/* Cumulative system time.  */
++-#if 0
++-    long int pr_instr;			/* Current instruction.  */
++-#endif
++-    elf_gregset_t pr_reg;		/* GP registers.  */
++-    int pr_fpvalid;			/* True if math copro being used.  */
++-  };
++-
++-
++-#define ELF_PRARGSZ     (80)    /* Number of chars for args */
++-
++-struct elf_prpsinfo
++-  {
++-    char pr_state;			/* Numeric process state.  */
++-    char pr_sname;			/* Char for pr_state.  */
++-    char pr_zomb;			/* Zombie.  */
++-    char pr_nice;			/* Nice val.  */
++-    unsigned long int pr_flag;		/* Flags.  */
++-    unsigned short int pr_uid;
++-    unsigned short int pr_gid;
++-    int pr_pid, pr_ppid, pr_pgrp, pr_sid;
++-    /* Lots missing */
++-    char pr_fname[16];			/* Filename of executable.  */
++-    char pr_psargs[ELF_PRARGSZ];	/* Initial part of arg list.  */
++-  };
++-
++-/* Addresses.  */
++-typedef void *psaddr_t;
++-
++-/* Register sets.  Linux has different names.  */
++-typedef gregset_t prgregset_t;
++-typedef fpregset_t prfpregset_t;
++-
++-/* We don't have any differences between processes and threads,
++-   therefore habe only ine PID type.  */
++-typedef __pid_t lwpid_t;
++-
++-
++-typedef struct elf_prstatus prstatus_t;
++-typedef struct elf_prpsinfo prpsinfo_t;
++-
++-__END_DECLS
++-
++-#endif	/* sys/procfs.h */
+++/* sys/procfs.h is architecture specific.  */
+++#error "This file must be supplied by every Linux architecture."
++
+diff --git a/packages/glibc/2.7/200-alpha-atfcts.patch b/packages/glibc/2.7/200-alpha-atfcts.patch
+new file mode 100644
+index 00000000..06c7d8f6
+--- /dev/null
++++ b/packages/glibc/2.7/200-alpha-atfcts.patch
+@@ -0,0 +1,12 @@
++--- glibc-2.7/sysdeps/unix/sysv/linux/kernel-features.h	2007-08-14 06:21:09.000000000 +0300
+++++ glibc-2.7/sysdeps/unix/sysv/linux/kernel-features.h.new	2008-07-23 07:05:20.000000000 +0300
++@@ -449,8 +449,7 @@
++    and on Alpha just after 2.6.22-rc1.  */
++ #if __LINUX_KERNEL_VERSION >= 0x020611 \
++     && ((!defined __sh__ && !defined __alpha__) \
++-	|| (__LINUX_KERNEL_VERSION >= 0x020613 && defined __sh__) \
++-	|| (__LINUX_KERNEL_VERSION >= 0x020617 && defined __alpha__))
+++	|| (__LINUX_KERNEL_VERSION >= 0x020613 && defined __sh__))
++ # define __ASSUME_ATFCTS	1
++ #endif
++ 
+diff --git a/packages/glibc/2.7/210-alpha-ptr_mangle.patch b/packages/glibc/2.7/210-alpha-ptr_mangle.patch
+new file mode 100644
+index 00000000..7f228333
+--- /dev/null
++++ b/packages/glibc/2.7/210-alpha-ptr_mangle.patch
+@@ -0,0 +1,94 @@
++--- glibc-2.7.orig/sysdeps/unix/alpha/sysdep.h
+++++ glibc-2.7/sysdeps/unix/alpha/sysdep.h
++@@ -397,42 +397,4 @@
++ 	_sc_ret = _sc_0, _sc_err = _sc_19;			\
++ }
++ 
++-/* Pointer mangling support.  Note that tls access is slow enough that
++-   we don't deoptimize things by placing the pointer check value there.  */
++-
++-#include <stdint.h>
++-
++-#if defined NOT_IN_libc && defined IS_IN_rtld
++-# ifdef __ASSEMBLER__
++-#  define PTR_MANGLE(dst, src, tmp)				\
++-	ldah	tmp, __pointer_chk_guard_local($29) !gprelhigh;	\
++-	ldq	tmp, __pointer_chk_guard_local(tmp) !gprellow;	\
++-	xor	src, tmp, dst
++-#  define PTR_MANGLE2(dst, src, tmp)				\
++-	xor	src, tmp, dst
++-#  define PTR_DEMANGLE(dst, tmp)   PTR_MANGLE(dst, dst, tmp)
++-#  define PTR_DEMANGLE2(dst, tmp)  PTR_MANGLE2(dst, dst, tmp)
++-# else
++-extern uintptr_t __pointer_chk_guard_local attribute_relro attribute_hidden;
++-#  define PTR_MANGLE(var)	\
++-  (var) = (__typeof (var)) ((uintptr_t) (var) ^ __pointer_chk_guard_local)
++-#  define PTR_DEMANGLE(var)  PTR_MANGLE(var)
++-# endif
++-#elif defined PIC
++-# ifdef __ASSEMBLER__
++-#  define PTR_MANGLE(dst, src, tmp)		\
++-	ldq	tmp, __pointer_chk_guard;	\
++-	xor	src, tmp, dst
++-#  define PTR_MANGLE2(dst, src, tmp)		\
++-	xor	src, tmp, dst
++-#  define PTR_DEMANGLE(dst, tmp)   PTR_MANGLE(dst, dst, tmp)
++-#  define PTR_DEMANGLE2(dst, tmp)  PTR_MANGLE2(dst, dst, tmp)
++-# else
++-extern uintptr_t __pointer_chk_guard attribute_relro;
++-#  define PTR_MANGLE(var)	\
++-	(var) = (void *) ((uintptr_t) (var) ^ __pointer_chk_guard)
++-#  define PTR_DEMANGLE(var)  PTR_MANGLE(var)
++-# endif
++-#endif
++-
++ #endif /* ASSEMBLER */
++--- glibc-2.7.orig/sysdeps/unix/sysv/linux/alpha/sysdep.h
+++++ glibc-2.7/sysdeps/unix/sysv/linux/alpha/sysdep.h
++@@ -98,4 +98,46 @@
++ 	INTERNAL_SYSCALL1(name, err_out, nr, args);			\
++ })
++ 
+++/* Pointer mangling support.  Note that tls access is slow enough that
+++   we don't deoptimize things by placing the pointer check value there.  */
+++
+++#if defined NOT_IN_libc && defined IS_IN_rtld
+++# ifdef __ASSEMBLER__
+++#  define PTR_MANGLE(dst, src, tmp)				\
+++	ldah	tmp, __pointer_chk_guard_local($29) !gprelhigh;	\
+++	ldq	tmp, __pointer_chk_guard_local(tmp) !gprellow;	\
+++	xor	src, tmp, dst
+++#  define PTR_MANGLE2(dst, src, tmp)				\
+++	xor	src, tmp, dst
+++#  define PTR_DEMANGLE(dst, tmp)   PTR_MANGLE(dst, dst, tmp)
+++#  define PTR_DEMANGLE2(dst, tmp)  PTR_MANGLE2(dst, dst, tmp)
+++# else
+++extern uintptr_t __pointer_chk_guard_local attribute_relro attribute_hidden;
+++#  define PTR_MANGLE(var)	\
+++  (var) = (__typeof (var)) ((uintptr_t) (var) ^ __pointer_chk_guard_local)
+++#  define PTR_DEMANGLE(var)  PTR_MANGLE(var)
+++# endif
+++#elif defined PIC
+++# ifdef __ASSEMBLER__
+++#  define PTR_MANGLE(dst, src, tmp)		\
+++	ldq	tmp, __pointer_chk_guard;	\
+++	xor	src, tmp, dst
+++#  define PTR_MANGLE2(dst, src, tmp)		\
+++	xor	src, tmp, dst
+++#  define PTR_DEMANGLE(dst, tmp)   PTR_MANGLE(dst, dst, tmp)
+++#  define PTR_DEMANGLE2(dst, tmp)  PTR_MANGLE2(dst, dst, tmp)
+++# else
+++extern uintptr_t __pointer_chk_guard attribute_relro;
+++#  define PTR_MANGLE(var)	\
+++	(var) = (void *) ((uintptr_t) (var) ^ __pointer_chk_guard)
+++#  define PTR_DEMANGLE(var)  PTR_MANGLE(var)
+++# endif
+++#else
+++/* Pointer mangling is not yet supported for static libc on alpha.  */
+++# ifndef __ASSEMBLER__
+++#  define PTR_MANGLE(var)   (void) (var)
+++#  define PTR_DEMANGLE(var) (void) (var)
+++# endif
+++#endif
+++
++ #endif /* _LINUX_ALPHA_SYSDEP_H */
+diff --git a/packages/glibc/2.7/220-objdump_for_host.patch b/packages/glibc/2.7/220-objdump_for_host.patch
+new file mode 100644
+index 00000000..8730bc75
+--- /dev/null
++++ b/packages/glibc/2.7/220-objdump_for_host.patch
+@@ -0,0 +1,13 @@
++diff -durN glibc-2.7.orig/Makerules glibc-2.7/Makerules
++--- glibc-2.7.orig/Makerules	2007-08-26 04:18:03.000000000 +0200
+++++ glibc-2.7/Makerules	2008-07-28 15:17:27.000000000 +0200
++@@ -1203,6 +1203,9 @@
++ # The include magic above causes those files to use this variable for flags.
++ CPPFLAGS-nonlib = -DNOT_IN_libc=1
++ 
+++ifneq ($(OBJDUMP_FOR_HOST),)
+++OBJDUMP = $(OBJDUMP_FOR_HOST)
+++endif
++ 
++ ifeq ($(versioning),yes)
++ # Generate normalized lists of symbols, versions, and data sizes.
+diff --git a/packages/glibc/2.7/230-powerpc-private_futex.patch b/packages/glibc/2.7/230-powerpc-private_futex.patch
+new file mode 100644
+index 00000000..30165296
+--- /dev/null
++++ b/packages/glibc/2.7/230-powerpc-private_futex.patch
+@@ -0,0 +1,15 @@
++2008-04-28  Hiroki Kaminaga  <kaminaga@sm.sony.co.jp>
++
++	[BZ 6740]
++	nptl/sysdeps/powerpc/tcb-offsets.sym (PRIVATE_FUTEX_OFFSET):
++	Guard sym definition with #ifndef __ASSUME_PRIVATE_FUTEX.
++
++--- a/nptl/sysdeps/powerpc/tcb-offsets.sym
+++++ b/nptl/sysdeps/powerpc/tcb-offsets.sym
++@@ -15,4 +15,6 @@
++ PID				thread_offsetof (pid)
++ TID				thread_offsetof (tid)
++ POINTER_GUARD			(offsetof (tcbhead_t, pointer_guard) - TLS_TCB_OFFSET - sizeof (tcbhead_t))
+++#ifndef __ASSUME_PRIVATE_FUTEX
++ PRIVATE_FUTEX_OFFSET		thread_offsetof (header.private_futex)
+++#endif
+diff --git a/packages/glibc/2.7/240-sh-lowlevellock-asm.patch b/packages/glibc/2.7/240-sh-lowlevellock-asm.patch
+new file mode 100644
+index 00000000..dec03909
+--- /dev/null
++++ b/packages/glibc/2.7/240-sh-lowlevellock-asm.patch
+@@ -0,0 +1,56 @@
++--- glibc-2.7/nptl/sysdeps/unix/sysv/linux/sh/lowlevellock.S.orig	2007-08-03 16:44:15.000000000 +0100
+++++ glibc-2.7/nptl/sysdeps/unix/sysv/linux/sh/lowlevellock.S	2008-08-19 21:08:19.000000000 +0100
++@@ -76,7 +76,7 @@
++ 	add	tmp2, tmp 	; \
++ 	mov.l	@tmp, tmp2	; \
++ 	bra	98f		; \
++-	 mov	#FUTEX_PRIVATE_FLAG, tmp
+++	 mov	#FUTEX_PRIVATE_FLAG, tmp ; \
++ 99:	.word	PRIVATE_FUTEX - TLS_PRE_TCB_SIZE ; \
++ 98:	extu.b	tmp, tmp	; \
++ 	xor	tmp, reg	; \
++@@ -88,7 +88,7 @@
++ 	add	tmp2, tmp 	; \
++ 	mov.l	@tmp, tmp2	; \
++ 	bra	98f		; \
++-	 mov	#FUTEX_PRIVATE_FLAG, tmp
+++	 mov	#FUTEX_PRIVATE_FLAG, tmp ; \
++ 99:	.word	PRIVATE_FUTEX - TLS_PRE_TCB_SIZE ; \
++ 98:	extu.b	tmp, tmp	; \
++ 	xor	tmp, reg	; \
++@@ -96,13 +96,13 @@
++ 	mov	#FUTEX_WAIT, tmp ; \
++ 	or	tmp, reg
++ # endif
++-# define LOAD_FUTEX_WAKE(reg,tmp) \
+++# define LOAD_FUTEX_WAKE(reg,tmp,tmp2) \
++ 	stc	gbr, tmp	; \
++ 	mov.w	99f, tmp2	; \
++ 	add	tmp2, tmp 	; \
++ 	mov.l	@tmp, tmp2	; \
++ 	bra	98f		; \
++-	 mov	#FUTEX_PRIVATE_FLAG, tmp
+++	 mov	#FUTEX_PRIVATE_FLAG, tmp ; \
++ 99:	.word	PRIVATE_FUTEX - TLS_PRE_TCB_SIZE ; \
++ 98:	extu.b	tmp, tmp	; \
++ 	xor	tmp, reg	; \
++--- glibc-2.7/nptl/sysdeps/unix/sysv/linux/sh/lowlevelrobustlock.S.orig	2007-08-03 16:44:57.000000000 +0100
+++++ glibc-2.7/nptl/sysdeps/unix/sysv/linux/sh/lowlevelrobustlock.S	2008-08-19 21:08:22.000000000 +0100
++@@ -42,7 +42,7 @@
++ 	add	tmp2, tmp 	; \
++ 	mov.l	@tmp, tmp2	; \
++ 	bra	98f		; \
++-	 mov	#FUTEX_PRIVATE_FLAG, tmp
+++	 mov	#FUTEX_PRIVATE_FLAG, tmp ; \
++ 99:	.word	PRIVATE_FUTEX - TLS_PRE_TCB_SIZE ; \
++ 98:	extu.b	tmp, tmp	; \
++ 	xor	tmp, reg	; \
++@@ -54,7 +54,7 @@
++ 	add	tmp2, tmp 	; \
++ 	mov.l	@tmp, tmp2	; \
++ 	bra	98f		; \
++-	 mov	#FUTEX_PRIVATE_FLAG, tmp
+++	 mov	#FUTEX_PRIVATE_FLAG, tmp ; \
++ 99:	.word	PRIVATE_FUTEX - TLS_PRE_TCB_SIZE ; \
++ 98:	extu.b	tmp, tmp	; \
++ 	xor	tmp, reg	; \
+diff --git a/packages/glibc/2.7/250-sh-chop-linux-version.patch b/packages/glibc/2.7/250-sh-chop-linux-version.patch
+new file mode 100644
+index 00000000..7d0062ba
+--- /dev/null
++++ b/packages/glibc/2.7/250-sh-chop-linux-version.patch
+@@ -0,0 +1,49 @@
++--- glibc-2.7/sysdeps/unix/sysv/linux/dl-osinfo.h.orig	2007-09-15 23:54:08.000000000 +0100
+++++ glibc-2.7/sysdeps/unix/sysv/linux/dl-osinfo.h	2008-08-20 09:26:26.000000000 +0100
++@@ -83,6 +83,10 @@
++   int parts;
++   char *cp;
++   struct utsname uts;
+++  int dotsfound = 0;
+++  int versionindex = 0;
+++  char *choppoint;
+++
++ 
++   /* Try the uname system call.  */
++   if (__uname (&uts))
++@@ -102,8 +106,34 @@
++   else
++     buf = uts.release;
++ 
+++  /* We are only interested in the first three kernel numbers, so */
+++  /* chop off anything past that: */
+++
+++  choppoint = buf;
+++  while (1)
+++    {
+++      versionindex++;
+++      if (versionindex == 63) break;
+++      if (*choppoint == '.') dotsfound++;
+++      choppoint++;
+++      if (dotsfound == 2)
+++      {
+++        if (*choppoint == '0' || *choppoint == '1'
+++          || *choppoint == '2' || *choppoint == '3'
+++          || *choppoint == '4' || *choppoint == '5'
+++          || *choppoint == '6' || *choppoint == '7'
+++          || *choppoint == '8' || *choppoint == '9')
+++          continue;
+++        else
+++          {
+++            *choppoint = 0;
+++            break;
+++          }
+++      }
+++    }
+++
++   /* Now convert it into a number.  The string consists of at most
++-     three parts.  */
+++     three parts.  Now it does, anyway.  ;-)  */
++   version = 0;
++   parts = 0;
++   cp = buf;
+diff --git a/packages/glibc/2.7/260-sh-syscall-error-path.patch b/packages/glibc/2.7/260-sh-syscall-error-path.patch
+new file mode 100644
+index 00000000..e293bbfe
+--- /dev/null
++++ b/packages/glibc/2.7/260-sh-syscall-error-path.patch
+@@ -0,0 +1,26 @@
++--- glibc-2.7/sysdeps/unix/sysv/linux/sh/sysdep.S.orig	2005-12-30 22:16:43.000000000 +0000
+++++ glibc-2.7/sysdeps/unix/sysv/linux/sh/sysdep.S	2008-08-19 22:33:14.000000000 +0100
++@@ -32,3 +32,13 @@
++ 
++ #define __syscall_error __syscall_error_1
++ #include <sysdeps/unix/sh/sysdep.S>
+++
+++	.data
+++	.align 3
+++	.globl ___fpscr_values
+++	.type ___fpscr_values, @object
+++	.size ___fpscr_values, 8
+++___fpscr_values:
+++	.long	0
+++	.long	0x80000
+++weak_alias (___fpscr_values, __fpscr_values)
++--- glibc-2.7/sysdeps/unix/sysv/linux/sh/Versions.orig	2003-09-01 05:05:09.000000000 +0100
+++++ glibc-2.7/sysdeps/unix/sysv/linux/sh/Versions	2008-08-19 22:33:14.000000000 +0100
++@@ -2,6 +2,7 @@
++   GLIBC_2.2 {
++     # functions used in other libraries
++     __xstat64; __fxstat64; __lxstat64;
+++    __fpscr_values;
++ 
++     # a*
++     alphasort64;
+diff --git a/packages/glibc/2.7/270-sh-fix-procfs.patch b/packages/glibc/2.7/270-sh-fix-procfs.patch
+new file mode 100644
+index 00000000..f5f8bb1e
+--- /dev/null
++++ b/packages/glibc/2.7/270-sh-fix-procfs.patch
+@@ -0,0 +1,37 @@
++diff -durN glibc-2.7.orig/sysdeps/unix/sysv/linux/sh/sys/procfs.h glibc-2.7/sysdeps/unix/sysv/linux/sh/sys/procfs.h
++--- glibc-2.7.orig/sysdeps/unix/sysv/linux/sh/sys/procfs.h	2004-11-20 18:56:16.000000000 +0100
+++++ glibc-2.7/sysdeps/unix/sysv/linux/sh/sys/procfs.h	2008-10-24 11:21:15.000000000 +0200
++@@ -29,10 +29,32 @@
++ #include <sys/types.h>
++ #include <sys/ucontext.h>
++ #include <sys/user.h>
++-#include <asm/elf.h>
++ 
++ __BEGIN_DECLS
++ 
+++/* BEGIN - UGLY HACK - YEM
+++ * These definitions are copied from the Alpha file,
+++ * and the register numbers are set accordingly to
+++ * what I could find in the Linux kernel sources
+++ * Highly dubious !!!!
+++ * BIG FAT WARNING !!!
+++ */
+++
+++/* Linux kernel says 16 (standards?) registers */
+++#define ELF_NGREG  16
+++/* Linux kernel says 16 floating point registers */
+++#define ELF_NFPREG 16
+++
+++/* Copied from Alpha as is */
+++typedef unsigned long elf_greg_t;
+++typedef elf_greg_t elf_gregset_t[ELF_NGREG];
+++
+++/* Ditto */
+++typedef double elf_fpreg_t;
+++typedef elf_fpreg_t elf_fpregset_t[ELF_NFPREG];
+++
+++/* END - UGLY HACK - YEM */
+++
++ struct elf_siginfo
++   {
++     int si_signo;			/* Signal number.  */
+diff --git a/packages/glibc/2.7/280-sh-fix-kernel-headers-location.patch b/packages/glibc/2.7/280-sh-fix-kernel-headers-location.patch
+new file mode 100644
+index 00000000..0c5caa50
+--- /dev/null
++++ b/packages/glibc/2.7/280-sh-fix-kernel-headers-location.patch
+@@ -0,0 +1,23 @@
++diff -durN glibc-2.7.orig/sysdeps/unix/sysv/linux/sh/sys/procfs.h glibc-2.7/sysdeps/unix/sysv/linux/sh/sys/procfs.h
++--- glibc-2.7.orig/sysdeps/unix/sysv/linux/sh/sys/procfs.h	2008-10-22 21:23:32.000000000 +0200
+++++ glibc-2.7/sysdeps/unix/sysv/linux/sh/sys/procfs.h	2008-10-22 21:41:54.000000000 +0200
++@@ -29,6 +29,7 @@
++ #include <sys/types.h>
++ #include <sys/ucontext.h>
++ #include <sys/user.h>
+++#include <asm/ptrace.h>
++ 
++ __BEGIN_DECLS
++ 
++diff -durN glibc-2.7.orig/sysdeps/unix/sysv/linux/sh/sys/user.h glibc-2.7/sysdeps/unix/sysv/linux/sh/sys/user.h
++--- glibc-2.7.orig/sysdeps/unix/sysv/linux/sh/sys/user.h	2008-10-22 21:23:32.000000000 +0200
+++++ glibc-2.7/sysdeps/unix/sysv/linux/sh/sys/user.h	2008-10-22 21:33:34.000000000 +0200
++@@ -21,8 +21,6 @@
++ 
++ #include <features.h>
++ 
++-#include <asm/user.h>
++-
++ #undef start_thread
++ 
++ #endif  /* sys/user.h */
+diff --git a/packages/glibc/2.7/290-powerpc-8xx-CPU15-errata.patch b/packages/glibc/2.7/290-powerpc-8xx-CPU15-errata.patch
+new file mode 100644
+index 00000000..1d0643be
+--- /dev/null
++++ b/packages/glibc/2.7/290-powerpc-8xx-CPU15-errata.patch
+@@ -0,0 +1,56 @@
++Fix memset on PowerPC 8xx, by Nye Liu:
++http://sourceware.org/ml/crossgcc/2008-10/msg00067.html
++
++Quote:
++ I am working on a powerpc 860 toolchain, but I am having problems  
++ convincing glibc to not emit code that uses the dcbz instruction (CPU15  
++ dcbX bug). The source of the problem is sysdeps/powerpc/power3/memset.S
++
++--- glibc-2.7/sysdeps/powerpc/powerpc32/memset.S	2007-03-26 13:09:07.000000000 -0700
+++++ glibc-2.7/sysdeps/powerpc/powerpc32/memset.S.new	2008-10-23 20:28:52.000000000 -0700
++@@ -112,11 +112,13 @@
++ 	clrrwi.	rALIGN, rLEN, 5
++ 	mtcrf	0x01, rLEN	/* 40th instruction from .align */
++ 
+++#ifndef BROKEN_PPC_8xx_CPU15
++ /* Check if we can use the special case for clearing memory using dcbz.
++    This requires that we know the correct cache line size for this
++    processor.  Getting the __cache_line_size may require establishing GOT
++    addressability, so branch out of line to set this up.  */
++ 	beq	cr1, L(checklinesize)
+++#endif
++ 
++ /* Store blocks of 32-bytes (256-bits) starting on a 32-byte boundary.
++    Can't assume that rCHR is zero or that the cache line size is either
++@@ -158,6 +160,7 @@
++ 	add	rMEMP, rMEMP, rALIGN
++ 	b	L(medium_tail2)	/* 72nd instruction from .align */
++ 
+++#ifndef BROKEN_PPC_8xx_CPU15
++ 	.align	5
++ 	nop
++ /* Clear cache lines of memory in 128-byte chunks.
++@@ -191,6 +194,7 @@
++ 	bdnz	L(zloop)
++ 	beqlr	cr5
++ 	b	L(medium_tail2)
+++#endif /* ! BROKEN_PPC_8xx_CPU15 */
++ 
++ 	.align	5
++ L(small):
++@@ -248,6 +252,7 @@
++ 	stw	rCHR, -8(rMEMP)
++ 	blr
++ 
+++#ifndef BROKEN_PPC_8xx_CPU15
++ L(checklinesize):
++ #ifdef SHARED
++ 	mflr	rTMP
++@@ -329,6 +334,7 @@
++ L(handletail32):
++ 	clrrwi.	rALIGN, rLEN, 5
++ 	b	L(nondcbz)
+++#endif /* ! BROKEN_PPC_8xx_CPU15 */
++ 
++ END (BP_SYM (memset))
++ libc_hidden_builtin_def (memset)
+diff --git a/packages/glibc/2.7/300-binutils-_begin.patch b/packages/glibc/2.7/300-binutils-_begin.patch
+new file mode 100644
+index 00000000..f670d290
+--- /dev/null
++++ b/packages/glibc/2.7/300-binutils-_begin.patch
+@@ -0,0 +1,190 @@
++--- glibc-2.7.OLD/elf/Makefile	2009-04-22 17:08:55.000000000 +0300
+++++ glibc-2.7/elf/Makefile	2009-04-22 18:09:18.000000000 +0300
++@@ -1,4 +1,4 @@
++-# Copyright (C) 1995-2004, 2005, 2006, 2007 Free Software Foundation, Inc.
+++# Copyright (C) 1995-2007, 2008, 2009 Free Software Foundation, Inc.
++ # This file is part of the GNU C Library.
++ 
++ # The GNU C Library is free software; you can redistribute it and/or
++@@ -23,7 +23,7 @@
++ headers		= elf.h bits/elfclass.h link.h bits/link.h
++ routines	= $(dl-routines) dl-support dl-iteratephdr \
++ 		  dl-addr enbl-secure dl-profstub \
++-		  dl-origin dl-libc dl-sym dl-tsd
+++		  dl-origin dl-libc dl-sym dl-tsd dl-sysdep
++ 
++ # The core dynamic linking functions are in libc for the static and
++ # profiled libraries.
++@@ -33,7 +33,8 @@
++ 				  execstack caller open close trampoline)
++ all-dl-routines = $(dl-routines) $(sysdep-dl-routines)
++ # But they are absent from the shared libc, because that code is in ld.so.
++-elide-routines.os = $(all-dl-routines) dl-support enbl-secure dl-origin
+++elide-routines.os = $(all-dl-routines) dl-support enbl-secure dl-origin \
+++		    dl-sysdep
++ shared-only-routines += dl-caller
++ 
++ # ld.so uses those routines, plus some special stuff for being the program
++@@ -120,13 +121,6 @@
++ install-bin-script = ldd
++ endif
++ 
++-ifeq (yes,$(build-static-nss))
++-nssobjdir := $(patsubst ../$(subdir),.,$(common-objpfx)nss)
++-resolvobjdir := $(patsubst ../$(subdir),.,$(common-objpfx)resolv)
++-otherlibs += $(nssobjdir)/libnss_files.a $(resolvobjdir)/libnss_dns.a \
++-	     $(resolvobjdir)/libresolv.a
++-endif
++-
++ others		= sprof sln
++ install-bin	= sprof
++ others-static   = sln
++@@ -165,14 +159,14 @@
++ endif
++ ifeq (yes,$(build-shared))
++ tests += loadtest restest1 preloadtest loadfail multiload origtest resolvfail \
++-	 constload1 order $(tests-vis-$(have-protected)) noload filter unload \
+++	 constload1 order vismain noload filter unload \
++ 	 reldep reldep2 reldep3 reldep4 nodelete nodelete2 \
++ 	 nodlopen nodlopen2 neededtest neededtest2 \
++ 	 neededtest3 neededtest4 unload2 lateglobal initfirst global \
++ 	 restest2 next dblload dblunload reldep5 reldep6 reldep7 reldep8 \
++ 	 circleload1 tst-tls3 tst-tls4 tst-tls5 tst-tls6 tst-tls7 tst-tls8 \
++ 	 tst-tls10 tst-tls11 tst-tls12 tst-tls13 tst-tls14 tst-tls15 \
++-	 tst-tls-dlinfo \
+++	 tst-tls16 tst-tls17 tst-tls18 tst-tls-dlinfo \
++ 	 tst-align tst-align2 $(tests-execstack-$(have-z-execstack)) \
++ 	 tst-dlmodcount tst-dlopenrpath tst-deep1 \
++ 	 tst-dlmopen1 tst-dlmopen2 tst-dlmopen3 \
++@@ -181,16 +175,17 @@
++ 	 tst-stackguard1 tst-addr1 tst-thrlock
++ #	 reldep9
++ test-srcs = tst-pathopt
++-tests-vis-yes = vismain
++ tests-execstack-yes = tst-execstack tst-execstack-needed tst-execstack-prog
++ endif
++ ifeq (yesyes,$(have-fpie)$(build-shared))
++ tests: $(objpfx)tst-pie1.out
++ endif
++ tests: $(objpfx)tst-leaks1-mem
+++tlsmod17a-suffixes = 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19
+++tlsmod18a-suffixes = 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19
++ modules-names = testobj1 testobj2 testobj3 testobj4 testobj5 testobj6 \
++ 		testobj1_1 failobj constload2 constload3 unloadmod \
++-		dep1 dep2 dep3 dep4 $(modules-vis-$(have-protected)) \
+++		dep1 dep2 dep3 dep4 vismod1 vismod2 vismod3 \
++ 		nodelmod1 nodelmod2 nodelmod3 nodelmod4 \
++ 		nodel2mod1 nodel2mod2 nodel2mod3 \
++ 		nodlopenmod nodlopenmod2 filtmod1 filtmod2 \
++@@ -206,7 +201,10 @@
++ 		tst-tlsmod5 tst-tlsmod6 tst-tlsmod7 tst-tlsmod8 \
++ 		tst-tlsmod9 tst-tlsmod10 tst-tlsmod11 tst-tlsmod12 \
++ 		tst-tlsmod13 tst-tlsmod13a tst-tlsmod14a tst-tlsmod14b \
++-		tst-tlsmod15a tst-tlsmod15b \
+++		tst-tlsmod15a tst-tlsmod15b tst-tlsmod16a tst-tlsmod16b \
+++		$(patsubst %,tst-tlsmod17a%,$(tlsmod17a-suffixes)) \
+++		tst-tlsmod17b \
+++		$(patsubst %,tst-tlsmod18a%,$(tlsmod18a-suffixes)) \
++ 		circlemod1 circlemod1a circlemod2 circlemod2a \
++ 		circlemod3 circlemod3a \
++ 		reldep8mod1 reldep8mod2 reldep8mod3 \
++@@ -226,7 +224,6 @@
++ ifeq (yesyes,$(have-fpie)$(build-shared))
++ modules-names += tst-piemod1
++ endif
++-modules-vis-yes = vismod1 vismod2 vismod3
++ modules-execstack-yes = tst-execstack-mod
++ extra-test-objs += $(addsuffix .os,$(strip $(modules-names)))
++ # We need this variable to be sure the test modules get the right CPPFLAGS.
++@@ -307,7 +304,7 @@
++ 		  $(LDFLAGS-rtld) -Wl,-z,defs -Wl,--verbose 2>&1 |	\
++ 		  LC_ALL=C \
++ 		  sed -e '/^=========/,/^=========/!d;/^=========/d'	\
++-		      -e 's/\. = 0 + SIZEOF_HEADERS;/& _begin = . - SIZEOF_HEADERS;/' \
+++		      -e 's/\. = .* + SIZEOF_HEADERS;/& _begin = . - SIZEOF_HEADERS;/' \
++ 		  > $@.lds
++ 	$(LINK.o) -nostdlib -nostartfiles -shared -o $@			\
++ 		  $(LDFLAGS-rtld) -Wl,-z,defs $(z-now-$(bind-now))	\
++@@ -315,7 +312,7 @@
++ 		  -Wl,-soname=$(rtld-installed-name) -T $@.lds
++ 	rm -f $@.lds
++ 	readelf -s $@ \
++-	  | awk '($$7 ~ /^UND(|EF)$$/ && $$1 != "0:" && $$4 != "REGISTER") { print; p=1 } END { exit p != 0 }'
+++	  | $(AWK) '($$7 ~ /^UND(|EF)$$/ && $$1 != "0:" && $$4 != "REGISTER") { print; p=1 } END { exit p != 0 }'
++ 
++ # interp.c exists just to get this string into the libraries.
++ CFLAGS-interp.c = -D'RUNTIME_LINKER="$(slibdir)/$(rtld-installed-name)"' \
++@@ -499,6 +496,7 @@
++ tst-tlsmod14a.so-no-z-defs = yes
++ tst-tlsmod14b.so-no-z-defs = yes
++ tst-tlsmod15a.so-no-z-defs = yes
+++tst-tlsmod16b.so-no-z-defs = yes
++ circlemod2.so-no-z-defs = yes
++ circlemod3.so-no-z-defs = yes
++ circlemod3a.so-no-z-defs = yes
++@@ -718,6 +716,22 @@
++ 
++ 
++ 
+++$(objpfx)tst-tls16: $(libdl)
+++$(objpfx)tst-tls16.out: $(objpfx)tst-tlsmod16a.so $(objpfx)tst-tlsmod16b.so
+++
+++$(objpfx)tst-tls17: $(libdl)
+++$(objpfx)tst-tls17.out: $(objpfx)tst-tlsmod17b.so
+++$(patsubst %,$(objpfx)tst-tlsmod17a%.os,$(tlsmod17a-suffixes)): $(objpfx)tst-tlsmod17a%.os : tst-tlsmod17a.c
+++	$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ -DN=$* -DNOT_IN_libc=1 $<
+++$(patsubst %,$(objpfx)tst-tlsmod17a%.so,$(tlsmod17a-suffixes)): $(objpfx)tst-tlsmod17a%.so: $(objpfx)ld.so
+++$(objpfx)tst-tlsmod17b.so: $(patsubst %,$(objpfx)tst-tlsmod17a%.so,$(tlsmod17a-suffixes))
+++
+++$(objpfx)tst-tls18: $(libdl)
+++$(objpfx)tst-tls18.out: $(patsubst %,$(objpfx)tst-tlsmod18a%.so,$(tlsmod18a-suffixes))
+++$(patsubst %,$(objpfx)tst-tlsmod18a%.os,$(tlsmod18a-suffixes)): $(objpfx)tst-tlsmod18a%.os : tst-tlsmod18a.c
+++	$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ -DN=$* -DNOT_IN_libc=1 $<
+++$(patsubst %,$(objpfx)tst-tlsmod18a%.so,$(tlsmod18a-suffixes)): $(objpfx)tst-tlsmod18a%.so: $(objpfx)ld.so
+++
++ CFLAGS-tst-align.c = $(stack-align-test-flags)
++ CFLAGS-tst-align2.c = $(stack-align-test-flags)
++ CFLAGS-tst-alignmod.c = $(stack-align-test-flags)
++@@ -804,7 +818,7 @@
++ 	cmp $@ tst-array5-static.exp > /dev/null
++ 
++ ifeq (yesyes,$(have-fpie)$(build-shared))
++-CFLAGS-tst-pie1.c += -fpie
+++CFLAGS-tst-pie1.c += $(pie-ccflag)
++ 
++ $(objpfx)tst-pie1.out: $(objpfx)tst-pie1
++ 	$(elf-objpfx)$(rtld-installed-name) \
++@@ -845,10 +859,14 @@
++ $(objpfx)tst-dlmodcount.out: $(test-modules)
++ 
++ check-data := $(firstword $(wildcard \
++-	        $(patsubst %,../scripts/data/localplt-%.data,\
++-			   $(addsuffix -$(config-os),\
++-			   	       $(config-machine) $(base-machine))\
++-			   generic)))
+++	        $(foreach D,$(add-ons) scripts,\
+++	        	  $(patsubst %,$(..)$D/data/localplt-%.data,\
+++			   	     $(abi-name) \
+++			   	     $(addsuffix -$(config-os),\
+++				     		 $(config-machine) \
+++						 $(base-machine)) \
+++			   generic))))
+++
++ tests: $(objpfx)check-localplt.out
++ 
++ ifeq ($(have-thread-library),yes)
++@@ -857,9 +875,11 @@
++ 
++ $(objpfx)check-localplt.out: $(objpfx)check-localplt \
++ 			     $(common-objpfx)libc.so \
++- 		    	     $(common-objpfx)math/libm.so $(thread-dso) \
++- 		    	     $(common-objpfx)rt/librt.so \
++- 		    	     $(common-objpfx)dlfcn/libdl.so \
+++		    	     $(common-objpfx)math/libm.so $(thread-dso) \
+++		    	     $(common-objpfx)rt/librt.so \
+++		    	     $(common-objpfx)dlfcn/libdl.so \
+++			     $(common-objpfx)resolv/libresolv.so \
+++			     $(common-objpfx)crypt/libcrypt.so \
++ 			     $(check-data)
++ 	$(dir $<)$(notdir $<) $(filter-out $< $(check-data),$^) | \
++ 	  LC_ALL=C sort | \
+diff --git a/packages/glibc/2.7/chksum b/packages/glibc/2.7/chksum
+new file mode 100644
+index 00000000..10ea77b4
+--- /dev/null
++++ b/packages/glibc/2.7/chksum
+@@ -0,0 +1,8 @@
++md5 glibc-2.7.tar.bz2 065c5952b439deba40083ccd67bcc8f7
++sha1 glibc-2.7.tar.bz2 ccc70e95db826e4b1fd3b484154402fdc3df88f7
++sha256 glibc-2.7.tar.bz2 4224a522ac4ee0fd89eb337e7505e280dfb05e2fe1ad44339ba8874081c0451a
++sha512 glibc-2.7.tar.bz2 2ecf3bd2d70298b3c44a8a78bf3ab734db3f22ea009712057ff9f5016c33b8180087fafe6474bf8f181e07f1eb6dca8a8a08ca807a65d0dc9b6dad8ce57c5d1e
++md5 glibc-2.7.tar.gz 0b4bc75fb7413bbd7e43c0a0e7c672b6
++sha1 glibc-2.7.tar.gz 7b82a12b57ec2fb24cced46d839be035d81252c8
++sha256 glibc-2.7.tar.gz f5ef515cb70f8d4cfcee0b3aac05b73def60d897bdb7a71f4356782febfe415a
++sha512 glibc-2.7.tar.gz 59a0422abf08c502b222e93b8dbb74ecf7c3b1c08834eb4ec13b2f17b2c27758a324daff38eb525fea3d945fdaf438ce40537509e8b5ed4048e4914104fad6dd
+diff --git a/packages/glibc/2.7/version.desc b/packages/glibc/2.7/version.desc
+new file mode 100644
+index 00000000..e51e378f
+--- /dev/null
++++ b/packages/glibc/2.7/version.desc
+@@ -0,0 +1 @@
++# GPH specific
+diff --git a/packages/linux/2.6.24/0001-fix-getline.patch b/packages/linux/2.6.24/0001-fix-getline.patch
+new file mode 100644
+index 00000000..eada2ea6
+--- /dev/null
++++ b/packages/linux/2.6.24/0001-fix-getline.patch
+@@ -0,0 +1,60 @@
++From e14c0aba2cb65b75a34dc0355e1ec9d90c0b3e35 Mon Sep 17 00:00:00 2001
++From: "Justin P. Mattock" <justinmattock@gmail.com>
++Date: Sat, 7 Mar 2009 13:31:29 +0100
++Subject: kbuild: fix C libary confusion in unifdef.c due to getline()
++
++commit d15bd1067b1fcb2b7250d22bc0c7c7fea0b759f7 upstream.
++
++This fixes an error when compiling the kernel.
++
++  CHK     include/linux/version.h
++  HOSTCC  scripts/unifdef
++scripts/unifdef.c:209: error: conflicting types for 'getline'
++/usr/include/stdio.h:651: note: previous declaration of 'getline' was here
++make[1]: *** [scripts/unifdef] Error 1
++make: *** [__headers] Error 2
++
++Signed-off-by: Justin P. Mattock <justinmattock@gmail.com>
++Cc:  Frederic Weisbecker <fweisbec@gmail.com>
++Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
++Signed-off-by: Sam Ravnborg <sam@ravnborg.org>
++Cc: Gilles Espinasse <g.esp@free.fr>
++Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
++---
++ scripts/unifdef.c | 6 +++---
++ 1 file changed, 3 insertions(+), 3 deletions(-)
++
++diff --git a/scripts/unifdef.c b/scripts/unifdef.c
++index 552025e72acb..05a31a6c7e1b 100644
++--- a/scripts/unifdef.c
+++++ b/scripts/unifdef.c
++@@ -206,7 +206,7 @@ static void             done(void);
++ static void             error(const char *);
++ static int              findsym(const char *);
++ static void             flushline(bool);
++-static Linetype         getline(void);
+++static Linetype         get_line(void);
++ static Linetype         ifeval(const char **);
++ static void             ignoreoff(void);
++ static void             ignoreon(void);
++@@ -512,7 +512,7 @@ process(void)
++ 
++ 	for (;;) {
++ 		linenum++;
++-		lineval = getline();
+++		lineval = get_line();
++ 		trans_table[ifstate[depth]][lineval]();
++ 		debug("process %s -> %s depth %d",
++ 		    linetype_name[lineval],
++@@ -526,7 +526,7 @@ process(void)
++  * help from skipcomment().
++  */
++ static Linetype
++-getline(void)
+++get_line(void)
++ {
++ 	const char *cp;
++ 	int cursym;
++-- 
++cgit 1.2-0.3.lf.el7
++
+diff --git a/packages/linux/2.6.24/0002-fix-recent-make.patch b/packages/linux/2.6.24/0002-fix-recent-make.patch
+new file mode 100644
+index 00000000..7210bfb7
+--- /dev/null
++++ b/packages/linux/2.6.24/0002-fix-recent-make.patch
+@@ -0,0 +1,64 @@
++From 5981f194641d4bcbff7e80adf393035b113f5022 Mon Sep 17 00:00:00 2001
++From: Sam Ravnborg <sam@ravnborg.org>
++Date: Sat, 13 Dec 2008 23:00:45 +0100
++Subject: kbuild: fix make incompatibility
++
++commit 31110ebbec8688c6e9597b641101afc94e1c762a upstream.
++
++"Paul Smith" <psmith@gnu.org> reported that we would fail
++to build with a new check that may be enabled in an
++upcoming version of make.
++
++The error was:
++
++      Makefile:442: *** mixed implicit and normal rules.  Stop.
++
++The problem is that we did stuff like this:
++
++config %config: ...
++
++The solution was simple - the above was split into two with identical
++prerequisites and commands.
++With only three lines it was not worth to try to avoid the duplication.
++
++Cc: "Paul Smith" <psmith@gnu.org>
++Signed-off-by: Sam Ravnborg <sam@ravnborg.org>
++Cc: Thomas Backlund <tmb@mandriva.org>
++Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
++---
++ Makefile | 12 ++++++++++--
++ 1 file changed, 10 insertions(+), 2 deletions(-)
++
++diff --git a/Makefile b/Makefile
++index 948de60db4d9..431b9e658293 100644
++--- a/Makefile
+++++ b/Makefile
++@@ -440,7 +440,11 @@ ifeq ($(config-targets),1)
++ include $(srctree)/arch/$(SRCARCH)/Makefile
++ export KBUILD_DEFCONFIG
++ 
++-config %config: scripts_basic outputmakefile FORCE
+++config: scripts_basic outputmakefile FORCE
+++	$(Q)mkdir -p include/linux include/config
+++	$(Q)$(MAKE) $(build)=scripts/kconfig $@
+++
+++%config: scripts_basic outputmakefile FORCE
++ 	$(Q)mkdir -p include/linux include/config
++ 	$(Q)$(MAKE) $(build)=scripts/kconfig $@
++ 
++@@ -1602,7 +1606,11 @@ endif
++ 	$(Q)$(MAKE) $(build)=$(build-dir) $(target-dir)$(notdir $@)
++ 
++ # Modules
++-/ %/: prepare scripts FORCE
+++/: prepare scripts FORCE
+++	$(cmd_crmodverdir)
+++	$(Q)$(MAKE) KBUILD_MODULES=$(if $(CONFIG_MODULES),1) \
+++	$(build)=$(build-dir)
+++%/: prepare scripts FORCE
++ 	$(cmd_crmodverdir)
++ 	$(Q)$(MAKE) KBUILD_MODULES=$(if $(CONFIG_MODULES),1) \
++ 	$(build)=$(build-dir)
++-- 
++cgit 1.2-0.3.lf.el7
++
+diff --git a/packages/linux/2.6.24/chksum b/packages/linux/2.6.24/chksum
+new file mode 100644
+index 00000000..d50af0fd
+--- /dev/null
++++ b/packages/linux/2.6.24/chksum
+@@ -0,0 +1,8 @@
++md5 linux-2.6.24.tar.gz f09806748f6809d5f7d2a1859240e1a5
++sha1 linux-2.6.24.tar.gz b7b63f52551f9e4bf2e5ba902f8385fbefc5d80c
++sha256 linux-2.6.24.tar.gz 1bf113a14d4303904693133d075cca201d25af3a8f462afaa1cb733ffb65b604
++sha512 linux-2.6.24.tar.gz 5ea8b9810597def674aa1038262f17ac5f0926903b286910ee23a834c29ca8e1f0d6d7287f9d850a2a5a850f0bf500ca0e579e9e3c60ccedd66d2eca31ffbe84
++md5 linux-2.6.24.tar.xz 1b61d38abef3461e0216c105aee3f495
++sha1 linux-2.6.24.tar.xz 32d92f2aa599307041958fd5f729bcc503bbdcdb
++sha256 linux-2.6.24.tar.xz a9c6123ea750be3173ff383d17c3afec27b5884823fb947a73b85f6469e01229
++sha512 linux-2.6.24.tar.xz 055881f903b18ecda26319374eb791c27106ecbdf4045980e28bd2743ec8be669aa86e73a22f24ab20ec4f00abd488b94329f5f1c9e8b5da0347cc81571d5110
+diff --git a/packages/linux/2.6.24/version.desc b/packages/linux/2.6.24/version.desc
+new file mode 100644
+index 00000000..65f2a782
+--- /dev/null
++++ b/packages/linux/2.6.24/version.desc
+@@ -0,0 +1,2 @@
++# GPH specific
++archive_formats='.tar.xz .tar.gz'

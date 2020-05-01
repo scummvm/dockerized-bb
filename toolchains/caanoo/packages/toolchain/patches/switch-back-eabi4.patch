@@ -1,0 +1,60 @@
+diff --git a/packages/binutils/2.32/9999-use-eabi4.patch b/packages/binutils/2.32/9999-use-eabi4.patch
+new file mode 100644
+index 00000000..77bc0535
+--- /dev/null
++++ b/packages/binutils/2.32/9999-use-eabi4.patch
+@@ -0,0 +1,35 @@
++Index: binutils-2.32/gas/config/te-armeabi.h
++===================================================================
++--- binutils-2.32.orig/gas/config/te-armeabi.h
+++++ binutils-2.32/gas/config/te-armeabi.h
++@@ -19,7 +19,7 @@
++ 
++ /* The EABI requires the use of VFP.  */
++ #define FPU_DEFAULT FPU_ARCH_VFP
++-#define EABI_DEFAULT EF_ARM_EABI_VER5
+++#define EABI_DEFAULT EF_ARM_EABI_VER4
++ 
++ #define LOCAL_LABELS_DOLLAR 1
++ #define LOCAL_LABELS_FB 1
++Index: binutils-2.32/gas/config/te-armlinuxeabi.h
++===================================================================
++--- binutils-2.32.orig/gas/config/te-armlinuxeabi.h
+++++ binutils-2.32/gas/config/te-armlinuxeabi.h
++@@ -21,4 +21,4 @@
++ 
++ /* The EABI requires the use of VFP.  */
++ #define FPU_DEFAULT FPU_ARCH_VFP
++-#define EABI_DEFAULT EF_ARM_EABI_VER5
+++#define EABI_DEFAULT EF_ARM_EABI_VER4
++Index: binutils-2.32/gas/config/te-nacl.h
++===================================================================
++--- binutils-2.32.orig/gas/config/te-nacl.h
+++++ binutils-2.32/gas/config/te-nacl.h
++@@ -25,6 +25,6 @@
++ /* These are for ARM but don't hurt other CPU targets.
++    They match the settings from te-armeabi.h; NaCl/ARM is based on EABI.  */
++ #define FPU_DEFAULT FPU_ARCH_VFP
++-#define EABI_DEFAULT EF_ARM_EABI_VER5
+++#define EABI_DEFAULT EF_ARM_EABI_VER4
++ 
++ #include "obj-format.h"
+diff --git a/packages/gcc/8.3.0/9998-use-eabi4.patch b/packages/gcc/8.3.0/9998-use-eabi4.patch
+new file mode 100644
+index 00000000..0e311146
+--- /dev/null
++++ b/packages/gcc/8.3.0/9998-use-eabi4.patch
+@@ -0,0 +1,13 @@
++Index: gcc-8.3.0/gcc/config/arm/bpabi.h
++===================================================================
++--- gcc-8.3.0.orig/gcc/config/arm/bpabi.h
+++++ gcc-8.3.0/gcc/config/arm/bpabi.h
++@@ -64,7 +64,7 @@
++ /* Tell the assembler to build BPABI binaries.  */
++ #undef  SUBTARGET_EXTRA_ASM_SPEC
++ #define SUBTARGET_EXTRA_ASM_SPEC \
++-  "%{mabi=apcs-gnu|mabi=atpcs:-meabi=gnu;:-meabi=5}" TARGET_FIX_V4BX_SPEC
+++  "%{mabi=apcs-gnu|mabi=atpcs:-meabi=gnu;:-meabi=4}" TARGET_FIX_V4BX_SPEC
++ 
++ #ifndef SUBTARGET_EXTRA_LINK_SPEC
++ #define SUBTARGET_EXTRA_LINK_SPEC ""

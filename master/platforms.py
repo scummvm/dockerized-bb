@@ -222,6 +222,25 @@ def debian_x86_64():
     register_platform(platform)
 debian_x86_64()
 
+def caanoo():
+    platform = Platform("caanoo")
+    platform.workerimage = "caanoo"
+    platform.compatibleBuilds = (builds.ScummVMBuild, )
+    platform.env["CXX"] = "ccache /opt/caanoo/bin/arm-gph-linux-gnueabi-c++"
+    platform.configureargs.append("--host=caanoo")
+    platform.buildconfigureargs = {
+        builds.ScummVMBuild: [ "--enable-plugins", "--default-dynamic", "--enable-vkeybd" ],
+    }
+    platform.packaging_cmd = "caanoo-bundle"
+    platform.built_files = {
+        builds.ScummVMBuild: [ "release/scummvm-caanoo.tar.bz2" ],
+    }
+    platform.archiveext = "tar.bz2"
+    platform.testable = False
+    platform.run_tests = False
+    register_platform(platform)
+caanoo()
+
 def gamecube():
     platform = Platform("gamecube")
     platform.workerimage = "devkitppc"

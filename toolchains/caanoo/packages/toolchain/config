@@ -1,0 +1,171 @@
+# crosstool-NG  Configuration
+#
+CT_CONFIG_VERSION="3"
+
+#
+# Paths and misc options
+#
+
+#
+# crosstool-NG behavior
+#
+
+#
+# Paths
+#
+# Define all paths
+#
+CT_LOCAL_TARBALLS_DIR="${CT_TOP_DIR}/.tarballs"
+CT_WORK_DIR="${CT_TOP_DIR}/.build"
+CT_BUILD_TOP_DIR="${CT_WORK_DIR:-${CT_TOP_DIR}/.build}/${CT_HOST:+HOST-${CT_HOST}/}${CT_TARGET}"
+CT_PREFIX_DIR="${CT_PREFIX:-${CT_TOP_DIR}/toolchain}"
+# Don't put toolchain R/O as we need to install libraries in it
+# CT_PREFIX_DIR_RO is not set
+
+#
+# Target options
+#
+# That's an ARM
+CT_ARCH_ARM=y
+
+#
+# Options for arm
+#
+# No thumb and EABI
+CT_ARCH_ARM_MODE_ARM=y
+CT_ARCH_ARM_EABI=y
+
+#
+# Generic target options
+#
+# Little endian
+CT_ARCH_LE=y
+
+#
+# Target optimisations
+#
+# No hardfloat on the target
+CT_ARCH_FLOAT_SW=y
+
+#
+# Toolchain options
+#
+
+#
+# General toolchain options
+#
+
+#
+# Tuple completion and aliasing
+#
+# Use same vendor as the official toolchain
+CT_TARGET_VENDOR="gph"
+
+#
+# Toolchain type
+#
+CT_CROSS=y
+
+#
+# Build system
+#
+
+#
+# Misc options
+#
+
+#
+# Operating System
+#
+CT_KERNEL_LINUX=y
+
+#
+# Options for linux
+#
+# Use 2.6.24 kernel like the one running on the target
+CT_LINUX_SRC_RELEASE=y
+CT_LINUX_V_2_6=y
+CT_LINUX_VERSION="2.6.24"
+
+#
+# Common kernel options
+#
+
+#
+# Binary utilities
+#
+
+#
+# Options for binutils
+#
+
+#
+# GNU binutils
+#
+
+#
+# C-library
+#
+CT_LIBC_GLIBC=y
+
+#
+# Options for glibc
+#
+# Use same GLIBC as the target to avoid static linking of it
+CT_GLIBC_USE_GNU=y
+CT_GLIBC_SRC_RELEASE=y
+CT_GLIBC_V_2_7=y
+
+#
+# Common C library options
+#
+# Use native threads
+CT_THREADS_NATIVE=y
+
+#
+# C compiler
+#
+CT_CC_GCC=y
+
+#
+# Options for gcc
+#
+# Don't build shared libgcc_s and libstdc++ as we are way more recent than the target compiler
+CT_CC_GCC_EXTRA_CONFIG_ARRAY="--disable-shared"
+
+#
+# Optimisation features
+#
+# Make the toolchain lighter
+# CT_CC_GCC_USE_GRAPHITE is not set
+# CT_CC_GCC_USE_LTO is not set
+
+#
+# Settings for libraries running on target
+#
+
+#
+# Misc. obscure options.
+#
+
+#
+# Additional supported languages:
+#
+# Support C++
+CT_CC_LANG_CXX=y
+
+#
+# Debug facilities
+#
+
+#
+# Companion libraries
+#
+
+#
+# Companion tools
+#
+
+#
+# Test suite
+#

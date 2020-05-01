@@ -1,0 +1,3000 @@
+Index: SDL-1.2.13/configure.in
+===================================================================
+--- SDL-1.2.13.orig/configure.in
++++ SDL-1.2.13/configure.in
+@@ -215,6 +215,7 @@ SOURCES="$SOURCES $srcdir/src/stdlib/*.c
+ SOURCES="$SOURCES $srcdir/src/thread/*.c"
+ SOURCES="$SOURCES $srcdir/src/timer/*.c"
+ SOURCES="$SOURCES $srcdir/src/video/*.c"
++SOURCES="$SOURCES $srcdir/src/platform_wiz/*.c"
+ 
+ dnl Enable/disable various subsystems of the SDL library
+ 
+Index: SDL-1.2.13/include/SDL.h
+===================================================================
+--- SDL-1.2.13.orig/include/SDL.h
++++ SDL-1.2.13/include/SDL.h
+@@ -91,4 +91,8 @@ extern DECLSPEC void SDLCALL SDL_Quit(vo
+ #endif
+ #include "close_code.h"
+ 
++/* HYUN_DEBUG */
++#ifndef __cplusplus
++int SDL_videofd; 	// ghcstop_caution: 20050128 add, mplayer
++#endif
+ #endif /* _SDL_H */
+Index: SDL-1.2.13/include/SDL_joystick.h
+===================================================================
+--- SDL-1.2.13.orig/include/SDL_joystick.h
++++ SDL-1.2.13/include/SDL_joystick.h
+@@ -105,6 +105,13 @@ extern DECLSPEC int SDLCALL SDL_Joystick
+  */
+ extern DECLSPEC void SDLCALL SDL_JoystickUpdate(void);
+ 
++/* hyun_debug 2008.0708 */
++//extern DECLSPEC int SDL_SYS_JoystickGetExtRtc(SDL_Joystick *joystick, void *dt);
++//extern DECLSPEC int SDL_SYS_JoystickSetExtRtc(SDL_Joystick *joystick, void *dt);
++//extern DECLSPEC int SDL_SYS_JoystickSetPowerOff(SDL_Joystick *joystick);
++//extern DECLSPEC void SDL_SYS_JoystickGp2xInfo(SDL_Joystick *joystick, unsigned char *pInfo);
++//extern DECLSPEC int SDL_SYS_JoystickUsbConCheck(SDL_Joystick *joystick);
++//extern DECLSPEC int SDL_SYS_JoystickUsbDisconnect(SDL_Joystick *joystick);
+ /*
+  * Enable/disable joystick event polling.
+  * If joystick events are disabled, you must call SDL_JoystickUpdate()
+Index: SDL-1.2.13/include/SDL_keysym.h
+===================================================================
+--- SDL-1.2.13.orig/include/SDL_keysym.h
++++ SDL-1.2.13/include/SDL_keysym.h
+@@ -33,6 +33,7 @@ typedef enum {
+ 	/* The keyboard syms have been cleverly chosen to map to ASCII */
+ 	SDLK_UNKNOWN		= 0,
+ 	SDLK_FIRST		= 0,
++	SDLK_CRTL_C		= 3, // ghcstop 041206 add: keymapÀ» ¶â¾î°íÄ¡¸é¼­ ctrl+cµµ key event·Î ¸Ô°Ô ¸¸µç´Ù.
+ 	SDLK_BACKSPACE		= 8,
+ 	SDLK_TAB		= 9,
+ 	SDLK_CLEAR		= 12,
+Index: SDL-1.2.13/include/SDL_video.h
+===================================================================
+--- SDL-1.2.13.orig/include/SDL_video.h
++++ SDL-1.2.13/include/SDL_video.h
+@@ -30,6 +30,8 @@
+ #include "SDL_rwops.h"
+ 
+ #include "begin_code.h"
++#include "pollux_fb_ioctl.h"
++
+ /* Set up for C function definitions, even when using C++ */
+ #ifdef __cplusplus
+ extern "C" {
+@@ -881,7 +883,40 @@ extern DECLSPEC SDL_GrabMode SDLCALL SDL
+ /* Not in public API at the moment - do not use! */
+ extern DECLSPEC int SDLCALL SDL_SoftStretch(SDL_Surface *src, SDL_Rect *srcrect,
+                                     SDL_Surface *dst, SDL_Rect *dstrect);
+-                    
++
++/* HYUN_DEBUG */
++extern DECLSPEC int SDLCALL SDL_GetVideofd(void);
++extern DECLSPEC int SDLCALL SDL_SetLcdChange(unsigned int subCmd, unsigned int value);
++extern DECLSPEC int SDLCALL SDL_TvConfig(FB_TVCONF * tv_cfg);
++
++extern DECLSPEC void SDL_SetLcdMode(int mode);
++extern DECLSPEC int SDL_GetLcdMode(void);
++
++extern DECLSPEC int SDLCALL SDL_GetGphBoard(unsigned char * board_num);
++
++extern DECLSPEC int SDLCALL SDL_FBLuminance(unsigned int * value);
++
++extern DECLSPEC int SDLCALL SDL_FBRGBControl(FB_RGBSET * rgbset);
++
++extern DECLSPEC int SDLCALL SDL_FBVideoPriority(unsigned int * vpriority);
++
++extern DECLSPEC int SDLCALL SDL_FBLayerTPColor(unsigned int  * tpcolor);
++
++extern DECLSPEC int SDLCALL SDL_FBLayerAlphaBLD(unsigned int * alphabld);
++
++extern DECLSPEC int SDLCALL SDL_FBDeviceEnable(unsigned int * devenable);
++
++extern DECLSPEC int SDLCALL SDL_FBVideoInit(FB_VIDEO_CONF * vconf);
++
++extern DECLSPEC int SDLCALL SDL_FBVideoUpdate(FB_VIDEO_CONF * vconf);
++
++extern DECLSPEC int SDLCALL SDL_FBVideoMemoryUpdate(FB_VMEMINFO * vmem);
++
++extern DECLSPEC int SDLCALL SDL_FBVideoStart(FB_VMEMINFO * vmem);
++
++extern DECLSPEC int SDLCALL SDL_FBVideoStop(unsigned int * vstop);
++
++
+ /* Ends C function definitions when using C++ */
+ #ifdef __cplusplus
+ }
+Index: SDL-1.2.13/include/pollux_fb_cfg.h
+===================================================================
+--- /dev/null
++++ SDL-1.2.13/include/pollux_fb_cfg.h
+@@ -0,0 +1,282 @@
++/*
++ * Copyright (c) MagicEyes co.
++ *
++ * This file is subject to the terms and conditions of the GNU General Public
++ * License.  See the file COPYING in the main directory of this archive for
++ * more details.
++ *
++ *	    pollux Frame Buffer Driver
++ *
++ * ChangeLog
++ *
++ * 2007-06-16 : Jonathan <mesdigital.com>
++ *	- First version
++ */
++
++
++#ifndef _POLLUX_FB_CFG_H
++#define _POLLUX_FB_CFG_H
++#if !defined(__WIN32__)
++
++//------------------------------------------------------------------------------
++// Enum type for vip driver & applictaion
++//------------------------------------------------------------------------------
++enum __MES_CHIPID {
++    MES_CHIPID_MP2530F = 1,
++    MES_CHIPID_POLLUX  = 2
++};
++
++enum  __MES_MEM_MODE {
++    FRAME_BUFFER = 0,	// 1D memory region
++    VIDEO_BUFFER = 1	// 2D memory region
++};
++
++enum  __MES_MEM_ALIGN {
++    MES_USERDEF = 0,	
++    MES_NORMAL  = 1,
++    MES_MPEG    = 256,
++    MES_H264    = 512	
++};
++
++enum __MES_VID_DEV
++{
++    PRI_VIDEO   = 1,	// Primary 	 MLC Video Layer
++    SEC_VIDEO 	= 2		// Secondary MLC Video Layer
++};
++
++enum __MES_MLC_DEV
++{
++    PRI_MLC 	= 1,	// Primary 	 MLC
++    SEC_MLC 	= 2		// Secondary MLC
++};
++
++#if 0
++enum __LCD_OLED_LIGHT
++{
++#if 1//def VM100
++    LOW_LIGHT_LCD = 20,//10,
++    LESS_MID_LIGHT_LCD = 25,
++    MID_LIGHT_LCD = 50,
++    HIGH_LIGHT_LCD = 100,
++#else	/* WIZ */
++    HIGH_LIGHT_LCD,    
++    MID_LIGHT_LCD,
++    LESS_MID_LIGHT_LCD,
++    LOW_LIGHT_LCD,
++#endif
++};
++#endif
++
++enum __LCD_SUB_COMMAND
++{
++    LCD_POWER_DOWN_ON_CMD,
++    LCD_POWER_DOWN_OFF_CMD,
++    LCD_GAMMA_SET_CMD,
++    LCD_LIGHT_SET_CMD,
++    LCD_PANEL_ID_CMD,
++    LCD_DIRECTION_ON_CMD,		/* 320 x 240 */		
++    LCD_DIRECTION_OFF_CMD		/* 240 x 320 */
++};
++
++enum __TV_COMMAND
++{
++    COMMAND_INDIVIDUALLY    = 1,	/* Not test */
++    COMMAND_COMMONVIEW 	    = 2,
++    COMMAND_ONLY_TV         = 3,
++    COMMAND_RETURN_LCD	    = 4,
++    COMMAND_SCREEN_POS      = 5,
++    COMMAND_SCREEN_SCALE    = 6,
++    COMMAND_CHANGE_MODE     = 7,
++    COMMAND_SET_COLOR	    = 8
++};
++
++
++enum __MES_DPC_VBS
++{
++    MES_DPC_VBS_NTSC_M		= 0UL,	///< NTSC-M             59.94 Hz(525)
++    MES_DPC_VBS_NTSC_N		= 1UL,	///< NTSC-N             50 Hz(625)
++    MES_DPC_VBS_NTSC_443	= 2UL,	///< NTSC-4.43          60 Hz(525)
++    MES_DPC_VBS_PAL_M		= 3UL,	///< PAL-M              59.952 Hz(525)
++    MES_DPC_VBS_PAL_N		= 4UL,	///< PAL-combination N  50 Hz(625)
++    MES_DPC_VBS_PAL_BGHI	= 5UL,	///< PAL-B,D,G,H,I,N    50 Hz(625)
++    MES_DPC_VBS_PSEUDO_PAL	= 6UL,	///< Pseudo PAL         60 Hz(525)
++    MES_DPC_VBS_PSEUDO_NTSC	= 7UL	///< Pseudo NTSC        50 Hz (625)
++
++};
++
++
++typedef enum __MES_CHIPID	MES_CHIPID;
++typedef enum __MES_MEM_MODE	MES_MEM_MODE;
++typedef enum __MES_MEM_ALIGN	MES_MEM_ALIGN;
++typedef enum __MES_VID_DEV	MES_VID_DEV;
++typedef enum __MES_MLC_DEV	MES_MLC_DEV;
++//typedef enum __LCD_OLED_LIGHT	LCD_OLED_LIGHT;
++typedef enum __TV_COMMAND	TV_COMMAND;
++typedef enum __MES_DPC_VBS	MES_DPC_VBS;    
++
++
++
++#define SCH_PHASE			0x01
++#define HUE_PHASE			0x02
++#define CHROMA_SATURATION		0x04 
++#define LUMA_GAIN			0x08    /* contrast */
++#define LUMA_OFFSET			0x10    /* bright */
++
++#define SCH_SHIFT			0					
++#define HUE_SHIFT			8
++#define CHROMA_SHIFT			16
++#define LUMA_GAIN_SHIFT			24
++#define LUMA_OFFSET_SHIFT		0
++
++#define MES_MPEG_X_ALIGN		512
++#define MES_MPEG_Y_ALIGN		256
++#define MES_H264_X_ALIGN		512
++#define MES_H264_Y_ALIGN		512
++
++//------------------------------------------------------------------------------
++// Display driver parameters
++//------------------------------------------------------------------------------
++//
++// Display(LCD) information struct
++//
++typedef struct _FB_INFORMATION
++{
++    u_int32_t		ScreenWidth;		// full screen width
++    u_int32_t		ScreenHeight;		// full screen height
++    int32_t		Frequency;
++    int32_t		ColorDepth;
++    u_int32_t		ColorKey;
++    MES_CHIPID		CHIPID;
++    u_int32_t		FrameMemPBase;		// 1D memory physical base.
++    u_int32_t		FrameMemVBase;		// 1D memory Virtual  base.	
++    u_int32_t		FrameMemSize;		// 1D memory size.
++    u_int32_t		BlockMemPBase;		// 2D memory physical base.
++    u_int32_t		BlockMemVBase;		// 2D memory Virtual  base.	
++    u_int32_t		BlockMemSize;		// 2D memory size.
++    u_int32_t		BlockMemStride; 	// 2D memory stride.
++    u_int32_t		IsDualDisplay;		// define Dual display.
++    u_int32_t		IsPrimaryMain;		// define main display devuce.
++    u_int32_t		PriScreenWidth;		// primary screen width
++    u_int32_t		PriScreenHeight;	// primary screen height
++    u_int32_t		SecScreenWidth;		// primary screen width
++    u_int32_t		SecScreenHeight;	// primary screen height	
++} FB_INFO, *LPFB_INFO;
++
++//------------------------------------------------------------------------------
++// Display driver Video memory allocate parameters
++//------------------------------------------------------------------------------
++//
++// struct for surface
++// this struct has a memory space for a single surface.
++//
++typedef struct _FB_MEMINFO
++{
++    u_int32_t		    Address;	// Allocated address.	
++    MES_MEM_MODE	    MemMode;	// memory mode(1D/2D). 
++    MES_MEM_ALIGN	    Align;	// Align type(mpeg, h264, 3D, nomal).
++    u_int32_t		    AlignX;	// if Align type is MES_USERDEF, align y
++    u_int32_t		    AlignY;	// if Align type is MES_USERDEF, align y
++    u_int32_t		    FourCC;	// FourCC, define allocate memory format		
++    int32_t		    Width;	// Image width.
++    int32_t		    Height;	// Image height.	
++    u_int32_t		    PhyAddr;	// 2D or 1D physical address for surface
++    u_int32_t		    Stride;	// 2D or 1D physical address for surface
++    u_int32_t		    Offset;	// 2D or 1D physical address for surface	
++    MES_VID_DEV		    VideoDev;	// Priamry or Secondary Video device
++} FB_MEMINFO, * LPFB_MEMINFO;
++
++//
++// struct for video surface(LuCbCr format)
++// this struct has Lu, Cb, Cr memory spaces for video surface
++//
++typedef struct _FB_VMEMINFO
++{
++    u_int32_t		Address;	// Allocated address.	
++    MES_MEM_MODE	MemMode;	// memory mode(1D/2D). 
++    MES_MEM_ALIGN	Align;		// Align type(mpeg, h264, 3D, nomal).
++    u_int32_t		AlignX;		// if Align type is MES_USERDEF, align y
++    u_int32_t		AlignY;		// if Align type is MES_USERDEF, align y
++    u_int32_t		FourCC;		// FourCC, define allocate memory format	
++    int32_t		Width;		// Image width.
++    int32_t		Height;		// Image height.	
++    u_int32_t		LuAddr;	// 2D or 1D physical address for video surface(YUV) 
++    u_int32_t		CbAddr;	// 2D or 1D physical address for video surface(YUV)
++    u_int32_t		CrAddr;	// 2D or 1D physical address for video surface(YUV) 
++    u_int32_t		LuStride;// 2D or 1D stride value for video surface(YUV)
++    u_int32_t		CbStride;// 2D or 1D stride value for video surface(YUV)
++    u_int32_t		CrStride;   // 2D or 1D stride value for video surface(YUV)
++    u_int32_t		LuOffset;   // 2D format addr or 1D physical address.
++    u_int32_t		CbOffset;   // 2D format addr or 1D physical address.
++    u_int32_t		CrOffset;   // 2D format addr or 1D physical address.
++    MES_VID_DEV		VideoDev;   // Priamry or Secondary Video device
++} FB_VMEMINFO, * LPFB_VMEMINFO;
++
++
++typedef struct _FB_RGBSET
++{
++    u_int32_t	Layer;
++    u_int32_t	Addrs;
++    int32_t	Left;
++    int32_t	Top;
++    int32_t	Right;
++    int32_t	Bottom;
++    u_int32_t	HStride;	
++    u_int32_t	VStride;	
++    int32_t     enable3D;    
++    u_int32_t	Bakcol;	
++    u_int32_t   Mlc_dev;
++} FB_RGBSET, * LPFB_RGBSET;
++
++typedef struct _FB_IDCT
++{
++    u_int16_t	*Indat;
++    u_int16_t	*QuantMatrix;
++    u_int16_t	*Outdat;
++} FB_IDCT, * LPFB_IDCT;
++//
++// video surface configuration struct 
++//
++
++typedef struct _FB_TVCONF
++{
++    u_int8_t    command;
++    u_int8_t	tv_mode;
++    u_int32_t   SecScreenWidth;		
++    u_int32_t	SecScreenHeight;	
++} FB_TVCONF, * LPFB_TVCONF;
++
++
++typedef struct _FB_VIDEO_CONF
++{	
++    u_int32_t		Flags;		// flags for video device set.	
++    u_int32_t		FourCC;		// FourCC, define video format.		
++    u_int32_t		ColorKey;	// Transparency Color Key of screen
++    int32_t	    	SrcWidth;	// The source width of the overlay image.
++    int32_t	    	SrcHeight;	// The source height of the overlay image.
++    int32_t	    	DstWidth;	// The target width of the overlay image.
++    int32_t	    	DstHeight;	// The target height of the overlay image.
++    //	RECTL			rVIDRECT;	// A RECT that defines the position. (Windows only)
++    int32_t			Left;		// Position information - use integer instead of rectangle structure
++    int32_t			Top;		//
++    int32_t			Right;		//
++    int32_t			Bottom;		//
++    MES_VID_DEV	VideoDev;	// Priamry or Secondary Video device
++} __attribute__((packed)) FB_VIDEO_CONF, * LPFB_VIDEO_CONF;
++
++
++//------------------------------------------------------------------------------
++// Display driver video flags
++//------------------------------------------------------------------------------
++#define	SET_TPCOLOR 0x00000001
++
++//------------------------------------------------------------------------------
++// Display 2D Memory configuration
++//------------------------------------------------------------------------------
++#define	MEM_2D_X_BYTE_PER_BLOCK		64
++#define	MEM_2D_Y_BYTE_PER_BLOCK		32
++#define	MEM_2D_X_BLOCK_PER_SEGMEMT	64		// 64 * 64 : 4096
++#define	MEM_2D_Y_BLOCK_PER_SEGMEMT	128		// 64 * 128: 4096
++#define	MEM_2D_Y_COORD_OFFBIT		12
++#define	MEM_2D_X_COORD_OFFBIT		0	
++#endif
++#endif // _MP2530F_FB_CFG_H
+Index: SDL-1.2.13/include/pollux_fb_ioctl.h
+===================================================================
+--- /dev/null
++++ SDL-1.2.13/include/pollux_fb_ioctl.h
+@@ -0,0 +1,66 @@
++/*
++ * include/asm/arch/fb_ioctl.h
++ * 	Copyright (c) MagicEyes co.
++ *
++ * This file is subject to the terms and conditions of the GNU General Public
++ * License.  See the file COPYING in the main directory of this archive for
++ * more details.
++ *
++ *	    POLLUX Frame Buffer Driver
++ *
++ * ChangeLog
++ *
++ * 2007-06-16 : Jonathan <mesdigital.com>
++ *	- First version
++ */
++
++/* 
++ * IOCTL code
++ */
++
++#ifndef _POLLUX_FB_IOCTL_H
++#define _POLLUX_FB_IOCTL_H
++
++#include <sys/ioctl.h>
++#include "pollux_fb_cfg.h"
++
++#define FBIO_MAGIC	'D'
++
++/* Video layer IO Control code */
++#define FBIO_INFO		    _IOR(FBIO_MAGIC, 52, struct _FB_INFORMATION)
++#define FBIO_VIDEO_INIT		    _IOW(FBIO_MAGIC, 53, struct _FB_VIDEO_CONF)
++#define FBIO_VIDEO_START	    _IOW(FBIO_MAGIC, 54, struct _FB_VMEMINFO)
++#define FBIO_VIDEO_UPDATE	    _IOW(FBIO_MAGIC, 55, struct _FB_VIDEO_CONF)
++#define FBIO_VIDEO_STOP		    _IOW(FBIO_MAGIC, 56, unsigned int)
++
++#define FBIO_VIDEO_MEMORY_UPDATE    _IOW(FBIO_MAGIC, 59, struct _FB_VMEMINFO)
++
++/* Video layer priority code */
++#define FBIO_VIDEO_PRIORITY	    _IOW(FBIO_MAGIC, 69, unsigned int[2])
++
++/* Color control Io Control code */
++#define FBIO_VIDEO_LUMINAENHANCE    _IOW(FBIO_MAGIC, 70, unsigned int[3])
++#define FBIO_VIDEO_CHROMAENHANCE    _IOW(FBIO_MAGIC, 71, unsigned int[5])
++
++/* Each layer transparency, alpha blend */
++#define FBIO_LAYER_TPCOLOR	    _IOW(FBIO_MAGIC, 72, unsigned int[4])
++#define FBIO_LAYER_INVCOLOR	    _IOW(FBIO_MAGIC, 73, unsigned int[4])
++#define FBIO_LAYER_ALPHABLD	    _IOW(FBIO_MAGIC, 74, unsigned int[4])
++
++/* Each layer power Io Control code */
++#define FBIO_DEVICE_ENABLE	    _IOW(FBIO_MAGIC, 77, unsigned int[3])
++
++/* Each RGB layer properties Io Control */
++
++#define FBIO_RGB_CONTROL	    _IOW(FBIO_MAGIC, 78, struct _FB_RGBSET)
++#define RGB_LAYER_POWER		    _IOW(FBIO_MAGIC, 79, unsigned int[3])
++
++
++#define FBIO_LCD_CHANGE_CONTROL     _IOW(FBIO_MAGIC, 90, unsigned int[2])
++
++/* GPH Support Video Number */
++#define FBIO_GET_BOARD_NUMBER	    _IOR(FBIO_MAGIC, 91, unsigned char*)
++
++#define FBIO_SET_TVCFG_MODE	    _IOW(FBIO_MAGIC, 92, struct _FB_TVCONF)
++
++#endif
+Index: SDL-1.2.13/include/SDL_wiz_dev.h
+===================================================================
+--- /dev/null
++++ SDL-1.2.13/include/SDL_wiz_dev.h
+@@ -0,0 +1,98 @@
++/*
++    SDL - Simple DirectMedia Layer
++    Copyright (C) 1997-2006 Sam Lantinga
++
++    This library is free software; you can redistribute it and/or
++    modify it under the terms of the GNU Lesser General Public
++    License as published by the Free Software Foundation; either
++    version 2.1 of the License, or (at your option) any later version.
++
++    This library is distributed in the hope that it will be useful,
++    but WITHOUT ANY WARRANTY; without even the implied warranty of
++    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++    Lesser General Public License for more details.
++
++    You should have received a copy of the GNU Lesser General Public
++    License along with this library; if not, write to the Free Software
++    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
++
++    Sam Lantinga
++    slouken@libsdl.org
++*/
++
++/* Include file for SDL application focus event handling */
++
++#ifndef _SDL_wiz_dev_h
++#define _SDL_wiz_dev_h
++
++#include "SDL_stdinc.h"
++#include "SDL_error.h"
++
++#include "begin_code.h"
++/* Set up for C function definitions, even when using C++ */
++#ifdef __cplusplus
++extern "C" {
++#endif
++
++#define SDL_WIZ_BATTRY_INIT    0x01
++
++/* pollux_key ioctl command */
++enum _pollux_keyif_ioctl
++{
++	IOCTL_GET_TIME,
++	IOCTL_SET_TIME,
++	IOCTL_SET_POWER_OFF,
++	IOCTL_GET_INFO_LSB,
++	IOCTL_GET_INFO_MSB,
++	IOCTL_GET_USB_CHECK,
++	IOCTL_SET_SOFT_DISCONNECT,
++	IOCTL_SET_SOFT_CONNECT,
++	IOCTL_GET_FW_VERSION,
++	IOCTL_GET_INSERT_SDMMC,
++	IOCTL_GET_BOARD_VERSION,
++	IOCTL_GET_HOLD_STATUS,
++	IOCTL_GET_PWR_STATUS,
++	IOCTL_GET_ID_NUM,
++	IOCTL_SET_ID_NUM,
++	IOCTL_GET_ID_STATUS,
++	IOCTL_GET_USB_WIRELESS_LAN,
++	IOCTL_SET_USB_MEMORY_STICK_MOUNT,
++	IOCTL_GET_USB_MEMORY_STICK_MOUNT,
++	IOCTL_GET_USB_MEMORY_STICK_ENABLE    
++};
++
++struct SDL_WizDevif {
++    int batt_fd;
++    int vib_fd;
++    int gpio_fd;
++};
++
++/* Battery */
++extern DECLSPEC int SDL_WizDevIfInit(Uint32 init);
++extern DECLSPEC int SDL_WizDevIfQuit(void);
++extern DECLSPEC int SDL_GetBattryCheck(Uint16 *battry_status);
++
++/* Vibrate */
++extern DECLSPEC int SDL_VibrateInit(void);
++extern DECLSPEC int SDL_VibrateQuit(void);
++extern DECLSPEC int SDL_VibratePlay(int _value);
++
++/* GPIO IOCTRL */
++extern DECLSPEC int SDL_OpenGPIO(void);
++extern DECLSPEC int SDL_CloseGPIO(void);
++extern DECLSPEC int SDL_SDStatus(void);
++extern DECLSPEC int SDL_HoldStatus(void);
++extern DECLSPEC int SDL_USBWLANStatus(void);
++extern DECLSPEC int SDL_SYS_JoystickUsbConCheck(void);
++extern DECLSPEC int SDL_SYS_JoystickUsbDisconnect(void);
++extern DECLSPEC int SDL_USBSETStatus(void);
++extern DECLSPEC int SDL_USBGETStatus(void);
++extern DECLSPEC int SDL_USBENABLEStatus(void);
++
++/* Ends C function definitions when using C++ */
++#ifdef __cplusplus
++}
++#endif
++#include "close_code.h"
++
++#endif /* _SDL_wiz_dev_h */
+Index: SDL-1.2.13/Makefile.in
+===================================================================
+--- SDL-1.2.13.orig/Makefile.in
++++ SDL-1.2.13/Makefile.in
+@@ -42,7 +42,7 @@ SDLMAIN_OBJECTS = @SDLMAIN_OBJECTS@
+ 
+ DIST = acinclude.m4 autogen.sh Borland.html Borland.zip BUGS build-scripts configure configure.in COPYING CREDITS CWprojects.sea.bin docs docs.html include INSTALL Makefile.dc Makefile.minimal Makefile.in MPWmake.sea.bin README* sdl-config.in sdl.m4 sdl.pc.in SDL.qpg.in SDL.spec SDL.spec.in src test TODO VisualCE.zip VisualC.html VisualC.zip Watcom-OS2.zip Watcom-Win32.zip symbian.zip WhatsNew Xcode.tar.gz
+ 
+-HDRS = SDL.h SDL_active.h SDL_audio.h SDL_byteorder.h SDL_cdrom.h SDL_cpuinfo.h SDL_endian.h SDL_error.h SDL_events.h SDL_getenv.h SDL_joystick.h SDL_keyboard.h SDL_keysym.h SDL_loadso.h SDL_main.h SDL_mouse.h SDL_mutex.h SDL_name.h SDL_opengl.h SDL_platform.h SDL_quit.h SDL_rwops.h SDL_stdinc.h SDL_syswm.h SDL_thread.h SDL_timer.h SDL_types.h SDL_version.h SDL_video.h begin_code.h close_code.h
++HDRS = SDL.h SDL_active.h SDL_audio.h SDL_byteorder.h SDL_cdrom.h SDL_cpuinfo.h SDL_endian.h SDL_error.h SDL_events.h SDL_getenv.h SDL_joystick.h SDL_keyboard.h SDL_keysym.h SDL_loadso.h SDL_main.h SDL_mouse.h SDL_mutex.h SDL_name.h SDL_opengl.h SDL_platform.h SDL_quit.h SDL_rwops.h SDL_stdinc.h SDL_syswm.h SDL_thread.h SDL_timer.h SDL_types.h SDL_version.h SDL_video.h begin_code.h close_code.h SDL_wiz_dev.h pollux_fb_cfg.h pollux_fb_ioctl.h
+ 
+ LT_AGE      = @LT_AGE@
+ LT_CURRENT  = @LT_CURRENT@
+Index: SDL-1.2.13/src/audio/dsp/SDL_dspaudio.c
+===================================================================
+--- SDL-1.2.13.orig/src/audio/dsp/SDL_dspaudio.c
++++ SDL-1.2.13/src/audio/dsp/SDL_dspaudio.c
+@@ -155,6 +155,7 @@ static void DSP_CloseAudio(_THIS)
+ 		mixbuf = NULL;
+ 	}
+ 	if ( audio_fd >= 0 ) {
++		ioctl(audio_fd, SNDCTL_DSP_RESET, NULL);
+ 		close(audio_fd);
+ 		audio_fd = -1;
+ 	}
+@@ -275,12 +276,22 @@ static int DSP_OpenAudio(_THIS, SDL_Audi
+ 
+ 	/* Set the number of channels of output */
+ 	value = spec->channels;
++	// jhkang 080829
++#if 0
+ 	if ( ioctl(audio_fd, SNDCTL_DSP_CHANNELS, &value) < 0 ) {
+ 		perror("SNDCTL_DSP_CHANNELS");
+ 		SDL_SetError("Cannot set the number of channels");
+ 		DSP_CloseAudio(this);
+ 		return(-1);
++#endif
++#if 1
++		value = (spec->channels > 1);
++		ioctl(audio_fd, SNDCTL_DSP_STEREO, &value);
++		value = (value ? 2 : 1);
++#endif
++#if 0
+ 	}
++#endif
+ 	spec->channels = value;
+ 
+ 	/* Set the DSP frequency */
+Index: SDL-1.2.13/src/events/SDL_keyboard.c
+===================================================================
+--- SDL-1.2.13.orig/src/events/SDL_keyboard.c
++++ SDL-1.2.13/src/events/SDL_keyboard.c
+@@ -61,10 +61,22 @@ int SDL_KeyboardInit(void)
+ 	SDL_ModState = KMOD_NONE;
+ 	SDL_memset((void*)keynames, 0, sizeof(keynames));
+ 	SDL_memset(SDL_KeyState, 0, sizeof(SDL_KeyState));
++		
++	/* 041206: ghcstop		
++	
++	fbconÃ€Ã Â°Ã¦Â¿Ã¬ 
++	
++	static SDL_VideoDevice *FB_CreateDevice(int devindex)
++	Â¿Â¡Â¼Â­ 
++	this->InitOSKeymap = FB_InitOSKeymap; Â·ÃŽ Â¼Â¼Ã†ÃƒÃ€ÃŒ ÂµÃˆÂ´Ã™.
++	*/
+ 	video->InitOSKeymap(this);
+ 
+ 	SDL_EnableKeyRepeat(0, 0);
+ 
++	// ghcstop 041206 ctrl+cÂµÂµ Â¸Ã”Â°Ã” Â¸Â¸ÂµÃ©Â¾ÃºÃ€Â½. SDL_keysym.h
++	keynames[SDLK_CRTL_C] = "ctrl+c";
++
+ 	/* Fill in the blanks in keynames */
+ 	keynames[SDLK_BACKSPACE] = "backspace";
+ 	keynames[SDLK_TAB] = "tab";
+@@ -373,20 +385,25 @@ char *SDL_GetKeyName(SDLKey key)
+ int SDL_PrivateKeyboard(Uint8 state, SDL_keysym *keysym)
+ {
+ 	SDL_Event event;
+-	int posted, repeatable;
++	int posted, repeatable, console;
+ 	Uint16 modstate;
+ 
+ 	SDL_memset(&event, 0, sizeof(event));
+ 
+-#if 0
+-printf("The '%s' key has been %s\n", SDL_GetKeyName(keysym->sym), 
++#if 1 // ghcstop uncomment
++dprintf("The '%s' key has been %s\n", SDL_GetKeyName(keysym->sym), 
+ 				state == SDL_PRESSED ? "pressed" : "released");
+ #endif
+ 	/* Set up the keysym */
+ 	modstate = (Uint16)SDL_ModState;
+ 
+ 	repeatable = 0;
+-
++	console = 0;
++	printf("Keyboard=%d\n", keysym->mod & KMOD_RESERVED);
++	if(keysym->mod & KMOD_RESERVED) {
++		console = 1;
++	}
++	printf("state=%d, keysym->sym=%d\n", state, keysym->sym);
+ 	if ( state == SDL_PRESSED ) {
+ 		keysym->mod = (SDLMod)modstate;
+ 		switch (keysym->sym) {
+@@ -479,7 +496,10 @@ printf("The '%s' key has been %s\n", SDL
+ 	/* Figure out what type of event this is */
+ 	switch (state) {
+ 		case SDL_PRESSED:
+-			event.type = SDL_KEYDOWN;
++			if( keysym->sym == SDLK_CRTL_C )
++				event.type = SDL_QUIT; // ctrl+cÃ€Ã Â°Ã¦Â¿Ã¬Â´Ã‚ SDL_QUIT eventÂ¸Â¦ Â¹ÃŸÂ»Ã½Â½ÃƒÃ…Â²Â´Ã™.
++			else
++				event.type = SDL_KEYDOWN;
+ 			break;
+ 		case SDL_RELEASED:
+ 			event.type = SDL_KEYUP;
+@@ -497,17 +517,28 @@ printf("The '%s' key has been %s\n", SDL
+ 	}
+ 
+ 	if ( keysym->sym != SDLK_UNKNOWN ) {
+-		/* Drop events that don't change state */
+-		if ( SDL_KeyState[keysym->sym] == state ) {
++		if (console)
++		{
++			repeatable = 0;
++
++			/* Update internal keyboard state */
++			SDL_ModState = (SDLMod)KMOD_NONE;
++			SDL_KeyState[keysym->sym] = state;
++		}
++		else
++		{
++			/* Drop events that don't change state */
++			if ( SDL_KeyState[keysym->sym] == state ) {
+ #if 0
+-printf("Keyboard event didn't change state - dropped!\n");
++	printf("Keyboard event didn't change state - dropped!\n");
+ #endif
+-			return(0);
+-		}
++				return(0);
++			}
+ 
+-		/* Update internal keyboard state */
+-		SDL_ModState = (SDLMod)modstate;
+-		SDL_KeyState[keysym->sym] = state;
++			/* Update internal keyboard state */
++			SDL_ModState = (SDLMod)modstate;
++			SDL_KeyState[keysym->sym] = state;
++		}
+ 	}
+ 
+ 	/* Post the event, if desired */
+Index: SDL-1.2.13/src/joystick/SDL_sysjoystick.h
+===================================================================
+--- SDL-1.2.13.orig/src/joystick/SDL_sysjoystick.h
++++ SDL-1.2.13/src/joystick/SDL_sysjoystick.h
+@@ -80,3 +80,12 @@ extern void SDL_SYS_JoystickClose(SDL_Jo
+ /* Function to perform any system-specific joystick related cleanup */
+ extern void SDL_SYS_JoystickQuit(void);
+ 
++#if 0
++/* HYUN_DEBUG_2008.0708 */
++/* pollux_key ioctl command */
++enum _pollux_keyif_ioctl {
++	IOCTL_GET_TIME,
++	IOCTL_SET_TIME,
++	IOCTL_SET_POWER_OFF,
++};
++#endif
+Index: SDL-1.2.13/src/joystick/linux/SDL_sysjoystick.c
+===================================================================
+--- SDL-1.2.13.orig/src/joystick/linux/SDL_sysjoystick.c
++++ SDL-1.2.13/src/joystick/linux/SDL_sysjoystick.c
+@@ -30,6 +30,9 @@
+ #include <fcntl.h>
+ #include <sys/ioctl.h>
+ #include <limits.h>		/* For the definition of PATH_MAX */
++#ifdef __arm__
++#include <linux/limits.h> /* Arm cross-compiler needs this */
++#endif
+ #include <linux/joystick.h>
+ #if SDL_INPUT_LINUXEV
+ #include <linux/input.h>
+@@ -531,6 +534,26 @@ const char *SDL_SYS_JoystickName(int ind
+ 	return name;
+ }
+ 
++#if 0
++/* hyun_debug 2008.0708 */
++/* ********************************************************************** */
++int SDL_SYS_JoystickGetExtRtc(SDL_Joystick *joystick, void* dt)
++{
++    return ioctl(joystick->hwdata->fd, IOCTL_GET_TIME, dt);
++}
++
++int SDL_SYS_JoystickSetExtRtc(SDL_Joystick *joystick, void *dt)
++{
++    return ioctl(joystick->hwdata->fd, IOCTL_SET_TIME, dt);
++}
++
++int SDL_SYS_JoystickSetPowerOff(SDL_Joystick *joystick)
++{
++	return ioctl(joystick->hwdata->fd, IOCTL_SET_POWER_OFF);
++}
++/* ************************************************************************** */
++#endif
++
+ static int allocate_hatdata(SDL_Joystick *joystick)
+ {
+ 	int i;
+Index: SDL-1.2.13/src/platform_wiz/SDL_device_if.c
+===================================================================
+--- /dev/null
++++ SDL-1.2.13/src/platform_wiz/SDL_device_if.c
+@@ -0,0 +1,196 @@
++/*
++    SDL - Simple DirectMedia Layer
++    Copyright (C) 1997-2006 Sam Lantinga
++
++    This library is free software; you can redistribute it and/or
++    modify it under the terms of the GNU Lesser General Public
++    License as published by the Free Software Foundation; either
++    version 2.1 of the License, or (at your option) any later version.
++
++    This library is distributed in the hope that it will be useful,
++    but WITHOUT ANY WARRANTY; without even the implied warranty of
++    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++    Lesser General Public License for more details.
++
++    You should have received a copy of the GNU Lesser General Public
++    License along with this library; if not, write to the Free Software
++    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
++
++    Sam Lantinga
++    slouken@libsdl.org
++*/
++#include <sys/ioctl.h>
++#include <fcntl.h>
++
++#include "SDL_config.h"
++#include "SDL_wiz_dev.h"
++
++#include "simple_isa1200if.h"
++
++#define BATT_DEV 	"/dev/misc/pollux_batt"
++#define BATT_DEV_WITH_DEVFS "/dev/pollux_batt"
++#define VIB_DEV "/dev/isa1200"
++#define GPIO_DEV "/dev/GPIO"
++
++struct SDL_WizDevif WizDevif = {-1, -1, -1};
++
++static pattern_data_t vib_pattern={
++	.act_number = 6,
++	.vib_act_array = {{0,126},{100,-126},{120,0},{150,126},{250,-126},{265,0}}
++};
++
++/* Battery */
++int SDL_WizDevIfInit(Uint32 init)
++{
++	//printf("SDL_WizDevIfInit(init=0x%x)\n", init);
++	if( ( (init & 0xff) & SDL_WIZ_BATTRY_INIT) == SDL_WIZ_BATTRY_INIT )
++	{
++
++		WizDevif.batt_fd = open(BATT_DEV, (O_RDWR | ( (init >>16) & 0xffff))  );
++
++		if(WizDevif.batt_fd < 0){
++			WizDevif.batt_fd = open(BATT_DEV_WITH_DEVFS, (O_RDWR | ( (init >>16) & 0xffff))  );
++
++			if (WizDevif.batt_fd < 0){
++			    printf("open battery driver failed\n");
++			    return -1 ;
++			}
++		}               
++	}
++	return 0;
++}
++
++int SDL_GetBattryCheck(Uint16 *battry_status)
++{
++    if( WizDevif.batt_fd < 0 ) return -1;
++    
++    //read(WizDevif.batt_fd, (char *)battry_status, sizeof(Uint16));
++    read(WizDevif.batt_fd, battry_status, sizeof(Uint16));
++    
++    return 0;
++}
++
++int SDL_WizDevIfQuit(void)
++{
++	if(WizDevif.batt_fd>=0) {
++		close(WizDevif.batt_fd);
++		WizDevif.batt_fd = -1;
++	}
++	return 0;
++}
++
++/* Vibrate */
++int SDL_VibrateInit(void)
++{
++	if(WizDevif.vib_fd<0)
++		WizDevif.vib_fd=open(VIB_DEV, O_RDWR|O_NDELAY);
++
++	if(WizDevif.vib_fd<0){
++		printf("open vib driver failed\n");
++		return -1;
++	}
++
++	return 0;
++}
++
++int SDL_VibrateQuit(void)
++{
++	if(WizDevif.vib_fd>=0) {
++		close(WizDevif.vib_fd);
++		WizDevif.vib_fd = -1;
++	}
++	return 0;
++}
++
++int SDL_VibratePlay(int _value)
++{
++	if(WizDevif.vib_fd<0) return -1;
++	ioctl(WizDevif.vib_fd,IOCTL_SET_VIB_LEVEL,&_value);
++	ioctl(WizDevif.vib_fd,IOCTL_PLAY_PATTERN,&vib_pattern);
++	return 0;
++}
++
++/* GPIO IOCTRL */
++int SDL_OpenGPIO(void)
++{
++	if(WizDevif.gpio_fd<0) 
++		WizDevif.gpio_fd=open(GPIO_DEV, O_RDWR | O_NDELAY);
++
++	if (WizDevif.gpio_fd < 0){
++		printf("open gpio driver failed\n");
++		return -1 ;
++	}
++
++	return 0;
++}
++
++int SDL_CloseGPIO(void)
++{
++	if(WizDevif.gpio_fd>=0)
++		close(WizDevif.gpio_fd);
++	return 0;
++}
++
++int SDL_SDStatus(void)
++{
++	int status=-1;
++	if(WizDevif.gpio_fd>=0)
++		ioctl(WizDevif.gpio_fd,IOCTL_GET_INSERT_SDMMC,&status);
++	return status;
++}
++
++int SDL_HoldStatus(void)
++{
++	int status=-1;
++	if(WizDevif.gpio_fd>=0)
++		ioctl(WizDevif.gpio_fd,IOCTL_GET_HOLD_STATUS,&status);
++	return status;
++}
++
++int SDL_USBWLANStatus(void)
++{
++	int status=-1;
++	if(WizDevif.gpio_fd>=0)
++		ioctl(WizDevif.gpio_fd,IOCTL_GET_USB_WIRELESS_LAN,&status);
++	return status;
++}
++
++int SDL_SYS_JoystickUsbConCheck(void)
++{
++	int status=-1;
++	if(WizDevif.gpio_fd>=0)
++		ioctl(WizDevif.gpio_fd,IOCTL_GET_USB_CHECK,&status);
++	return status;
++}
++
++int SDL_SYS_JoystickUsbDisconnect(void)
++{
++	if(WizDevif.gpio_fd>=0)
++		ioctl(WizDevif.gpio_fd,IOCTL_SET_SOFT_DISCONNECT,NULL);
++	return 0;
++}
++
++int SDL_USBSETStatus(void)
++{
++	unsigned int status=0;
++	if(WizDevif.gpio_fd<0) return -1;
++		ioctl(WizDevif.gpio_fd,IOCTL_SET_USB_MEMORY_STICK_MOUNT,&status);
++	return 0;
++}
++
++int SDL_USBGETStatus(void)
++{
++	int status=-1;
++	if(WizDevif.gpio_fd>=0)
++		ioctl(WizDevif.gpio_fd,IOCTL_GET_USB_MEMORY_STICK_MOUNT,(unsigned int*)&status);
++	return status;
++}
++
++int SDL_USBENABLEStatus(void)
++{
++	int status=-1;
++	if(WizDevif.gpio_fd>=0)
++		ioctl(WizDevif.gpio_fd,IOCTL_GET_USB_MEMORY_STICK_ENABLE,(unsigned int*)&status);
++	return status;
++}
++
+Index: SDL-1.2.13/src/platform_wiz/simple_isa1200if.h
+===================================================================
+--- /dev/null
++++ SDL-1.2.13/src/platform_wiz/simple_isa1200if.h
+@@ -0,0 +1,45 @@
++#ifndef __POLLUX_SIMPLE_ISA1200_H__
++#define __POLLUX_SIMPLE_ISA1200_H__
++
++#define VIB_STRENGTH_MIN	(-126)
++#define VIB_STRENGTH_MAX	(126)
++
++struct _vibration_act {
++	short time_line;					//millisecond base...
++	short vib_strength;					
++}__attribute__ ((packed)) ;
++
++typedef struct _vibration_act vibration_act_t;
++
++#define MAX_VIB_ACTION_NR	(120)
++struct _pattern_data {
++   	int act_number;						//include finish sequence... 
++	vibration_act_t vib_act_array[MAX_VIB_ACTION_NR];
++};
++typedef struct _pattern_data pattern_data_t;
++typedef enum {JOB_STATUS_IDLE, JOB_STATUS_BUSY} job_status_t;
++typedef enum {VIB_LEVEL_OFF, VIB_LEVEL_WEAK, VIB_LEVEL_NORMAL, VIB_LEVEL_MAX} vibration_level_t;
++
++#define HAPTIC_IOCTL_MAGIC	'I'
++
++//ioctl() commands... 
++/* dummy command for old version compatibillity */
++#define IOCTL_MOTOR_DRV_ENABLE	_IO(HAPTIC_IOCTL_MAGIC, 0) 
++#define IOCTL_MOTOR_DRV_DISABLE	_IO(HAPTIC_IOCTL_MAGIC, 1) 
++
++/* user application interface */
++#define IOCTL_FFLUSH_JOB		_IO(HAPTIC_IOCTL_MAGIC, 2)
++#define IOCTL_JOB_STATUS		_IOR(HAPTIC_IOCTL_MAGIC, 3, job_status_t)
++#define IOCTL_PLAY_PATTERN		_IOW(HAPTIC_IOCTL_MAGIC, 4, pattern_data_t)
++
++//added command for hardware test by lars 2010-06-18...
++#define IOCTL_INDIVIDUAL_MODE   _IOW(HAPTIC_IOCTL_MAGIC, 5, unsigned int)	// 1:enable 0:disable
++#define IOCTL_ISA1200A_ENABLE   _IO(HAPTIC_IOCTL_MAGIC, 6)
++#define IOCTL_ISA1200B_ENABLE   _IO(HAPTIC_IOCTL_MAGIC, 7)
++/* Vibration Level Related Commands  */
++#define IOCTL_GET_VIB_LEVEL		_IOR(HAPTIC_IOCTL_MAGIC, 8, vibration_level_t)
++#define IOCTL_SET_VIB_LEVEL		_IOW(HAPTIC_IOCTL_MAGIC, 9, vibration_level_t)
++#define IOCTL_HAPTIC_MAXNR		10	
++
++#endif /* __POLLUX_SIMPLE_ISA1200_H__ */
++
+Index: SDL-1.2.13/src/video/fbcon/SDL_fbevents.c
+===================================================================
+--- SDL-1.2.13.orig/src/video/fbcon/SDL_fbevents.c
++++ SDL-1.2.13/src/video/fbcon/SDL_fbevents.c
+@@ -58,13 +58,31 @@
+ /*#define DEBUG_KEYBOARD*/
+ /*#define DEBUG_MOUSE*/
+ 
++#define TTYCONSOLE
++#undef IFBOARDTEST
++#undef MYKEE
++#undef MYKEERTC
++#undef DOOGI
++#undef USE_SERIAL
++
++//static int tty_fd;
++static int vt_fd;
++#define tty_fd keyboard_fd
++
+ /* The translation tables from a console scancode to a SDL keysym */
+ #define NUM_VGAKEYMAPS	(1<<KG_CAPSSHIFT)
+ static Uint16 vga_keymap[NUM_VGAKEYMAPS][NR_KEYS];
+ static SDLKey keymap[128];
+ static Uint16 keymap_temp[128]; /* only used at startup */
++static Uint16 ext_keymap[128];
++static Uint16 ext2_keymap[128];
+ static SDL_keysym *TranslateKey(int scancode, SDL_keysym *keysym);
+ 
++static SDLKey vt_keymap[128];
++static SDL_keysym *TranslateVTKey(int asciicode, SDL_keysym *keysym);
++static SDL_keysym *TranslateMyKee(int code, int pressed, SDL_keysym *keysym);
++static SDL_keysym *TranslateDoogi(int code, SDL_keysym *keysym);
++
+ /* Ugh, we have to duplicate the kernel's keysym mapping code...
+    Oh, it's not so bad. :-)
+ 
+@@ -158,7 +176,6 @@ int FB_EnterGraphicsMode(_THIS)
+ 
+ 	/* Set medium-raw keyboard mode */
+ 	if ( (keyboard_fd >= 0) && !FB_InGraphicsMode(this) ) {
+-
+ 		/* Switch to the correct virtual terminal */
+ 		if ( current_vt > 0 ) {
+ 			struct vt_stat vtstate;
+@@ -171,44 +188,112 @@ int FB_EnterGraphicsMode(_THIS)
+ 			}
+ 		}
+ 
+-		/* Set the terminal input mode */
+-		if ( tcgetattr(keyboard_fd, &saved_kbd_termios) < 0 ) {
+-			SDL_SetError("Unable to get terminal attributes");
+-			if ( keyboard_fd > 0 ) {
+-				close(keyboard_fd);
++		/* For GP2X */
++		while (keyboard_fd >= 0)
++		{
++			/* Set the terminal input mode */
++			if ( tcgetattr(keyboard_fd, &saved_kbd_termios) < 0 ) {
++				SDL_SetError("Unable to get terminal attributes");
++				if ( keyboard_fd > 0 ) {
++					close(keyboard_fd);
++				}
++				keyboard_fd = -1;
++				return(-1);
+ 			}
+-			keyboard_fd = -1;
+-			return(-1);
+-		}
+-		if ( ioctl(keyboard_fd, KDGKBMODE, &saved_kbd_mode) < 0 ) {
+-			SDL_SetError("Unable to get current keyboard mode");
+-			if ( keyboard_fd > 0 ) {
+-				close(keyboard_fd);
++			if ( ioctl(keyboard_fd, KDGKBMODE, &saved_kbd_mode) < 0 ) {
++				SDL_SetError("Unable to get current keyboard mode");
++				if ( keyboard_fd > 0 ) {
++					close(keyboard_fd);
++				}
++				keyboard_fd = -1;
++				return(-1);
+ 			}
+-			keyboard_fd = -1;
+-			return(-1);
++			keyboard_termios = saved_kbd_termios;
++#if 1
++			keyboard_termios.c_iflag = (IGNPAR | IGNBRK) & (~PARMRK) & (~ISTRIP);
++			keyboard_termios.c_oflag = 0;
++			keyboard_termios.c_cflag = CREAD | CS8;
++			keyboard_termios.c_lflag = 0;
++			keyboard_termios.c_cc[VTIME]=0;
++			keyboard_termios.c_cc[VMIN]=1;
++			tcsetattr(tty_fd, TCSANOW, &keyboard_termios);
++
++			/* This will fail if we aren't root or this isn't our tty */
++			if ( ioctl(tty_fd, KDSKBMODE, K_RAW) < 0 ) {
++				SDL_SetError("Unable to set keyboard in raw mode");
++				if ( tty_fd > 0 ) close(tty_fd);
++				tty_fd = -1;
++				break;
++			}
++#else
++			keyboard_termios.c_lflag &= ~(ICANON | ECHO | ISIG);
++			keyboard_termios.c_iflag &= ~(ISTRIP | IGNCR | ICRNL | INLCR | IXOFF | IXON);
++			keyboard_termios.c_cc[VMIN] = 0;
++			keyboard_termios.c_cc[VTIME] = 0;
++
++			if (tcsetattr(keyboard_fd, TCSAFLUSH, &keyboard_termios) < 0) {
++				FB_CloseKeyboard(this);
++				SDL_SetError("Unable to set terminal attributes");
++				return(-1);
++			}
++			/* This will fail if we aren't root or this isn't our tty */
++			if ( ioctl(keyboard_fd, KDSKBMODE, K_MEDIUMRAW) < 0 ) {
++				FB_CloseKeyboard(this);
++				SDL_SetError("Unable to set keyboard in raw mode");
++				return(-1);
++			}
++			if ( ioctl(keyboard_fd, KDSETMODE, KD_GRAPHICS) < 0 ) {
++				FB_CloseKeyboard(this);
++				SDL_SetError("Unable to set keyboard in graphics mode");
++				return(-1);
++			}
++#endif
++			break;
+ 		}
+-		keyboard_termios = saved_kbd_termios;
+-		keyboard_termios.c_lflag &= ~(ICANON | ECHO | ISIG);
+-		keyboard_termios.c_iflag &= ~(ISTRIP | IGNCR | ICRNL | INLCR | IXOFF | IXON);
+-		keyboard_termios.c_cc[VMIN] = 0;
+-		keyboard_termios.c_cc[VTIME] = 0;
+-		if (tcsetattr(keyboard_fd, TCSAFLUSH, &keyboard_termios) < 0) {
+-			FB_CloseKeyboard(this);
+-			SDL_SetError("Unable to set terminal attributes");
+-			return(-1);
+-		}
+-		/* This will fail if we aren't root or this isn't our tty */
+-		if ( ioctl(keyboard_fd, KDSKBMODE, K_MEDIUMRAW) < 0 ) {
+-			FB_CloseKeyboard(this);
+-			SDL_SetError("Unable to set keyboard in raw mode");
+-			return(-1);
+-		}
+-		if ( ioctl(keyboard_fd, KDSETMODE, KD_GRAPHICS) < 0 ) {
+-			FB_CloseKeyboard(this);
+-			SDL_SetError("Unable to set keyboard in graphics mode");
+-			return(-1);
++
++		while (vt_fd >= 0) {
++			/* Set the terminal input mode */
++			if ( tcgetattr(vt_fd, &saved_kbd_termios) < 0 ) {
++				SDL_SetError("Unable to get terminal attributes");
++				if ( vt_fd > 0 ) close(vt_fd);
++				vt_fd = -1;
++				break;
++			}
++
++			keyboard_termios = saved_kbd_termios;
++#ifdef TTYCONSOLE
++	   		keyboard_termios.c_lflag = 0;
++			keyboard_termios.c_iflag &= ~(ISTRIP | IGNCR | ICRNL | INLCR | IXOFF | IXON);
++#endif
++#ifdef IFBOARDTEST
++			keyboard_termios.c_iflag = (IGNPAR | IGNBRK) & (~PARMRK) & (~ISTRIP);
++	   		keyboard_termios.c_lflag = 0;
++#endif
++#ifdef MYKEE
++			keyboard_termios.c_cflag = B9600 | CS8 | CLOCAL | CREAD;
++			keyboard_termios.c_iflag = (IGNPAR | IGNBRK) & (~PARMRK) & (~ISTRIP);
++	   		keyboard_termios.c_oflag = 0;
++	   		keyboard_termios.c_lflag = 0;
++#endif
++#ifdef MYKEERTC
++			keyboard_termios.c_cflag = B115200 | CS8 | CLOCAL | CREAD;
++			keyboard_termios.c_iflag = (IGNPAR | IGNBRK) & (~PARMRK) & (~ISTRIP);
++	   		keyboard_termios.c_oflag = 0;
++	   		keyboard_termios.c_lflag = 0;
++#endif
++	   		keyboard_termios.c_cc[VTIME]    = 0;   // ¹®ÀÚ »çÀÌÀÇ timer¸¦ disable
++	   		keyboard_termios.c_cc[VMIN]     = 1;   // ÃÖ¼Ò 5 ¹®ÀÚ ¹ÞÀ» ¶§±îÁø blocking
++	   		tcflush(vt_fd, TCIFLUSH);
++
++			if (tcsetattr(vt_fd, TCSAFLUSH, &keyboard_termios) < 0) {
++				SDL_SetError("Unable to set terminal attributes");
++				vt_fd = -1;
++				break;
++			}
++
++			break;
+ 		}
++	
+ 		/* Prevent switching the virtual terminal */
+ 		ioctl(keyboard_fd, VT_LOCKSWITCH, 1);
+ 	}
+@@ -228,24 +313,66 @@ void FB_LeaveGraphicsMode(_THIS)
+ 		if ( saved_vt > 0 ) {
+ 			ioctl(keyboard_fd, VT_ACTIVATE, saved_vt);
+ 		}
++
++		/* For GP2X */
++		if (vt_fd >= 0) {
++			tcsetattr(vt_fd, TCSAFLUSH, &saved_kbd_termios);
++		}
+ 	}
+ }
+ 
+ void FB_CloseKeyboard(_THIS)
+ {
+-	if ( keyboard_fd >= 0 ) {
++	if ( (keyboard_fd >= 0 ) 
++		|| (vt_fd >= 0)	/* For GP2X */
++	)
++	{
+ 		FB_LeaveGraphicsMode(this);
+ 		if ( keyboard_fd > 0 ) {
+ 			close(keyboard_fd);
+ 		}
++
++		/* For GP2X */
++		if ( vt_fd > 0 ) {
++			close(vt_fd);
++		}
++
+ 	}
+ 	keyboard_fd = -1;
++	vt_fd = -1;	/* For GP2X */
+ }
+ 
+ int FB_OpenKeyboard(_THIS)
+ {
+ 	/* Open only if not already opened */
+  	if ( keyboard_fd < 0 ) {
++#if 1	/* For GP2X */
++		static const char * const tty0[] = { "/dev/tty0", "/dev/vc/0", NULL };
++		int i;
++
++		/* Try to query for a free virtual terminal */
++		tty_fd = -1;
++		for ( i=0; tty0[i] && (tty_fd < 0); ++i ) {
++			tty_fd = open(tty0[i],  O_RDWR | O_NDELAY, 0);
++		}
++
++		dprintf("tty_fd = %d\n", tty_fd);
++
++		if(tty_fd >= 0) {
++			/* Set up keymap */
++			FB_vgainitkeymaps(tty_fd);
++		}
++
++#ifndef USE_SERIAL
++		/* Last resort, maybe our tty is a usable VT */
++		vt_fd = open("/dev/tty", O_RDWR);
++#else
++		vt_fd = -1;
++#endif
++
++		dprintf("vt_fd = %d\n", vt_fd);
++ 		saved_kbd_mode = -1;
++#else
+ 		static const char * const tty0[] = { "/dev/tty0", "/dev/vc/0", NULL };
+ 		static const char * const vcs[] = { "/dev/vc/%d", "/dev/tty%d", NULL };
+ 		int i, tty0_fd;
+@@ -276,6 +403,7 @@ int FB_OpenKeyboard(_THIS)
+ 				*/
+ 				if ( keyboard_fd >= 0 ) {
+ 					tty0_fd = open("/dev/tty", O_RDWR, 0);
++					vt_fd = tty0_fd;	/* For GP2X */
+ 					if ( tty0_fd >= 0 ) {
+ 						ioctl(tty0_fd, TIOCNOTTY, 0);
+ 						close(tty0_fd);
+@@ -311,6 +439,7 @@ int FB_OpenKeyboard(_THIS)
+ 
+ 		/* Set up keymap */
+ 		FB_vgainitkeymaps(keyboard_fd);
++#endif
+  	}
+  	return(keyboard_fd);
+ }
+@@ -548,16 +677,20 @@ int FB_OpenMouse(_THIS)
+ 	mousedrv = SDL_getenv("SDL_MOUSEDRV");
+ 	mousedev = SDL_getenv("SDL_MOUSEDEV");
+ 	mouse_fd = -1;
++	printf("FB_OpenMouse()\n");
+ 
+ #if SDL_INPUT_TSLIB
+-	if ( mousedrv && (SDL_strcmp(mousedrv, "TSLIB") == 0) ) {
++	// jhkang 20080625
++	if (1/*mousedrv && (SDL_strcmp(mousedrv, "TSLIB") == 0) */) {
+ 		if (mousedev == NULL) mousedev = SDL_getenv("TSLIB_TSDEVICE");
++		if (mousedev == NULL) mousedev = strdup("/dev/input/event0");
+ 		if (mousedev != NULL) {
+ 			ts_dev = ts_open(mousedev, 1);
+ 			if ((ts_dev != NULL) && (ts_config(ts_dev) >= 0)) {
+ #ifdef DEBUG_MOUSE
+ 				fprintf(stderr, "Using tslib touchscreen\n");
+ #endif
++				printf("Using tslib touchscreen\n");
+ 				mouse_drv = MOUSE_TSLIB;
+ 				mouse_fd = ts_fd(ts_dev);
+ 				return mouse_fd;
+@@ -766,7 +899,6 @@ static void handle_mouse(_THIS)
+ 	int dx = 0, dy = 0;
+ 	int packetsize = 0;
+ 	int realx, realy;
+-	
+ 	/* Figure out the mouse packet size */
+ 	switch (mouse_drv) {
+ 		case MOUSE_NONE:
+@@ -999,6 +1131,7 @@ static void handle_keyboard(_THIS)
+ 			pressed = SDL_PRESSED;
+ 		}
+ 		TranslateKey(scancode, &keysym);
++		printf("handle_keyboard(_THIS) keysym.sym=%d\n",keysym.sym);
+ 		/* Handle Ctrl-Alt-FN for vt switch */
+ 		switch (keysym.sym) {
+ 		    case SDLK_F1:
+@@ -1028,12 +1161,150 @@ static void handle_keyboard(_THIS)
+ 	}
+ }
+ 
++/* For GP2X */
++#ifndef USE_SERIAL
++static void handle_vt_keyboard(_THIS)
++{
++	unsigned char keybuf[BUFSIZ];
++	int i, nread;
++	int pressed;
++	int scancode;
++	SDL_keysym keysym;
++#ifdef MYKEERTC
++	static int rtc_mode;
++	static unsigned char rtcbuf[7];
++#endif // MYKEERTC
++
++	nread = read(vt_fd, keybuf, BUFSIZ);
++#ifdef TTYCONSOLE
++	// ghcstop add: 041206  È®ÀåÅ°ÀÇ °æ¿ì´Â Ã³¸®¸¦ ÇÏÁö ¾Ê´Â´Ù.
++	if((nread > 0) && (nread < 3)) {
++		for ( i=0; i<nread; ++i ) {
++			scancode = keybuf[i] & 0x7F; // ascii code·Î Á¦ÇÑ
++
++			pressed = SDL_PRESSED; // ¹«Á¶°Ç pressed·Î Ã³¸®ÇÑ´Ù.
++			TranslateVTKey(scancode, &keysym);
++			posted += SDL_PrivateKeyboard(pressed, &keysym); // ghcstop 041206 SDL_keyboard.c·Î °¡¼­ eventÃ³¸®°¡ µÈ´Ù. Àßº¼ °Í
++		}
++	}
++#endif // TTYCONSOLE
++
++#ifdef IFBOARDTEST
++	for ( i=0; i<nread; ++i ) {
++		scancode = keybuf[i] & 0x7F;
++		switch(scancode) {
++			case 0x02:
++			case 0x03:
++			case 'I':
++			case 'F':
++			case 'O':
++			case 'N':
++				pressed = SDL_PRESSED;
++
++				keysym.scancode = scancode;
++				keysym.sym = vt_keymap[scancode];
++				keysym.mod = KMOD_RESERVED;
++				keysym.unicode = scancode;
++				posted += SDL_PrivateKeyboard(pressed, &keysym);
++
++				break;
++		}
++	}
++#endif // IFBOARDTEST
++
++#if defined(MYKEE) || defined(MYKEERTC)
++	for ( i=0; i<nread; ++i ) {
++#ifdef MYKEE
++		if(keybuf[i] == 0x55) continue;
++#else // MYKEERTC
++		if(keybuf[i] == 0x65) {
++			// rtc read start
++			rtc_mode = 1;
++			continue;
++		}
++
++		if(keybuf[i] == 0x66) {
++			// rtc write ok
++			rtc_mode = 0;
++			continue;
++		}
++
++		if(rtc_mode && (rtc_mode < 8)) {
++			if(keybuf[i] == 0xff) {
++				// apply
++				struct tm wtm;
++				struct tm *ltm;
++				struct timeval tv;
++
++				wtm.tm_year = 100 + rtcbuf[0];
++				wtm.tm_mon = rtcbuf[1] - 1;
++				wtm.tm_mday = rtcbuf[2];
++				wtm.tm_hour = rtcbuf[3];
++				wtm.tm_min = rtcbuf[4];
++				wtm.tm_sec = rtcbuf[5];
++
++				tv.tv_sec = mktime(&wtm) - timezone;
++
++				/*
++				if(tv.tv_sec != -1) {
++					tv.tv_usec = 0;
++					ltm = gmtime(&tv.tv_sec);
++					tv.tv_sec = mktime(ltm);
++				}
++				*/
++
++				if(tv.tv_sec != -1) {
++					stime(&tv.tv_sec);
++					//settimeofday(&tv, NULL);
++					// success
++				} else {
++					// error
++				}
++				rtc_mode = 0;
++			} else if (rtc_mode == 7) {
++				// error
++				rtc_mode = 0;
++			} else {
++				// read
++				rtcbuf[rtc_mode-1] = ((keybuf[i] >> 4) * 10) + (keybuf[i] & 0x0f);
++				rtc_mode++;
++			}
++			continue;
++		}
++#endif // MYKEE
++		scancode = keybuf[i] & 0x7F;
++
++		if ( keybuf[i] & 0x80 ) {
++			pressed = SDL_RELEASED;
++		} else {
++			pressed = SDL_PRESSED;
++		}
++
++		if(TranslateMyKee(scancode, pressed, &keysym) != NULL)
++			posted += SDL_PrivateKeyboard(pressed, &keysym);
++	}
++#endif // MYKEE || MYKEERTC
++}
++#endif // !USE_SERIAL
++
++static void led_setting(_THIS, int mod)
++{
++	char leds;
++	ioctl(tty_fd, KDGETLED, &leds);
++	leds = leds & ~(LED_CAP | LED_NUM);
++	if ( mod & KMOD_CAPS ) leds |= LED_CAP;
++	if ( mod & KMOD_NUM ) leds |= LED_NUM;
++	ioctl(tty_fd, KDSETLED, leds);
++	dprintf("led_setting: %x\n", leds);
++}
++
+ void FB_PumpEvents(_THIS)
+ {
+ 	fd_set fdset;
+ 	int max_fd;
+ 	static struct timeval zero;
+-
++	static int modstate = -1;	/* For GP2X */
++	
+ 	do {
+ 		if ( switched_away ) {
+ 			struct vt_stat vtstate;
+@@ -1048,7 +1319,12 @@ void FB_PumpEvents(_THIS)
+ 		}
+ 
+ 		posted = 0;
+-
++		/* For GP2X */
++		if(modstate != (SDL_GetModState() & (KMOD_CAPS | KMOD_NUM))) {
++			modstate = (SDL_GetModState() & (KMOD_CAPS | KMOD_NUM));
++			led_setting(this, modstate);
++		}
++		
+ 		FD_ZERO(&fdset);
+ 		max_fd = 0;
+ 		if ( keyboard_fd >= 0 ) {
+@@ -1057,18 +1333,36 @@ void FB_PumpEvents(_THIS)
+ 				max_fd = keyboard_fd;
+ 			}
+ 		}
++
++#ifndef USE_SERIAL	/* For GP2X */
++		if ( vt_fd >= 0 ) {
++			FD_SET(vt_fd, &fdset);
++			if ( max_fd < vt_fd ) {
++				max_fd = vt_fd;
++			}
++		}
++#endif
++		
+ 		if ( mouse_fd >= 0 ) {
+ 			FD_SET(mouse_fd, &fdset);
+ 			if ( max_fd < mouse_fd ) {
+ 				max_fd = mouse_fd;
+ 			}
+ 		}
++
+ 		if ( select(max_fd+1, &fdset, NULL, NULL, &zero) > 0 ) {
+ 			if ( keyboard_fd >= 0 ) {
+ 				if ( FD_ISSET(keyboard_fd, &fdset) ) {
+ 					handle_keyboard(this);
+ 				}
+ 			}
++#ifndef USE_SERIAL	/* For GP2X */
++			if ( vt_fd >= 0 ) {
++				if ( FD_ISSET(vt_fd, &fdset) ) {
++					handle_vt_keyboard(this);
++				}
++			}
++#endif
+ 			if ( mouse_fd >= 0 ) {
+ 				if ( FD_ISSET(mouse_fd, &fdset) ) {
+ 					handle_mouse(this);
+@@ -1078,6 +1372,21 @@ void FB_PumpEvents(_THIS)
+ 	} while ( posted );
+ }
+ 
++/* ghcstop 041206: new keymapping ......^^, only ascii code¸¸ ¸Ô°Ô ¹Ù²Þ....
++   ¿Ö³ÄÇÏ¸é serial consoleÀÏ °æ¿ì Å°°¡ ascii¸¸ ¸Ô°Ô µÇ¾î ÀÖ³ß....^^ ¸Ó ¾îÂ¿ ¼ö ¾øÁö·Õ
++   */
++
++/* SDL_types.h
++#define SDL_TABLESIZE(table)	(sizeof(table)/sizeof(table[0]))
++
++SDLKey // SDL_keysym.h¿¡ enumÇüÀ¸·Î ¼±¾ðµÇ¾î ÀÖÀ½
++static SDLKey keymap[128];
++
++// keymapÀº SDL_keysym.h¿¡ ÀÖ´Â ASCII code range¾È¿¡¼­¸¸ ¼³Á¤ÇÑ´Ù.
++´ë¹®ÀÚµéÀº »«´Ù(¿Ö³ÄÇÏ¸é SDLÀÇ °æ¿ì shift´­¸°°Å¶û ¾Æ´Ñ°Å¶û Â÷ÀÌ¸¦ µÎ±â ¶§¹®ÀÎ°Í °°´ç....)
++==> ÇÏ¿©°£ shift´­·¯¼­ Âï´Â ³ÑµéÀº ´Ù »«´Ù..;
++*/
++
+ void FB_InitOSKeymap(_THIS)
+ {
+ 	int i;
+@@ -1130,6 +1439,10 @@ void FB_InitOSKeymap(_THIS)
+ 	    break;
+           }
+ 	}
++
++	memset(ext_keymap, 0, sizeof(ext_keymap));
++	memset(ext2_keymap, 0, sizeof(ext2_keymap));
++	ext2_keymap[0x45] = SDLK_PAUSE;
+ 	for (i=0; i<SDL_arraysize(keymap); ++i) {
+ 	  switch(keymap_temp[i]) {
+ 	    case K_F1:  keymap[i] = SDLK_F1;  break;
+@@ -1150,22 +1463,23 @@ void FB_InitOSKeymap(_THIS)
+ 	    case K_RIGHT: keymap[i] = SDLK_RIGHT; break;
+ 	    case K_UP:    keymap[i] = SDLK_UP;    break;
+ 
+-	    case K_P0:     keymap[i] = SDLK_KP0; break;
+-	    case K_P1:     keymap[i] = SDLK_KP1; break;
+-	    case K_P2:     keymap[i] = SDLK_KP2; break;
+-	    case K_P3:     keymap[i] = SDLK_KP3; break;
+-	    case K_P4:     keymap[i] = SDLK_KP4; break;
++	    /* For GP2X */
++	    case K_P0:     keymap[i] = SDLK_KP0; ext_keymap[i] = SDLK_INSERT; break;
++	    case K_P1:     keymap[i] = SDLK_KP1; ext_keymap[i] = SDLK_END; break;
++	    case K_P2:     keymap[i] = SDLK_KP2; ext_keymap[i] = SDLK_DOWN; break;
++	    case K_P3:     keymap[i] = SDLK_KP3; ext_keymap[i] = SDLK_PAGEDOWN; break;
++	    case K_P4:     keymap[i] = SDLK_KP4; ext_keymap[i] = SDLK_LEFT; break;
+ 	    case K_P5:     keymap[i] = SDLK_KP5; break;
+-	    case K_P6:     keymap[i] = SDLK_KP6; break;
+-	    case K_P7:     keymap[i] = SDLK_KP7; break;
+-	    case K_P8:     keymap[i] = SDLK_KP8; break;
+-	    case K_P9:     keymap[i] = SDLK_KP9; break;
++	    case K_P6:     keymap[i] = SDLK_KP6; ext_keymap[i] = SDLK_RIGHT; break;
++	    case K_P7:     keymap[i] = SDLK_KP7; ext_keymap[i] = SDLK_HOME; break;
++	    case K_P8:     keymap[i] = SDLK_KP8; ext_keymap[i] = SDLK_UP; break;
++	    case K_P9:     keymap[i] = SDLK_KP9; ext_keymap[i] = SDLK_PAGEUP; break;
+ 	    case K_PPLUS:  keymap[i] = SDLK_KP_PLUS; break;
+ 	    case K_PMINUS: keymap[i] = SDLK_KP_MINUS; break;
+ 	    case K_PSTAR:  keymap[i] = SDLK_KP_MULTIPLY; break;
+ 	    case K_PSLASH: keymap[i] = SDLK_KP_DIVIDE; break;
+ 	    case K_PENTER: keymap[i] = SDLK_KP_ENTER; break;
+-	    case K_PDOT:   keymap[i] = SDLK_KP_PERIOD; break;
++	    case K_PDOT:   keymap[i] = SDLK_KP_PERIOD; ext_keymap[i] = SDLK_DELETE; break;
+ 
+ 	    case K_SHIFT:  if ( keymap[i] != SDLK_RSHIFT )
+ 	                     keymap[i] = SDLK_LSHIFT;
+@@ -1174,10 +1488,11 @@ void FB_InitOSKeymap(_THIS)
+ 	    case K_SHIFTR: keymap[i] = SDLK_RSHIFT; break;
+ 	    case K_CTRL:  if ( keymap[i] != SDLK_RCTRL )
+ 	                     keymap[i] = SDLK_LCTRL;
++	                   ext_keymap[i] = SDLK_RCTRL;
+ 	                   break;
+ 	    case K_CTRLL:  keymap[i] = SDLK_LCTRL;  break;
+ 	    case K_CTRLR:  keymap[i] = SDLK_RCTRL;  break;
+-	    case K_ALT:    keymap[i] = SDLK_LALT;   break;
++	    case K_ALT:    keymap[i] = SDLK_LALT; ext_keymap[i] = SDLK_RALT; break;
+ 	    case K_ALTGR:  keymap[i] = SDLK_RALT;   break;
+ 
+ 	    case K_INSERT: keymap[i] = SDLK_INSERT;   break;
+@@ -1199,13 +1514,43 @@ void FB_InitOSKeymap(_THIS)
+ 	    default: break;
+ 	  }
+ 	}
++#ifdef TTYCONSOLE
++	/* for Serial Console keymap */
++	for (i=0; i<SDL_TABLESIZE(vt_keymap); ++i)  // 128°³ ±îÁ¤
++		vt_keymap[i] = 0; // all key map clear ==> ¸ù¶¥ SDLK_UNKNOWN·Î ÀÏ´Ü ¼¼ÆÃ
++
++	vt_keymap[0] =  SDLK_UNKNOWN	;
++	vt_keymap[3] =  SDLK_CRTL_C	;// ghcstop 041206 add: vt_keymapÀ» ¶â¾î°íÄ¡¸é¼­ ctrl+cµµ key event·Î ¸Ô°Ô ¸¸µç´Ù.
++	vt_keymap[8] =  SDLK_BACKSPACE	;
++	vt_keymap[9] =  SDLK_TAB		;
++	vt_keymap[12] = SDLK_CLEAR		;
++	vt_keymap[13] = SDLK_RETURN	;
++	vt_keymap[19] = SDLK_PAUSE		;
++	vt_keymap[27] = SDLK_ESCAPE    ;
++
++	for (i=32; i<=64; ++i)  // ' ' ¿¡¼­ºÎÅÍ '@'±îÁöÀÇ 32°³
++		vt_keymap[i] = i; // ¾Æ½ºÅ° °ª ¼¼ÆÃ
++
++	for (i=91; i<=122; ++i)  // '[' ¿¡¼­ºÎÅÍ 'z'±îÁöÀÇ 32°³
++		vt_keymap[i] = i; // ¾Æ½ºÅ° °ª ¼¼ÆÃ
++
++	vt_keymap[127] = SDLK_DELETE;
++#endif
+ }
+ 
+ static SDL_keysym *TranslateKey(int scancode, SDL_keysym *keysym)
+ {
++	int ext = scancode >> 8;
++	scancode &= 0x7f;
++
+ 	/* Set the keysym information */
+ 	keysym->scancode = scancode;
+-	keysym->sym = keymap[scancode];
++	if(ext == 0)
++		keysym->sym = keymap[scancode];
++	else if(ext == 1)
++		keysym->sym = ext_keymap[scancode];
++	else if(ext == 2)
++		keysym->sym = ext2_keymap[scancode];
+ 	keysym->mod = KMOD_NONE;
+ 
+ 	/* If UNICODE is on, get the UNICODE value for the key */
+@@ -1243,3 +1588,84 @@ static SDL_keysym *TranslateKey(int scan
+ 	}
+ 	return(keysym);
+ }
++
++static SDL_keysym *TranslateVTKey(int asciicode, SDL_keysym *keysym)
++{
++	/* Set the keysym information */
++	keysym->scancode = asciicode;
++	keysym->sym = vt_keymap[asciicode];
++	keysym->mod = KMOD_RESERVED;
++	keysym->unicode = 0;
++	// 041206: ghcstop unicode map delete ¿Ö³Ä? ¾Æ¿¹ keymapÀ» ³»¸¾´ë·Î serial console¿ëÀ¸·Î º¯È­½ÃÄ×±â ¶§¹®
++	//dprintf("VT: %x(%s)\n", keysym->sym, SDL_GetKeyName(keysym->sym));
++	return(keysym);
++}
++
++#define E(x) (0x0100 | x)
++const Uint16 mykee_map[128] =
++{
++	0,
++	1, 59, 60, 61, 62, 63, 64, 41, 26, 27, 51, 52, 53, 13,
++	2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14,
++	15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 28,
++	58, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
++	42, 44, 45, 46, 47, 48, 49, 50, E(72), 54, E(73),
++	29, 0, 56, 40, 43, 57, E(75), E(80), E(77), E(81),
++	0,
++};
++
++const Uint16 mykee_extmap[128] =
++{
++	0,
++	1, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 87, 88, 13,
++	2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14,
++	15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 28,
++	58, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
++	42, 44, 45, 46, 47, 48, 49, 50, E(72), 54, E(71),
++	29, 0, 56, 40, 43, 57, E(75), E(80), E(77), E(79),
++	0,
++};
++#undef E
++
++static int mykee_menu = 0;
++
++static SDL_keysym *TranslateMyKee(int code, int pressed, SDL_keysym *keysym)
++{
++	int scancode;
++
++	if(code == 0x3E)
++		mykee_menu = (pressed == SDL_PRESSED);
++
++	scancode = (mykee_menu ? mykee_extmap[code] : mykee_map[code]);
++
++	if(scancode == 0)
++		return NULL;
++
++	return TranslateKey(scancode, keysym);
++}
++
++#define E(x) (0x0100 | x)
++const Uint16 doogi_map[128] =
++{
++	0,
++	1, 59, 60, 61, 62, 63, 64, 41, 26, 27, 51, 52, 53, 13,
++	2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14,
++	15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 28,
++	58, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
++	42, 44, 45, 46, 47, 48, 49, 50, E(72), 54, E(73),
++	29, 0, 56, 40, 43, 57, E(75), E(80), E(77), E(81),
++	0,
++};
++#undef E
++
++static SDL_keysym *TranslateDoogi(int code, SDL_keysym *keysym)
++{
++	int scancode;
++
++	scancode = doogi_map[code];
++
++	if(scancode == 0)
++		return NULL;
++
++	return TranslateKey(scancode, keysym);
++}
+Index: SDL-1.2.13/src/video/fbcon/SDL_fbvideo.c
+===================================================================
+--- SDL-1.2.13.orig/src/video/fbcon/SDL_fbvideo.c
++++ SDL-1.2.13/src/video/fbcon/SDL_fbvideo.c
+@@ -47,6 +47,20 @@
+ #include "SDL_fb3dfx.h"
+ #include "SDL_fbmatrox.h"
+ #include "SDL_fbriva.h"
++#include "../wizhard.h"
++
++// ghcstop,  SDL_sysideo.h:  #define _THIS        SDL_VideoDevice *_this
++
++/* ghcstop_041124 add
++ *
++ * keyboard, mouse inputÀ» ¾ø¾Ö´Â define, 1ÀÌ¸é enable, 0ÀÌ¸é disable
++ *
++ * mplayerÀÇ 20041123ÀÌÀüÀÇ ¹öÀü¿¡¼­´Â ÀÌºÎºÐÀ» 0À¸·Î ÇÏ°í »ç¿ëÇÒ °Í
++ * ±× ÀÌÈÄ¹öÀüÀº ÀÌºÎºÐÀ» 1·Î ÇÏ°í SDL_fbevents.cÀÇ #define FB_VT_OPEN 1 // ghcstop add¸¦
++ * 0À¸·Î ÇÏ°í Å×½ºÆ® ÇÏ°í ÀÖÀ¸³ª ¹®Á¦Á¡ÀÌ ¹ß°ßµÇ³×....Å° ÀÌº¥Æ®°¡ ¾È¸Ô¾îÀ×....(test program¿¡¼­´Â
++ * - testbitmap.c ÀßµÈ´Ù...--;, 20041124) 
++ */
++#define FB_INPUT_DEVICE_ENABLE 1 
+ 
+ /*#define FBCON_DEBUG*/
+ 
+@@ -79,8 +93,10 @@ static const SDL_Rect checkres[] = {
+ 	{  0, 0,  640,  480 },		/* 16 bpp: 0x111, or 273 */
+ 	{  0, 0,  640,  400 },		/*  8 bpp: 0x100, or 256 */
+ 	{  0, 0,  512,  384 },
++	{  0, 0,  480,  272 },	// jhkang add 20080508
+ 	{  0, 0,  320,  240 },
+-	{  0, 0,  320,  200 }
++	{  0, 0,  320,  200 },
++	{  0, 0,  240,  320 }          // ghcstop add
+ };
+ static const struct {
+ 	int xres;
+@@ -111,8 +127,10 @@ static const struct {
+ 	   the 'modeline2fb' perl script included with the fbset package.
+ 	   These timings were generated for Matrox Millenium I, 15" monitor.
+ 	*/
++	{  240,  320, 63492,  16, 16, 16,  4,  48, 2, 0, 2 },	/* 72 Hz */ // ghcstop add
+ 	{  320,  200, 79440,  16, 16, 20,  4,  48, 1, 0, 2 },	/* 70 Hz */
+ 	{  320,  240, 63492,  16, 16, 16,  4,  48, 2, 0, 2 },	/* 72 Hz */
++	{  480,  272, 63492,  16, 16, 16,  4,  48, 2, 0, 2 },	/* 72 Hz */	// jhkang add 20080508
+ 	{  512,  384, 49603,  48, 16, 16,  1,  64, 3, 0, 0 },	/* 78 Hz */
+ 	{  640,  400, 31746,  96, 32, 41,  1,  64, 3, 2, 0 },	/* 85 Hz */
+ 	{  640,  480, 31746, 120, 16, 16,  1,  64, 3, 0, 0 },	/* 75 Hz */
+@@ -126,6 +144,8 @@ static const struct {
+ 	{ 1600, 1200,/*?*/0, 272, 48, 32,  5, 152, 5, 0, 0 },	/* 60 Hz */
+ #endif
+ };
++/* HYUN_DEBUG */
++extern int SDL_videofd; // Dark add 20050510
+ 
+ /* Initialization/Query functions */
+ static int FB_VideoInit(_THIS, SDL_PixelFormat *vformat);
+@@ -196,6 +216,7 @@ static int FB_Available(void)
+ 	for( ; SDL_fbdevs[idx]; idx++ )
+ 	{
+ 		console = open(SDL_fbdevs[idx], O_RDWR, 0);
++	SDL_videofd = console; // Dark add 20050510
+ 		if ( console >= 0 ) {
+ 			close(console);
+ 			break;
+@@ -555,6 +576,7 @@ static int FB_VideoInit(_THIS, SDL_Pixel
+ 			return(-1);
+ 	}
+ 
++	#if 0 // ghcstop_041123 delete
+ 	/* Check if the user wants to disable hardware acceleration */
+ 	{ const char *fb_accel;
+ 		fb_accel = SDL_getenv("SDL_FBACCEL");
+@@ -562,6 +584,7 @@ static int FB_VideoInit(_THIS, SDL_Pixel
+ 			finfo.accel = SDL_atoi(fb_accel);
+ 		}
+ 	}
++	#endif
+ 
+ 	/* Memory map the device, compensating for buggy PPC mmap() */
+ 	mapped_offset = (((long)finfo.smem_start) -
+@@ -601,8 +624,10 @@ static int FB_VideoInit(_THIS, SDL_Pixel
+ 	}
+ 	saved_vinfo = vinfo;
+ 
++	#if 0 // ghcstop_041123
+ 	/* Save hardware palette, if needed */
+ 	FB_SavePalette(this, &finfo, &vinfo);
++	#endif
+ 
+ 	/* If the I/O registers are available, memory map them so we
+ 	   can take advantage of any supported hardware acceleration.
+@@ -680,6 +705,7 @@ static int FB_VideoInit(_THIS, SDL_Pixel
+ 	this->info.wm_available = 0;
+ 	this->info.hw_available = 1;
+ 	this->info.video_mem = finfo.smem_len/1024;
++#if 0 // ghcstop_041123 delete			
+ 	if ( mapped_io ) {
+ 		switch (finfo.accel) {
+ 		    case FB_ACCEL_MATROX_MGA2064W:
+@@ -714,22 +740,28 @@ static int FB_VideoInit(_THIS, SDL_Pixel
+ 			break;
+ 		}
+ 	}
++#endif // no accelation, comment	
+ 
+ 	/* Enable mouse and keyboard support */
+ 	if ( FB_OpenKeyboard(this) < 0 ) {
+ 		FB_VideoQuit(this);
+ 		return(-1);
+ 	}
++	#if 0 // ghcstop delete, no keyboard, no mouse in s3c2410
++	// ghcstop_041123: SDL_fbevents.c, ¾ÆÁ÷Àº ¸¶¿ì½º »ì¸®Áö ¸»°í³ªÁß¿¡ »ì·Á¾ß°Ú±º...
+ 	if ( FB_OpenMouse(this) < 0 ) {
+ 		const char *sdl_nomouse;
+ 
+-		sdl_nomouse = SDL_getenv("SDL_NOMOUSE");
++		sdl_nomouse = getenv("SDL_NOMOUSE");
+ 		if ( ! sdl_nomouse ) {
+ 			SDL_SetError("Unable to open mouse");
+ 			FB_VideoQuit(this);
+ 			return(-1);
+ 		}
+ 	}
++	#else
++	FB_OpenMouse(this);
++       #endif
+ 
+ 	/* We're done! */
+ 	return(0);
+@@ -865,13 +897,17 @@ static SDL_Surface *FB_SetVGA16Mode(_THI
+ 	struct fb_fix_screeninfo finfo;
+ 	struct fb_var_screeninfo vinfo;
+ 
++#if FB_INPUT_DEVICE_ENABLE // ghcstop
+ 	/* Set the terminal into graphics mode */
+ 	if ( FB_EnterGraphicsMode(this) < 0 ) {
+ 		return(NULL);
+ 	}
++#endif
+ 
++	#if 0 // ghcstop_041123 delete
+ 	/* Restore the original palette */
+ 	FB_RestorePalette(this);
++	#endif
+ 
+ 	/* Set the video mode and get the final screen format */
+ 	if ( ioctl(console_fd, FBIOGET_VSCREENINFO, &vinfo) < 0 ) {
+@@ -900,8 +936,10 @@ static SDL_Surface *FB_SetVGA16Mode(_THI
+ 	print_finfo(&finfo);
+ #endif
+ 
++	#if 0 // ghcstop_041123 delete
+ 	/* Save hardware palette, if needed */
+ 	FB_SavePalette(this, &finfo, &vinfo);
++	#endif
+ 
+ 	/* Set up the new mode framebuffer */
+ 	current->flags = SDL_FULLSCREEN;
+@@ -930,13 +968,17 @@ static SDL_Surface *FB_SetVideoMode(_THI
+ 	char *surfaces_mem;
+ 	int surfaces_len;
+ 
++#if FB_INPUT_DEVICE_ENABLE // ghcstop_041123 alive
+ 	/* Set the terminal into graphics mode */
+ 	if ( FB_EnterGraphicsMode(this) < 0 ) {
+ 		return(NULL);
+ 	}
++#endif
+ 
++	#if 0 // ghcstop_041123 delete
+ 	/* Restore the original palette */
+ 	FB_RestorePalette(this);
++	#endif
+ 
+ 	/* Set the video mode and get the final screen format */
+ 	if ( ioctl(console_fd, FBIOGET_VSCREENINFO, &vinfo) < 0 ) {
+@@ -1026,8 +1068,10 @@ static SDL_Surface *FB_SetVideoMode(_THI
+ 		return(NULL);
+ 	}
+ 
++	#if 0 // ghcstop_041123 delete
+ 	/* Save hardware palette, if needed */
+ 	FB_SavePalette(this, &finfo, &vinfo);
++	#endif
+ 
+ 	/* Set up the new mode framebuffer */
+ 	current->flags = (SDL_FULLSCREEN|SDL_HWSURFACE);
+@@ -1638,13 +1682,28 @@ static void FB_VideoQuit(_THIS)
+ 
+ 	if ( this->screen ) {
+ 		/* Clear screen and tell SDL not to free the pixels */
++// ghcstop fix to original: 041123
++#if FB_INPUT_DEVICE_ENABLE
+ 		if ( this->screen->pixels && FB_InGraphicsMode(this) ) {
++#else			
++		if ( this->screen->pixels  ) {
++#endif
++			
+ #if defined(__powerpc__) || defined(__ia64__)	/* SIGBUS when using SDL_memset() ?? */
+ 			Uint8 *rowp = (Uint8 *)this->screen->pixels;
+ 			int left = this->screen->pitch*this->screen->h;
+ 			while ( left-- ) { *rowp++ = 0; }
+ #else
+-			SDL_memset(this->screen->pixels,0,this->screen->h*this->screen->pitch);
++			// GP2X WIZ jhkang 081006
++			printf("FB_VideoQuit() h=%d, pitch=%d\n", this->screen->h, this->screen->pitch);
++			if (Wiz240x320)
++			{
++				SDL_memset(this->screen->pixels,0,this->screen->h*(this->screen->pitch+160));
++			}
++			else
++			{
++				SDL_memset(this->screen->pixels,0,this->screen->h*this->screen->pitch);
++			}
+ #endif
+ 		}
+ 		/* This test fails when using the VGA16 shadow memory */
+@@ -1686,16 +1745,25 @@ static void FB_VideoQuit(_THIS)
+ 			mapped_io = NULL;
+ 		}
+ 
++        #if 0 // ghcstop delete, palette´Â ¾²Áö ¾Ê´Â´Ù.
+ 		/* Restore the original video mode and palette */
+ 		if ( FB_InGraphicsMode(this) ) {
+ 			FB_RestorePalette(this);
+ 			ioctl(console_fd, FBIOPUT_VSCREENINFO, &saved_vinfo);
+ 		}
++        #endif
+ 
+ 		/* We're all done with the framebuffer */
+ 		close(console_fd);
+ 		console_fd = -1;
+ 	}
++#if FB_INPUT_DEVICE_ENABLE	// ghcstop
++	#if 0 // ghcstop_041123 delete, ÀÌºÎºÐÀº ³ªÁß¿¡ ¿øº¹ÇÒ °Í
+ 	FB_CloseMouse(this);
++	#endif
++//	dprintf("FB_closeKeyboard\n"); // ghcstop
+ 	FB_CloseKeyboard(this);
++#endif	
++	FB_CloseMouse(this); //hyun
++//printf("[4]FB_VideoQuit() h=%d, pitch=%d\n", this->screen->h, this->screen->pitch);
+ }
+Index: SDL-1.2.13/src/video/fbcon/tslib.h
+===================================================================
+--- /dev/null
++++ SDL-1.2.13/src/video/fbcon/tslib.h
+@@ -0,0 +1,93 @@
++#ifndef _TSLIB_H_
++#define _TSLIB_H_
++/*
++ *  tslib/src/tslib.h
++ *
++ *  Copyright (C) 2001 Russell King.
++ *
++ * This file is placed under the LGPL.
++ *
++ * $Id: tslib.h,v 1.4 2005/02/26 01:47:23 kergoth Exp $
++ *
++ * Touch screen library interface definitions.
++ */
++#ifdef __cplusplus
++extern "C" {
++#endif /* __cplusplus */
++#include <stdarg.h>
++#include <sys/time.h>
++
++#ifdef WIN32
++  #define TSIMPORT __declspec(dllimport)
++  #define TSEXPORT __declspec(dllexport)
++  #define TSLOCAL
++#else
++  #define TSIMPORT
++  #ifdef GCC_HASCLASSVISIBILITY
++    #define TSEXPORT __attribute__ ((visibility("default")))
++    #define TSLOCAL __attribute__ ((visibility("hidden")))
++  #else
++    #define TSEXPORT
++    #define TSLOCAL
++  #endif
++#endif
++
++#ifdef TSLIB_INTERNAL
++  #define TSAPI TSEXPORT
++#else
++  #define TSAPI TSIMPORT
++#endif // TSLIB_INTERNAL
++
++struct tsdev;
++
++struct ts_sample {
++	int		x;
++	int		y;
++	unsigned int	pressure;
++	struct timeval	tv;
++};
++
++/*
++ * Close the touchscreen device, free all resources.
++ */
++TSAPI int ts_close(struct tsdev *);
++
++/*
++ * Configure the touchscreen device.
++ */
++TSAPI int ts_config(struct tsdev *);
++
++/*
++ * Change this hook to point to your custom error handling function.
++ */
++extern TSAPI int (*ts_error_fn)(const char *fmt, va_list ap);
++
++/*
++ * Returns the file descriptor in use for the touchscreen device.
++ */
++TSAPI int ts_fd(struct tsdev *);
++
++/*
++ * Load a filter/scaling module
++ */
++TSAPI int ts_load_module(struct tsdev *, const char *mod, const char *params);
++
++/*
++ * Open the touchscreen device.
++ */
++TSAPI struct tsdev *ts_open(const char *dev_name, int nonblock);
++
++/*
++ * Return a scaled touchscreen sample.
++ */
++TSAPI int ts_read(struct tsdev *, struct ts_sample *, int);
++
++/*
++ * Returns a raw, unscaled sample from the touchscreen.
++ */
++TSAPI int ts_read_raw(struct tsdev *, struct ts_sample *, int);
++
++#ifdef __cplusplus
++}
++#endif /* __cplusplus */
++#endif /* _TSLIB_H_ */
+Index: SDL-1.2.13/src/video/SDL_surface.c
+===================================================================
+--- SDL-1.2.13.orig/src/video/SDL_surface.c
++++ SDL-1.2.13/src/video/SDL_surface.c
+@@ -446,7 +446,7 @@ int SDL_UpperBlit (SDL_Surface *src, SDL
+ {
+         SDL_Rect fulldst;
+ 	int srcx, srcy, w, h;
+-
++//printf("SDL_UpperBlit() BitsPerPixel=%d\n", SDL_ShadowSurface->format->BitsPerPixel);
+ 	/* Make sure the surfaces aren't locked */
+ 	if ( ! src || ! dst ) {
+ 		SDL_SetError("SDL_UpperBlit: passed a NULL surface");
+@@ -603,6 +603,7 @@ int SDL_FillRect(SDL_Surface *dst, SDL_R
+ 	row = (Uint8 *)dst->pixels+dstrect->y*dst->pitch+
+ 			dstrect->x*dst->format->BytesPerPixel;
+ 	if ( dst->format->palette || (color == 0) ) {
++		//printf("SDL_FillRect() dst->pitch=%d\n", dst->pitch);
+ 		x = dstrect->w*dst->format->BytesPerPixel;
+ 		if ( !color && !((uintptr_t)row&3) && !(x&3) && !(dst->pitch&3) ) {
+ 			int n = x >> 2;
+Index: SDL-1.2.13/src/video/SDL_video.c
+===================================================================
+--- SDL-1.2.13.orig/src/video/SDL_video.c
++++ SDL-1.2.13/src/video/SDL_video.c
+@@ -30,6 +30,10 @@
+ #include "SDL_cursor_c.h"
+ #include "../events/SDL_sysevents.h"
+ #include "../events/SDL_events_c.h"
++#include <linux/i2c-dev.h>
++
++/* GP2X Wiz */
++#include "wizhard.h"
+ 
+ /* Available video drivers */
+ static VideoBootStrap *bootstrap[] = {
+@@ -138,6 +142,16 @@ static SDL_GrabMode SDL_WM_GrabInputOff(
+ static int lock_count = 0;
+ #endif
+ 
++/* GP2X Wiz */
++int Wiz_SetColors(SDL_VideoDevice *this, int firstcolour, int ncolours, SDL_Color *colours)
++{
++	int i;
++	for (i = firstcolour; i < ncolours; i++)
++		WizVideoRGBColor8 (colours[i].r, colours[i].g, colours[i].b, i);
++	WizVideoRGBSetPalette();
++
++  return 0;
++}
+ 
+ /*
+  * Initialize the video and event subsystems -- determine native pixel format
+@@ -200,6 +214,7 @@ int SDL_VideoInit (const char *driver_na
+ 	current_video->name = bootstrap[i]->name;
+ 
+ 	/* Do some basic variable initialization */
++	video->SetColors = Wiz_SetColors; /* GP2X Wiz */
+ 	video->screen = NULL;
+ 	video->shadow = NULL;
+ 	video->visible = NULL;
+@@ -278,6 +293,354 @@ int SDL_VideoInit (const char *driver_na
+ 	return(0);
+ }
+ 
++/* HYUN_DEBUG */
++/* ********************************************************************************** */
++extern int SDL_videofd;
++
++static int lcd_mode=0;
++static unsigned char num_bd=0;
++
++int SDL_GetVideofd(void)
++{
++    return SDL_videofd;
++}
++
++#include <sys/ioctl.h>
++#if 0
++#include <fcntl.h>
++#include <linux/fb.h>
++#include <sys/mman.h>
++#include <sys/ioctl.h>
++//#include "pollux_fb_ioctl.h"
++
++#define RESUME_OPER		0xEF
++#define LASTER_OPER		0x6F
++
++//#define usleep(x) microsleep(x)
++//#define msleep(x) usleep(x*1000)
++
++#define I2C_DEV   "/dev/i2c-0"
++#define SLAVE_EEPROM			(0xA0 >> 1)
++#define PIO_BASE     0xC0000000
++#define IO_SIZE      0x10000
++
++#define PIO_I2CCON_ADDR    	0xC0000D00
++#define PIO_I2CSTAT_ADDR    0xC0000D02
++#define PIO_I2CADD_ADDR    	0xC0000D04
++#define PIO_I2CDD_ADDR    	0xC0000D06
++
++#define PIO_GPIOH_ADDR			0xC000106E
++#define PIO_GPIOH_ALN_ADDR		0xC000102E
++
++#define PIO_I2CCON_OFFSET     ( PIO_I2CCON_ADDR  - PIO_BASE )
++#define PIO_I2CSTAT_OFFSET    ( PIO_I2CSTAT_ADDR - PIO_BASE )
++#define PIO_I2CADD_OFFSET     ( PIO_I2CADD_ADDR  - PIO_BASE )
++#define PIO_I2CDD_OFFSET      ( PIO_I2CDD_ADDR   - PIO_BASE )
++
++#define PIO_GPIOH_OFFSET	  (	PIO_GPIOH_ADDR - PIO_BASE )
++#define PIO_GPIOH_ALN_OFFSET  (	PIO_GPIOH_ALN_ADDR - PIO_BASE )
++
++#define BASEADDR 0x50
++#define DRMSIZE 0xC0
++#define TOTALSIZE (BASEADDR + DRMSIZE)
++
++#define U8 unsigned char
++#define U16 unsigned short
++#define U32 unsigned long
++
++static const unsigned char adr[8] = {0xBA, 0xF1, 0xF0, 0xE3, 0xBA, 0xF8, 0xF0, 0xF8};
++
++typedef struct tagI2CBUS{
++	int mfd;
++	U16* I2CCON;
++	U16* I2CSTAT;
++	U16* I2CADD;
++	U16* I2CDD;
++	void* base;
++}I2CBUS;
++
++static I2CBUS i2c;
++
++static inline int SDL_InitEEPROM()
++{
++	char dev[9];
++	int i;
++
++	for (i=0;i<8;i++)
++		dev[i] = adr[i] ^ 0x95;
++	dev[8] = 0;
++
++	i2c.mfd = open( dev, O_RDWR|O_SYNC );
++	if( i2c.mfd < 0 )
++	{
++		i2c.base = NULL;
++		return 0;
++	}
++
++	i2c.base = (U16 *) mmap( 0, IO_SIZE, PROT_READ|PROT_WRITE, MAP_SHARED, i2c.mfd, PIO_BASE );
++
++	if( i2c.base != NULL) {
++		i2c.I2CCON  =	(U16 *) (i2c.base + PIO_I2CCON_OFFSET);
++		i2c.I2CSTAT =	(U16 *) (i2c.base + PIO_I2CSTAT_OFFSET);
++		i2c.I2CADD  =	(U16 *) (i2c.base + PIO_I2CADD_OFFSET);
++		i2c.I2CDD   =	(U16 *) (i2c.base + PIO_I2CDD_OFFSET);
++	} else {
++		close(i2c.mfd);
++		return 0;
++	}
++
++	*(i2c.I2CCON)  = RESUME_OPER;
++	*(i2c.I2CADD)  = 0xA0;
++	*(i2c.I2CSTAT) = 0x10;
++	usleep(100);
++
++	return 1;
++}
++/* ================================================================================ */
++static inline void SDL_CloseEEPROM(void)
++{
++	if( i2c.base == NULL ) return ;
++
++	munmap( i2c.base, IO_SIZE );
++	close(i2c.mfd);
++}
++
++int SDL_RdEEPROM(unsigned int rAddr,unsigned int size,unsigned char * buff) 
++{
++	struct i2c_rdwr_ioctl_data    i2c_rctl;
++	struct i2c_msg                i2c_msgs;
++	int i2c_rfd,err,i;
++	unsigned char addr[2];
++	unsigned char tempbuff;
++	
++	addr[0]=(unsigned char)(rAddr >> 8); 		//MSB
++	addr[1]=(unsigned char)(rAddr & 0xff);		//LSB	
++	
++	if((i2c_rfd = open( I2C_DEV, O_RDWR ))< 0 )
++	{
++		printf("I2c driver open error\n");
++		return -1;
++	}
++
++	i2c_rctl.msgs=&i2c_msgs;
++	i2c_rctl.nmsgs = 1;
++    	i2c_rctl.msgs[0].addr  = SLAVE_EEPROM;
++    	i2c_rctl.msgs[0].flags = 0;
++    	i2c_rctl.msgs[0].len   = 2;
++    	i2c_rctl.msgs[0].buf   = addr;
++	err=ioctl( i2c_rfd, I2C_RDWR, (struct i2c_rdwr_ioctl_data *) &i2c_rctl);
++	if(err < 0) {
++		printf("EEPROM addr set error\n");
++		close(i2c_rfd);
++		return -1;
++	}
++
++
++	//for(i=0;i<size;i++)
++	{	
++		i2c_rctl.msgs=&i2c_msgs;
++		i2c_rctl.nmsgs = 1;
++		i2c_rctl.msgs[0].addr  = SLAVE_EEPROM;
++		i2c_rctl.msgs[0].flags = I2C_M_RD;
++		i2c_rctl.msgs[0].len   = 1;
++		i2c_rctl.msgs[0].buf   = buff;		//&tempbuff;
++		
++		err=ioctl( i2c_rfd, I2C_RDWR, (struct i2c_rdwr_ioctl_data *) &i2c_rctl);
++		if(err < 0) {
++			printf("EEPROM addr set error\n");
++			close(i2c_rfd);
++			return -1;
++		}	
++		
++		//buff++;						//=tempbuff;
++	}
++	//printf("RdEEPROM() buff=%s\n", buff);
++	close(i2c_rfd);
++	return 0;	
++}
++
++#if 1
++void SDL_GetDRMNumber(unsigned char * buf)
++{
++	const unsigned char addr[3] = {0xB7, 0x86, 0x9F};
++	unsigned char val[3] = {0x0,};
++	short drmaddr;
++	int i;
++
++	SDL_InitEEPROM();
++
++	for(i=0;i<3;i++)
++		//val[i] = RdEEPROM(addr[i] + BASEADDR);
++		//RdEEPROM(addr[i] + BASEADDR, 1, val[i]);
++		SDL_RdEEPROM(addr[i] + BASEADDR, 1, val+i);
++
++	if( ((val[0] & 0xfe) == (unsigned char)(val[1] << 1)) &&
++	    ((val[1] & 0xfe) == (unsigned char)(val[2] << 1)) ) {
++		short testaddr = val[0] | (((short)val[1]) << 1) | (((short)val[2]) << 2);
++		drmaddr = val[0] | (((short)val[2]) << 2);
++		if((drmaddr >= BASEADDR) && (drmaddr < TOTALSIZE) && (drmaddr == testaddr)) {
++			for(i=0; i < 16; i++) {
++				//buf[i + 0x10] = RdEEPROM(drmaddr + i) ^ val[i % 3];
++				//RdEEPROM(drmaddr + i, 1, buf[i + 0x10]);
++				 SDL_RdEEPROM(drmaddr + i,1,buf+(i+0x10));	
++				buf[i + 0x10]  = buf[i + 0x10]  ^ val[i % 3];
++
++				buf[i << 1] = (buf[i + 0x10] >> 4);
++				buf[(i << 1) + 1] = (buf[i + 0x10] & 0x0f);
++			}
++
++			for(i=0; i< 32; i++) {
++				if(buf[i] < 10) {
++					buf[i] = '0' + buf[i];
++				} else {
++					buf[i] = 'A' - 10 + buf[i];
++				}
++			}
++
++			SDL_CloseEEPROM();
++
++			return;
++		}
++	}
++
++	for(i=0;i<32;i++)
++		//buf[i] = RdEEPROM(i);
++		SDL_RdEEPROM(i, 1, buf+i);
++	
++	//RdEEPROM(0, 32, buf);
++	//printf("getcode(buf=%s)\n", buf);
++	SDL_CloseEEPROM();
++}
++#endif
++
++void SDL_GetSerialNumber(unsigned char *buf)
++{
++	int i;
++
++	SDL_InitEEPROM();
++
++	for(i=0;i<24;i++)
++		//buf[i] = RdEEPROM(i + 0x20);
++		SDL_RdEEPROM(i + 0x20, 1, buf+i);
++
++	//RdEEPROM(0x20, 24, buf);
++	//printf("getserial(buf=%s)\n", buf);
++	SDL_CloseEEPROM();
++}
++#endif
++
++int SDL_SetLcdChange(unsigned int subCmd, unsigned int value)
++{
++    unsigned int send[2];
++    send[0] = subCmd;
++    send[1] = value;
++    
++    ioctl(SDL_videofd, FBIO_LCD_CHANGE_CONTROL, &send);
++	
++	return 0;
++}
++
++int SDL_TvConfig(FB_TVCONF * tv_cfg)
++{
++    ioctl(SDL_videofd, FBIO_SET_TVCFG_MODE, tv_cfg);
++    return 0;
++}
++
++void SDL_SetLcdMode(int mode)
++{
++    lcd_mode=mode;
++}
++
++int SDL_GetLcdMode(void)
++{
++    return lcd_mode;
++}
++
++int SDL_GetGphBoard(unsigned char * board_num)
++{
++    ioctl(SDL_videofd, FBIO_GET_BOARD_NUMBER, board_num);
++    return 0;
++}
++
++// jhkang 080722 [[
++int SDL_FBRGBControl(FB_RGBSET * rgbset)
++{    
++    ioctl(SDL_videofd, FBIO_RGB_CONTROL, rgbset);
++
++	return 0;
++}
++
++int SDL_FBVideoPriority(unsigned int * vpriority)
++{    
++    ioctl(SDL_videofd, FBIO_VIDEO_PRIORITY, vpriority);
++
++	return 0;
++}
++
++int SDL_FBLayerTPColor(unsigned int  * tpcolor)
++{    
++    ioctl(SDL_videofd, FBIO_LAYER_TPCOLOR, tpcolor);
++
++	return 0;
++}
++
++int SDL_FBLayerAlphaBLD(unsigned int * alphabld)
++{    
++    ioctl(SDL_videofd, FBIO_LAYER_ALPHABLD, alphabld);
++
++	return 0;
++}
++
++int SDL_FBDeviceEnable(unsigned int * devenable)
++{    
++    ioctl(SDL_videofd, FBIO_DEVICE_ENABLE, devenable);
++
++	return 0;
++}
++
++int SDL_FBVideoInit(FB_VIDEO_CONF * vconf)
++{    
++    ioctl(SDL_videofd, FBIO_VIDEO_INIT, vconf);
++
++	return 0;
++}
++
++int SDL_FBVideoUpdate(FB_VIDEO_CONF * vconf)
++{    
++    ioctl(SDL_videofd, FBIO_VIDEO_UPDATE, vconf);
++
++	return 0;
++}
++
++int SDL_FBVideoStart(FB_VMEMINFO * vmem)
++{    
++    ioctl(SDL_videofd, FBIO_VIDEO_START, vmem);
++
++	return 0;
++}
++
++int SDL_FBVideoStop(unsigned int  * vstop)
++{    
++    ioctl(SDL_videofd, FBIO_VIDEO_STOP, vstop);
++
++	return 0;
++}
++
++int SDL_FBVideoMemoryUpdate(FB_VMEMINFO * vmem)
++{    
++    ioctl(SDL_videofd, FBIO_VIDEO_MEMORY_UPDATE, vmem);
++
++	return 0;
++}
++
++int SDL_FBLuminance(unsigned int * value)
++{
++    ioctl(SDL_videofd, FBIO_VIDEO_LUMINAENHANCE, value);
++}
++// jhkang ]]
++
++/* ********************************************************************************** */
++
+ char *SDL_VideoDriverName(char *namebuf, int maxlen)
+ {
+ 	if ( current_video != NULL ) {
+@@ -601,6 +964,25 @@ SDL_Surface * SDL_SetVideoMode (int widt
+ 		bpp = SDL_VideoSurface->format->BitsPerPixel;
+ 	}
+ 
++#if 1
++	SDL_GetGphBoard(&num_bd);
++	if (num_bd == 170) {
++		if (width == 320 && height == 240)
++		{
++			wizRotate();
++		}
++	}
++	wizInit(bpp);
++#endif
++#if 0
++	/* GP2X Wiz */
++	if ( bpp == 8 ) {
++		wizInit(8);
++	}
++	else if ( bpp == 16 ) {
++		wizInit(16);
++	}
++#endif
+ 	/* Get a good video mode, the closest one possible */
+ 	video_w = width;
+ 	video_h = height;
+@@ -688,44 +1070,52 @@ SDL_Surface * SDL_SetVideoMode (int widt
+ 	 * that case?  Should we call SDL_VideoInit() again?
+ 	 */
+ 	SDL_VideoSurface = (mode != NULL) ? mode : prev_mode;
++	
++	if (Wiz240x320)
++	{
++		SDL_memset(SDL_VideoSurface->pixels,0,SDL_VideoSurface->h*(SDL_VideoSurface->pitch+160));
++	}
++	else
++	{
++		if ( (mode != NULL) && (!is_opengl) ) {
++			/* Sanity check */
++			if ( (mode->w < width) || (mode->h < height) ) {
++				SDL_SetError("Video mode smaller than requested");
++				return(NULL);
++			}
+ 
+-	if ( (mode != NULL) && (!is_opengl) ) {
+-		/* Sanity check */
+-		if ( (mode->w < width) || (mode->h < height) ) {
+-			SDL_SetError("Video mode smaller than requested");
+-			return(NULL);
+-		}
++			/* If we have a palettized surface, create a default palette */
++			if ( mode->format->palette ) {
++				SDL_PixelFormat *vf = mode->format;
++				SDL_DitherColors(vf->palette->colors, vf->BitsPerPixel);
++				video->SetColors(this, 0, vf->palette->ncolors,
++				                           vf->palette->colors);
++			}
+ 
+-		/* If we have a palettized surface, create a default palette */
+-		if ( mode->format->palette ) {
+-			SDL_PixelFormat *vf = mode->format;
+-			SDL_DitherColors(vf->palette->colors, vf->BitsPerPixel);
+-			video->SetColors(this, 0, vf->palette->ncolors,
+-			                           vf->palette->colors);
+-		}
+-
+-		/* Clear the surface to black */
+-		video->offset_x = 0;
+-		video->offset_y = 0;
+-		mode->offset = 0;
+-		SDL_SetClipRect(mode, NULL);
+-		SDL_ClearSurface(mode);
+-
+-		/* Now adjust the offsets to match the desired mode */
+-		video->offset_x = (mode->w-width)/2;
+-		video->offset_y = (mode->h-height)/2;
+-		mode->offset = video->offset_y*mode->pitch +
+-				video->offset_x*mode->format->BytesPerPixel;
++			/* Clear the surface to black */
++			video->offset_x = 0;
++			video->offset_y = 0;
++			mode->offset = 0;
++			SDL_SetClipRect(mode, NULL);
++			SDL_ClearSurface(mode);
++
++			/* Now adjust the offsets to match the desired mode */
++			video->offset_x = (mode->w-width)/2;
++			video->offset_y = (mode->h-height)/2;
++			mode->offset = video->offset_y*mode->pitch +
++					video->offset_x*mode->format->BytesPerPixel;
+ #ifdef DEBUG_VIDEO
+-  fprintf(stderr,
+-	"Requested mode: %dx%dx%d, obtained mode %dx%dx%d (offset %d)\n",
+-		width, height, bpp,
+-		mode->w, mode->h, mode->format->BitsPerPixel, mode->offset);
+-#endif
+-		mode->w = width;
+-		mode->h = height;
+-		SDL_SetClipRect(mode, NULL);
++	  fprintf(stderr,
++		"Requested mode: %dx%dx%d, obtained mode %dx%dx%d (offset %d)\n",
++			width, height, bpp,
++			mode->w, mode->h, mode->format->BitsPerPixel, mode->offset);
++#endif
++			mode->w = width;
++			mode->h = height;
++			SDL_SetClipRect(mode, NULL);
++		}
+ 	}
++	
+ 	SDL_ResetCursor();
+ 	SDL_UnlockCursor();
+ 
+@@ -1022,6 +1412,7 @@ void SDL_UpdateRects (SDL_Surface *scree
+ 		SDL_SetError("OpenGL active, use SDL_GL_SwapBuffers()");
+ 		return;
+ 	}
++
+ 	if ( screen == SDL_ShadowSurface ) {
+ 		/* Blit the shadow surface using saved mapping */
+ 		SDL_Palette *pal = screen->format->palette;
+@@ -1048,14 +1439,75 @@ void SDL_UpdateRects (SDL_Surface *scree
+ 			SDL_UnlockCursor();
+ 		} else {
+ 			for ( i=0; i<numrects; ++i ) {
+-				SDL_LowerBlit(SDL_ShadowSurface, &rects[i], 
+-						SDL_VideoSurface, &rects[i]);
++				if (!Wiz240x320)
++				{
++					SDL_LowerBlit(SDL_ShadowSurface, &rects[i], 
++							SDL_VideoSurface, &rects[i]);
++				}
+ 			}
+ 		}
+ 		if ( saved_colors ) {
+ 			pal->colors = saved_colors;
+ 		}
++#if 1	/* 240 x 320 */
++		/* Right Most Vertical Draw */
++		if (Wiz240x320)
++		{
++			if (SDL_ShadowSurface->format->BitsPerPixel == 8)
++			{
++				unsigned char * dstBuf;
++				unsigned char * srcBuf;
++				unsigned char * target;
++				int j;
++
++				srcBuf = (unsigned char *)screen->pixels+319;
++				target = (unsigned char *)video->screen->pixels;
++
++				/* Perform software fill */
++				if ( SDL_LockSurface(screen) != 0 ) {
++					return(-1);
++				}
++
++				for( i=0; i<320;i++)
++				{
++					dstBuf = srcBuf-i;
++					for(j=0;j<240;j++)
++					{
++						*target++ = *dstBuf;
++						dstBuf+=320;	
++					}	
++				}
++				SDL_UnlockSurface(screen);
+ 
++			}
++			else if (SDL_ShadowSurface->format->BitsPerPixel == 16)
++			{
++				unsigned short * dstBuf;
++				unsigned short * srcBuf;
++				unsigned short * target;
++				int j;
++
++				srcBuf = (unsigned short *)screen->pixels+319;
++				target = (unsigned short *)video->screen->pixels;
++				
++				/* Perform software fill */
++				if ( SDL_LockSurface(screen) != 0 ) {
++					return(-1);
++				}
++				
++				for( i=0; i<320;i++)
++				{
++					dstBuf = srcBuf-i;
++					for(j=0;j<240;j++)
++					{
++						*target++ = *dstBuf;
++						dstBuf+=320;	
++					}	
++				}
++				SDL_UnlockSurface(screen);
++			}
++		}
++#endif
+ 		/* Fall through to video surface update */
+ 		screen = SDL_VideoSurface;
+ 	}
+@@ -1084,6 +1536,7 @@ int SDL_Flip(SDL_Surface *screen)
+ {
+ 	SDL_VideoDevice *video = current_video;
+ 	/* Copy the shadow surface to the video surface */
++	
+ 	if ( screen == SDL_ShadowSurface ) {
+ 		SDL_Rect rect;
+ 		SDL_Palette *pal = screen->format->palette;
+@@ -1112,12 +1565,71 @@ int SDL_Flip(SDL_Surface *screen)
+ 			SDL_EraseCursor(SDL_ShadowSurface);
+ 			SDL_UnlockCursor();
+ 		} else {
+-			SDL_LowerBlit(SDL_ShadowSurface, &rect,
+-					SDL_VideoSurface, &rect);
++			if (!Wiz240x320)	/* 240 x 320 */
++			{
++				SDL_LowerBlit(SDL_ShadowSurface, &rect,
++						SDL_VideoSurface, &rect);
++			}
+ 		}
+ 		if ( saved_colors ) {
+ 			pal->colors = saved_colors;
+ 		}
++#if 1	/* 240 x 320 */
++		if (Wiz240x320)
++		{
++			if ( SDL_ShadowSurface->format->BitsPerPixel == 8 ) {
++				unsigned char * dstBuf;
++				unsigned char * srcBuf;
++				unsigned char * target;
++				int i, j;
++
++				srcBuf = (unsigned char *)screen->pixels+319;
++				target = (unsigned char *)video->screen->pixels;
++				
++				/* Perform software fill */
++				if ( SDL_LockSurface(screen) != 0 ) {
++					return(-1);
++				}
++				
++				for( i=0; i<320;i++)
++				{
++					dstBuf =srcBuf-i;
++					for(j=0;j<240;j++)
++					{
++						*target++ = *dstBuf;
++						dstBuf+=320;	
++					}	
++				}
++				SDL_UnlockSurface(screen);
++			}
++			else if ( SDL_ShadowSurface->format->BitsPerPixel == 16 ) {
++				unsigned short * dstBuf;
++				unsigned short * srcBuf;
++				unsigned short * target;
++				int i, j;
++
++				srcBuf = (unsigned short *)screen->pixels+319;
++				target = (unsigned short *)video->screen->pixels;
++				
++				/* Perform software fill */
++				if ( SDL_LockSurface(screen) != 0 ) {
++					return(-1);
++				}
++				
++				for( i=0; i<320;i++)
++				{
++					dstBuf = srcBuf-i;
++					for(j=0;j<240;j++)
++					{
++						*target++ = *dstBuf;
++						dstBuf+=320;	
++					}	
++				}
++				SDL_UnlockSurface(screen);
++			}
++
++		}
++#endif
+ 
+ 		/* Fall through to video surface update */
+ 		screen = SDL_VideoSurface;
+@@ -1126,7 +1638,8 @@ int SDL_Flip(SDL_Surface *screen)
+ 		SDL_VideoDevice *this  = current_video;
+ 		return(video->FlipHWSurface(this, SDL_VideoSurface));
+ 	} else {
+-		SDL_UpdateRect(screen, 0, 0, 0, 0);
++		if (!Wiz240x320)	/* 240 x 320 */
++			SDL_UpdateRect(screen, 0, 0, 0, 0);
+ 	}
+ 	return(0);
+ }
+@@ -1378,8 +1891,13 @@ void SDL_VideoQuit (void)
+ 
+ 		/* Finish cleaning up video subsystem */
+ 		video->free(this);
++
+ 		current_video = NULL;
+ 	}
++
++	/* GP2X Wiz */
++	wizDeinit(num_bd);
++
+ 	return;
+ }
+ 
+Index: SDL-1.2.13/src/video/wizhard.c
+===================================================================
+--- /dev/null
++++ SDL-1.2.13/src/video/wizhard.c
+@@ -0,0 +1,137 @@
++/* Title: Wiz Hardware Access
++   Written by Israel LÃ³pez FernÃ¡ndez (Puck2099), (c) 2008.
++
++   Please check readme for licensing and other conditions. */
++
++#include "wizhard.h"
++
++static          unsigned long   wiz_dev[8]={0,0,0,0,0,0,0,0};
++volatile unsigned short *wiz_memregs;
++static volatile unsigned long  *wiz_memregl;
++static volatile wiz_palette wiz_video_RGB_palette[256];
++
++int Wiz240x320 = 0;
++void wizRotate(void) {
++	Wiz240x320 = 1;
++	return;
++}
++
++unsigned long initregval;
++
++void wizInit (int bpp)
++{
++    if (!wiz_dev[2])  wiz_dev[2] = open("/dev/mem",   O_RDWR);
++
++    int fb0_fd = open("/dev/fb0", O_RDWR | O_NONBLOCK);
++    if (fb0_fd < 0)
++    {
++	    printf("cannot open file :%s\n", "/dev/fb0");
++	    return;
++    }
++
++    if (bpp == 16 || bpp == 24)
++    {
++	    ioctl(fb0_fd, 0x4004445Fu, &bpp);
++    }
++    close(fb0_fd);
++
++    //map memory for Wiz hw registers
++    wiz_memregl=(unsigned long  *)mmap(0, 0x10000,                    PROT_READ|PROT_WRITE, MAP_SHARED, wiz_dev[2], 0xc0000000);
++    wiz_memregs=(unsigned short *)wiz_memregl;
++
++    if (bpp == 8)
++    {
++        wiz_memregl[0x4058>>2] = 0x443AD020;    // PTR5G6B5 pixel format
++        wiz_memregl[0x405C>>2] = 0x1;           // RGB Layer 1 Horizontal Stride
++        
++        if (Wiz240x320)
++	        wiz_memregl[0x4060>>2] = 240;//320;          // RGB Layer 1 Vertical Stride
++	else
++	        wiz_memregl[0x4060>>2] = 320;          // RGB Layer 1 Vertical Stride
++	        
++        wiz_memregl[0x4058>>2] = 0x443AD030;    // Apply changes (Dirty bit ON)
++
++        int i;
++        for (i=0; i<256; i++)                   // Default palette (All colours black)
++            wiz_memregl[0x4070>>2] = i<<24;
++    }
++    else if (bpp = 16)
++    {
++	wiz_memregl[0x4058>>2] = 0x4432D020;    // R5G6B5 pixel format
++	wiz_memregl[0x405C>>2] = 0x2;           // RGB Layer 1 Horizontal Stride
++	
++	if (Wiz240x320)
++		wiz_memregl[0x4060>>2] = 480;//640;         // RGB Layer 1 Vertical Stride
++	else
++		wiz_memregl[0x4060>>2] = 640;         // RGB Layer 1 Vertical Stride
++		
++	wiz_memregl[0x4058>>2] = 0x4432D030;    // Apply changes (Dirty bit ON)
++    }
++    else if (bpp = 24)
++    {
++	wiz_memregl[0x4058>>2] = 0x4653D020;    // R8G8B8 pixel format
++	wiz_memregl[0x405C>>2] = 0x3;           // RGB Layer 1 Horizontal Stride
++	
++	if (Wiz240x320)
++		wiz_memregl[0x4060>>2] = 720;//960;         // RGB Layer 1 Vertical Stride
++	else
++		wiz_memregl[0x4060>>2] = 960;         // RGB Layer 1 Vertical Stride
++		
++	wiz_memregl[0x4058>>2] = 0x4653D030;    // Apply changes (Dirty bit ON)
++    }
++}
++
++void wizDeinit(int board_num)
++{
++	if (board_num == 187 || board_num == 170)
++	{
++		wiz_memregl[0x4058>>2] = 0x4432D020;    // R5G6B5 pixel format
++		wiz_memregl[0x405C>>2] = 0x2;           // RGB Layer 1 Horizontal Stride
++	
++		if (Wiz240x320)
++			wiz_memregl[0x4060>>2] = 480;//640;         // RGB Layer 1 Vertical Stride
++		else
++			wiz_memregl[0x4060>>2] = 640;         // RGB Layer 1 Vertical Stride
++		
++		wiz_memregl[0x4058>>2] = 0x4432D030;    // Apply changes (Dirty bit ON)
++	}
++	else
++	{
++		wiz_memregl[0x4058>>2] = 0x4653D020;    // R8G8B8 pixel format
++		wiz_memregl[0x405C>>2] = 0x3;           // RGB Layer 1 Horizontal Stride
++	
++		if (Wiz240x320)
++			wiz_memregl[0x4060>>2] = 720;         // RGB Layer 1 Vertical Stride
++		else
++			wiz_memregl[0x4060>>2] = 960;         // RGB Layer 1 Vertical Stride
++		
++		wiz_memregl[0x4058>>2] = 0x4653D030;    // Apply changes (Dirty bit ON)
++	}
++
++	if (wiz_memregl) munmap((void *)wiz_memregl,      0x10000);
++
++	{
++		int i;
++		for (i=0;i<8;i++) if (wiz_dev[i]) close(wiz_dev[i]);
++	}
++}
++
++void WizVideoRGBColor8 (int R, int G, int B, int C)
++{
++    wiz_video_RGB_palette[C].color = (R>>3)<<11 | (G>>2)<<5 | (B>>3);
++    wiz_video_RGB_palette[C].dirty = 1;
++}
++
++void WizVideoRGBSetPalette(void)
++{
++    int i;
++    for (i=0; i<256; i++)
++    {
++        if (wiz_video_RGB_palette[i].dirty)
++        {
++            wiz_memregl[0x4070>>2] = i<<24 | wiz_video_RGB_palette[i].color;
++            wiz_video_RGB_palette[i].dirty = 0;
++        }
++    }
++    wiz_memregl[0x4058>>2] |= 0x10; // Apply changes
++}
+Index: SDL-1.2.13/src/video/wizhard.h
+===================================================================
+--- /dev/null
++++ SDL-1.2.13/src/video/wizhard.h
+@@ -0,0 +1,30 @@
++/* Title: Wiz Hardware Access
++   Written by Israel LÃ³pez FernÃ¡ndez (Puck2099), (c) 2008.
++
++   Please check readme for licensing and other conditions. */
++
++#ifndef PLIBS_H
++#define PLIBS_H
++
++#include <stdio.h>
++#include <stdlib.h>
++#include <sys/mman.h>
++#include <string.h>
++#include <fcntl.h>
++#include <unistd.h>
++
++typedef struct wiz_palette
++{
++    unsigned short color;
++    int dirty;
++} wiz_palette;
++
++extern void wizInit(int bpp);
++extern void wizDeinit(int board_num);
++extern void WizVideoRGBColor8 (int, int, int, int);
++extern void WizVideoRGBSetPalette(void);
++
++extern int Wiz240x320;
++extern void wizRotate(void);
++
++#endif // PLIBS_H

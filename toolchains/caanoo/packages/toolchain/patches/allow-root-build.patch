@@ -1,0 +1,18 @@
+diff --git a/config/global/ct-behave.in b/config/global/ct-behave.in
+index 42171e4d..244a2d60 100644
+--- a/config/global/ct-behave.in
++++ b/config/global/ct-behave.in
+@@ -32,5 +32,4 @@ config EXPERIMENTAL
+ config ALLOW_BUILD_AS_ROOT
+-    bool
++    def_bool y
+     prompt "Allow building as root user (READ HELP!)"
+-    depends on EXPERIMENTAL
+     help
+@@ -57,6 +56,6 @@ config ALLOW_BUILD_AS_ROOT
+ 
+ config ALLOW_BUILD_AS_ROOT_SURE
+-    bool
++    def_bool y
+     prompt "Are you sure?"
+     depends on ALLOW_BUILD_AS_ROOT
