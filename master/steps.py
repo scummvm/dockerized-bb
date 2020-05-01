@@ -135,6 +135,14 @@ class CleanShellSequence(ShellSequence):
     def getResultSummary(self):
         return buildstep.BuildStep.getResultSummary(self)
 
+PACKAGE_FORMAT_COMMANDS = {
+    # format: [command, options]
+    "tar.bz2": ["tar", "cvjf"],
+    "tar.gz": ["tar", "cvzf"],
+    "tar.xz": ["tar", "cvJf"],
+    "zip": ["zip", "-r"],
+}
+
 def Package(disttarget, srcpath, dstpath, data_files,
         buildname, platform_built_files, platform_data_files, archive_format, 
         **kwargs):
@@ -147,21 +155,16 @@ def Package(disttarget, srcpath, dstpath, data_files,
 
     @renderer
     def generateCommands(props):
-        name = "{0}-{1}".format(buildname, props["revision"][:8])
-        archive = "{0}.{1}".format(name, archive_format)
-        symlink = "{0}-latest.{1}".format(buildname, archive_format)
+        # Create a mutable variable from the outer one
+        archive_format_ = archive_format
+        if archive_format_ not in PACKAGE_FORMAT_COMMANDS:
+            archive_format_ = "tar.bz2"
 
-        format_commands = {
-            # format: [command, options]
-            "zip": ["zip", "-r"],
-            "tar.xz": ["tar", "cvJf"],
-            "tar.gz": ["tar", "cvzf"],
-            "tar.bz2": ["tar", "cvjf"]
-        }
-        if archive_format not in format_commands:
-            archive_format = "tar.bz2"
-            archive += archive_format           
-        archive_command = format_commands.get(archive_format) + [archive, name+"/"]
+        name = "{0}-{1}".format(buildname, props["revision"][:8])
+        archive = "{0}.{1}".format(name, archive_format_)
+        symlink = "{0}-latest.{1}".format(buildname, archive_format_)
+
+        archive_command = PACKAGE_FORMAT_COMMANDS.get(archive_format_) + [archive, name+"/"]
 
         commands = []
 
