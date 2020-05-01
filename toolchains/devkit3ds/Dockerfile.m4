@@ -64,4 +64,6 @@ pacman_package(3ds-curl)
 
 pacman_package(3ds-freetype)
 
+helpers_package(fribidi)
+
 # No fluidsynth

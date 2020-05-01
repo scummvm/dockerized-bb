@@ -51,4 +51,6 @@ helpers_package(a52dec)
 
 pacman_package(nds-freetype)
 
+helpers_package(fribidi)
+
 # No fluidsynth

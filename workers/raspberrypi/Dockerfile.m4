@@ -12,6 +12,7 @@ RUN dpkg --add-architecture armhf && \
 		libflac-dev:armhf \
 		libfluidsynth-dev:armhf \
 		libfreetype6-dev:armhf \
+		libfribidi-dev:armhf \
 		libjpeg62-turbo-dev:armhf \
 		libmad0-dev:armhf \
 		libmpeg2-4-dev:armhf \

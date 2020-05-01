@@ -9,6 +9,7 @@ RUN apt-get update && \
 		libflac-dev \
 		libfluidsynth-dev \
 		libfreetype6-dev \
+		libfribidi-dev \
 		libjpeg62-turbo-dev \
 		libmad0-dev \
 		libmpeg2-4-dev \

@@ -34,6 +34,8 @@ helpers_package(curl)
 
 helpers_package(freetype)
 
+helpers_package(fribidi)
+
 # Specific android patched version
 android_package(libsdl2)
 

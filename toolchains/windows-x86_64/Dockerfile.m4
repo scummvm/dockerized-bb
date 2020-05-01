@@ -70,6 +70,8 @@ helpers_package(curl, --without-ssl --with-winssl --with-winidn --disable-pthrea
 
 helpers_package(freetype)
 
+helpers_package(fribidi)
+
 local_package(libsdl2)
 
 helpers_package(libsdl2-net)

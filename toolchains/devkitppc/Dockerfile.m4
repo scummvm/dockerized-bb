@@ -91,4 +91,6 @@ helpers_package(a52dec)
 
 pacman_package(ppc-freetype)
 
+helpers_package(fribidi)
+
 # No fluidsynth

@@ -69,6 +69,8 @@ local_package(curl)
 
 local_package(freetype)
 
+helpers_package(fribidi)
+
 local_package(sdl2)
 
 local_package(sdl2_net)

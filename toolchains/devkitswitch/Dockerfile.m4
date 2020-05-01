@@ -90,6 +90,8 @@ pacman_package(switch-curl)
 
 pacman_package(switch-freetype)
 
+helpers_package(fribidi)
+
 pacman_package(switch-sdl2)
 
 pacman_package(switch-sdl2_net)
