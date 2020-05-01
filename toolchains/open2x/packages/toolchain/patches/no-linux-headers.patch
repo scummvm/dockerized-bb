@@ -1,0 +1,11 @@
+Index: gcc-4.1.1-glibc-2.3.6-hdrs-gp2x.dat
+===================================================================
+--- a/gcc-4.1.1-glibc-2.3.6-hdrs-gp2x.dat	(revision 376)
++++ b/gcc-4.1.1-glibc-2.3.6-hdrs-gp2x.dat	(working copy)
+@@ -3,5 +3,5 @@
+ GCC_DIR=gcc-4.1.1
+ GLIBC_DIR=glibc-2.3.6
+ LINUX_DIR=linux-2.6.11.2
+-LINUX_SANITIZED_HEADER_DIR=linux-libc-headers-2.6.11.2
++DO_NOT_USE_LINUX_SANITIZED_HEADER_DIR=linux-libc-headers-2.6.11.2
+ GLIBCTHREADS_FILENAME=glibc-linuxthreads-2.3.6

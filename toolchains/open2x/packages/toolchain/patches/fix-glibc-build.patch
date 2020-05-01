@@ -1,0 +1,154 @@
+Index: patches/glibc-2.3.6/fix-configure.patch
+===================================================================
+--- a/patches/glibc-2.3.6/fix-configure.patch	(nonexistent)
++++ b/patches/glibc-2.3.6/fix-configure.patch	(working copy)
+@@ -0,0 +1,127 @@
++--- a/configure	2020-04-12 18:58:35.522139192 +0200
+++++ b/configure	2020-04-12 19:08:06.649377145 +0200
++@@ -3915,11 +3915,11 @@
++   echo "$as_me:$LINENO: checking version of $AS" >&5
++ echo $ECHO_N "checking version of $AS... $ECHO_C" >&6
++   ac_prog_version=`$AS --version 2>&1 | sed -n 's/^.*GNU assembler.* \([0-9]*\.[0-9.]*\).*$/\1/p'`
++   case $ac_prog_version in
++     '') ac_prog_version="v. ?.??, bad"; ac_verc_fail=yes;;
++-    2.1[3-9]*)
+++    2.1[0-9][0-9]*|2.1[3-9]*|2.[2-9]*|[3-9].*|[1-9][0-9]*)
++        ac_prog_version="$ac_prog_version, ok"; ac_verc_fail=no;;
++     *) ac_prog_version="$ac_prog_version, bad"; ac_verc_fail=yes;;
++ 
++   esac
++   echo "$as_me:$LINENO: result: $ac_prog_version" >&5
++@@ -3976,11 +3976,11 @@
++   echo "$as_me:$LINENO: checking version of $LD" >&5
++ echo $ECHO_N "checking version of $LD... $ECHO_C" >&6
++   ac_prog_version=`$LD --version 2>&1 | sed -n 's/^.*GNU ld.* \([0-9][0-9]*\.[0-9.]*\).*$/\1/p'`
++   case $ac_prog_version in
++     '') ac_prog_version="v. ?.??, bad"; ac_verc_fail=yes;;
++-    2.1[3-9]*)
+++    2.1[0-9][0-9]*|2.1[3-9]*|2.[2-9]*|[3-9].*|[1-9][0-9]*)
++        ac_prog_version="$ac_prog_version, ok"; ac_verc_fail=no;;
++     *) ac_prog_version="$ac_prog_version, bad"; ac_verc_fail=yes;;
++ 
++   esac
++   echo "$as_me:$LINENO: result: $ac_prog_version" >&5
++@@ -4091,11 +4091,11 @@
++   echo "$as_me:$LINENO: checking version of $CC" >&5
++ echo $ECHO_N "checking version of $CC... $ECHO_C" >&6
++   ac_prog_version=`$CC -v 2>&1 | sed -n 's/^.*version \([egcygnustpi-]*[0-9.]*\).*$/\1/p'`
++   case $ac_prog_version in
++     '') ac_prog_version="v. ?.??, bad"; ac_verc_fail=yes;;
++-    3.[2-9]* | 4.[0-9]* )
+++    3.[2-9]* | [4-9].[0-9]* | [0-9][0-9].[0-9]* )
++        ac_prog_version="$ac_prog_version, ok"; ac_verc_fail=no;;
++     *) ac_prog_version="$ac_prog_version, bad"; ac_verc_fail=yes;;
++ 
++   esac
++   echo "$as_me:$LINENO: result: $ac_prog_version" >&5
++@@ -4152,11 +4152,11 @@
++   echo "$as_me:$LINENO: checking version of $MAKE" >&5
++ echo $ECHO_N "checking version of $MAKE... $ECHO_C" >&6
++   ac_prog_version=`$MAKE --version 2>&1 | sed -n 's/^.*GNU Make[^0-9]*\([0-9][0-9.]*\).*$/\1/p'`
++   case $ac_prog_version in
++     '') ac_prog_version="v. ?.??, bad"; ac_verc_fail=yes;;
++-    3.79* | 3.[89]*)
+++    [4-9].* | [1-9][0-9]*)
++        ac_prog_version="$ac_prog_version, ok"; ac_verc_fail=no;;
++     *) ac_prog_version="$ac_prog_version, bad"; ac_verc_fail=yes;;
++ 
++   esac
++   echo "$as_me:$LINENO: result: $ac_prog_version" >&5
++@@ -4275,11 +4275,11 @@
++   echo "$as_me:$LINENO: checking version of $MAKEINFO" >&5
++ echo $ECHO_N "checking version of $MAKEINFO... $ECHO_C" >&6
++   ac_prog_version=`$MAKEINFO --version 2>&1 | sed -n 's/^.*GNU texinfo.* \([0-9][0-9.]*\).*$/\1/p'`
++   case $ac_prog_version in
++     '') ac_prog_version="v. ?.??, bad"; ac_verc_fail=yes;;
++-    4.*)
+++    [4-9].*)
++        ac_prog_version="$ac_prog_version, ok"; ac_verc_fail=no;;
++     *) ac_prog_version="$ac_prog_version, bad"; ac_verc_fail=yes;;
++ 
++   esac
++   echo "$as_me:$LINENO: result: $ac_prog_version" >&5
++@@ -4333,11 +4333,11 @@
++   ac_verc_fail=yes
++ else
++   # Found it, now check the version.
++   echo "$as_me:$LINENO: checking version of $SED" >&5
++ echo $ECHO_N "checking version of $SED... $ECHO_C" >&6
++-  ac_prog_version=`$SED --version 2>&1 | sed -n 's/^.*GNU sed version \([0-9]*\.[0-9.]*\).*$/\1/p'`
+++  ac_prog_version=`$SED --version 2>&1 | sed -n 's/^.*GNU sed[^0-9]* \([0-9]*\.[0-9.]*\).*$/\1/p'`
++   case $ac_prog_version in
++     '') ac_prog_version="v. ?.??, bad"; ac_verc_fail=yes;;
++     3.0[2-9]*|3.[1-9]*|[4-9]*)
++        ac_prog_version="$ac_prog_version, ok"; ac_verc_fail=no;;
++     *) ac_prog_version="$ac_prog_version, bad"; ac_verc_fail=yes;;
++--- a/configure.in	2005-07-18 03:38:55.000000000 +0200
+++++ b/configure.in	2020-04-12 18:56:36.406101385 +0200
++@@ -732,14 +732,16 @@
++ AC_SUBST(MIG)dnl Needed by sysdeps/mach/configure.in
++ 
++ # Accept binutils 2.13 or newer.
++ AC_CHECK_PROG_VER(AS, $AS, --version,
++ 		  [GNU assembler.* \([0-9]*\.[0-9.]*\)],
++-		  [2.1[3-9]*], AS=: critic_missing="$critic_missing as")
+++		  [2.1[0-9][0-9]*|2.1[3-9]*|2.[2-9]*|[3-9].*|[1-9][0-9]*],
+++		  AS=: critic_missing="$critic_missing as")
++ AC_CHECK_PROG_VER(LD, $LD, --version,
++ 		  [GNU ld.* \([0-9][0-9]*\.[0-9.]*\)],
++-		  [2.1[3-9]*], LD=: critic_missing="$critic_missing ld")
+++		  [2.1[0-9][0-9]*|2.1[3-9]*|2.[2-9]*|[3-9].*|[1-9][0-9]*],
+++		  LD=: critic_missing="$critic_missing ld")
++ 
++ # We need the physical current working directory.  We cannot use the
++ # "pwd -P" shell builtin since that's not portable.  Instead we try to
++ # find a pwd binary.  Note that assigning to the PWD environment
++ # variable might have some interesting side effects, so we don't do
++@@ -754,22 +756,22 @@
++ AC_CHECK_PROG_VER(CC, ${ac_tool_prefix}gcc ${ac_tool_prefix}cc, -v,
++   [version \([egcygnustpi-]*[0-9.]*\)], [3.[2-9]* | 4.[0-9]* ],
++   critic_missing="$critic_missing gcc")
++ AC_CHECK_PROG_VER(MAKE, gnumake gmake make, --version,
++   [GNU Make[^0-9]*\([0-9][0-9.]*\)],
++-  [3.79* | 3.[89]*], critic_missing="$critic_missing make")
+++  [[4-9].* | [1-9][0-9]*], critic_missing="$critic_missing make")
++ 
++ AC_CHECK_PROG_VER(MSGFMT, gnumsgfmt gmsgfmt msgfmt, --version,
++   [GNU gettext.* \([0-9]*\.[0-9.]*\)],
++   [0.10.3[6-9]* | 0.10.[4-9][0-9]* | 0.1[1-9]* | 0.[2-9][0-9]* | [1-9].*],
++   MSGFMT=: aux_missing="$aux_missing msgfmt")
++ AC_CHECK_PROG_VER(MAKEINFO, makeinfo, --version,
++   [GNU texinfo.* \([0-9][0-9.]*\)],
++-  [4.*],
+++  [[4-9].*],
++   MAKEINFO=: aux_missing="$aux_missing makeinfo")
++ AC_CHECK_PROG_VER(SED, sed, --version,
++-  [GNU sed version \([0-9]*\.[0-9.]*\)],
+++  [GNU sed[^0-9]* \([0-9]*\.[0-9.]*\)],
++   [3.0[2-9]*|3.[1-9]*|[4-9]*],
++   SED=: aux_missing="$aux_missing sed")
++ 
++ AC_CHECK_PROGS(AUTOCONF, autoconf, no)
++ case "x$AUTOCONF" in
+Index: patches/glibc-2.3.6/fix-manual-rule.patch
+===================================================================
+--- a/patches/glibc-2.3.6/fix-manual-rule.patch	(nonexistent)
++++ b/patches/glibc-2.3.6/fix-manual-rule.patch	(working copy)
+@@ -0,0 +1,17 @@
++Index: glibc-2.3.6/manual/Makefile
++===================================================================
++--- glibc-2.3.6.orig/manual/Makefile
+++++ glibc-2.3.6/manual/Makefile
++@@ -233,7 +233,11 @@ ifdef objpfx
++ .PHONY: stubs
++ stubs: $(objpfx)stubs
++ endif
++-$(objpfx)stubs ../po/manual.pot $(objpfx)stamp%:
+++$(objpfx)stubs ../po/manual.pot:
+++	$(make-target-directory)
+++	touch $@
+++
+++$(objpfx)stamp%:
++ 	$(make-target-directory)
++ 	touch $@
++ 
