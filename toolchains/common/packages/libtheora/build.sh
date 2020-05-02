@@ -12,7 +12,7 @@ do_pkg_fetch libtheora
 sed -ie 's/^\(SUBDIRS.*\) doc/\1/' Makefile.am
 
 autoreconf -fi -I m4
-do_configure --disable-examples --disable-spec --disable-doc
+do_configure --disable-examples --disable-spec --disable-doc "$@"
 do_make
 do_make install
 
