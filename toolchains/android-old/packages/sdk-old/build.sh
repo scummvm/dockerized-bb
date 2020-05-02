@@ -14,8 +14,11 @@ do_make_bdir
 
 export ANDROID_SDK_HOME=$(pwd)
 
-do_http_fetch tools "https://dl.google.com/android/repository/tools_r${SDK_VERSION}-${HOST_TAG%-*}.zip" 'unzip' \
+do_http_fetch tools "http://dl.google.com/android/repository/tools_r${SDK_VERSION}-${HOST_TAG%-*}.zip" 'unzip' \
 	"sha1:${SDK_SHA1}"
+
+# Cleanup what we don't need in tools
+rm -rf apps lib/monitor-x86 lib/monitor-x86_64 qemu emulator* bin64 lib64 emulator64-crash-service
 
 # Fix permissions
 find . -type f -executable -exec chmod +x {} +
@@ -67,14 +70,11 @@ DEBIAN_FRONTEND=noninteractive apt-get autoremove --purge -y \
 
 mkdir -p "${ANDROID_SDK_ROOT}"
 
-# Download needed parts
-yes | ./bin/sdkmanager --sdk_root="${ANDROID_SDK_ROOT}" "build-tools;25.0.3" platform-tools "platforms;android-28"
-
-# Cleanup what we don't need in tools
-rm -rf apps lib/monitor-x86 lib/monitor-x86_64 qemu emulator* bin64 lib64 emulator64-crash-service
-
 # Move
 mkdir "${ANDROID_SDK_ROOT}/tools/"
 mv ./* "${ANDROID_SDK_ROOT}/tools/"
+
+# Download needed parts
+yes | "${ANDROID_SDK_ROOT}"/tools/bin/sdkmanager --no_https --sdk_root="${ANDROID_SDK_ROOT}" "build-tools;25.0.3" platform-tools "platforms;android-28"
 
 do_clean_bdir
