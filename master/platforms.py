@@ -314,6 +314,25 @@ def nds():
     register_platform(platform)
 nds()
 
+def openpandora():
+    platform = Platform("openpandora")
+    platform.workerimage = "openpandora"
+    platform.compatibleBuilds = (builds.ScummVMBuild, )
+    platform.env["CXX"] = "ccache /opt/openpandora/bin/arm-angstrom-linux-gnueabi-c++"
+    platform.configureargs.append("--host=openpandora")
+    platform.buildconfigureargs = {
+        builds.ScummVMBuild: [ "--enable-plugins", "--default-dynamic", "--enable-vkeybd" ],
+    }
+    platform.packaging_cmd = "op-pnd"
+    platform.built_files = {
+        builds.ScummVMBuild: [ "release/scummvm-op-pnd.tar.bz2" ],
+    }
+    platform.archiveext = "tar.bz2"
+    platform.testable = False
+    platform.run_tests = False
+    register_platform(platform)
+openpandora()
+
 def ps3():
     platform = Platform("ps3")
     platform.compatibleBuilds = (builds.ScummVMBuild, )

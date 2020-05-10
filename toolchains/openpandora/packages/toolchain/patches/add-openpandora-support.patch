@@ -1,0 +1,579 @@
+diff --git a/config/libc/glibc.in b/config/libc/glibc.in
+index 4138707f..ca54d9d2 100644
+--- a/config/libc/glibc.in
++++ b/config/libc/glibc.in
+@@ -5,7 +5,7 @@
+ ## select LIBC_SUPPORT_THREADS_NATIVE
+ ## select CC_CORE_PASSES_NEEDED
+ # TBD: select GETTEXT for build only, not for host
+-## select GETTEXT_NEEDED
++## select GETTEXT_NEEDED if !GLIBC_V_2_9
+ ## select BINUTILS_FORCE_LD_BFD_DEFAULT
+ 
+ ## help The de-facto standard for Linux distributions.
+diff --git a/packages/glibc-ports/2.9/0000-Fix-ARM-build-with-GCC-trunk.patch b/packages/glibc-ports/2.9/0000-Fix-ARM-build-with-GCC-trunk.patch
+new file mode 100644
+index 00000000..a8eff6a0
+--- /dev/null
++++ b/packages/glibc-ports/2.9/0000-Fix-ARM-build-with-GCC-trunk.patch
+@@ -0,0 +1,56 @@
++Index: glibc-ports-2.9/sysdeps/unix/sysv/linux/arm/eabi/nptl/unwind-forcedunwind.c
++===================================================================
++--- glibc-ports-2.9.orig/sysdeps/unix/sysv/linux/arm/eabi/nptl/unwind-forcedunwind.c
+++++ glibc-ports-2.9/sysdeps/unix/sysv/linux/arm/eabi/nptl/unwind-forcedunwind.c
++@@ -22,7 +22,8 @@
++ #include <unwind.h>
++ #include <pthreadP.h>
++ 
++-static void (*libgcc_s_resume) (struct _Unwind_Exception *exc);
+++static void (*libgcc_s_resume) (struct _Unwind_Exception *exc)
+++	__attribute_used__;
++ static _Unwind_Reason_Code (*libgcc_s_personality)
++   (_Unwind_State, struct _Unwind_Exception *, struct _Unwind_Context *);
++ static _Unwind_Reason_Code (*libgcc_s_forcedunwind)
++Index: glibc-ports-2.9/sysdeps/unix/sysv/linux/arm/eabi/nptl/unwind-resume.c
++===================================================================
++--- glibc-ports-2.9.orig/sysdeps/unix/sysv/linux/arm/eabi/nptl/unwind-resume.c
+++++ glibc-ports-2.9/sysdeps/unix/sysv/linux/arm/eabi/nptl/unwind-resume.c
++@@ -21,7 +21,8 @@
++ #include <stdio.h>
++ #include <unwind.h>
++ 
++-static void (*libgcc_s_resume) (struct _Unwind_Exception *exc);
+++static void (*libgcc_s_resume) (struct _Unwind_Exception *exc)
+++	__attribute_used__;
++ static _Unwind_Reason_Code (*libgcc_s_personality)
++   (_Unwind_State, struct _Unwind_Exception *, struct _Unwind_Context *);
++ 
++Index: glibc-ports-2.9/sysdeps/unix/sysv/linux/arm/nptl/unwind-forcedunwind.c
++===================================================================
++--- glibc-ports-2.9.orig/sysdeps/unix/sysv/linux/arm/nptl/unwind-forcedunwind.c
+++++ glibc-ports-2.9/sysdeps/unix/sysv/linux/arm/nptl/unwind-forcedunwind.c
++@@ -22,7 +22,8 @@
++ #include <unwind.h>
++ #include <pthreadP.h>
++ 
++-static void (*libgcc_s_resume) (struct _Unwind_Exception *exc);
+++static void (*libgcc_s_resume) (struct _Unwind_Exception *exc)
+++	__attribute_used__;
++ static _Unwind_Reason_Code (*libgcc_s_personality)
++   (int, _Unwind_Action, _Unwind_Exception_Class, struct _Unwind_Exception *,
++    struct _Unwind_Context *);
++Index: glibc-ports-2.9/sysdeps/unix/sysv/linux/arm/nptl/unwind-resume.c
++===================================================================
++--- glibc-ports-2.9.orig/sysdeps/unix/sysv/linux/arm/nptl/unwind-resume.c
+++++ glibc-ports-2.9/sysdeps/unix/sysv/linux/arm/nptl/unwind-resume.c
++@@ -21,7 +21,8 @@
++ #include <stdio.h>
++ #include <unwind.h>
++ 
++-static void (*libgcc_s_resume) (struct _Unwind_Exception *exc);
+++static void (*libgcc_s_resume) (struct _Unwind_Exception *exc)
+++	__attribute_used__;
++ static _Unwind_Reason_Code (*libgcc_s_personality)
++   (int, _Unwind_Action, _Unwind_Exception_Class, struct _Unwind_Exception *,
++    struct _Unwind_Context *);
+diff --git a/packages/glibc-ports/2.9/0100-arm-lowlevellock-include-tls.patch b/packages/glibc-ports/2.9/0100-arm-lowlevellock-include-tls.patch
+new file mode 100644
+index 00000000..2f8e6756
+--- /dev/null
++++ b/packages/glibc-ports/2.9/0100-arm-lowlevellock-include-tls.patch
+@@ -0,0 +1,12 @@
++Index: sysdeps/unix/sysv/linux/arm/nptl/lowlevellock.h
++===================================================================
++--- a/sysdeps/unix/sysv/linux/arm/nptl/lowlevellock.h	2009-06-19 20:54:35.446686910 +0400
+++++ b/sysdeps/unix/sysv/linux/arm/nptl/lowlevellock.h	2009-06-19 20:54:43.774683370 +0400
++@@ -25,6 +25,7 @@
++ #include <atomic.h>
++ #include <sysdep.h>
++ #include <kernel-features.h>
+++#include <tls.h>
++ 
++ #define FUTEX_WAIT		0
++ #define FUTEX_WAKE		1
+diff --git a/packages/glibc-ports/2.9/chksum b/packages/glibc-ports/2.9/chksum
+new file mode 100644
+index 00000000..08afc976
+--- /dev/null
++++ b/packages/glibc-ports/2.9/chksum
+@@ -0,0 +1,8 @@
++md5 glibc-ports-2.9.tar.bz2 7d5d86031cb15403e4d246658209ee81
++sha1 glibc-ports-2.9.tar.bz2 599f44dd21c653a115ebf9dbb73eeff9d89b4f86
++sha256 glibc-ports-2.9.tar.bz2 824c97b83f1ec2894ee0e824db6d542c40b978d2f6c4364c7411777e44b15a64
++sha512 glibc-ports-2.9.tar.bz2 bdaad157dffb3e029a62d3c34e21042aa45b10bc728e9373774000c3bae4281f92b98a806320de9b18899e9f213a7f2730c45ddd571336ed576612a260aad9c1
++md5 glibc-ports-2.9.tar.gz 1d136173241ce2b0554ffe302e909cc5
++sha1 glibc-ports-2.9.tar.gz d5e2f500c60296c25159017f045c062b6e79b32b
++sha256 glibc-ports-2.9.tar.gz ce23634accd7df13a97827ddb7e9e668b95e72e7a0936db68e728467f8583c44
++sha512 glibc-ports-2.9.tar.gz ec412fe98768d9c04bfda4f453f2af4da34823e3041e6eaea439887f0fd408e8f5c13672c5c60a910cfa9802a299b880fa879345b516d1d4f237d94e524e7668
+diff --git a/packages/glibc-ports/2.9/version.desc b/packages/glibc-ports/2.9/version.desc
+new file mode 100644
+index 00000000..d44e333b
+--- /dev/null
++++ b/packages/glibc-ports/2.9/version.desc
+@@ -0,0 +1 @@
++archive_formats='.tar.bz2 .tar.gz'
+diff --git a/packages/glibc/2.9/0000-fix-configure-versions.patch b/packages/glibc/2.9/0000-fix-configure-versions.patch
+new file mode 100644
+index 00000000..018dfbbe
+--- /dev/null
++++ b/packages/glibc/2.9/0000-fix-configure-versions.patch
+@@ -0,0 +1,105 @@
++Index: glibc-2.9/configure
++===================================================================
++--- glibc-2.9.orig/configure
+++++ glibc-2.9/configure
++@@ -4531,7 +4531,7 @@ echo $ECHO_N "checking version of $AS...
++   ac_prog_version=`$AS --version 2>&1 | sed -n 's/^.*GNU assembler.* \([0-9]*\.[0-9.]*\).*$/\1/p'`
++   case $ac_prog_version in
++     '') ac_prog_version="v. ?.??, bad"; ac_verc_fail=yes;;
++-    2.1[3-9]*)
+++    2.1[0-9][0-9]*|2.1[3-9]*|2.[2-9]*|[3-9].*|[1-9][0-9]*)
++        ac_prog_version="$ac_prog_version, ok"; ac_verc_fail=no;;
++     *) ac_prog_version="$ac_prog_version, bad"; ac_verc_fail=yes;;
++ 
++@@ -4594,7 +4594,7 @@ echo $ECHO_N "checking version of $LD...
++   ac_prog_version=`$LD --version 2>&1 | sed -n 's/^.*GNU ld.* \([0-9][0-9]*\.[0-9.]*\).*$/\1/p'`
++   case $ac_prog_version in
++     '') ac_prog_version="v. ?.??, bad"; ac_verc_fail=yes;;
++-    2.1[3-9]*)
+++    2.1[0-9][0-9]*|2.1[3-9]*|2.[2-9]*|[3-9].*|[1-9][0-9]*)
++        ac_prog_version="$ac_prog_version, ok"; ac_verc_fail=no;;
++     *) ac_prog_version="$ac_prog_version, bad"; ac_verc_fail=yes;;
++ 
++@@ -4712,7 +4712,7 @@ echo $ECHO_N "checking version of $CC...
++   ac_prog_version=`$CC -v 2>&1 | sed -n 's/^.*version \([egcygnustpi-]*[0-9.]*\).*$/\1/p'`
++   case $ac_prog_version in
++     '') ac_prog_version="v. ?.??, bad"; ac_verc_fail=yes;;
++-    3.4* | 4.[0-9]* )
+++    3.4* | [4-9].[0-9]* | [0-9][0-9].[0-9]* )
++        ac_prog_version="$ac_prog_version, ok"; ac_verc_fail=no;;
++     *) ac_prog_version="$ac_prog_version, bad"; ac_verc_fail=yes;;
++ 
++@@ -4775,7 +4775,7 @@ echo $ECHO_N "checking version of $MAKE.
++   ac_prog_version=`$MAKE --version 2>&1 | sed -n 's/^.*GNU Make[^0-9]*\([0-9][0-9.]*\).*$/\1/p'`
++   case $ac_prog_version in
++     '') ac_prog_version="v. ?.??, bad"; ac_verc_fail=yes;;
++-    3.79* | 3.[89]*)
+++    3.79* | 3.[89]* | [4-9].* | [1-9][0-9]*)
++        ac_prog_version="$ac_prog_version, ok"; ac_verc_fail=no;;
++     *) ac_prog_version="$ac_prog_version, bad"; ac_verc_fail=yes;;
++ 
++@@ -4902,7 +4902,7 @@ echo $ECHO_N "checking version of $MAKEI
++   ac_prog_version=`$MAKEINFO --version 2>&1 | sed -n 's/^.*GNU texinfo.* \([0-9][0-9.]*\).*$/\1/p'`
++   case $ac_prog_version in
++     '') ac_prog_version="v. ?.??, bad"; ac_verc_fail=yes;;
++-    4.*)
+++    [4-9].*)
++        ac_prog_version="$ac_prog_version, ok"; ac_verc_fail=no;;
++     *) ac_prog_version="$ac_prog_version, bad"; ac_verc_fail=yes;;
++ 
++@@ -4962,7 +4962,7 @@ else
++   # Found it, now check the version.
++   { echo "$as_me:$LINENO: checking version of $SED" >&5
++ echo $ECHO_N "checking version of $SED... $ECHO_C" >&6; }
++-  ac_prog_version=`$SED --version 2>&1 | sed -n 's/^.*GNU sed version \([0-9]*\.[0-9.]*\).*$/\1/p'`
+++  ac_prog_version=`$SED --version 2>&1 | sed -n 's/^.*GNU sed[^0-9]* \([0-9]*\.[0-9.]*\).*$/\1/p'`
++   case $ac_prog_version in
++     '') ac_prog_version="v. ?.??, bad"; ac_verc_fail=yes;;
++     3.0[2-9]*|3.[1-9]*|[4-9]*)
++Index: glibc-2.7/configure.in
++===================================================================
++--- glibc-2.7.orig/configure.in
+++++ glibc-2.7/configure.in
++@@ -844,10 +844,12 @@ AC_SUBST(MIG)dnl Needed by sysdeps/mach/
++ # Accept binutils 2.13 or newer.
++ AC_CHECK_PROG_VER(AS, $AS, --version,
++ 		  [GNU assembler.* \([0-9]*\.[0-9.]*\)],
++-		  [2.1[3-9]*], AS=: critic_missing="$critic_missing as")
+++		  [2.1[0-9][0-9]*|2.1[3-9]*|2.[2-9]*|[3-9].*|[1-9][0-9]*],
+++		  AS=: critic_missing="$critic_missing as")
++ AC_CHECK_PROG_VER(LD, $LD, --version,
++ 		  [GNU ld.* \([0-9][0-9]*\.[0-9.]*\)],
++-		  [2.1[3-9]*], LD=: critic_missing="$critic_missing ld")
+++		  [2.1[0-9][0-9]*|2.1[3-9]*|2.[2-9]*|[3-9].*|[1-9][0-9]*],
+++		  LD=: critic_missing="$critic_missing ld")
++ 
++ # We need the physical current working directory.  We cannot use the
++ # "pwd -P" shell builtin since that's not portable.  Instead we try to
++@@ -862,11 +864,12 @@ fi
++ # These programs are version sensitive.
++ AC_CHECK_TOOL_PREFIX
++ AC_CHECK_PROG_VER(CC, ${ac_tool_prefix}gcc ${ac_tool_prefix}cc, -v,
++-  [version \([egcygnustpi-]*[0-9.]*\)], [3.4* | 4.[0-9]* ],
+++  [version \([egcygnustpi-]*[0-9.]*\)],
+++  [3.4* | [4-9].[0-9]* | [0-9][0-9].[0-9]*],
++   critic_missing="$critic_missing gcc")
++ AC_CHECK_PROG_VER(MAKE, gnumake gmake make, --version,
++   [GNU Make[^0-9]*\([0-9][0-9.]*\)],
++-  [3.79* | 3.[89]*], critic_missing="$critic_missing make")
+++  3.79* | 3.[89]* | [[4-9].* | [1-9][0-9]*], critic_missing="$critic_missing make")
++ 
++ AC_CHECK_PROG_VER(MSGFMT, gnumsgfmt gmsgfmt msgfmt, --version,
++   [GNU gettext.* \([0-9]*\.[0-9.]*\)],
++@@ -874,10 +877,10 @@ AC_CHECK_PROG_VER(MSGFMT, gnumsgfmt gmsg
++   MSGFMT=: aux_missing="$aux_missing msgfmt")
++ AC_CHECK_PROG_VER(MAKEINFO, makeinfo, --version,
++   [GNU texinfo.* \([0-9][0-9.]*\)],
++-  [4.*],
+++  [[4-9].*],
++   MAKEINFO=: aux_missing="$aux_missing makeinfo")
++ AC_CHECK_PROG_VER(SED, sed, --version,
++-  [GNU sed version \([0-9]*\.[0-9.]*\)],
+++  [GNU sed[^0-9]* \([0-9]*\.[0-9.]*\)],
++   [3.0[2-9]*|3.[1-9]*|[4-9]*],
++   SED=: aux_missing="$aux_missing sed")
++ 
+diff --git a/packages/glibc/2.9/0001-fix-recent-make.patch b/packages/glibc/2.9/0001-fix-recent-make.patch
+new file mode 100644
+index 00000000..d59ec36b
+--- /dev/null
++++ b/packages/glibc/2.9/0001-fix-recent-make.patch
+@@ -0,0 +1,17 @@
++Index: glibc-2.9/manual/Makefile
++===================================================================
++--- glibc-2.9.orig/manual/Makefile
+++++ glibc-2.9/manual/Makefile
++@@ -232,7 +232,11 @@ ifdef objpfx
++ .PHONY: stubs
++ stubs: $(objpfx)stubs
++ endif
++-$(objpfx)stubs ../po/manual.pot $(objpfx)stamp%:
+++$(objpfx)stubs ../po/manual.pot:
+++	$(make-target-directory)
+++	touch $@
+++
+++$(objpfx)stamp%:
++ 	$(make-target-directory)
++ 	touch $@
++ 
+diff --git a/packages/glibc/2.9/0100-nscd-init.patch b/packages/glibc/2.9/0100-nscd-init.patch
+new file mode 100644
+index 00000000..b5b0dbb5
+--- /dev/null
++++ b/packages/glibc/2.9/0100-nscd-init.patch
+@@ -0,0 +1,39 @@
++--- a/nscd/nscd.init
+++++ b/nscd/nscd.init
++@@ -48,9 +48,8 @@
++ 
++ start () {
++     [ -d /var/run/nscd ] || mkdir /var/run/nscd
++-    [ -d /var/db/nscd ] || mkdir /var/db/nscd
++     echo -n $"Starting $prog: "
++-    daemon /usr/sbin/nscd
+++    /usr/sbin/nscd
++     RETVAL=$?
++     echo
++     [ $RETVAL -eq 0 ] && touch /var/lock/subsys/nscd
++@@ -67,12 +66,10 @@
++ 	# a non-privileged user
++ 	rm -f /var/run/nscd/nscd.pid
++ 	rm -f /var/run/nscd/socket
++-       	success $"$prog shutdown"
++-    else
++-       	failure $"$prog shutdown"
++     fi
++-    echo
++-    return $RETVAL
+++    echo "Done."
+++    # If nscd did not run, return 0 according to LSB.
+++    return 0
++ }
++ 
++ restart() {
++@@ -104,7 +101,8 @@
++ 	;;
++     force-reload | reload)
++     	echo -n $"Reloading $prog: "
++-	killproc /usr/sbin/nscd -HUP
+++	# Use killall, initscripts-1.0-r115 don't support -HUP yet.
+++	killall -HUP /usr/sbin/nscd
++ 	RETVAL=$?
++ 	echo
++ 	;;
+diff --git a/packages/glibc/2.9/0110-fhs-linux-paths.patch b/packages/glibc/2.9/0110-fhs-linux-paths.patch
+new file mode 100644
+index 00000000..1f32f6d7
+--- /dev/null
++++ b/packages/glibc/2.9/0110-fhs-linux-paths.patch
+@@ -0,0 +1,11 @@
++--- glibc-2.1.1/sysdeps/unix/sysv/linux/paths.h~	Thu May 27 13:16:33 1999
+++++ glibc-2.1.1/sysdeps/unix/sysv/linux/paths.h	Thu May 27 13:17:55 1999
++@@ -71,7 +71,7 @@
++ /* Provide trailing slash, since mostly used for building pathnames. */
++ #define	_PATH_DEV	"/dev/"
++ #define	_PATH_TMP	"/tmp/"
++-#define	_PATH_VARDB	"/var/db/"
+++#define	_PATH_VARDB	"/var/lib/misc/"
++ #define	_PATH_VARRUN	"/var/run/"
++ #define	_PATH_VARTMP	"/var/tmp/"
++ 
+diff --git a/packages/glibc/2.9/0120-march-i686.patch b/packages/glibc/2.9/0120-march-i686.patch
+new file mode 100644
+index 00000000..a9bfd73c
+--- /dev/null
++++ b/packages/glibc/2.9/0120-march-i686.patch
+@@ -0,0 +1,38 @@
++2007-02-15  Khem Raj  <kraj@xxxxxxxxxx>
++
++       * sysdeps/unix/sysv/linux/i386/sysdep.h: Re-define __i686.
++       * nptl/sysdeps/pthread/pt-initfini.c: Ditto.
++
++
++
++Index: sysdeps/unix/sysv/linux/i386/sysdep.h
++===================================================================
++--- a/sysdeps/unix/sysv/linux/i386/sysdep.h	(revision 1469)
+++++ b/sysdeps/unix/sysv/linux/i386/sysdep.h	(working copy)
++@@ -29,6 +29,10 @@
++ #include <dl-sysdep.h>
++ #include <tls.h>
++ 
+++#if defined __i686 && defined __ASSEMBLER__
+++#undef __i686
+++#define __i686 __i686
+++#endif
++ 
++ /* For Linux we can use the system call table in the header file
++ 	/usr/include/asm/unistd.h
++Index: nptl/sysdeps/pthread/pt-initfini.c
++===================================================================
++--- a/nptl/sysdeps/pthread/pt-initfini.c	(revision 1469)
+++++ b/nptl/sysdeps/pthread/pt-initfini.c	(working copy)
++@@ -45,6 +45,11 @@
++ /* Embed an #include to pull in the alignment and .end directives. */
++ asm ("\n#include \"defs.h\"");
++ 
+++asm ("\n#if defined __i686 && defined __ASSEMBLER__");
+++asm ("\n#undef __i686");
+++asm ("\n#define __i686 __i686");
+++asm ("\n#endif");
+++
++ /* The initial common code ends here. */
++ asm ("\n/*@HEADER_ENDS*/");
++ 
+diff --git a/packages/glibc/2.9/0130-tls_i486.patch b/packages/glibc/2.9/0130-tls_i486.patch
+new file mode 100644
+index 00000000..69a1fdf9
+--- /dev/null
++++ b/packages/glibc/2.9/0130-tls_i486.patch
+@@ -0,0 +1,14 @@
++Index: glibc-2.9/sysdeps/i386/dl-tlsdesc.S
++===================================================================
++--- glibc-2.9.orig/sysdeps/i386/dl-tlsdesc.S	2009-07-07 23:21:11.647664128 +0200
+++++ glibc-2.9/sysdeps/i386/dl-tlsdesc.S	2009-07-07 23:21:32.802555992 +0200
++@@ -128,8 +128,7 @@
++ .Lslow:
++ 	cfi_adjust_cfa_offset (28)
++ 	movl	%ebx, 16(%esp)
++-	call	__i686.get_pc_thunk.bx
++-	addl	$_GLOBAL_OFFSET_TABLE_, %ebx
+++	LOAD_PIC_REG (bx)
++ 	call	___tls_get_addr@PLT
++ 	movl	16(%esp), %ebx
++ 	jmp	.Lret
+diff --git a/packages/glibc/2.9/0200-glibc-2.9-use-_begin.patch b/packages/glibc/2.9/0200-glibc-2.9-use-_begin.patch
+new file mode 100644
+index 00000000..8d36a052
+--- /dev/null
++++ b/packages/glibc/2.9/0200-glibc-2.9-use-_begin.patch
+@@ -0,0 +1,28 @@
++From 7c8a67320e26b8c11108bf0a3410d3aef9cf3486 Mon Sep 17 00:00:00 2001
++From: Ulrich Drepper <drepper@redhat.com>
++Date: Sat, 31 Jan 2009 00:21:15 +0000
++Subject: [PATCH] * elf/Makefile (ld.so): Adjust the sed script to insert _begin in to newer linker scripts.
++---
++diff --git a/elf/Makefile b/elf/Makefile
++index 8079fe9..e44ff1d 100644
++--- a/elf/Makefile
+++++ b/elf/Makefile
++@@ -1,4 +1,4 @@
++-# Copyright (C) 1995-2007, 2008 Free Software Foundation, Inc.
+++# Copyright (C) 1995-2007, 2008, 2009 Free Software Foundation, Inc.
++ # This file is part of the GNU C Library.
++ 
++ # The GNU C Library is free software; you can redistribute it and/or
++@@ -304,7 +304,7 @@ $(objpfx)ld.so: $(objpfx)librtld.os $(ld-map)
++ 		  $(LDFLAGS-rtld) -Wl,-z,defs -Wl,--verbose 2>&1 |	\
++ 		  LC_ALL=C \
++ 		  sed -e '/^=========/,/^=========/!d;/^=========/d'	\
++-		      -e 's/\. = 0 + SIZEOF_HEADERS;/& _begin = . - SIZEOF_HEADERS;/' \
+++		      -e 's/\. = .* + SIZEOF_HEADERS;/& _begin = . - SIZEOF_HEADERS;/' \
++ 		  > $@.lds
++ 	$(LINK.o) -nostdlib -nostartfiles -shared -o $@			\
++ 		  $(LDFLAGS-rtld) -Wl,-z,defs $(z-now-$(bind-now))	\
++-- 
++1.6.3.2
++
++
+diff --git a/packages/glibc/2.9/0300-malloc-memusage.c-update_data-Fix-handling-of-wrappi.patch b/packages/glibc/2.9/0300-malloc-memusage.c-update_data-Fix-handling-of-wrappi.patch
+new file mode 100644
+index 00000000..9a43212f
+--- /dev/null
++++ b/packages/glibc/2.9/0300-malloc-memusage.c-update_data-Fix-handling-of-wrappi.patch
+@@ -0,0 +1,46 @@
++From c3ab42a82de7506c17749e78a171ce07ced95dd5 Mon Sep 17 00:00:00 2001
++From: Ulrich Drepper <drepper@redhat.com>
++Date: Fri, 6 Feb 2009 18:24:23 +0000
++Subject: [PATCH 1/3] * malloc/memusage.c (update_data): Fix handling of wrapping back
++
++	to the beginning of the buffer.
++---
++ malloc/memusage.c |    8 +++++---
++ 1 files changed, 5 insertions(+), 3 deletions(-)
++
++diff --git a/malloc/memusage.c b/malloc/memusage.c
++index d11e9e6..6c67a8c 100644
++--- a/malloc/memusage.c
+++++ b/malloc/memusage.c
++@@ -1,5 +1,5 @@
++ /* Profile heap and stack memory usage of running program.
++-   Copyright (C) 1998-2002, 2004, 2005, 2006 Free Software Foundation, Inc.
+++   Copyright (C) 1998-2002, 2004-2006, 2009 Free Software Foundation, Inc.
++    This file is part of the GNU C Library.
++    Contributed by Ulrich Drepper <drepper@cygnus.com>, 1998.
++ 
++@@ -18,6 +18,7 @@
++    Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
++    02111-1307 USA.  */
++ 
+++#include <assert.h>
++ #include <atomic.h>
++ #include <dlfcn.h>
++ #include <errno.h>
++@@ -168,10 +169,11 @@ update_data (struct header *result, size_t len, size_t old_len)
++ 	     this fails because of another thread increasing the
++ 	     counter it does not matter since that thread will take
++ 	     care of the correction.  */
++-	  unsigned int reset = idx - 2 * buffer_size;
++-	  catomic_compare_and_exchange_val_acq (&buffer_size, reset, idx);
+++	  uatomic32_t reset = idx % (2 * buffer_size);
+++	  catomic_compare_and_exchange_val_acq (&buffer_cnt, reset, idx);
++ 	  idx = reset;
++ 	}
+++      assert (idx < 2 * DEFAULT_BUFFER_SIZE);
++ 
++       buffer[idx].heap = current_heap;
++       buffer[idx].stack = current_stack;
++-- 
++1.6.3.3
++
+diff --git a/packages/glibc/2.9/0310-malloc-memusage.c-DEFAULT_BUFFER_SIZE-Change-to-3276.patch b/packages/glibc/2.9/0310-malloc-memusage.c-DEFAULT_BUFFER_SIZE-Change-to-3276.patch
+new file mode 100644
+index 00000000..770de9ee
+--- /dev/null
++++ b/packages/glibc/2.9/0310-malloc-memusage.c-DEFAULT_BUFFER_SIZE-Change-to-3276.patch
+@@ -0,0 +1,26 @@
++From e2e390fad8271da33a51075cc2bf27c9fe78861b Mon Sep 17 00:00:00 2001
++From: Ulrich Drepper <drepper@redhat.com>
++Date: Fri, 6 Feb 2009 18:27:08 +0000
++Subject: [PATCH 2/3] * malloc/memusage.c (DEFAULT_BUFFER_SIZE): Change to 32768.
++
++	(update_data): Fix handling of wrapping back
++---
++ malloc/memusage.c |    2 +-
++ 1 files changed, 1 insertions(+), 1 deletions(-)
++
++diff --git a/malloc/memusage.c b/malloc/memusage.c
++index 6c67a8c..fcd58dc 100644
++--- a/malloc/memusage.c
+++++ b/malloc/memusage.c
++@@ -93,7 +93,7 @@ static __thread uintptr_t start_sp;
++ #define peak_stack	peak_use[1]
++ #define peak_total	peak_use[2]
++ 
++-#define DEFAULT_BUFFER_SIZE	1024
+++#define DEFAULT_BUFFER_SIZE	32768
++ static size_t buffer_size;
++ 
++ static int fd = -1;
++-- 
++1.6.3.3
++
+diff --git a/packages/glibc/2.9/0320-Fix-wrap-around-in-memusage.patch b/packages/glibc/2.9/0320-Fix-wrap-around-in-memusage.patch
+new file mode 100644
+index 00000000..e07c9d92
+--- /dev/null
++++ b/packages/glibc/2.9/0320-Fix-wrap-around-in-memusage.patch
+@@ -0,0 +1,37 @@
++From 22bc5239e1c7d97b0642af6c135af994586f8e82 Mon Sep 17 00:00:00 2001
++From: Andreas Schwab <schwab@redhat.com>
++Date: Thu, 29 Oct 2009 11:25:20 -0700
++Subject: [PATCH 3/3] Fix wrap-around in memusage.
++
++---
++ malloc/memusage.c |    9 +++++----
++ 1 files changed, 5 insertions(+), 4 deletions(-)
++
++diff --git a/malloc/memusage.c b/malloc/memusage.c
++index fcd58dc..382261c 100644
++--- a/malloc/memusage.c
+++++ b/malloc/memusage.c
++@@ -163,15 +163,16 @@ update_data (struct header *result, size_t len, size_t old_len)
++   if (fd != -1)
++     {
++       uatomic32_t idx = catomic_exchange_and_add (&buffer_cnt, 1);
++-      if (idx >= 2 * buffer_size)
+++      if (idx + 1 >= 2 * buffer_size)
++ 	{
++ 	  /* We try to reset the counter to the correct range.  If
++ 	     this fails because of another thread increasing the
++ 	     counter it does not matter since that thread will take
++ 	     care of the correction.  */
++-	  uatomic32_t reset = idx % (2 * buffer_size);
++-	  catomic_compare_and_exchange_val_acq (&buffer_cnt, reset, idx);
++-	  idx = reset;
+++	  uatomic32_t reset = (idx + 1) % (2 * buffer_size);
+++	  catomic_compare_and_exchange_val_acq (&buffer_cnt, reset, idx + 1);
+++	  if (idx >= 2 * buffer_size)
+++	    idx = reset - 1;
++ 	}
++       assert (idx < 2 * DEFAULT_BUFFER_SIZE);
++ 
++-- 
++1.6.3.3
++
+diff --git a/packages/glibc/2.9/chksum b/packages/glibc/2.9/chksum
+new file mode 100644
+index 00000000..b620c50d
+--- /dev/null
++++ b/packages/glibc/2.9/chksum
+@@ -0,0 +1,8 @@
++md5 glibc-2.9.tar.bz2 fc62e989cf31d015f31628609fc3757a
++sha1 glibc-2.9.tar.bz2 13de149245b84af770eddafe842acb208929352b
++sha256 glibc-2.9.tar.bz2 098baa84c74af5b21d27ec6e8ba6f1a393de88327cefbcd9e90c9b4edda9a36c
++sha512 glibc-2.9.tar.bz2 53af0d0c888d8beb0fa2729f32b605f2bd546bafe03de80805f25e7bc69189f7183d78f8e6465f553be4fc9846a500aaaafec24325e7cb88892fc918b886a6bb
++md5 glibc-2.9.tar.gz 21e4c70a6819c821b2a219e26fb414fb
++sha1 glibc-2.9.tar.gz 3f0f2b42dfba01649d524adea7761c0974566048
++sha256 glibc-2.9.tar.gz e0210dec2a4ca0a03d8ee26e2a4ebccc915d99f4cdb1489ff0f9f4ce7bda3e30
++sha512 glibc-2.9.tar.gz ff9888bc73479af52efb7d9da17e2a6f073e8105eabae406fe4d78bceaed3d6e00c11a18abbae8cc72465878fb7ed281803b56c61777bbd4df0337cfa8f671f4
+diff --git a/packages/glibc/2.9/version.desc b/packages/glibc/2.9/version.desc
+new file mode 100644
+index 00000000..d2fdc339
+--- /dev/null
++++ b/packages/glibc/2.9/version.desc
+@@ -0,0 +1,2 @@
++# OpenPandora specific
++archive_formats='.tar.bz2 .tar.gz'
+diff --git a/packages/linux/2.6.31/chksum b/packages/linux/2.6.31/chksum
+new file mode 100644
+index 00000000..a200e054
+--- /dev/null
++++ b/packages/linux/2.6.31/chksum
+@@ -0,0 +1,8 @@
++md5 linux-2.6.31.tar.xz c6a901042a2dc9552bc6f475887a5ef3
++sha1 linux-2.6.31.tar.xz df3dc6292aee9c993186adc14412fdd3b895944f
++sha256 linux-2.6.31.tar.xz 4ad0df33ca20f170fa0a05ad2bcf8fb18bf457aba7f909434ed13461c59be80a
++sha512 linux-2.6.31.tar.xz 0b9543896568af46bc62d6bdbc13104b449b52267c568fba016588f9da413f4e066cccbdbc92d8ffed2d2f6e5aa1ad29f07c67f1c6cea3b8905a1af52a2384d2
++md5 linux-2.6.31.tar.gz 16c0355d3612806ef87addf7c9f8c9f9
++sha1 linux-2.6.31.tar.gz 6b19c2987b0e2d74dcdca2aadebd5081bc143b72
++sha256 linux-2.6.31.tar.gz 304eab47177ecd6964b587df1682c31d21e4c4bc2e6ebfa14218c85a76659bc7
++sha512 linux-2.6.31.tar.gz 6152f4cacd68c7f8fedcd8fa89cb013135b9e368821a8d0fbd0bf13067bd89a51d37686414a5f8d4e46eb500dafc6f57ecdf6f3434c0f81838ecaac57fa654b2
+diff --git a/packages/linux/2.6.31/version.desc b/packages/linux/2.6.31/version.desc
+new file mode 100644
+index 00000000..554d220c
+--- /dev/null
++++ b/packages/linux/2.6.31/version.desc
+@@ -0,0 +1,2 @@
++# OpenPandora specific
++archive_formats='.tar.xz .tar.gz'
