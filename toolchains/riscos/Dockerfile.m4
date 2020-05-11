@@ -91,6 +91,8 @@ helpers_package(fluidsynth-lite, -DCMAKE_TOOLCHAIN_FILE=$GCCSDK_INSTALL_ENV/tool
 
 helpers_package(freetype)
 
+helpers_package(fribidi)
+
 local_package(libsdl1.2)
 
 helpers_package(sdl-net1.2)
