@@ -4,5 +4,6 @@ do_svn_fetch () {
 	fi
 	svn co "$2" "$1"
 	cd "$1"*/
+	svn up $3
 	do_patch
 }
