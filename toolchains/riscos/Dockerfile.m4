@@ -34,6 +34,7 @@ RUN apt-get update && \
 		patch \
 		wget \
 		help2man \
+		git \
 		pandoc && \
 	rm -rf /var/lib/apt/lists/*
 
@@ -79,9 +80,9 @@ helpers_package(flac, --with-pic=no)
 
 helpers_package(faad2)
 
-helpers_package(mpeg2dec, , CFLAGS="$CFLAGS -D__CRT__NO_INLINE")
+helpers_package(mpeg2dec)
 
-helpers_package(a52dec, , CFLAGS="$CFLAGS -D__CRT__NO_INLINE")
+helpers_package(a52dec)
 
 # helpers_package(openssl)
 
