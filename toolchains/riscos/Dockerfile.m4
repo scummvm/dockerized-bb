@@ -49,7 +49,7 @@ local_package(bindhelp)
 
 local_package(tokenize)
 
-# TODO: http://www.riscos.info/websvn/listing.php?repname=gccsdk&path=%2Ftrunk%2Fautobuilder%2Fsupport%2Fnative-zip%2F
+local_package(zip)
 
 ENV \
 	def_binaries(`${GCCSDK_INSTALL_CROSSBIN}/${HOST}-', `ar, as, c++filt, ld, nm, objcopy, objdump, ranlib, readelf, strings, strip') \
