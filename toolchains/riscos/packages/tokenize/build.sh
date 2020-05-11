@@ -6,7 +6,7 @@ HELPERS_DIR=$PACKAGE_DIR/../..
 
 do_make_bdir
 
-do_svn_fetch tokenize svn://svn.riscos.info/tokenize/trunk/
+do_svn_fetch tokenize svn://svn.riscos.info/tokenize/trunk/ -r32
 
 do_make obj buildlinux/tokenize
 cp buildlinux/tokenize /usr/local/bin/
