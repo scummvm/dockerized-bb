@@ -6,7 +6,7 @@ HELPERS_DIR=$PACKAGE_DIR/../..
 
 do_make_bdir
 
-do_http_fetch SDL-0f0aa5935c12 'https://hg.libsdl.org/SDL/archive/0f0aa5935c12.tar.bz2' 'tar xjf'
+do_http_fetch SDL-2f82852644d1 'https://hg.libsdl.org/SDL/archive/2f82852644d1.tar.bz2' 'tar xjf'
 
 do_configure
 do_make
