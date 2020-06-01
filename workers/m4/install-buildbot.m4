@@ -2,6 +2,7 @@ m4_ifdef(`BASE_ALPINE',
 RUN apk add --no-cache \
 	dumb-init \
 	py3-future \
+	py3-pip \
 	py3-twisted
 , m4_ifdef(`BASE_DEBIAN',
 RUN apt-get update && \
