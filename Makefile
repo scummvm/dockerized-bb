@@ -1,4 +1,6 @@
 BUILDBOT_VERSION=2.7.0
+DOCKER_REGISTRY = lephilousophe/scummvm
+DOCKER_SEPARATOR = :
 
 VERBOSE = 
 BUILDDIR = .build
@@ -24,6 +26,8 @@ $(BUILDDIR)/$(1): \
 		$(BUILDDIR)/toolchains/$(notdir $(1)) \
 	)
 endef
+# Return the docker URL with path sanitized
+build_docker_url = $(DOCKER_REGISTRY)$(DOCKER_SEPARATOR)$(subst /,.,$(1))
 
 # All these targets are directories that should be made
 $(BUILDDIR) $(BUILDDIR)/toolchains $(BUILDDIR)/workers: %:
@@ -86,14 +90,40 @@ TOOLCHAINS_M4_TS=$(foreach i,$(TOOLCHAINS_M4),$(BUILDDIR)/$(i))
 TOOLCHAINS_DOC_TS=$(foreach i,$(TOOLCHAINS_DOC),$(BUILDDIR)/$(i))
 TOOLCHAINS_TS=$(TOOLCHAINS_M4_TS) $(TOOLCHAINS_DOC_TS)
 
-# Phony rules to build and clean toolchains easily
+# Build clean/push/pull rules
+TOOLCHAINS_CLEAN=$(foreach i,$(TOOLCHAINS),$(i)/clean)
+TOOLCHAINS_PUSH=$(foreach i,$(TOOLCHAINS),$(i)/push)
+TOOLCHAINS_PULL=$(foreach i,$(TOOLCHAINS),$(i)/pull)
+
+# Phony rules to manage all toolchains easily
 toolchains: $(TOOLCHAINS)
-clean-toolchains:
-	docker rmi $(TOOLCHAINS)
-	rm -f $(TOOLCHAINS_TS)
+clean-toolchains: $(TOOLCHAINS_CLEAN)
+push-toolchains: $(TOOLCHAINS_PUSH)
+pull-toolchains: $(TOOLCHAINS_PULL)
 
 $(TOOLCHAINS): %: $(BUILDDIR)/%
-.PHONY: toolchains clean-toolchains $(TOOLCHAINS)
+
+# Phony rule to clean toolchains
+$(TOOLCHAINS_CLEAN): %/clean:
+	docker rmi -f $*
+	rm -f $(BUILDDIR)/$*
+
+# Phony rules to push and pull images from registry
+$(TOOLCHAINS_PUSH): %/push: $(BUILDDIR)/%
+	docker tag $* $(call build_docker_url,$*) && \
+		docker push $(call build_docker_url,$*) && \
+		docker rmi $(call build_docker_url,$*)
+
+# Update timestamp to avoid building image if we got it
+# Remove repository tag as it's duplicated
+$(TOOLCHAINS_PULL): %/pull:
+	docker pull $(call build_docker_url,$*) && \
+		docker tag $(call build_docker_url,$*) $* && \
+		docker rmi $(call build_docker_url,$*) && \
+		touch -d `docker inspect -f '{{ .Created }}' $*` $(BUILDDIR)/$*
+
+.PHONY: toolchains push-toolchains pull-toolchains clean-toolchains \
+	$(TOOLCHAINS) $(TOOLCHAINS_CLEAN) $(TOOLCHAINS_PUSH) $(TOOLCHAINS_PULL)
 
 # Raw Dockerfile toolchains are just built using docker
 # They generate a timestamp file in $(BUILDDIR)
@@ -141,14 +171,40 @@ WORKERS_M4_TS=$(foreach i,$(WORKERS_M4),$(BUILDDIR)/$(i))
 WORKERS_DOC_TS=$(foreach i,$(WORKERS_DOC),$(BUILDDIR)/$(i))
 WORKERS_TS=$(WORKERS_M4_TS) $(WORKERS_DOC_TS)
 
-# Phony rules to build and clean workers easily
+# Build clean/push/pull rules
+WORKERS_CLEAN=$(foreach i,$(WORKERS),$(i)/clean)
+WORKERS_PUSH=$(foreach i,$(WORKERS),$(i)/push)
+WORKERS_PULL=$(foreach i,$(WORKERS),$(i)/pull)
+
+# Phony rules to manage all workers easily
 workers: $(WORKERS)
-clean-workers:
-	docker rmi $(WORKERS)
-	rm -f $(WORKERS_TS)
+clean-workers: $(WORKERS_CLEAN)
+push-workers: $(WORKERS_PUSH)
+pull-workers: $(WORKERS_PULL)
 
 $(WORKERS): %: $(BUILDDIR)/%
-.PHONY: workers $(WORKERS) clean-workers
+
+# Phony rule to clean workers
+$(WORKERS_CLEAN): %/clean:
+	docker rmi -f $*
+	rm -f $(BUILDDIR)/$*
+
+# Phony rules to push and pull images from registry
+$(WORKERS_PUSH): %/push: $(BUILDDIR)/%
+	docker tag $* $(call build_docker_url,$*) && \
+		docker push $(call build_docker_url,$*) && \
+		docker rmi $(call build_docker_url,$*)
+
+# Update timestamp to avoid building image if we got it
+# Remove repository tag as it's duplicated
+$(WORKERS_PULL): %/pull:
+	docker pull $(call build_docker_url,$*) && \
+		docker tag $(call build_docker_url,$*) $* && \
+		docker rmi $(call build_docker_url,$*) && \
+		touch -d `docker inspect -f '{{ .Created }}' $*` $(BUILDDIR)/$*
+
+.PHONY: workers push-workers pull-workers clean-workers \
+	$(WORKERS) $(WORKERS_CLEAN) $(WORKERS_PUSH) $(WORKERS_PULL)
 
 # Raw Dockerfile workers are just built using docker
 # They generate a timestamp file in $(BUILDDIR)
