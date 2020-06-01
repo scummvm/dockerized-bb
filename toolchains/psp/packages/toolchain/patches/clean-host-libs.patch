@@ -1,22 +1,45 @@
 diff --git a/depends/check-dependencies.sh b/depends/check-dependencies.sh
-index c97a4f7..cfa5181 100755
+index af022a3..1791ee2 100755
 --- a/depends/check-dependencies.sh
 +++ b/depends/check-dependencies.sh
-@@ -67,7 +67,7 @@ function check_aclocal
- # check_header    gmp             gmp.h
- # check_header    mpc             mpc.h
- # check_header    mpfr            mpfr.h
+@@ -53,14 +53,14 @@ if [ "$(uname)" == "Darwin" ]; then
+   header_paths+=("`xcrun --show-sdk-path`/usr/include")
+ fi
+ 
 -check_header    libelf          elf.h libelf.h libelf/libelf.h gelf.h libelf/gelf.h
-+# check_header    libelf          elf.h libelf.h libelf/libelf.h gelf.h libelf/gelf.h
++#check_header    libelf          elf.h libelf.h libelf/libelf.h gelf.h libelf/gelf.h
  check_header    libusb          usb.h
  check_header    ncurses         ncurses.h ncurses/ncurses.h
  check_header    zlib            zlib.h
-@@ -86,7 +86,7 @@ check_program   make
+-check_header    libarchive      archive.h
+-check_header    libcurl         curl/curl.h
+-check_header    libssl          openssl/ssl.h
+-check_header    gpgme           gpgme.h
++#check_header    libarchive      archive.h
++#check_header    libcurl         curl/curl.h
++#check_header    libssl          openssl/ssl.h
++#check_header    gpgme           gpgme.h
+ 
+ check_program   git
+ check_program   svn
+@@ -77,7 +77,7 @@ check_program   cmake
+ check_program   make
  check_program   gcc
  check_program   g++
- 
--check_program   sdl-config
-+# check_program   sdl-config
- # check_program   freetype-config
+-check_program   m4
++#check_program   m4
  
  check_program   bison
+ check_program   flex
+@@ -88,9 +88,9 @@ check_program   which
+ check_program   makeinfo
+ check_program   doxygen
+ 
+-check_program   pkg-config
++#check_program   pkg-config
+ 
+-check_program   python3
++#check_program   python3
+ 
+ # Sometimes things will be a little different on Mac OS X...
+ if [ "$(uname)" == "Darwin" ]; then
