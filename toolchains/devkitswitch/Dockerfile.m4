@@ -40,7 +40,11 @@ RUN wget https://github.com/devkitPro/pacman/releases/download/devkitpro-pacman-
 pacman_package(switch-dev)
 
 # As fluidsynth-lite is using cmake, we need to get the platform cmake definitions
+# pkg-config is needed by switch.cmake
+pacman_package(switch-pkg-config)
 pacman_package(devkitpro-pkgbuild-helpers)
+# Fix switch.cmake
+RUN sed -ie 's/^set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /set(CMAKE_EXE_LINKER_FLAGS_INIT "/' /opt/devkitpro/switch.cmake
 
 ENV DEVKITPRO=/opt/devkitpro
 ENV DEVKITA64=${DEVKITPRO}/devkitA64
@@ -101,4 +105,4 @@ pacman_package(switch-sdl2_net)
 # CMake don't use CPPFLAGS so add them to CFLAGS
 # Copy specific Switch support
 COPY packages/fluidsynth-lite lib-helpers/packages/fluidsynth-lite
-helpers_package(fluidsynth-lite, -DCMAKE_TOOLCHAIN_FILE=${DEVKITPRO}/switch.cmake -DHAVE_WORDS_BIGENDIAN=true, CFLAGS="${CPPFLAGS} ${CFLAGS}" PATH="${PATH}:${DEVKITA64}/bin")
+helpers_package(fluidsynth-lite, -DCMAKE_TOOLCHAIN_FILE=${DEVKITPRO}/switch.cmake -DHAVE_WORDS_BIGENDIAN=true, PATH="${PATH}:${DEVKITA64}/bin")
