@@ -18,6 +18,9 @@ common_env = {
     "CCACHE_COMPRESS": "1",
 }
 
+platforms_whitelist = []
+platforms_blacklist = []
+
 # These engines can't be used on some platforms due to CPU/Video requirements
 disable_heavy_engines = "--disable-engines=sword25,wintermute"
 

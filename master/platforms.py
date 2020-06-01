@@ -94,6 +94,14 @@ class Platform:
 
 
 platforms = []
+def register_platform(platform):
+    if (config.platforms_whitelist and
+            platform.name not in config.platforms_whitelist):
+        return
+    if (config.platforms_blacklist and
+            platform.name in config.platforms_blacklist):
+        return
+    platforms.append(platform)
 
 def _3ds():
     platform = Platform("3ds")
@@ -111,7 +119,7 @@ def _3ds():
     platform.archiveext = "zip"
     platform.testable = False
     platform.run_tests = False
-    platforms.append(platform)
+    register_platform(platform)
 _3ds()
 
 def android(suffix, scummvm_target, ndk_target, cxx_target, abi_version):
@@ -166,7 +174,7 @@ def android(suffix, scummvm_target, ndk_target, cxx_target, abi_version):
     platform.archiveext = "zip"
     platform.testable = False
     platform.run_tests = False
-    platforms.append(platform)
+    register_platform(platform)
 
 android(suffix="arm",
         scummvm_target="arm-v7a",
@@ -211,7 +219,7 @@ def debian_x86_64():
         ]
     }
     platform.run_tests = True
-    platforms.append(platform)
+    register_platform(platform)
 debian_x86_64()
 
 def gamecube():
@@ -230,7 +238,7 @@ def gamecube():
     platform.archiveext = "tar.xz"
     platform.testable = False
     platform.run_tests = False
-    platforms.append(platform)
+    register_platform(platform)
 gamecube()
 
 def nds():
@@ -248,7 +256,7 @@ def nds():
     platform.archiveext = "tar.xz"
     platform.testable = False
     platform.run_tests = False
-    platforms.append(platform)
+    register_platform(platform)
 nds()
 
 def ps3():
@@ -262,7 +270,7 @@ def ps3():
     }
     platform.testable = False
     platform.run_tests = False
-    platforms.append(platform)
+    register_platform(platform)
 ps3()
 
 def psp():
@@ -296,7 +304,7 @@ def psp():
     platform.archiveext = "tar.xz"
     platform.testable = False
     platform.run_tests = False
-    platforms.append(platform)
+    register_platform(platform)
 
     # PSP full
     platform = copy.deepcopy(platform)
@@ -316,7 +324,7 @@ def psp():
         builds.ScummVMBuild: [ "--disable-engines=glk" ],
         builds.ScummVMStableBuild: [ ],
     }
-    platforms.append(platform)
+    register_platform(platform)
 psp()
 
 def raspberrypi():
@@ -340,7 +348,7 @@ def raspberrypi():
             "scummvm-tools-cli"
         ]
     }
-    platforms.append(platform)
+    register_platform(platform)
 raspberrypi()
 
 def switch():
@@ -356,7 +364,7 @@ def switch():
     platform.archiveext = "zip"
     platform.testable = False
     platform.run_tests = False
-    platforms.append(platform)
+    register_platform(platform)
 switch()
 
 def vita():
@@ -379,7 +387,7 @@ def vita():
     platform.archiveext = "zip"
     platform.testable = False
     platform.run_tests = False
-    platforms.append(platform)
+    register_platform(platform)
 vita()
 
 def wii():
@@ -398,7 +406,7 @@ def wii():
     platform.archiveext = "tar.xz"
     platform.testable = False
     platform.run_tests = False
-    platforms.append(platform)
+    register_platform(platform)
 wii()
 
 def windows_x86_64():
@@ -432,5 +440,5 @@ def windows_x86_64():
     }
     platform.archiveext = "zip"
     platform.run_tests = False
-    platforms.append(platform)
+    register_platform(platform)
 windows_x86_64()
