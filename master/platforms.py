@@ -259,6 +259,22 @@ def nds():
     register_platform(platform)
 nds()
 
+def ps2():
+    platform = Platform("ps2")
+    platform.compatibleBuilds = (builds.ScummVMBuild, )
+    platform.env["CXX"] = "ccache ee-g++"
+    platform.configureargs.append("--host=ps2")
+    platform.buildconfigureargs = {
+        builds.ScummVMBuild: [ "--enable-plugins", "--default-dynamic" ],
+    }
+    platform.built_files = {
+        builds.ScummVMBuild: [ "scummvm.elf", "plugins" ],
+    }
+    platform.testable = False
+    platform.run_tests = False
+    register_platform(platform)
+ps2()
+
 def ps3():
     platform = Platform("ps3")
     platform.compatibleBuilds = (builds.ScummVMBuild, )
