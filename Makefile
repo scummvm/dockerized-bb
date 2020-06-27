@@ -1,8 +1,9 @@
-BUILDBOT_VERSION := 2.7.0
-DOCKER_REGISTRY := lephilousophe/scummvm
-DOCKER_SEPARATOR := :
+BUILDBOT_VERSION   := 2.7.0
 
-VERBOSE := 0
+DOCKER_REGISTRY    := lephilousophe/scummvm
+DOCKER_SEPARATOR   := :
+
+VERBOSE  := 0
 BUILDDIR := .build
 M4_DEBUG := -dcxaeq
 
@@ -39,16 +40,16 @@ $(BUILDDIR) $(BUILDDIR)/toolchains $(BUILDDIR)/workers: %:
 
 # Debug informations
 status:
-	@echo "Buildbot version: " $(BUILDBOT_VERSION)
-	@echo "Timestamps directory: " $(BUILDDIR)
-	@echo "Toolchains to preprocess: " $(TOOLCHAINS_M4)
+	@echo "Buildbot version:                 " $(BUILDBOT_VERSION)
+	@echo "Timestamps directory:             " $(BUILDDIR)
+	@echo "Toolchains to preprocess:         " $(TOOLCHAINS_M4)
 	@echo "Toolchains without preprocessing: " $(TOOLCHAINS_DOC)
-	@echo "All toolchains: " $(TOOLCHAINS)
-	@echo "Toolchains timestamps: " $(TOOLCHAINS_TS)
-	@echo "Workers to preprocess: " $(WORKERS_M4)
-	@echo "Workers without preprocessing: " $(WORKERS_DOC)
-	@echo "All workers: " $(WORKERS)
-	@echo "Workers timestamps: " $(WORKERS_TS)
+	@echo "All toolchains:                   " $(TOOLCHAINS)
+	@echo "Toolchains timestamps:            " $(TOOLCHAINS_TS)
+	@echo "Workers to preprocess:            " $(WORKERS_M4)
+	@echo "Workers without preprocessing:    " $(WORKERS_DOC)
+	@echo "All workers:                      " $(WORKERS)
+	@echo "Workers timestamps:               " $(WORKERS_TS)
 
 # Debug ccache used by workers
 ccache-stats:
@@ -86,25 +87,25 @@ master/buildbot.tac: $(BUILDDIR)/buildbot_installed
 
 # Toolchains rules
 # List all toolchains: m4 based and raw Dockerfile based
-TOOLCHAINS_M4 := $(patsubst %/,%,$(dir $(wildcard toolchains/*/Dockerfile.m4)))
+TOOLCHAINS_M4  := $(patsubst %/,%,$(dir $(wildcard toolchains/*/Dockerfile.m4)))
 TOOLCHAINS_DOC := $(patsubst %/,%,$(dir $(wildcard toolchains/*/Dockerfile)))
-TOOLCHAINS := $(TOOLCHAINS_M4) $(TOOLCHAINS_DOC)
+TOOLCHAINS     := $(TOOLCHAINS_M4) $(TOOLCHAINS_DOC)
 
 # Build timestamps files generated as a marker
-TOOLCHAINS_M4_TS := $(foreach i,$(TOOLCHAINS_M4),$(BUILDDIR)/$(i))
+TOOLCHAINS_M4_TS  := $(foreach i,$(TOOLCHAINS_M4),$(BUILDDIR)/$(i))
 TOOLCHAINS_DOC_TS := $(foreach i,$(TOOLCHAINS_DOC),$(BUILDDIR)/$(i))
-TOOLCHAINS_TS := $(TOOLCHAINS_M4_TS) $(TOOLCHAINS_DOC_TS)
+TOOLCHAINS_TS     := $(TOOLCHAINS_M4_TS) $(TOOLCHAINS_DOC_TS)
 
 # Build clean/push/pull rules
 TOOLCHAINS_CLEAN := $(foreach i,$(TOOLCHAINS),$(i)/clean)
-TOOLCHAINS_PUSH := $(foreach i,$(TOOLCHAINS),$(i)/push)
-TOOLCHAINS_PULL := $(foreach i,$(TOOLCHAINS),$(i)/pull)
+TOOLCHAINS_PUSH  := $(foreach i,$(TOOLCHAINS),$(i)/push)
+TOOLCHAINS_PULL  := $(foreach i,$(TOOLCHAINS),$(i)/pull)
 
 # Phony rules to manage all toolchains easily
-toolchains: $(TOOLCHAINS)
+toolchains      : $(TOOLCHAINS)
 clean-toolchains: $(TOOLCHAINS_CLEAN)
-push-toolchains: $(TOOLCHAINS_PUSH)
-pull-toolchains: $(TOOLCHAINS_PULL)
+push-toolchains : $(TOOLCHAINS_PUSH)
+pull-toolchains : $(TOOLCHAINS_PULL)
 
 $(TOOLCHAINS): %: $(BUILDDIR)/%
 
@@ -152,10 +153,10 @@ endif
 	touch "$@"
 
 # Specific toolchains interdependencies
-$(BUILDDIR)/toolchains/android: $(BUILDDIR)/toolchains/android-common
+$(BUILDDIR)/toolchains/android    : $(BUILDDIR)/toolchains/android-common
 $(BUILDDIR)/toolchains/android-old: $(BUILDDIR)/toolchains/android-common
-$(BUILDDIR)/toolchains/devkit3ds: $(BUILDDIR)/toolchains/devkitarm
-$(BUILDDIR)/toolchains/devkitnds: $(BUILDDIR)/toolchains/devkitarm
+$(BUILDDIR)/toolchains/devkit3ds  : $(BUILDDIR)/toolchains/devkitarm
+$(BUILDDIR)/toolchains/devkitnds  : $(BUILDDIR)/toolchains/devkitarm
 
 # Generate dependencies over files and common toolchain
 $(foreach i,$(TOOLCHAINS), \
@@ -167,25 +168,25 @@ $(foreach i,$(TOOLCHAINS), \
 
 # Workers rules
 # List all workers: m4 based and raw Dockerfile based
-WORKERS_M4 := $(patsubst %/,%,$(dir $(wildcard workers/*/Dockerfile.m4)))
+WORKERS_M4  := $(patsubst %/,%,$(dir $(wildcard workers/*/Dockerfile.m4)))
 WORKERS_DOC := $(patsubst %/,%,$(dir $(wildcard workers/*/Dockerfile)))
-WORKERS := $(WORKERS_M4) $(WORKERS_DOC)
+WORKERS     := $(WORKERS_M4) $(WORKERS_DOC)
 
 # Build timestamps files generated as a marker
-WORKERS_M4_TS := $(foreach i,$(WORKERS_M4),$(BUILDDIR)/$(i))
+WORKERS_M4_TS  := $(foreach i,$(WORKERS_M4),$(BUILDDIR)/$(i))
 WORKERS_DOC_TS := $(foreach i,$(WORKERS_DOC),$(BUILDDIR)/$(i))
-WORKERS_TS := $(WORKERS_M4_TS) $(WORKERS_DOC_TS)
+WORKERS_TS     := $(WORKERS_M4_TS) $(WORKERS_DOC_TS)
 
 # Build clean/push/pull rules
 WORKERS_CLEAN := $(foreach i,$(WORKERS),$(i)/clean)
-WORKERS_PUSH := $(foreach i,$(WORKERS),$(i)/push)
-WORKERS_PULL := $(foreach i,$(WORKERS),$(i)/pull)
+WORKERS_PUSH  := $(foreach i,$(WORKERS),$(i)/push)
+WORKERS_PULL  := $(foreach i,$(WORKERS),$(i)/pull)
 
 # Phony rules to manage all workers easily
-workers: $(WORKERS)
+workers      : $(WORKERS)
 clean-workers: $(WORKERS_CLEAN)
-push-workers: $(WORKERS_PUSH)
-pull-workers: $(WORKERS_PULL)
+push-workers : $(WORKERS_PUSH)
+pull-workers : $(WORKERS_PULL)
 
 $(WORKERS): %: $(BUILDDIR)/%
 
