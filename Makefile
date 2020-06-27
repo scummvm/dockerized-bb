@@ -1,10 +1,10 @@
-BUILDBOT_VERSION=2.7.0
-DOCKER_REGISTRY = lephilousophe/scummvm
-DOCKER_SEPARATOR = :
+BUILDBOT_VERSION := 2.7.0
+DOCKER_REGISTRY := lephilousophe/scummvm
+DOCKER_SEPARATOR := :
 
-VERBOSE = 
-BUILDDIR = .build
-M4_DEBUG = -dcxaeq
+VERBOSE := 0
+BUILDDIR := .build
+M4_DEBUG := -dcxaeq
 
 # Helpers
 
@@ -81,19 +81,19 @@ master/buildbot.tac: $(BUILDDIR)/buildbot_installed
 
 # Toolchains rules
 # List all toolchains: m4 based and raw Dockerfile based
-TOOLCHAINS_M4=$(patsubst %/,%,$(dir $(wildcard toolchains/*/Dockerfile.m4)))
-TOOLCHAINS_DOC=$(patsubst %/,%,$(dir $(wildcard toolchains/*/Dockerfile)))
-TOOLCHAINS=$(TOOLCHAINS_M4) $(TOOLCHAINS_DOC)
+TOOLCHAINS_M4 := $(patsubst %/,%,$(dir $(wildcard toolchains/*/Dockerfile.m4)))
+TOOLCHAINS_DOC := $(patsubst %/,%,$(dir $(wildcard toolchains/*/Dockerfile)))
+TOOLCHAINS := $(TOOLCHAINS_M4) $(TOOLCHAINS_DOC)
 
 # Build timestamps files generated as a marker
-TOOLCHAINS_M4_TS=$(foreach i,$(TOOLCHAINS_M4),$(BUILDDIR)/$(i))
-TOOLCHAINS_DOC_TS=$(foreach i,$(TOOLCHAINS_DOC),$(BUILDDIR)/$(i))
-TOOLCHAINS_TS=$(TOOLCHAINS_M4_TS) $(TOOLCHAINS_DOC_TS)
+TOOLCHAINS_M4_TS := $(foreach i,$(TOOLCHAINS_M4),$(BUILDDIR)/$(i))
+TOOLCHAINS_DOC_TS := $(foreach i,$(TOOLCHAINS_DOC),$(BUILDDIR)/$(i))
+TOOLCHAINS_TS := $(TOOLCHAINS_M4_TS) $(TOOLCHAINS_DOC_TS)
 
 # Build clean/push/pull rules
-TOOLCHAINS_CLEAN=$(foreach i,$(TOOLCHAINS),$(i)/clean)
-TOOLCHAINS_PUSH=$(foreach i,$(TOOLCHAINS),$(i)/push)
-TOOLCHAINS_PULL=$(foreach i,$(TOOLCHAINS),$(i)/pull)
+TOOLCHAINS_CLEAN := $(foreach i,$(TOOLCHAINS),$(i)/clean)
+TOOLCHAINS_PUSH := $(foreach i,$(TOOLCHAINS),$(i)/push)
+TOOLCHAINS_PULL := $(foreach i,$(TOOLCHAINS),$(i)/pull)
 
 # Phony rules to manage all toolchains easily
 toolchains: $(TOOLCHAINS)
@@ -162,19 +162,19 @@ $(foreach i,$(TOOLCHAINS), \
 
 # Workers rules
 # List all workers: m4 based and raw Dockerfile based
-WORKERS_M4=$(patsubst %/,%,$(dir $(wildcard workers/*/Dockerfile.m4)))
-WORKERS_DOC=$(patsubst %/,%,$(dir $(wildcard workers/*/Dockerfile)))
-WORKERS=$(WORKERS_M4) $(WORKERS_DOC)
+WORKERS_M4 := $(patsubst %/,%,$(dir $(wildcard workers/*/Dockerfile.m4)))
+WORKERS_DOC := $(patsubst %/,%,$(dir $(wildcard workers/*/Dockerfile)))
+WORKERS := $(WORKERS_M4) $(WORKERS_DOC)
 
 # Build timestamps files generated as a marker
-WORKERS_M4_TS=$(foreach i,$(WORKERS_M4),$(BUILDDIR)/$(i))
-WORKERS_DOC_TS=$(foreach i,$(WORKERS_DOC),$(BUILDDIR)/$(i))
-WORKERS_TS=$(WORKERS_M4_TS) $(WORKERS_DOC_TS)
+WORKERS_M4_TS := $(foreach i,$(WORKERS_M4),$(BUILDDIR)/$(i))
+WORKERS_DOC_TS := $(foreach i,$(WORKERS_DOC),$(BUILDDIR)/$(i))
+WORKERS_TS := $(WORKERS_M4_TS) $(WORKERS_DOC_TS)
 
 # Build clean/push/pull rules
-WORKERS_CLEAN=$(foreach i,$(WORKERS),$(i)/clean)
-WORKERS_PUSH=$(foreach i,$(WORKERS),$(i)/push)
-WORKERS_PULL=$(foreach i,$(WORKERS),$(i)/pull)
+WORKERS_CLEAN := $(foreach i,$(WORKERS),$(i)/clean)
+WORKERS_PUSH := $(foreach i,$(WORKERS),$(i)/push)
+WORKERS_PULL := $(foreach i,$(WORKERS),$(i)/pull)
 
 # Phony rules to manage all workers easily
 workers: $(WORKERS)
