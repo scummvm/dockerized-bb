@@ -1,4 +1,5 @@
 /.build/
+/Makefile.user
 /README.html
 /buildbot-data/bshomes/
 /buildbot-data/builds/

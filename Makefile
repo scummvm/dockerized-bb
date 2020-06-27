@@ -6,6 +6,10 @@ VERBOSE := 0
 BUILDDIR := .build
 M4_DEBUG := -dcxaeq
 
+# To let user override previous values easily
+# User can also set values on command line
+-include Makefile.user
+
 # Helpers
 
 # Create dependencies list based on docker context contents
@@ -35,6 +39,7 @@ $(BUILDDIR) $(BUILDDIR)/toolchains $(BUILDDIR)/workers: %:
 
 # Debug informations
 status:
+	@echo "Buildbot version: " $(BUILDBOT_VERSION)
 	@echo "Timestamps directory: " $(BUILDDIR)
 	@echo "Toolchains to preprocess: " $(TOOLCHAINS_M4)
 	@echo "Toolchains without preprocessing: " $(TOOLCHAINS_DOC)
