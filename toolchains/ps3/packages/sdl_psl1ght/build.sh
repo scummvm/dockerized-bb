@@ -1,6 +1,6 @@
 #! /bin/sh
 
-SDL_PSL1GHT_VERSION=8e342b3aeba862aabb4c986c27e0480009f0e4d9
+SDL_PSL1GHT_VERSION=d9763a92004369ba3d2384553eb84b2732be3ca9
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..
@@ -8,7 +8,7 @@ HELPERS_DIR=$PACKAGE_DIR/../..
 
 do_make_bdir
 
-do_http_fetch bgK-sdl_psl1ght "https://bitbucket.org/bgK/sdl_psl1ght/get/${SDL_PSL1GHT_VERSION}.tar.gz" 'tar xzf'
+do_http_fetch sdl_psl1ght "https://github.com/bgK/sdl_psl1ght/archive/${SDL_PSL1GHT_VERSION}.tar.gz" 'tar xzf'
 
 # export PATH to please script.sh
 export PATH=$PATH:$PS3DEV/bin:$PS3DEV/ppu/bin:$PS3DEV/spu/bin
