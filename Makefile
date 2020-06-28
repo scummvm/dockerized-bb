@@ -47,7 +47,7 @@ $(BUILDDIR)/$(1): \
 	)
 endef
 # Return the docker URL with path sanitized
-build_docker_url = $(DOCKER_REGISTRY)$(DOCKER_SEPARATOR)$(subst /,.,$(1))
+build_docker_url = $(DOCKER_REGISTRY)$(DOCKER_SEPARATOR)$(subst /,-,$(1))
 
 # Let's create a list taking whitelist and blacklist into account
 # First create a positive list: that takes all words which don't start with a dash,
