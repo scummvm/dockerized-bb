@@ -1,6 +1,6 @@
 #! /bin/sh
 
-WINSPARKLE_VERSION=0.6.0
+WINSPARKLE_VERSION=0.7.0
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..

@@ -1,7 +1,7 @@
 #! /bin/sh
 
 # This commit is in fbo branch
-VITA2DLIB_VERSION=58fca1aef30c01035876b73ae3f0fe5a056f203f
+VITA2DLIB_VERSION=28a5c03886b1c7815aa7c71727faae70cbcfa2dc
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..

@@ -1,6 +1,6 @@
 #! /bin/sh
 
-PROJECT_CTR_VERSION=0.16
+PROJECT_CTR_VERSION=makerom-v0.17
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..
@@ -8,7 +8,7 @@ HELPERS_DIR=$PACKAGE_DIR/../..
 
 do_make_bdir
 
-do_http_fetch Project_CTR "https://github.com/jakcron/Project_CTR/archive/v${PROJECT_CTR_VERSION}.tar.gz" 'tar xzf'
+do_http_fetch Project_CTR "https://github.com/3DSGuy/Project_CTR/archive/${PROJECT_CTR_VERSION}.tar.gz" 'tar xzf'
 
 export
 
