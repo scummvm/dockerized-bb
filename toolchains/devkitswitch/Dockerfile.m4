@@ -1,10 +1,12 @@
 FROM toolchains/common AS helpers
 
+# This version of devkitA64 depends on a Debian Stretch
+# For now it works with stable-slim, we will have to ensure it stays like that
+FROM devkitpro/devkita64:20200528 AS original-toolchain
+
 m4_include(`paths.m4')m4_dnl
 
 m4_include(`packages.m4')m4_dnl
-m4_define(`pacman_package',`RUN dkp-pacman -Syy --noconfirm `$1' && \
-	rm -rf /opt/devkitpro/pacman/var/cache/pacman/pkg/* /opt/devkitpro/pacman/var/lib/pacman/sync/*')m4_dnl
 
 FROM debian:stable-slim
 USER root
@@ -21,33 +23,25 @@ RUN apt-get update && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 		bzip2 \
 		ca-certificates \
+		curl \
 		gnupg \
 		libxml2 \
 		make \
 		pkg-config \
-		wget \
 		xz-utils \
 		&& \
 	rm -rf /var/lib/apt/lists/*
 
-ARG DKP_PACMAN=1.0.1
-
-RUN wget https://github.com/devkitPro/pacman/releases/download/devkitpro-pacman-${DKP_PACMAN}/devkitpro-pacman.deb && \
-	dpkg -i devkitpro-pacman.deb && \
-	rm -f $HOME/.wget-hsts devkitpro-pacman.deb && \
-	rm -rf /opt/devkitpro/pacman/var/cache/pacman/pkg/* /opt/devkitpro/pacman/var/lib/pacman/sync/*
-
-pacman_package(switch-dev)
-
-# As fluidsynth-lite is using cmake, we need to get the platform cmake definitions
-# pkg-config is needed by switch.cmake
-pacman_package(switch-pkg-config)
-pacman_package(devkitpro-pkgbuild-helpers)
-# Fix switch.cmake
-RUN sed -ie 's/^set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /set(CMAKE_EXE_LINKER_FLAGS_INIT "/' /opt/devkitpro/switch.cmake
-
 ENV DEVKITPRO=/opt/devkitpro
 ENV DEVKITA64=${DEVKITPRO}/devkitA64
+
+# Copy A64 toolchain
+COPY --from=original-toolchain ${DEVKITPRO}/ ${DEVKITPRO}
+
+# As fluidsynth-lite is using cmake, we need to get the platform cmake definitions
+# Instead of installing them with pacman (and lose reproductibility) just copy them
+# We have patched switch.cmake to make it use CMAKE_EXE_LINKER_FLAGS_INIT instead of CMAKE_EXE_LINKER_FLAGS
+COPY devkita64.cmake switch.cmake ${DEVKITPRO}/
 
 ENV PREFIX=${DEVKITPRO}/portlibs/switch HOST=aarch64-none-elf
 
@@ -68,37 +62,37 @@ ENV \
 	LDFLAGS="-march=armv8-a+crc+crypto -mtune=cortex-a57 -mtp=soft -fPIC -ftls-model=local-exec -L${PREFIX}/lib -L${DEVKITPRO}/libnx/lib" \
 	LIBS="-lnx"
 
-pacman_package(switch-libpng)
+# libpng is already installed in original toolchain
 
-pacman_package(switch-libjpeg-turbo)
+# libjpeg-turbo is already installed in original toolchain
 
 helpers_package(faad2)
 
-pacman_package(switch-libmad)
+# libmad is already installed in original toolchain
 
-pacman_package(switch-libogg)
+# libogg is already installed in original toolchain
 
-pacman_package(switch-libvorbis)
+# libvorbis is already installed in original toolchain
 
-pacman_package(switch-libtheora)
+# libtheora is already installed in original toolchain
 
-pacman_package(switch-flac)
+# flac is already installed in original toolchain
 
 helpers_package(mpeg2dec)
 
 helpers_package(a52dec)
 
-pacman_package(switch-libtimidity)
+# libtimidity is already installed in original toolchain
 
-pacman_package(switch-curl)
+# curl is already installed in original toolchain
 
-pacman_package(switch-freetype)
+# freetype is already installed in original toolchain
 
 helpers_package(fribidi)
 
-pacman_package(switch-sdl2)
+# sdl2 is already installed in original toolchain
 
-pacman_package(switch-sdl2_net)
+# sdl2_net is already installed in original toolchain
 
 # CMake can't determine endinanness of Switch by running tests
 # CMake platform files expect to have compilers in PATH
