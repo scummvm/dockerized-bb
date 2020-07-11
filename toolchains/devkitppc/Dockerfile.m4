@@ -1,10 +1,12 @@
 FROM toolchains/common AS helpers
 
+# This version of devkitPPC depends on a Debian Stretch
+# For now it works with stable-slim, we will have to ensure it stays like that
+FROM devkitpro/devkitppc:20190212 AS original-toolchain
+
 m4_include(`paths.m4')m4_dnl
 
 m4_include(`packages.m4')m4_dnl
-m4_define(`pacman_package',`RUN dkp-pacman -Syy --noconfirm `$1' && \
-	rm -rf /opt/devkitpro/pacman/var/cache/pacman/pkg/* /opt/devkitpro/pacman/var/lib/pacman/sync/*')m4_dnl
 
 FROM debian:stable-slim
 USER root
@@ -21,26 +23,20 @@ RUN apt-get update && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 		bzip2 \
 		ca-certificates \
+		curl \
 		gnupg \
 		libxml2 \
 		make \
 		pkg-config \
-		wget \
 		xz-utils \
 		&& \
 	rm -rf /var/lib/apt/lists/*
 
-ARG DKP_PACMAN=1.0.1
-
-RUN wget https://github.com/devkitPro/pacman/releases/download/devkitpro-pacman-${DKP_PACMAN}/devkitpro-pacman.deb && \
-	dpkg -i devkitpro-pacman.deb && \
-	rm -f $HOME/.wget-hsts devkitpro-pacman.deb && \
-	rm -rf /opt/devkitpro/pacman/var/cache/pacman/pkg/* /opt/devkitpro/pacman/var/lib/pacman/sync/*
-
-pacman_package(gamecube-dev wii-dev wiiu-dev)
-
 ENV DEVKITPRO=/opt/devkitpro
 ENV DEVKITPPC=${DEVKITPRO}/devkitPPC
+
+# Copy PPC toolchain
+COPY --from=original-toolchain ${DEVKITPRO}/ ${DEVKITPRO}
 
 local_package(libgxflux)
 
@@ -61,22 +57,22 @@ ENV \
 ENV \
 	CFLAGS="-O2 -mcpu=750 -meabi -mhard-float -ffunction-sections -fdata-sections" \
 	CXXFLAGS="-O2 -mcpu=750 -meabi -mhard-float -ffunction-sections -fdata-sections" \
-	CPPFLAGS="-DGEKKO -I${PREFIX}/include" \
+	CPPFLAGS="-I${PREFIX}/include" \
 	LDFLAGS="-L${PREFIX}/lib"
 
-pacman_package(ppc-libpng)
+# libpng is already installed in original-toolchain
 
-pacman_package(ppc-libjpeg-turbo)
+# libjpeg-turbo is already installed in original-toolchain
 
 helpers_package(faad2)
 
-pacman_package(ppc-libmad)
+# libmad is already installed in original-toolchain
 
-pacman_package(ppc-libogg)
+# libogg is already installed in original-toolchain
 
 helpers_package(libtheora)
 
-pacman_package(ppc-libvorbisidec)
+# libvorbisidec is already installed in original-toolchain
 
 # Disable AltiVec as it's not supported by targets and SSE2 because configure script enables it
 # Copy specific patch to disable FORTIFY as toolchain doesn't seem to support it
@@ -89,7 +85,7 @@ helpers_package(a52dec)
 
 # curl
 
-pacman_package(ppc-freetype)
+# freetype is already installed in original-toolchain
 
 helpers_package(fribidi)
 
