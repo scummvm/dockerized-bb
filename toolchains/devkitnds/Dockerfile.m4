@@ -3,8 +3,6 @@ FROM toolchains/common AS helpers
 m4_include(`paths.m4')m4_dnl
 
 m4_include(`packages.m4')m4_dnl
-m4_define(`pacman_package',`RUN dkp-pacman -Syy --noconfirm `$1' && \
-	rm -rf /opt/devkitpro/pacman/var/cache/pacman/pkg/* /opt/devkitpro/pacman/var/lib/pacman/sync/*')m4_dnl
 
 FROM toolchains/devkitarm
 
@@ -27,7 +25,7 @@ ENV \
 	LDFLAGS="-L${PREFIX}/lib -L${DEVKITPRO}/libnds/lib" \
 	LIBS="-lnds9"
 
-pacman_package(nds-libpng)
+# libpng is already installed in original toolchain
 
 helpers_package(libjpeg-turbo)
 
@@ -49,7 +47,7 @@ helpers_package(a52dec)
 
 # curl
 
-pacman_package(nds-freetype)
+# freetype is already installed in original toolchain
 
 helpers_package(fribidi)
 

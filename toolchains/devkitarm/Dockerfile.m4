@@ -1,10 +1,12 @@
 FROM toolchains/common AS helpers
 
+# This version of devkitARM depends on a Debian Stretch
+# For now it works with stable-slim, we will have to ensure it stays like that
+FROM devkitpro/devkitarm:20200528 AS original-toolchain
+
 m4_include(`paths.m4')m4_dnl
 
 m4_include(`packages.m4')m4_dnl
-m4_define(`pacman_package',`RUN dkp-pacman -Syy --noconfirm `$1' && \
-	rm -rf /opt/devkitpro/pacman/var/cache/pacman/pkg/* /opt/devkitpro/pacman/var/lib/pacman/sync/*')m4_dnl
 
 FROM debian:stable-slim
 USER root
@@ -21,25 +23,21 @@ RUN apt-get update && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 		bzip2 \
 		ca-certificates \
+		curl \
 		gnupg \
 		libxml2 \
 		make \
 		pkg-config \
-		wget \
 		xz-utils \
 		&& \
 	rm -rf /var/lib/apt/lists/*
 
-ARG DKP_PACMAN=1.0.1
-
-RUN wget https://github.com/devkitPro/pacman/releases/download/devkitpro-pacman-${DKP_PACMAN}/devkitpro-pacman.deb && \
-	dpkg -i devkitpro-pacman.deb && \
-	rm -f $HOME/.wget-hsts devkitpro-pacman.deb && \
-	rm -rf /opt/devkitpro/pacman/var/cache/pacman/pkg/* /opt/devkitpro/pacman/var/lib/pacman/sync/*
-
-pacman_package(nds-dev 3ds-dev)
-
 ENV DEVKITPRO=/opt/devkitpro
 ENV DEVKITARM=${DEVKITPRO}/devkitARM
 
-# Libraries will be built or installed separately in NDS and 3DS toolchains
+# Copy ARM toolchain
+COPY --from=original-toolchain ${DEVKITPRO}/ ${DEVKITPRO}
+
+# All devkit libraries got installed
+
+# Libraries will be built separately in NDS and 3DS toolchains
