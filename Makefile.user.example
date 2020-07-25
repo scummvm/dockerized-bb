@@ -1,0 +1,14 @@
+#BUILDBOT_VERSION   := 
+
+# Without toolchains/ part, all is a placeholder for all detected toolchains
+TOOLCHAINS_ENABLED := 
+TOOLCHAINS_BUILT   := 
+
+# Without workers/ part, all is a placeholder for all detected workers
+WORKERS_ENABLED    := all
+WORKERS_BUILT      := 
+
+#DOCKER_REGISTRY    := 
+#DOCKER_SEPARATOR   := :
+
+
