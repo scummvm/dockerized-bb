@@ -168,7 +168,7 @@ $(TOOLCHAINS_PUSH): %/push: $(BUILDDIR)/%
 
 # Update timestamp to avoid building image if we got it
 # Remove repository tag as it's duplicated
-$(TOOLCHAINS_PULL): %/pull:
+$(TOOLCHAINS_PULL): %/pull: | $(BUILDDIR)/toolchains
 	docker pull $(call build_docker_url,$*) && \
 		docker tag $(call build_docker_url,$*) $* && \
 		docker rmi $(call build_docker_url,$*) && \
@@ -179,7 +179,7 @@ $(TOOLCHAINS_PULL): %/pull:
 
 # Raw Dockerfile toolchains are just built using docker
 # They generate a timestamp file in $(BUILDDIR)
-$(TOOLCHAINS_DOC_TS): $(BUILDDIR)/%: %/Dockerfile
+$(TOOLCHAINS_DOC_TS): $(BUILDDIR)/%: %/Dockerfile | $(BUILDDIR)/toolchains
 	@echo "Building $*"
 	docker build -t $* -f $< $(<D)
 	touch "$@"
@@ -189,7 +189,7 @@ $(TOOLCHAINS_DOC_TS): $(BUILDDIR)/%: %/Dockerfile
 # toolchains/m4/library.m4 is automatically included at start for common functions
 # Using VERBOSE=1 makes rule generate a Dockerfile.debug file with preprocessed content and optional trace (m4_traceon instruction)
 # They generate a timestamp file in $(BUILDDIR)
-$(TOOLCHAINS_M4_TS): $(BUILDDIR)/%: %/Dockerfile.m4 $(shell find toolchains/m4 -type f)
+$(TOOLCHAINS_M4_TS): $(BUILDDIR)/%: %/Dockerfile.m4 $(shell find toolchains/m4 -type f) | $(BUILDDIR)/toolchains
 	@echo "Building $*"
 ifeq ($(VERBOSE),1)
 	m4 -P -EE $(M4_DEBUG) -I toolchains/m4 -I $(<D) toolchains/m4/library.m4 $< > $(<D)/Dockerfile.debug 2>&1
@@ -273,7 +273,7 @@ $(WORKERS_PUSH): %/push: $(BUILDDIR)/%
 
 # Update timestamp to avoid building image if we got it
 # Remove repository tag as it's duplicated
-$(WORKERS_PULL): %/pull:
+$(WORKERS_PULL): %/pull: | $(BUILDDIR)/workers
 	docker pull $(call build_docker_url,$*) && \
 		docker tag $(call build_docker_url,$*) $* && \
 		docker rmi $(call build_docker_url,$*) && \
@@ -284,7 +284,7 @@ $(WORKERS_PULL): %/pull:
 
 # Raw Dockerfile workers are just built using docker
 # They generate a timestamp file in $(BUILDDIR)
-$(WORKERS_DOC_TS): $(BUILDDIR)/%: %/Dockerfile
+$(WORKERS_DOC_TS): $(BUILDDIR)/%: %/Dockerfile | $(BUILDDIR)/workers
 	@echo "Building $*"
 	docker build --build-arg BUILDBOT_VERSION=$(BUILDBOT_VERSION) -t $@ -f $< $(<D)
 	touch "$@"
@@ -294,7 +294,7 @@ $(WORKERS_DOC_TS): $(BUILDDIR)/%: %/Dockerfile
 # workers/m4/library.m4 is automatically included at start for common functions
 # Using VERBOSE=1 makes rule generate a Dockerfile.debug file with preprocessed content and optional trace (m4_traceon instruction)
 # They generate a timestamp file in $(BUILDDIR)
-$(WORKERS_M4_TS): $(BUILDDIR)/%: %/Dockerfile.m4 $(shell find workers/m4 -type f)
+$(WORKERS_M4_TS): $(BUILDDIR)/%: %/Dockerfile.m4 $(shell find workers/m4 -type f) | $(BUILDDIR)/workers
 	@echo "Building $*"
 ifeq ($(VERBOSE),1)
 	m4 -P -EE $(M4_DEBUG) -I workers/m4 -I $(<D) workers/m4/library.m4 $< > $(<D)/Dockerfile.debug 2>&1
