@@ -1,7 +1,5 @@
-CMDLINE_TOOLS_VERSION=6200805
-CMDLINE_TOOLS_CHECKSUM="sha256:f10f9d5bca53cc27e2d210be2cbc7c0f1ee906ad9b868748d74d62e10f2c8275"
-
-# Disable HTTPS to allow caching in optional proxy
+CMDLINE_TOOLS_VERSION=6609375
+CMDLINE_TOOLS_CHECKSUM="sha256:89f308315e041c93a37a79e0627c47f21d5c5edbe5e80ea8dc0aac8a649e0e92"
 
 do_install_sdk_tools () {
 	do_http_fetch tools "https://dl.google.com/android/repository/commandlinetools-${HOST_TAG%%-*}-${CMDLINE_TOOLS_VERSION}_latest.zip" 'unzip' \

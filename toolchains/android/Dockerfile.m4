@@ -1,4 +1,4 @@
-##### New toolchain : NDK 21.0.6113669 + SDK licenses only / SDK and tools are downloaded by Gradle #####
+##### New toolchain : NDK + SDK licenses only / SDK and tools are downloaded by Gradle #####
 m4_include(`android/start.m4')m4_dnl
 
 # Newer SDKs need Go
@@ -24,7 +24,7 @@ RUN apt-get update && \
 ENV ANDROID_ROOT=/opt/android
 
 ENV ANDROID_NDK_ROOT=${ANDROID_ROOT}/ndk \
-	ANDROID_NDK_VERSION=21.0.6113669 \
+	ANDROID_NDK_VERSION=21.3.6528147 \
 	API=16 \
 	HOST_TAG=linux-x86_64
 
