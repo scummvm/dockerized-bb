@@ -19,7 +19,7 @@ mkdir -p "${ANDROID_SDK_ROOT}"
 do_sdk_accept_licenses "${ANDROID_SDK_ROOT}"
 
 if [ -n "${ANDROID_SDK_VERSION}" ]; then
-	do_sdk_install "platforms;android-${SDK_VERSION}"
+	do_sdk_install "platforms;android-${ANDROID_SDK_VERSION}"
 	do_sdk_install "platform-tools"
 fi
 if [ -n "${ANDROID_BUILD_TOOLS_VERSION}" ]; then
