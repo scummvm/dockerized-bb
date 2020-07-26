@@ -9,7 +9,7 @@ HELPERS_DIR=$PACKAGE_DIR/../..
 do_make_bdir
 
 # GPG key of Bruno Haible (Open Source Development) <bruno@clisp.org>
-gpg --keyserver hkps://hkps.pool.sks-keyservers.net --recv-keys 4F494A942E4616C2
+gpg --keyserver hkps://keyserver.ubuntu.com --recv-keys 0x4F494A942E4616C2
 do_http_fetch libiconv "http://ftp.gnu.org/pub/gnu/libiconv/libiconv-${LIBICONV_VERSION}.tar.gz" 'tar xzf' \
 	"gpgurl:http://ftp.gnu.org/pub/gnu/libiconv/libiconv-${LIBICONV_VERSION}.tar.gz.sig"
 rm -Rf $HOME/.gnupg

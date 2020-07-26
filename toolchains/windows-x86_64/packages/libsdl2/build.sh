@@ -10,8 +10,8 @@ do_make_bdir
 
 # We need to get package directly from SDL because Debian source package doesn't have Windows specific files
 
-# GPG key of Sam Lantinga
-gpg --keyserver hkps://hkps.pool.sks-keyservers.net --recv-keys 0xA7763BE6
+# GPG key of Sam Lantinga (short key ID: 0xA7763BE6 but immune to collisions)
+gpg --keyserver hkps://keyserver.ubuntu.com --recv-keys 0x30A59377A7763BE6
 do_http_fetch SDL2 "http://www.libsdl.org/release/SDL2-${SDL_VERSION}.tar.gz" 'tar xzf' \
 	"gpgurl:http://www.libsdl.org/release/SDL2-${SDL_VERSION}.tar.gz.sig"
 rm -Rf $HOME/.gnupg
