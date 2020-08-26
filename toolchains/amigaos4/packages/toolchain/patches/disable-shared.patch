@@ -1,0 +1,62 @@
+diff --git a/gcc-build/features.mk b/gcc-build/features.mk
+index 6f1c678..d9317fa 100644
+--- a/gcc-build/features.mk
++++ b/gcc-build/features.mk
+@@ -11,3 +11,5 @@ FEATURES=\
+ ifeq ($(shell test $(MAJOR_VERSION) -ge 8; echo $$?), 0)
+ FEATURES+=--enable-threads=amigaos --enable-lto
+ endif
++
++FEATURES+=--disable-shared
+diff --git a/gcc/4.9/patches/0001-Changes-for-AmigaOS-version-of-gcc.patch b/gcc/4.9/patches/0001-Changes-for-AmigaOS-version-of-gcc.patch
+index adc6ab8..d4f0d61 100644
+--- a/gcc/4.9/patches/0001-Changes-for-AmigaOS-version-of-gcc.patch
++++ b/gcc/4.9/patches/0001-Changes-for-AmigaOS-version-of-gcc.patch
+@@ -955,7 +955,7 @@ index 0000000000000000000000000000000000000000..4556163c22a8fadc51c9ed7401c7e6c4
+ +/* default linker specs */
+ +#undef REAL_LIBGCC_SPEC
+ +#define REAL_LIBGCC_SPEC "\
+-+%{static|static-libgcc: %{!use-dynld: -lgcc -lgcc_eh} %{use-dynld: -lgcc} }%{!static:%{!static-libgcc:%{!shared:%{!shared-libgcc: %{!use-dynld: -lgcc -lgcc_eh} %{use-dynld: -lgcc}}%{shared-libgcc:-lgcc}}%{shared:%{shared-libgcc:-lgcc}%{!shared-libgcc:-lgcc}}}}"
+++%{static|static-libgcc: -lgcc}%{!static:%{!static-libgcc:%{!shared:%{!shared-libgcc: %{!use-dynld: -lgcc} %{use-dynld: -lgcc}}%{shared-libgcc:-lgcc}}%{shared:%{shared-libgcc:-lgcc}%{!shared-libgcc:-lgcc}}}}"
+ +
+ +
+ +/* make newlib the default */
+diff --git a/gcc/5/patches/0001-Changes-for-AmigaOS-version-of-gcc.patch b/gcc/5/patches/0001-Changes-for-AmigaOS-version-of-gcc.patch
+index ad32733..4d2fad7 100644
+--- a/gcc/5/patches/0001-Changes-for-AmigaOS-version-of-gcc.patch
++++ b/gcc/5/patches/0001-Changes-for-AmigaOS-version-of-gcc.patch
+@@ -955,7 +955,7 @@ index 0000000000000000000000000000000000000000..94fa93c0be047c08987d7acbc7c71413
+ +/* default linker specs */
+ +#undef REAL_LIBGCC_SPEC
+ +#define REAL_LIBGCC_SPEC "\
+-+%{static|static-libgcc: %{!use-dynld: -lgcc -lgcc_eh} %{use-dynld: -lgcc} }%{!static:%{!static-libgcc:%{!shared:%{!shared-libgcc: %{!use-dynld: -lgcc -lgcc_eh} %{use-dynld: -lgcc}}%{shared-libgcc:-lgcc}}%{shared:%{shared-libgcc:-lgcc}%{!shared-libgcc:-lgcc}}}}"
+++%{static|static-libgcc: -lgcc}%{!static:%{!static-libgcc:%{!shared:%{!shared-libgcc: %{!use-dynld: -lgcc} %{use-dynld: -lgcc}}%{shared-libgcc:-lgcc}}%{shared:%{shared-libgcc:-lgcc}%{!shared-libgcc:-lgcc}}}}"
+ +
+ +
+ +/* make newlib the default */
+diff --git a/gcc/6/patches/0001-Changes-for-AmigaOS-version-of-gcc.patch b/gcc/6/patches/0001-Changes-for-AmigaOS-version-of-gcc.patch
+index 0e0b6c2..f9e292c 100644
+--- a/gcc/6/patches/0001-Changes-for-AmigaOS-version-of-gcc.patch
++++ b/gcc/6/patches/0001-Changes-for-AmigaOS-version-of-gcc.patch
+@@ -956,7 +956,7 @@ index 0000000000000000000000000000000000000000..0d06f2dd48c7d97bbd192b26d530b18b
+ +/* default linker specs */
+ +#undef REAL_LIBGCC_SPEC
+ +#define REAL_LIBGCC_SPEC "\
+-+%{static|static-libgcc: %{!use-dynld: -lgcc -lgcc_eh} %{use-dynld: -lgcc} }%{!static:%{!static-libgcc:%{!shared:%{!shared-libgcc: %{!use-dynld: -lgcc -lgcc_eh} %{use-dynld: -lgcc}}%{shared-libgcc:-lgcc}}%{shared:%{shared-libgcc:-lgcc}%{!shared-libgcc:-lgcc}}}}"
+++%{static|static-libgcc: -lgcc}%{!static:%{!static-libgcc:%{!shared:%{!shared-libgcc: %{!use-dynld: -lgcc} %{use-dynld: -lgcc}}%{shared-libgcc:-lgcc}}%{shared:%{shared-libgcc:-lgcc}%{!shared-libgcc:-lgcc}}}}"
+ +
+ +
+ +/* make newlib the default */
+diff --git a/gcc/8/patches/0001-Changes-for-AmigaOS-version-of-gcc.patch b/gcc/8/patches/0001-Changes-for-AmigaOS-version-of-gcc.patch
+index 4e4edf5..7caefa8 100644
+--- a/gcc/8/patches/0001-Changes-for-AmigaOS-version-of-gcc.patch
++++ b/gcc/8/patches/0001-Changes-for-AmigaOS-version-of-gcc.patch
+@@ -960,7 +960,7 @@ index 0000000000000000000000000000000000000000..1153ece337930f7bbf5f9978bf6f3faf
+ +/* default linker specs */
+ +#undef REAL_LIBGCC_SPEC
+ +#define REAL_LIBGCC_SPEC "\
+-+%{static|static-libgcc: %{!use-dynld: -lgcc -lgcc_eh} %{use-dynld: -lgcc} }%{!static:%{!static-libgcc:%{!shared:%{!shared-libgcc: %{!use-dynld: -lgcc -lgcc_eh} %{use-dynld: -lgcc}}%{shared-libgcc:-lgcc}}%{shared:%{shared-libgcc:-lgcc}%{!shared-libgcc:-lgcc}}}}"
+++%{static|static-libgcc: -lgcc}%{!static:%{!static-libgcc:%{!shared:%{!shared-libgcc: %{!use-dynld: -lgcc} %{use-dynld: -lgcc}}%{shared-libgcc:-lgcc}}%{shared:%{shared-libgcc:-lgcc}%{!shared-libgcc:-lgcc}}}}"
+ +
+ +
+ +/* make newlib the default */

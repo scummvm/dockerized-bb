@@ -122,6 +122,40 @@ def _3ds():
     register_platform(platform)
 _3ds()
 
+def amigaos4():
+    platform = Platform("amigaos4")
+    platform.env["CXX"] = "ccache /usr/local/amigaos4/bin/ppc-amigaos-c++"
+    platform.configureargs.append("--host=ppc-amigaos")
+    platform.buildconfigureargs = {
+        builds.ScummVMBuild: [ "--enable-static" ],
+    }
+    platform.packaging_cmd = {
+        builds.ScummVMBuild: "amigaosdist",
+        builds.ScummVMToolsBuild: "amigaos4dist"
+    }
+    platform.built_files = {
+        builds.ScummVMBuild: [ "Games:ScummVM", "Games:ScummVM.info" ],
+        builds.ScummVMToolsBuild: [
+	    "construct_mohawk",
+	    "create_sjisfnt",
+	    "decine",
+	    #"decompile", # Decompiler currently not built - BOOST library not present
+	    "degob",
+	    "dekyra",
+	    "descumm",
+	    "desword2",
+	    "extract_mohawk",
+	    "gob_loadcalc",
+	    #"scummvm-tools", # GUI tools currently not built - WxWidgets library not present
+	    "scummvm-tools-cli"
+        ],
+    }
+    platform.archiveext = "zip"
+    platform.testable = False
+    platform.run_tests = False
+    register_platform(platform)
+amigaos4()
+
 def android(suffix, scummvm_target, ndk_target, cxx_target, abi_version):
     platform = Platform("android_{0}".format(suffix))
     platform.compatibleBuilds = (builds.ScummVMBuild, )

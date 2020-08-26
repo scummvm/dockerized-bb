@@ -1,0 +1,11 @@
+#! /bin/sh
+
+BIN_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+
+# Ensure shims are in the path
+export PATH=$PATH:$BIN_DIR
+
+# Ask for Amiga Rexx version
+export REGINA_OPTIONS="AREXX_BIFS AREXX_SEMANTICS"
+
+exec "$BIN_DIR"/rexx "$@"

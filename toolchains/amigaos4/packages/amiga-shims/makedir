@@ -1,0 +1,5 @@
+#! /bin/sh
+
+# TODO: Parse arguments
+
+exec mkdir "$@"
