@@ -6,7 +6,7 @@ HELPERS_DIR=$PACKAGE_DIR/../..
 
 do_make_bdir
 
-do_svn_fetch gcc4 svn://svn.riscos.info/gccsdk/trunk/gcc4/ -r7251
+do_svn_fetch gcc4 svn://svn.riscos.info/gccsdk/trunk/gcc4/ -r7419
 
 echo "export GCCSDK_INSTALL_CROSSBIN=$GCCSDK_INSTALL_CROSSBIN" > gccsdk-params
 echo "export GCCSDK_INSTALL_ENV=$GCCSDK_INSTALL_ENV" >> gccsdk-params
