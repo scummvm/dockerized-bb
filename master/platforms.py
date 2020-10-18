@@ -330,6 +330,76 @@ def gp2x():
     register_platform(platform)
 gp2x()
 
+def macosx():
+    platform = Platform("macosx")
+    platform.env["CXX"] = "ccache x86_64-apple-darwin19-c++"
+    # Put back worker CXXFLAGS
+    platform.env["CXXFLAGS"] += "${CXXFLAGS}"
+    platform.configureargs.append("--host=x86_64-apple-darwin19")
+    platform.buildconfigureargs = {
+        builds.ScummVMBuild: [ "--enable-static", "--with-staticlib-prefix=${DESTDIR}/${PREFIX}",
+            "--disable-osx-dock-plugin"],
+    }
+    platform.packaging_cmd = {
+        builds.ScummVMBuild: "bundle",
+        builds.ScummVMToolsBuild: None
+    }
+    platform.built_files = {
+        builds.ScummVMBuild: [ "ScummVM.app" ],
+        builds.ScummVMToolsBuild: [
+            "construct_mohawk",
+            "create_sjisfnt",
+            "decine",
+            #"decompile", # Decompiler currently not built - BOOST library not present
+            "degob",
+            "dekyra",
+            "descumm",
+            "desword2",
+            "extract_mohawk",
+            "gob_loadcalc",
+            #"scummvm-tools", # GUI tools currently not built - WxWidgets library not present
+            "scummvm-tools-cli"
+        ]
+    }
+    platform.archiveext = "tar.xz"
+    register_platform(platform)
+macosx()
+
+def macosx_i386():
+    platform = Platform("macosx-i386")
+    platform.env["CXX"] = "ccache i386-apple-darwin17-c++"
+    # Put back worker CXXFLAGS
+    platform.env["CXXFLAGS"] += "${CXXFLAGS}"
+    platform.configureargs.append("--host=x86_64-apple-darwin17")
+    platform.buildconfigureargs = {
+        builds.ScummVMBuild: [ "--enable-static", "--with-staticlib-prefix=${DESTDIR}/${PREFIX}",
+            "--disable-osx-dock-plugin"],
+    }
+    platform.packaging_cmd = {
+        builds.ScummVMBuild: "bundle",
+        builds.ScummVMToolsBuild: None
+    }
+    platform.built_files = {
+        builds.ScummVMBuild: [ "scummvm" ],
+        builds.ScummVMToolsBuild: [
+            "construct_mohawk",
+            "create_sjisfnt",
+            "decine",
+            #"decompile", # Decompiler currently not built - BOOST library not present
+            "degob",
+            "dekyra",
+            "descumm",
+            "desword2",
+            "extract_mohawk",
+            "gob_loadcalc",
+            #"scummvm-tools", # GUI tools currently not built - WxWidgets library not present
+            "scummvm-tools-cli"
+        ]
+    }
+    platform.archiveext = "tar.xz"
+    register_platform(platform)
+macosx_i386()
+
 def nds():
     platform = Platform("nds")
     platform.workerimage = "devkitnds"

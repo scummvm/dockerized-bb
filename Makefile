@@ -133,7 +133,7 @@ ALL_TOOLCHAINS_M4  := $(patsubst %/,%,$(dir $(wildcard toolchains/*/Dockerfile.m
 ALL_TOOLCHAINS_DOC := $(patsubst %/,%,$(dir $(wildcard toolchains/*/Dockerfile)))
 ALL_TOOLCHAINS     := $(ALL_TOOLCHAINS_M4) $(ALL_TOOLCHAINS_DOC)
 
-TOOLCHAINS_RESTRICTED := toolchains/apple-sdks
+TOOLCHAINS_RESTRICTED := toolchains/apple-sdks toolchains/macosx toolchains/macosx-i386
 
 # Override because we use the provided value and calculate the real one
 override TOOLCHAINS_ENABLED := $(call filter_list,$(TOOLCHAINS_ENABLED),$(ALL_TOOLCHAINS),toolchains/)
@@ -231,6 +231,14 @@ $(eval $(call DEPEND_IMAGE,\
 	toolchains/devkitnds,\
 	toolchains/devkitarm,\
 	$(TOOLCHAINS_BUILT)))
+$(eval $(call DEPEND_IMAGE,\
+	toolchains/macosx,\
+	toolchains/macosx-common,\
+	$(TOOLCHAINS_BUILT)))
+$(eval $(call DEPEND_IMAGE,\
+	toolchains/macosx-i386,\
+	toolchains/macosx-common,\
+	$(TOOLCHAINS_BUILT)))
 
 # Generate dependencies over files and to common toolchain only for toolchains we will build
 $(foreach i,$(TOOLCHAINS_BUILT), \
@@ -246,7 +254,7 @@ ALL_WORKERS_M4  := $(patsubst %/,%,$(dir $(wildcard workers/*/Dockerfile.m4)))
 ALL_WORKERS_DOC := $(patsubst %/,%,$(dir $(wildcard workers/*/Dockerfile)))
 ALL_WORKERS     := $(ALL_WORKERS_M4) $(ALL_WORKERS_DOC)
 
-WORKERS_RESTRICTED :=
+WORKERS_RESTRICTED := workers/macosx workers/macosx-i386
 
 override WORKERS_ENABLED := $(call filter_list,$(WORKERS_ENABLED),$(ALL_WORKERS),workers/)
 override WORKERS_BUILT   := $(call filter_list,$(WORKERS_BUILT),$(WORKERS_ENABLED),workers/)

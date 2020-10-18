@@ -107,6 +107,17 @@ When a custom toolchain has to be built, Dockerfile should:
 `make toolchains` just runs `docker build` on every directory in `toolchains` using GNU m4 when needed.
 It also handles user preferences and downloads toolchains when build isn't desirable.
 
+Apple toolchains
+----------------
+
+Apple toolchains need SDKs which aren't publicly available.
+The toolchain `apple-sdks` extracts them from Xcode packages.
+For this you need an AppleID account and download Xcode packages needed by the toolchain.
+They must be placed in `toolchains/apple-sdks` directory.
+In some (if not all) versions of Docker, if the files are larger than 4G, building of image will fail.
+You can use the command `split -b2G toolchains/apple-sdks/<filename>.xip toolchains/apple-sdks/<filename>.xip.` to make small parts of it.
+File will be joined back in the building process.
+
 Credits
 -------
 
