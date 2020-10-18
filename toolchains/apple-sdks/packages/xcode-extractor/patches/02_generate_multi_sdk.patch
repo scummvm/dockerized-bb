@@ -1,0 +1,49 @@
+diff --git a/tools/gen_sdk_package.sh b/tools/gen_sdk_package.sh
+index df3ade8..b9d2218 100755
+--- a/tools/gen_sdk_package.sh
++++ b/tools/gen_sdk_package.sh
+@@ -124,8 +124,8 @@ set -e
+ 
+ pushd "$XCODEDIR" &>/dev/null
+ 
+-if [ -d "Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs" ]; then
+-  pushd "Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs" &>/dev/null
++if [ -d "Contents/Developer/Platforms" ]; then
++  pushd "Contents/Developer/Platforms" &>/dev/null
+ else
+   if [ -d "../Packages" ]; then
+     pushd "../Packages" &>/dev/null
+@@ -148,7 +148,7 @@ else
+   fi
+ fi
+ 
+-SDKS=$(ls | grep -E "^MacOSX11.*|^MacOSX10.*" | grep -v "Patch")
++SDKS=$(for platform in $SDK_PLATFORMS; do ls -1d ${platform}.platform/Developer/SDKs/*.*.sdk | grep -v 'Patch'; done)
+ 
+ if [ -z "$SDKS" ]; then
+     echo "No SDK found" 1>&2
+@@ -164,7 +164,8 @@ LIBCXXDIR2="Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c
+ # Manual directory
+ MANDIR="Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/share/man"
+ 
+-for SDK in $SDKS; do
++for SDK_DIR in $SDKS; do
++  SDK=$(basename "$SDK_DIR")
+   echo -n "packaging $(echo "$SDK" | sed -E "s/(.sdk|.pkg)//g") SDK "
+   echo "(this may take several minutes) ..."
+ 
+@@ -174,7 +175,7 @@ for SDK in $SDKS; do
+   fi
+ 
+   TMP=$(mktemp -d /tmp/XXXXXXXXXXX)
+-  cp -r $(rreadlink $SDK) $TMP/$SDK &>/dev/null || true
++  cp -r $(rreadlink $SDK_DIR) $TMP/$SDK &>/dev/null || true
+ 
+   pushd "$XCODEDIR" &>/dev/null
+ 
+@@ -205,4 +206,4 @@ popd &>/dev/null
+ popd &>/dev/null
+ 
+ echo ""
+-ls -lh | grep MacOSX
++ls -lh *.*.sdk.*

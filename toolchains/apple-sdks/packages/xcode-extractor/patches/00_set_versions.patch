@@ -1,0 +1,39 @@
+diff --git a/build.sh b/build.sh
+index 2f345c1..aea608d 100755
+--- a/build.sh
++++ b/build.sh
+@@ -99,7 +99,7 @@ build_xar
+ if [ $ARM_SUPPORTED -eq 1 ]; then
+ 
+   get_sources \
+-    https://github.com/tpoechtrager/ldid.git master
++    https://github.com/tpoechtrager/ldid.git $LDID_VERSION
+ 
+   pushd $CURRENT_BUILD_PROJECT_NAME &>/dev/null
+   echo ""
+diff --git a/tools/gen_sdk_package_pbzx.sh b/tools/gen_sdk_package_pbzx.sh
+index d741550..f2ae9de 100755
+--- a/tools/gen_sdk_package_pbzx.sh
++++ b/tools/gen_sdk_package_pbzx.sh
+@@ -22,7 +22,7 @@ pushd $BUILD_DIR &>/dev/null
+ 
+ build_xar
+ 
+-get_sources https://github.com/tpoechtrager/pbzx.git master
++get_sources https://github.com/tpoechtrager/pbzx.git $PBZX_VERSION
+ 
+ if [ $f_res -eq 1 ]; then
+   pushd $CURRENT_BUILD_PROJECT_NAME &>/dev/null
+diff --git a/tools/tools.sh b/tools/tools.sh
+index 2317260..5b9a24a 100644
+--- a/tools/tools.sh
++++ b/tools/tools.sh
+@@ -472,7 +472,7 @@ function build_xar()
+ {
+   pushd $BUILD_DIR &>/dev/null
+ 
+-  get_sources https://github.com/tpoechtrager/xar.git master
++  get_sources https://github.com/tpoechtrager/xar.git $XAR_VERSION
+ 
+   if [ $f_res -eq 1 ]; then
+     pushd $CURRENT_BUILD_PROJECT_NAME/xar &>/dev/null
