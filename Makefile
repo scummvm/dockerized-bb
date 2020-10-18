@@ -8,6 +8,7 @@ TOOLCHAINS_BUILT   := all
 WORKERS_ENABLED    := all
 WORKERS_BUILT      := all
 
+DOCKER_PRIVATE     := 0
 DOCKER_REGISTRY    := lephilousophe/scummvm
 DOCKER_SEPARATOR   := :
 
@@ -81,6 +82,7 @@ status:
 	@echo "Toolchains enabled:               " $(TOOLCHAINS_ENABLED)
 	@echo "Toolchains to build:              " $(TOOLCHAINS_BUILT)
 	@echo "Toolchains to download:           " $(TOOLCHAINS_DOWNLOADED)
+	@echo "Toolchains online:                " $(TOOLCHAINS_ONLINE)
 	@echo "Toolchains timestamps:            " $(TOOLCHAINS_TS)
 	@echo "Workers to preprocess:            " $(ALL_WORKERS_M4)
 	@echo "Workers without preprocessing:    " $(ALL_WORKERS_DOC)
@@ -88,6 +90,7 @@ status:
 	@echo "Workers enabled:                  " $(WORKERS_ENABLED)
 	@echo "Workers to build:                 " $(WORKERS_BUILT)
 	@echo "Workers to download:              " $(WORKERS_DOWNLOADED)
+	@echo "Workers online:                   " $(WORKERS_ONLINE)
 	@echo "Workers timestamps:               " $(WORKERS_TS)
 
 # Debug ccache used by workers
@@ -130,10 +133,17 @@ ALL_TOOLCHAINS_M4  := $(patsubst %/,%,$(dir $(wildcard toolchains/*/Dockerfile.m
 ALL_TOOLCHAINS_DOC := $(patsubst %/,%,$(dir $(wildcard toolchains/*/Dockerfile)))
 ALL_TOOLCHAINS     := $(ALL_TOOLCHAINS_M4) $(ALL_TOOLCHAINS_DOC)
 
+TOOLCHAINS_RESTRICTED :=
+
 # Override because we use the provided value and calculate the real one
 override TOOLCHAINS_ENABLED := $(call filter_list,$(TOOLCHAINS_ENABLED),$(ALL_TOOLCHAINS),toolchains/)
 override TOOLCHAINS_BUILT   := $(call filter_list,$(TOOLCHAINS_BUILT),$(TOOLCHAINS_ENABLED),toolchains/)
-TOOLCHAINS_DOWNLOADED       := $(filter-out $(TOOLCHAINS_BUILT),$(TOOLCHAINS_ENABLED))
+ifeq ($(DOCKER_PRIVATE),1)
+	TOOLCHAINS_ONLINE   := $(TOOLCHAINS_ENABLED)
+else
+	TOOLCHAINS_ONLINE   := $(filter-out $(TOOLCHAINS_RESTRICTED),$(TOOLCHAINS_ENABLED))
+endif
+TOOLCHAINS_DOWNLOADED       := $(filter-out $(TOOLCHAINS_BUILT),$(TOOLCHAINS_ONLINE))
 
 # Build timestamps files generated as a marker
 TOOLCHAINS_M4_TS  := $(foreach i,$(filter $(TOOLCHAINS_BUILT),$(ALL_TOOLCHAINS_M4)),$(BUILDDIR)/$(i))
@@ -143,8 +153,8 @@ TOOLCHAINS_TS     := $(TOOLCHAINS_M4_TS) $(TOOLCHAINS_DOC_TS) $(TOOLCHAINS_DL_TS
 
 # Build clean/push/pull rules
 TOOLCHAINS_CLEAN := $(foreach i,$(TOOLCHAINS_ENABLED),$(i)/clean)
-TOOLCHAINS_PUSH  := $(foreach i,$(TOOLCHAINS_ENABLED),$(i)/push)
-TOOLCHAINS_PULL  := $(foreach i,$(TOOLCHAINS_ENABLED),$(i)/pull)
+TOOLCHAINS_PUSH  := $(foreach i,$(TOOLCHAINS_ONLINE),$(i)/push)
+TOOLCHAINS_PULL  := $(foreach i,$(TOOLCHAINS_ONLINE),$(i)/pull)
 
 # Phony rules to manage all toolchains easily
 toolchains      : $(TOOLCHAINS_ENABLED)
@@ -236,9 +246,16 @@ ALL_WORKERS_M4  := $(patsubst %/,%,$(dir $(wildcard workers/*/Dockerfile.m4)))
 ALL_WORKERS_DOC := $(patsubst %/,%,$(dir $(wildcard workers/*/Dockerfile)))
 ALL_WORKERS     := $(ALL_WORKERS_M4) $(ALL_WORKERS_DOC)
 
+WORKERS_RESTRICTED :=
+
 override WORKERS_ENABLED := $(call filter_list,$(WORKERS_ENABLED),$(ALL_WORKERS),workers/)
 override WORKERS_BUILT   := $(call filter_list,$(WORKERS_BUILT),$(WORKERS_ENABLED),workers/)
-WORKERS_DOWNLOADED       := $(filter-out $(WORKERS_BUILT),$(WORKERS_ENABLED))
+ifeq ($(DOCKER_PRIVATE),1)
+	WORKERS_ONLINE   := $(WORKERS_ENABLED)
+else
+	WORKERS_ONLINE   := $(filter-out $(WORKERS_RESTRICTED),$(WORKERS_ENABLED))
+endif
+WORKERS_DOWNLOADED       := $(filter-out $(WORKERS_BUILT),$(WORKERS_ONLINE))
 
 # Build timestamps files generated as a marker
 WORKERS_M4_TS  := $(foreach i,$(filter $(WORKERS_BUILT),$(ALL_WORKERS_M4)),$(BUILDDIR)/$(i))
@@ -248,8 +265,8 @@ WORKERS_TS     := $(WORKERS_M4_TS) $(WORKERS_DOC_TS) $(WORKERS_DL_TS)
 
 # Build clean/push/pull rules
 WORKERS_CLEAN := $(foreach i,$(WORKERS_ENABLED),$(i)/clean)
-WORKERS_PUSH  := $(foreach i,$(WORKERS_ENABLED),$(i)/push)
-WORKERS_PULL  := $(foreach i,$(WORKERS_ENABLED),$(i)/pull)
+WORKERS_PUSH  := $(foreach i,$(WORKERS_ONLINE),$(i)/push)
+WORKERS_PULL  := $(foreach i,$(WORKERS_ONLINE),$(i)/pull)
 
 # Phony rules to manage all workers easily
 workers      : $(WORKERS_ENABLED)
