@@ -6,6 +6,7 @@ m4_include(`install-buildbot.m4')m4_dnl
 
 RUN apt-get update && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+		bzip2 \
 		ccache \
 		git \
 		make \
