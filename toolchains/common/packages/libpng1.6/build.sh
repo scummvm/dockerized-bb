@@ -15,9 +15,13 @@ do_make install-libLTLIBRARIES \
 	install-binSCRIPTS \
 	install-pkgconfigDATA \
 	install-pkgincludeHEADERS \
-	install-nodist_pkgincludeHEADERS \
-	install-header-links \
+	install-nodist_pkgincludeHEADERS
+
+# As we install everything manually we must handle dependencies ourselves
+# Run these after the other ones as they depends on them
+do_make install-header-links \
 	install-library-links \
-	install-libpng-pc
+	install-libpng-pc \
+	install-libpng-config
 
 do_clean_bdir
