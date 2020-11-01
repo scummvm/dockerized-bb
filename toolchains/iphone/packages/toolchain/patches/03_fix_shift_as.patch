@@ -1,0 +1,17 @@
+Index: cctools-port/cctools/as/arm.c
+===================================================================
+--- cctools-port.orig/cctools/as/arm.c
++++ cctools-port/cctools/as/arm.c
+@@ -5085,8 +5085,11 @@ static unsigned int
+ encode_arm_immediate (unsigned int val)
+ {
+   unsigned int a, i;
++  // Avoid rotating by 0 as it triggers bug in LLVM
++  if (val <= 0xff)
++	return val;
+ 
+-  for (i = 0; i < 32; i += 2)
++  for (i = 2; i < 32; i += 2)
+     if ((a = rotate_left (val, i)) <= 0xff)
+       return a | (i << 7); /* 12-bit pack: [shift-cnt,const].  */
+ 
