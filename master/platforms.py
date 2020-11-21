@@ -356,10 +356,15 @@ def macosx():
     platform.env["CXX"] = "ccache x86_64-apple-darwin19-c++"
     # Put back worker CXXFLAGS
     platform.env["CXXFLAGS"] += "${CXXFLAGS}"
+    # configure script doesn't compile discord check with proper flags
+    platform.env["DISCORD_LIBS"] = "-framework AppKit"
+
     platform.configureargs.append("--host=x86_64-apple-darwin19")
     platform.buildconfigureargs = {
-        builds.ScummVMBuild: [ "--enable-static", "--with-staticlib-prefix=${DESTDIR}/${PREFIX}",
-            "--disable-osx-dock-plugin"],
+        builds.ScummVMBuild: [ "--enable-static",
+            "--with-staticlib-prefix=${DESTDIR}/${PREFIX}",
+            "--with-sparkle-prefix=${DESTDIR}/${PREFIX}/Library/Frameworks",
+            "--disable-osx-dock-plugin", "--enable-updates"],
     }
     platform.packaging_cmd = {
         builds.ScummVMBuild: "bundle",

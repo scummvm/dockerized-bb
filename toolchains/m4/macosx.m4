@@ -130,9 +130,13 @@ helpers_package(freetype)
 
 ports_package(fribidi)
 
+ports_package(glew)
+
 # This is a shim package which uses ports but fixes paths in sdl2-config
 common_package(libsdl2)
 
 ports_package(libsdl2_net)
 
 helpers_package(fluidsynth, -DCMAKE_SYSTEM_NAME=Darwin -DLIB_SUFFIX=)
+
+# Toolchain specific packages will go in the dedicated file now
