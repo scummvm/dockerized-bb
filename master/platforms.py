@@ -613,20 +613,26 @@ def wii():
     register_platform(platform)
 wii()
 
-def windows_x86_64():
-    platform = Platform("windows-x86_64")
-    platform.env["CXX"] = "ccache x86_64-w64-mingw32-g++"
+def windows_mxe(suffix, target):
+    platform = Platform("windows-{0}".format(suffix))
+    platform.workerimage = "mxe"
+
+    platform.env["CXX"] = "ccache ${{MXE_PREFIX_DIR}}/bin/{0}-c++".format(target)
+    # strings is detected using host alias and not host, override it here
+    platform.env["STRINGS"] = "ccache ${{MXE_PREFIX_DIR}}/bin/{0}-strings".format(target)
+    platform.env["PKG_CONFIG_LIBDIR"] = "${{MXE_PREFIX_DIR}}/{0}/lib/pkgconfig".format(target)
+    # Altering PATH for curl-config, that lets us reuse environment variables instead of using configure args
+    platform.env["PATH"] = [ "${PATH}", "${{MXE_PREFIX_DIR}}/{0}/bin".format(target)]
     # Add iphlpapi to librairies (should be done in configure script like in create_project)
-    platform.env["SDL_NET_LIBS"] = "-lSDL2_net -liphlpapi"
-    # Fluidsynth will be linked statically
-    platform.env["FLUIDSYNTH_CFLAGS"] = "-DFLUIDSYNTH_NOT_A_DLL"
-    platform.configureargs.append("--host=x86_64-w64-mingw32")
-    platform.configureargs.append("--enable-updates")
-    platform.configureargs.append("--enable-libcurl")
-    platform.configureargs.append("--enable-sdlnet")
+    platform.env["SDL_NET_LIBS"] = "-lSDL2_net -lws2_32 -liphlpapi"
+
+    platform.configureargs.append("--host={0}".format(target))
+    platform.configureargs.append("--enable-debug")
+    platform.buildconfigureargs = {
+        builds.ScummVMBuild: [ "--enable-updates"],
+    }
     platform.built_files = {
-        # SDL2 is not really built but we give there an absolute path that must not be appended to src path
-        builds.ScummVMBuild: [ "scummvm.exe", "/usr/x86_64-w64-mingw32/bin/SDL2.dll", "/usr/x86_64-w64-mingw32/bin/WinSparkle.dll" ],
+        builds.ScummVMBuild: [ "scummvm.exe" ],
         builds.ScummVMToolsBuild: [
             "construct_mohawk.exe",
             "create_sjisfnt.exe",
@@ -642,7 +648,17 @@ def windows_x86_64():
             "scummvm-tools-cli.exe"
         ]
     }
+    # WinSparkle is built as a DLL (because we don't build it), so add it to the package
+    platform.data_files = {
+        builds.ScummVMBuild: [
+            "${{MXE_PREFIX_DIR}}/{0}/bin/WinSparkle.dll".format(target),
+        ],
+    }
     platform.archiveext = "zip"
     platform.run_tests = False
     register_platform(platform)
-windows_x86_64()
+
+windows_mxe(suffix="x86",
+        target="i686-w64-mingw32.static")
+windows_mxe(suffix="x86_64",
+        target="x86_64-w64-mingw32.static")
