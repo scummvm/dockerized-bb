@@ -151,7 +151,10 @@ def Package(disttarget, srcpath, dstpath, data_files,
     if not disttarget:
         files += [ os.path.join(srcpath, f) for f in data_files ]
     files += platform_built_files
-    files += [ os.path.join(srcpath, f) for f in platform_data_files ]
+    # If file is absolute or begins with a $ (environment variable) don't prepend srcpath
+    if platform_data_files:
+        files += [ f if (os.path.isabs(f) or f[0:1] == '$') else os.path.join(srcpath, f)
+                for f in platform_data_files ]
 
     @renderer
     def generateCommands(props):
