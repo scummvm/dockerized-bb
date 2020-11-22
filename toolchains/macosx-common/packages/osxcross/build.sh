@@ -2,6 +2,7 @@
 
 OSXCROSS_VERSION=7c090bd8cd4ad28cf332f1d02267630d8f333c19
 export XAR_VERSION=2b9a4ab7003f1db8c54da4fea55fcbb424fdecb0
+export LDID_VERSION=4bf8f4d60384a0693dbbe2084ce62a35bfeb87ab
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..

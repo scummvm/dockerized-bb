@@ -30,13 +30,16 @@ ENV SDK_DIR=/opt/sdk
 
 ENV PACKAGES_LOCATION=/opt/
 
+m4_dnl Use a define to have only one place to change
+m4_define(`VERSION', 9.4.1)
 # Extract last MacOS X SDK supporting i686 builds
-COPY Xcode_9.4.1.xip* ${PACKAGES_LOCATION}
-local_package(xcode-extractor, , PACKAGE=Xcode_9.4.1.xip SDK_PLATFORMS="MacOSX")
+COPY Xcode_`'VERSION.xip* ${PACKAGES_LOCATION}
+local_package(xcode-extractor, , PACKAGE=Xcode_`'VERSION.xip SDK_PLATFORMS="MacOSX")
 
 # Extract latest MacOS X and iPhoneOS SDK
-COPY Xcode_12.xip* ${PACKAGES_LOCATION}
-local_package(xcode-extractor, , PACKAGE=Xcode_12.xip SDK_PLATFORMS="MacOSX iPhoneOS")
+m4_define(`VERSION', 12.2)
+COPY Xcode_`'VERSION.xip* ${PACKAGES_LOCATION}
+local_package(xcode-extractor, , PACKAGE=Xcode_`'VERSION.xip SDK_PLATFORMS="MacOSX iPhoneOS")
 
 FROM scratch
 
