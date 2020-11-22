@@ -25,8 +25,11 @@ M4_DEBUG := -dcxaeq
 # Create dependencies list based on docker context contents
 define MAKE_DEPS
 $(BUILDDIR)/$(1): $(shell find $(1)/ -type f) | $(BUILDDIR)/$(patsubst %/,%,$(dir $(1)))
+$(if $(wildcard $(1)/Dockerfile.m4),$(BUILDDIR)/$(1): \
+   $(shell $(call m4_cmdline,$(1),$(1)/Dockerfile.m4,-di) 2>&1 >/dev/null | sed -e '/^m4debug: input read from /!d; s///;' | tr '\n' ' ') \
+,)
 endef
-# Create a dependency on common (used by toolchains) except when target is common
+# Create a dependency on common (used by toolchains) except when target is not common
 define DEPEND_COMMON
 $(BUILDDIR)/$(1): \
 	$(if $(filter-out common,$(notdir $(1))), \
@@ -47,6 +50,9 @@ $(BUILDDIR)/$(1): \
 		$(BUILDDIR)/toolchains/$(notdir $(1)) \
 	)
 endef
+
+m4_cmdline = m4 -P -EE $(3) -I $(dir $(1))m4 -I $(1) toolchains/m4/library.m4 $(2)
+
 # Return the docker URL with path sanitized
 build_docker_url = $(DOCKER_REGISTRY)$(DOCKER_SEPARATOR)$(subst /,-,$(1))
 
@@ -199,12 +205,12 @@ $(TOOLCHAINS_DOC_TS): $(BUILDDIR)/%: %/Dockerfile | $(BUILDDIR)/toolchains
 # toolchains/m4/library.m4 is automatically included at start for common functions
 # Using VERBOSE=1 makes rule generate a Dockerfile.debug file with preprocessed content and optional trace (m4_traceon instruction)
 # They generate a timestamp file in $(BUILDDIR)
-$(TOOLCHAINS_M4_TS): $(BUILDDIR)/%: %/Dockerfile.m4 $(shell find toolchains/m4 -type f) | $(BUILDDIR)/toolchains
+$(TOOLCHAINS_M4_TS): $(BUILDDIR)/%: %/Dockerfile.m4 | $(BUILDDIR)/toolchains
 	@echo "Building $*"
 ifeq ($(VERBOSE),1)
-	m4 -P -EE $(M4_DEBUG) -I toolchains/m4 -I $(<D) toolchains/m4/library.m4 $< > $(<D)/Dockerfile.debug 2>&1
+	$(call m4_cmdline,$(<D),$<,$(M4_DEBUG)) > $(<D)/Dockerfile.debug 2>&1
 endif
-	m4 -P -EE -I toolchains/m4 -I $(<D) toolchains/m4/library.m4 $< | \
+	$(call m4_cmdline,$(<D),$<) | \
 		docker build -t $* -f - $(<D)
 	touch "$@"
 
@@ -327,12 +333,12 @@ $(WORKERS_DOC_TS): $(BUILDDIR)/%: %/Dockerfile | $(BUILDDIR)/workers
 # workers/m4/library.m4 is automatically included at start for common functions
 # Using VERBOSE=1 makes rule generate a Dockerfile.debug file with preprocessed content and optional trace (m4_traceon instruction)
 # They generate a timestamp file in $(BUILDDIR)
-$(WORKERS_M4_TS): $(BUILDDIR)/%: %/Dockerfile.m4 $(shell find workers/m4 -type f) | $(BUILDDIR)/workers
+$(WORKERS_M4_TS): $(BUILDDIR)/%: %/Dockerfile.m4 | $(BUILDDIR)/workers
 	@echo "Building $*"
 ifeq ($(VERBOSE),1)
-	m4 -P -EE $(M4_DEBUG) -I workers/m4 -I $(<D) workers/m4/library.m4 $< > $(<D)/Dockerfile.debug 2>&1
+	$(call m4_cmdline,$(<D),$<,$(M4_DEBUG)) > $(<D)/Dockerfile.debug 2>&1
 endif
-	m4 -P -EE -I workers/m4 -I $(<D) workers/m4/library.m4 $< | \
+	$(call m4_cmdline,$(<D),$<) | \
 		docker build --build-arg BUILDBOT_VERSION=$(BUILDBOT_VERSION) -t $* -f - $(<D)
 	touch "$@"
 
