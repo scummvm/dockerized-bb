@@ -1,7 +1,5 @@
 FROM toolchains/common AS helpers
 
-m4_include(`paths.m4')m4_dnl
-
 m4_include(`packages.m4')m4_dnl
 
 FROM debian:stable-slim AS extractor
