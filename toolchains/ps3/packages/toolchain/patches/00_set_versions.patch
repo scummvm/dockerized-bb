@@ -1,0 +1,77 @@
+diff --git a/patches/ps3libraries-set-versions.patch b/patches/ps3libraries-set-versions.patch
+new file mode 100644
+index 0000000..92948c2
+--- /dev/null
++++ b/patches/ps3libraries-set-versions.patch
+@@ -0,0 +1,39 @@
++diff --git a/scripts/013-sdl_psl1ght.sh b/scripts/013-sdl_psl1ght.sh
++index 2c0f439..1d00e17 100755
++--- a/scripts/013-sdl_psl1ght.sh
+++++ b/scripts/013-sdl_psl1ght.sh
++@@ -2,7 +2,7 @@
++ # sdl_psl1ght.sh by Naomi Peori (naomi@peori.ca)
++ 
++ ## Download the source code.
++-wget --no-check-certificate https://github.com/zeldin/SDL_PSL1GHT/tarball/master -O sdl_psl1ght.tar.gz
+++wget "https://github.com/zeldin/SDL_PSL1GHT/archive/${SDL_PSL1GHT_VERSION}.tar.gz" -O sdl_psl1ght.tar.gz
++ 
++ ## Unpack the source code.
++ rm -Rf sdl_psl1ght && mkdir sdl_psl1ght && tar --strip-components=1 --directory=sdl_psl1ght -xvzf sdl_psl1ght.tar.gz
++diff --git a/scripts/014-sdl_psl1ght_libs.sh b/scripts/014-sdl_psl1ght_libs.sh
++index e34f6a2..f0f3b9f 100755
++--- a/scripts/014-sdl_psl1ght_libs.sh
+++++ b/scripts/014-sdl_psl1ght_libs.sh
++@@ -2,7 +2,7 @@
++ # sdl_psl1ght_libs.sh by Naomi Peori (naomi@peori.ca)
++ 
++ ## Download the source code.
++-wget --no-check-certificate https://github.com/zeldin/SDL_PSL1GHT_Libs/tarball/master -O sdl_psl1ght_libs.tar.gz
+++wget "https://github.com/zeldin/SDL_PSL1GHT_Libs/archive/${SDL_PSL1GHT_LIBS_VERSION}.tar.gz" -O sdl_psl1ght_libs.tar.gz
++ 
++ ## Unpack the source code.
++ rm -Rf sdl_psl1ght_libs && mkdir sdl_psl1ght_libs && tar --strip-components=1 --directory=sdl_psl1ght_libs -xvzf sdl_psl1ght_libs.tar.gz
++diff --git a/scripts/021-NoRSX.sh b/scripts/021-NoRSX.sh
++index ea0505d..8273847 100755
++--- a/scripts/021-NoRSX.sh
+++++ b/scripts/021-NoRSX.sh
++@@ -2,7 +2,7 @@
++ # libNoRSX.sh by wargio (wargio@libero.it)
++ 
++ ## Download the source code.
++-wget --no-check-certificate https://github.com/wargio/NoRSX/tarball/master -O NoRSX.tar.gz 
+++wget "https://github.com/wargio/NoRSX/archive/${NORSX_VERSION}.tar.gz" -O NoRSX.tar.gz
++ 
++ ## Unpack the source code.
++ rm -Rf NoRSX && mkdir NoRSX && tar --strip-components=1 --directory=NoRSX -xvzf NoRSX.tar.gz && cd NoRSX
+diff --git a/scripts/008-psl1ght.sh b/scripts/008-psl1ght.sh
+index 0f66d90..3815aa4 100755
+--- a/scripts/008-psl1ght.sh
++++ b/scripts/008-psl1ght.sh
+@@ -2,7 +2,7 @@
+ # psl1ght.sh by Naomi Peori (naomi@peori.ca)
+ 
+ ## Download the source code.
+-wget --no-check-certificate https://github.com/ps3dev/PSL1GHT/tarball/master -O psl1ght.tar.gz
++wget "https://github.com/ps3dev/PSL1GHT/archive/${PSL1GHT_VERSION}.tar.gz" -O psl1ght.tar.gz
+ 
+ ## Unpack the source code.
+ rm -Rf psl1ght && mkdir psl1ght && tar --strip-components=1 --directory=psl1ght -xvzf psl1ght.tar.gz
+diff --git a/scripts/009-ps3libraries.sh b/scripts/009-ps3libraries.sh
+index 67fd2ad..c732dc1 100755
+--- a/scripts/009-ps3libraries.sh
++++ b/scripts/009-ps3libraries.sh
+@@ -2,10 +2,13 @@
+ # ps3libraries.sh by Naomi Peori (naomi@peori.ca)
+ 
+ ## Download the source code.
+-wget --no-check-certificate https://github.com/ps3dev/ps3libraries/tarball/master -O ps3libraries.tar.gz
++wget "https://github.com/ps3dev/ps3libraries/archive/${PS3LIBRARIES_VERSION}.tar.gz" -O ps3libraries.tar.gz
+ 
+ ## Unpack the source code.
+ rm -Rf ps3libraries && mkdir ps3libraries && tar --strip-components=1 --directory=ps3libraries -xvzf ps3libraries.tar.gz && cd ps3libraries
+ 
++## Set versions of libraries
++cat ../../patches/ps3libraries-set-versions.patch | patch -p1
++
+ ## Compile and install.
+ ./libraries.sh
