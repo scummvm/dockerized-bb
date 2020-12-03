@@ -355,7 +355,8 @@ def macosx():
     platform = Platform("macosx")
     platform.env["CXX"] = "ccache x86_64-apple-darwin20-c++"
     # Put back worker CXXFLAGS
-    platform.env["CXXFLAGS"] += "${CXXFLAGS}"
+    if "CXXFLAGS" in platform.env:
+        platform.env["CXXFLAGS"] += "${CXXFLAGS}"
     # configure script doesn't compile discord check with proper flags
     platform.env["DISCORD_LIBS"] = "-framework AppKit"
 
@@ -395,7 +396,8 @@ def macosx_i386():
     platform = Platform("macosx-i386")
     platform.env["CXX"] = "ccache i386-apple-darwin17-c++"
     # Put back worker CXXFLAGS
-    platform.env["CXXFLAGS"] += "${CXXFLAGS}"
+    if "CXXFLAGS" in platform.env:
+        platform.env["CXXFLAGS"] += "${CXXFLAGS}"
     platform.configureargs.append("--host=i386-apple-darwin17")
     platform.buildconfigureargs = {
         builds.ScummVMBuild: [ "--enable-static", "--with-staticlib-prefix=${DESTDIR}/${PREFIX}",
