@@ -7,7 +7,6 @@
 /buildbot-data/packages/
 /buildbot-data/src/
 /buildbot-data/triggers/
-/master/__pycache__/
 /master/buildbot.tac
 /master/http.log*
 /master/state.sqlite*
@@ -15,3 +14,5 @@
 /master/config.py
 /toolchains/*/Dockerfile.debug
 /workers/*/Dockerfile.debug
+
+__pycache__/
