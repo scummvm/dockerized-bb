@@ -1,8 +1,9 @@
+m4_define(`DEVKITPPC_VERSION',20190212)
 FROM toolchains/common AS helpers
 
 # This version of devkitPPC depends on a Debian Stretch
 # For now it works with stable-slim, we will have to ensure it stays like that
-FROM devkitpro/devkitppc:20190212 AS original-toolchain
+FROM devkitpro/devkitppc:DEVKITPPC_VERSION AS original-toolchain
 
 m4_include(`paths.m4')m4_dnl
 

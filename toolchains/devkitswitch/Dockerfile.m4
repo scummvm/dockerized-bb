@@ -1,8 +1,9 @@
+m4_define(`DEVKITA64_VERSION',20200528)
 FROM toolchains/common AS helpers
 
 # This version of devkitA64 depends on a Debian Stretch
 # For now it works with stable-slim, we will have to ensure it stays like that
-FROM devkitpro/devkita64:20200528 AS original-toolchain
+FROM devkitpro/devkita64:DEVKITA64_VERSION AS original-toolchain
 
 m4_include(`paths.m4')m4_dnl
 
