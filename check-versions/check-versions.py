@@ -173,6 +173,11 @@ def handle_path(status, path):
         handle_file(status, path)
 
 def main():
+    # We already changed directory to ours
+    # ROOT is relative to us so we can chdir here
+    if hasattr(config, 'ROOT') and config.ROOT:
+        os.chdir(config.ROOT)
+
     status = Status()
     print("Looking for version tags...")
     for path in config.PATHS:
