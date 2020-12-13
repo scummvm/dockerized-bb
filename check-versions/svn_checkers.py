@@ -44,8 +44,7 @@ def fetch_props(url, depth, props):
     for p in props:
         ET.SubElement(prop, p)
 
-    data = ET.tostring(propfind, encoding="utf-8", xml_declaration=True)
-    #print(data)
+    data = ET.tostring(propfind, encoding="utf-8")
 
     req = urlr.Request(url, method="PROPFIND", data=data)
     req.add_header('Depth', str(depth))
