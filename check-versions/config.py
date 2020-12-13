@@ -280,6 +280,32 @@ VERSIONS = {
         'repository': 'https://github.com/ps3dev/ps3toolchain.git',
         'branch': 'master',
     },
+    ('./toolchains/ps3/packages/toolchain/build.sh', 'PSL1GHT'): {
+        'check': 'git commit',
+        'repository': 'https://github.com/ps3dev/PSL1GHT.git',
+        'branch': 'master',
+    },
+    ('./toolchains/ps3/packages/toolchain/build.sh', 'PS3LIBRARIES'): {
+        'check': 'git commit',
+        'repository': 'https://github.com/ps3dev/ps3libraries.git',
+        'branch': 'master',
+    },
+    ('./toolchains/ps3/packages/toolchain/build.sh', 'SDL_PSL1GHT'): {
+        'check': 'git commit',
+        'repository': 'https://github.com/zeldin/SDL_PSL1GHT.git',
+        'branch': 'master',
+    },
+    ('./toolchains/ps3/packages/toolchain/build.sh', 'SDL_PSL1GHT_LIBS'): {
+        'check': 'git commit',
+        'repository': 'https://github.com/zeldin/SDL_PSL1GHT_Libs.git',
+        'branch': 'master',
+    },
+    ('./toolchains/ps3/packages/toolchain/build.sh', 'NORSX'): {
+        'check': 'git commit',
+        'repository': 'https://github.com/wargio/NoRSX.git',
+        'branch': 'master',
+    },
+
     ('./toolchains/psp/packages/toolchain/build.sh', 'TOOLCHAIN'): {
         'check': 'git commit',
         'repository': 'https://github.com/pspdev/psptoolchain.git',
