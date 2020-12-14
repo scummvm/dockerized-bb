@@ -1,4 +1,4 @@
-m4_define(`DEVKITARM_VERSION',20200528)
+m4_define(`DEVKITARM_VERSION',20200730)
 FROM toolchains/common AS helpers
 
 # This version of devkitARM depends on a Debian Stretch
