@@ -25,7 +25,6 @@ RUN lib-helpers/prepare.sh
 COPY --from=helpers /lib-helpers/functions.sh lib-helpers/
 
 COPY --from=android-helpers /lib-helpers/functions-platform.sh \
-	/lib-helpers/functions-sdk.sh \
 	/lib-helpers/multi-build.sh lib-helpers/
 
 # nasm is used for x86 ScummVM
@@ -38,3 +37,5 @@ RUN for i in $(seq 1 8); do mkdir -p "/usr/share/man/man${i}"; done && \
 		nasm && \
 	rm -rf /var/lib/apt/lists/*
 
+# Copy functions-sdk.sh after because it contains version information
+COPY --from=android-helpers /lib-helpers/functions-sdk.sh lib-helpers/
