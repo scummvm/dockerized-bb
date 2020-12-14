@@ -26,7 +26,8 @@ define $(PKG)_BUILD
         --with-threads=win32 \
         --with-pcre=internal \
         CXX='$(TARGET)-g++' \
-        PKG_CONFIG='$(PREFIX)/bin/$(TARGET)-pkg-config'
+        PKG_CONFIG='$(PREFIX)/bin/$(TARGET)-pkg-config' \
+	CFLAGS='-Wno-incompatible-pointer-types -Wno-deprecated-declarations -Wno-format'
     $(MAKE) -C '$(BUILD_DIR)/glib'    -j '$(JOBS)' install sbin_PROGRAMS= noinst_PROGRAMS=
     $(MAKE) -C '$(BUILD_DIR)/gthread' -j '$(JOBS)' install bin_PROGRAMS= sbin_PROGRAMS= noinst_PROGRAMS=
     $(MAKE) -C '$(BUILD_DIR)'         -j '$(JOBS)' install-pkgconfigDATA pkgconfig_DATA="glib-2.0.pc gthread-2.0.pc"

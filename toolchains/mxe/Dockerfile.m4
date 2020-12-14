@@ -43,7 +43,7 @@ RUN apt-get update && \
 # As MXE changes are mainly packages related, set version here instead of in toolchain script
 ENV MXE_DIR=/opt/mxe-src \
 	MXE_PREFIX_DIR=/opt/mxe \
-	MXE_VERSION=540f96b6166b7dcc6c651ad77a5af47ab2eeef9d
+	MXE_VERSION=a5c92bcc39d9bbe1a46925efb54616568475a368
 
 local_package(toolchain)
 
