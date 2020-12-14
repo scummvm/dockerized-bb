@@ -50,6 +50,10 @@ $(BUILDDIR)/$(1): \
 		$(BUILDDIR)/toolchains/$(notdir $(1)) \
 	)
 endef
+# Create a dependency on Makefile
+define DEPEND_MAKEFILE
+$(BUILDDIR)/$(1): Makefile
+endef
 
 m4_cmdline = m4 -P -EE $(3) -I $(dir $(1))m4 -I $(1) toolchains/m4/library.m4 $(2)
 
@@ -354,4 +358,8 @@ $(foreach i,$(WORKERS_BUILT), \
 )
 $(foreach i,$(WORKERS_BUILT), \
 	$(eval $(call DEPEND_TOOLCHAIN,$(i))) \
+)
+# Generate dependencies on Makefile as it defines BUILDBOT_VERSION
+$(foreach i,$(WORKERS_BUILT), \
+	$(eval $(call DEPEND_MAKEFILE,$(i))) \
 )
