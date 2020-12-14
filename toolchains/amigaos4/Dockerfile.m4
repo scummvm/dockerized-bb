@@ -73,7 +73,7 @@ local_package(libmpeg2)
 
 local_package(liba52)
 
-#local_package(libiconv)
+local_package(codesets)
 
 local_package(libopenssl)
 
