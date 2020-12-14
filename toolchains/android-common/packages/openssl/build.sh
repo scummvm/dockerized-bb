@@ -26,11 +26,10 @@ export RANLIB=ranlib
 if [ "$API" = "." ]; then
 	# Standalone toolchain (even if merged)
 	and_api=
-	export ANDROID_NDK_HOME=$TOOLCHAIN
+	export ANDROID_NDK_ROOT=$TOOLCHAIN
 else
 	# Android fully unified toolchain
 	and_api=-D__ANDROID_API__=$API
-	export ANDROID_NDK_HOME=${ANDROID_NDK_ROOT}
 fi
 
 ./Configure $ssl_target no-shared no-threads -fno-integrated-as $and_api --prefix=${PREFIX} --libdir=${PREFIX}/lib/${TARGET}/${API}

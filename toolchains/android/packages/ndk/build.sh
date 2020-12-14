@@ -17,15 +17,14 @@ do_sdk_install "ndk;${ANDROID_NDK_VERSION}"
 
 cd "ndk/${ANDROID_NDK_VERSION}"
 
-# Don't cleanup as OpenSSL still need them
 # Cleanup unused parts of the NDK (which will get removed in future versions)
-#rm -rf platforms sources/cxx-stl sysroot
-#for d in toolchains/*; do
-#	if [ "$d" = "toolchains/llvm" ]; then
-#		continue
-#	fi
-#	rm -rf "$d"
-#done
+rm -rf platforms sources/cxx-stl sysroot
+for d in toolchains/*; do
+	if [ "$d" = "toolchains/llvm" ]; then
+		continue
+	fi
+	rm -rf "$d"
+done
 
 mkdir -p "${ANDROID_NDK_ROOT}/"
 # mv is faster than cp
