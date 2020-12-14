@@ -311,6 +311,37 @@ VERSIONS = {
         'repository': 'https://github.com/pspdev/psptoolchain.git',
         'branch': 'master',
     },
+    ('./toolchains/psp/packages/toolchain/build.sh', 'PSPSDK'): {
+        'check': 'git commit',
+        'repository': 'https://github.com/pspdev/pspsdk.git',
+        'branch': 'master',
+    },
+    ('./toolchains/psp/packages/toolchain/build.sh', 'NEWLIB'): {
+        'check': 'git commit',
+        'repository': 'https://github.com/pspdev/newlib.git',
+        'branch': 'newlib-1_20_0-PSP',
+    },
+    ('./toolchains/psp/packages/toolchain/build.sh', 'PSPLINKUSB'): {
+        'check': 'git commit',
+        'repository': 'https://github.com/pspdev/psplinkusb.git',
+        'branch': 'master',
+    },
+    ('./toolchains/psp/packages/toolchain/build.sh', 'EBOOTSIGNER'): {
+        'check': 'git commit',
+        'repository': 'https://github.com/pspdev/ebootsigner.git',
+        'branch': 'master',
+    },
+    ('./toolchains/psp/packages/toolchain/build.sh', 'PSP_PKGCONF'): {
+        'check': 'git commit',
+        'repository': 'https://github.com/pspdev/psp-pkgconf.git',
+        'branch': 'master',
+    },
+    ('./toolchains/psp/packages/toolchain/build.sh', 'PSPLIBRARIES'): {
+        'check': 'git commit',
+        'repository': 'https://github.com/pspdev/psplibraries.git',
+        'branch': 'master',
+    },
+
     ('./toolchains/vita/packages/vita-shader-collection/build.sh', 'VITA_SHDR_COLL') : {
         'check': 'git tag',
         'repository': 'https://github.com/frangarcj/vita-shader-collection.git',
