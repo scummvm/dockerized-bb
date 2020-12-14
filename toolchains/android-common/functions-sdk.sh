@@ -1,9 +1,11 @@
-CMDLINE_TOOLS_VERSION=6609375
-CMDLINE_TOOLS_CHECKSUM="sha256:89f308315e041c93a37a79e0627c47f21d5c5edbe5e80ea8dc0aac8a649e0e92"
+CMDLINE_TOOLS_VERSION=6858069
+CMDLINE_TOOLS_CHECKSUM="sha256:87f6dcf41d4e642e37ba03cb2e387a542aa0bd73cb689a9e7152aad40a6e7a08"
+CMDLINE_TOOLS_SUBDIR=cmdline-tools
 
 do_install_sdk_tools () {
-	do_http_fetch tools "https://dl.google.com/android/repository/commandlinetools-${HOST_TAG%%-*}-${CMDLINE_TOOLS_VERSION}_latest.zip" 'unzip' \
-		"${CMDLINE_TOOLS_CHECKSUM}"
+	do_http_fetch "$CMDLINE_TOOLS_SUBDIR" \
+		"https://dl.google.com/android/repository/commandlinetools-${HOST_TAG%%-*}-${CMDLINE_TOOLS_VERSION}_latest.zip" \
+		'unzip' "${CMDLINE_TOOLS_CHECKSUM}"
 
 	# Don't stay in tools subdirectory
 	cd ..
@@ -12,7 +14,7 @@ do_install_sdk_tools () {
 	export ANDROID_SDK_HOME="$(pwd)"
 
 	# Make sure we have the last version
-	yes | "${ANDROID_TEMP_SDK_DIR}/tools/bin/sdkmanager" --sdk_root="${ANDROID_TEMP_SDK_DIR}" --no_https --install "cmdline-tools;latest"
+	yes | "${ANDROID_TEMP_SDK_DIR}/${CMDLINE_TOOLS_SUBDIR}/bin/sdkmanager" --sdk_root="${ANDROID_TEMP_SDK_DIR}" --no_https --install "cmdline-tools;latest"
 }
 
 do_sdk_accept_licenses () {
@@ -21,7 +23,7 @@ do_sdk_accept_licenses () {
 		dst=${ANDROID_TEMP_SDK_DIR}
 	fi
 
-	yes | "${ANDROID_TEMP_SDK_DIR}/tools/bin/sdkmanager" --sdk_root="$dst" --no_https --licenses >/dev/null
+	yes | "${ANDROID_TEMP_SDK_DIR}/${CMDLINE_TOOLS_SUBDIR}/bin/sdkmanager" --sdk_root="$dst" --no_https --licenses >/dev/null
 }
 
 do_sdk_install () {
@@ -31,5 +33,5 @@ do_sdk_install () {
 	fi
 
 	# Install requested NDK
-	yes | "${ANDROID_TEMP_SDK_DIR}/tools/bin/sdkmanager" --sdk_root="$dst" --no_https --install "$pkg"
+	yes | "${ANDROID_TEMP_SDK_DIR}/${CMDLINE_TOOLS_SUBDIR}/bin/sdkmanager" --sdk_root="$dst" --no_https --install "$pkg"
 }
