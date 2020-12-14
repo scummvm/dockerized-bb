@@ -1,6 +1,6 @@
 #! /bin/sh
 
-VITA_SHDR_COLL_VERSION=gtu-0.1-v74
+VITA_SHDR_COLL_VERSION=gtu-0.1-v79
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..
