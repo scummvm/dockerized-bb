@@ -251,6 +251,10 @@ $(eval $(call DEPEND_IMAGE,\
 	$(TOOLCHAINS_BUILT)))
 $(eval $(call DEPEND_IMAGE,\
 	toolchains/macosx-i386,\
+	toolchains/macosx-common,\
+	$(TOOLCHAINS_BUILT)))
+$(eval $(call DEPEND_IMAGE,\
+	toolchains/macosx-i386,\
 	toolchains/apple-sdks,\
 	$(TOOLCHAINS_BUILT)))
 $(eval $(call DEPEND_IMAGE,\
