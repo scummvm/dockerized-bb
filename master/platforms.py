@@ -314,7 +314,7 @@ def gp2x():
     platform.buildconfigureargs = {
         builds.ScummVMBuild: [ "--enable-vkeybd",
             # Disable big engines
-            "--disable-engines=glk,lastexpress,titanic,tsage,ultima" ],
+            "--disable-engines=bladerunner,glk,kyra,lastexpress,titanic,tsage,ultima" ],
     }
     setup(platform)
     register_platform(platform)
@@ -324,7 +324,7 @@ def gp2x():
         builds.ScummVMBuild: [ "--enable-vkeybd",
             # Only the other ones
             "--disable-all-engines",
-            "--enable-engines=glk,lastexpress,titanic,tsage,ultima" ],
+            "--enable-engines=bladerunner,glk,kyra,lastexpress,titanic,tsage,ultima" ],
     }
     setup(platform)
     register_platform(platform)
