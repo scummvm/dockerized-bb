@@ -1,4 +1,4 @@
-BUILDBOT_VERSION   := 2.8.4
+BUILDBOT_VERSION   := 2.9.2
 
 # Without toolchains/ part, all is a placeholder for all detected toolchains
 TOOLCHAINS_ENABLED := all
