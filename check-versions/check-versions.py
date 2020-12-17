@@ -6,6 +6,7 @@ import os
 import os.path
 import re
 import sys
+import traceback
 
 import checkers
 
@@ -41,6 +42,7 @@ class Status:
         self.missing_versions = list()
         self.new_versions = list()
         self.ok_versions = list()
+        self.err_versions = list()
 
     def queue_work(self, path, tag, version):
         self.queue.append((path, tag, version))
@@ -74,10 +76,16 @@ class Status:
     @staticmethod
     def handle_version(all_args):
         path, tag, version, checker, args = all_args
-        result, online_version, extra_infos = checker(version, **args)
+        try:
+            result, online_version, extra_infos = checker(version, **args)
+        except Exception as e:
+            return path, tag, version, e, None, None
         return path, tag, version, result, online_version, extra_infos
 
     def __post_handle_version(self, path, tag, version, result, online_version, extra_infos):
+        if isinstance(result, Exception):
+            self.__err_version(path, tag, result)
+
         if not result:
             self.__new_version(path, tag, version, online_version, extra_infos)
             return
@@ -125,6 +133,23 @@ class Status:
         print("Same versions:")
         for v in self.ok_versions:
             print("{1} in {0}: version {3} ({2} in file{5}{4})".format(*v, ', ' if v[4] else ''))
+
+    def __err_version(self, path, tag, error):
+        self.seen_tags.add((path, tag))
+        self.err_versions.append((path, tag or 'Unknown', error))
+
+    def print_err_versions(self):
+        if not self.err_versions:
+            return
+
+        self.err_versions.sort(key=operator.itemgetter(0))
+
+        print("Query errors:")
+        for v in self.err_versions:
+            exc = v[2]
+            etype, value, tb = type(exc), exc, exc.__traceback__
+            msg = ''.join(traceback.format_exception(etype, value, tb))
+            print("{1} in {0}:\n{2}".format(v[0], v[1], msg))
 
     def print_obsolete_versions(self):
         config_tags = set(VERSIONS.keys())
@@ -192,6 +217,7 @@ def main():
     status.print_new_versions()
     status.print_obsolete_versions()
     status.print_missing_versions()
+    status.print_err_versions()
 
 if __name__ == "__main__":
     main()
