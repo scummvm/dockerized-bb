@@ -17,6 +17,9 @@ RUN apt-get update && \
 
 COPY --from=toolchain $PS3DEV $PS3DEV/
 
+# Copy Debian certificates for bundling by buildbot
+RUN cp /etc/ssl/certs/ca-certificates.crt "$PS3DEV/cacert.pem"
+
 # We add PATH here for *-config and platform specific binaries
 ENV \
 	def_binaries(`${PS3DEV}/ppu/bin/${HOST}-', `ar, as, c++filt, ld, nm, objcopy, objdump, ranlib, readelf, strings, strip') \
