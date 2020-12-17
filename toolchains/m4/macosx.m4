@@ -67,6 +67,9 @@ ENV SDK_DIR=/opt/sdk
 # Keep in sync with apple_sdks
 COPY --from=sdks /sdk/MacOSX`'MACOSX_SDK_VERSION`'* ${SDK_DIR}/
 
+m4_dnl define this to add toolchain specific patch (new OSX version for example)
+m4_ifdef(`PATCH_OSXCROSS',
+COPY packages/osxcross lib-helpers/packages/osxcross,)
 common_package(osxcross)
 
 # Use same prefix as in MacPorts and DESTDIR to install at correct place
