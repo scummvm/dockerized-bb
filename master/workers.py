@@ -17,19 +17,6 @@ if len(docker_client.networks(names=[config.docker_workers_net])) == 0:
 
 buildbot_ip = docker_client.inspect_network(config.docker_workers_net)['IPAM']['Config'][0]['Gateway']
 
-# Patch DockerLatentWorker to avoid bug with MRO and clear build properties when instance is deleted
-if DockerLatentWorker.builds_may_be_incompatible == False:
-    from buildbot.util.latent import CompatibleLatentWorkerMixin
-    class DockerLatentWorker(DockerLatentWorker):
-        builds_may_be_incompatible = True
-        isCompatibleWithBuild = CompatibleLatentWorkerMixin.isCompatibleWithBuild
-
-        def stop_instance(self, fast=False):
-            d = super().stop_instance(fast)
-            self._actual_build_props = None
-            return d
-assert(DockerLatentWorker.builds_may_be_incompatible == True)
-
 def StandardBuilderWorker(name, **kwargs):
     password = ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(32))
     tmpfs = docker.types.Mount('/tmp', None, type='tmpfs')
