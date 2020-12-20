@@ -156,7 +156,7 @@ amigaos4()
 # Android environment can't be specified in worker Dockerfile as it's a unified toolchain
 # So we must pollute our configuration
 def android(suffix, scummvm_target, ndk_target, cxx_target, abi_version):
-    platform = Platform("android_{0}".format(suffix))
+    platform = Platform("android-{0}".format(suffix))
     platform.compatibleBuilds = (builds.ScummVMBuild, )
 
     platform.workerimage = {
@@ -201,14 +201,16 @@ android(suffix="x86",
         ndk_target="i686-linux-android",
         cxx_target="i686-linux-android",
         abi_version=16)
-android(suffix="x86_64",
+android(suffix="x86-64",
         scummvm_target="x86_64",
         ndk_target="x86_64-linux-android",
         cxx_target="x86_64-linux-android",
         abi_version=21)
 
 def debian_x86_64():
-    platform = Platform("debian-x86_64")
+    platform = Platform("debian-x86-64")
+    platform.workerimage = "debian-x86_64"
+
     platform.env["CXX"] = "ccache g++"
     platform.configureargs.append("--host=x86_64-linux-gnu")
     # stable build don't have this target yet
@@ -647,5 +649,5 @@ def windows_mxe(suffix, target):
 
 windows_mxe(suffix="x86",
         target="i686-w64-mingw32.static")
-windows_mxe(suffix="x86_64",
+windows_mxe(suffix="x86-64",
         target="x86_64-w64-mingw32.static")
