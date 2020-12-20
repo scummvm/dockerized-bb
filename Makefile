@@ -130,7 +130,7 @@ $(BUILDDIR)/buildbot_installed: Makefile | $(BUILDDIR)
 # Database setting is loaded from master/config.py
 # create-master with initialize the database if it doesn't exist yet
 # upgrade-master will upgrade it if it needs to be
-master/buildbot.tac: $(BUILDDIR)/buildbot_installed
+master/buildbot.tac: $(BUILDDIR)/buildbot_installed master/config.py
 	DBLINE=$$(cd master && python3 -c 'import config; config.init("."); print(config.db["db_url"])') && \
 		buildbot create-master -rf --db=$${DBLINE} master
 	buildbot upgrade-master master
