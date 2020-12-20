@@ -12,23 +12,32 @@ db = {
 docker_socket = 'unix:///var/run/docker.sock'
 docker_workers_net = 'workers-net'
 
+# Which port the Buildbot worker will listen
+# It will be used on master side to connect to worker
+# and it will be used on worker side to configure worker
+pb_protocol_port = 9989
+
 # Environment shared by all builds and builders
 common_env = {
-    "LC_ALL": "C.utf-8",
+    "LC_ALL": "C.UTF-8",
     "CCACHE_COMPRESS": "1",
 }
 
-platforms_whitelist = []
-platforms_blacklist = []
+# List of platforms enabled
+platforms_whitelist = [
+]
+platforms_blacklist = [
+]
 
-# These engines can't be used on some platforms due to CPU/Video requirements
-disable_heavy_engines = "--disable-engines=sword25,wintermute"
 
-www_port = ("127.0.0.1", 8010)
-htfile = './scumm_htpasswd'
 changehook_passwd = './changehook.passwd'
-pb_protocol_port = 9989
 
+# UI settings
 projectName = "ScummVM"
 projectURL = "https://scummvm.org/"
+# Where web server must listen
+www_port = ("127.0.0.1", 8010)
+# URL used to reach Buildbot instance
 buildbotURL = "https://buildbot.scummvm.org/"
+
+htfile = './scumm_htpasswd'
