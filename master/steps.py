@@ -59,8 +59,8 @@ class SetPropertyIfOlder(steps.BuildStep):
     haltOnFailure = True
     flunkOnFailure = True
 
-    def __init__(self, 
-            src, generated, 
+    def __init__(self,
+            src, generated,
             property,
             workdir=None,
             **kwargs):
@@ -144,7 +144,7 @@ PACKAGE_FORMAT_COMMANDS = {
 }
 
 def Package(disttarget, srcpath, dstpath, data_files,
-        buildname, platform_built_files, platform_data_files, archive_format, 
+        buildname, platform_built_files, platform_data_files, archive_format,
         **kwargs):
     files = []
     # dont pack up the default files if the port has its own dist target

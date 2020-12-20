@@ -43,7 +43,7 @@ class StandardBuild(Build):
     __slots__ = ['baseurl', 'giturl', 'branch', 'nightly', 'enable_force', 'lock_src']
 
     PATCHES = []
-    
+
     def __init__(self, name, baseurl, branch, nightly = None, enable_force = True, giturl = None):
         super().__init__(name)
         if giturl is None:
@@ -85,7 +85,7 @@ class StandardBuild(Build):
 
         # All compiling builders
         comp_builders = ["{0}-{1}".format(self.name, p.name) for p in platforms if p.canBuild(self)]
-        
+
         # Global build scheduler (triggered by fetch build)
         ret.append(schedulers.Triggerable(name = self.name, builderNames = comp_builders))
 
@@ -391,7 +391,7 @@ class ScummVMToolsBuild(StandardBuild):
 
         f = util.BuildFactory()
         f.useProgress = False
-        
+
         f.addStep(scummsteps.Clean(
             dir = "",
             doStepIf = util.Property("clean", False)
