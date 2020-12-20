@@ -8,14 +8,19 @@ from buildbot.plugins import reporters
 import config
 
 htfile = os.path.join(config.buildbot_base_dir, config.htfile)
-changehook_passwd = os.path.join(config.buildbot_base_dir, config.changehook_passwd)
 web_authz = None
 
 www = {
     'plugins': dict(waterfall_view={}, console_view={}, grid_view={}),
 # TODO:
 #    order_console_by_time: True,
+    'change_hook_dialects': {
+        'github': {
+            'secret': config.github_webhook_secret
+        },
+    },
 }
+services = []
 
 if os.path.exists(htfile):
     www['authz'] = util.Authz(auth=util.HTPasswdAuth(htfile),
@@ -36,8 +41,3 @@ try:
 except TypeError:
     www['port'] = "tcp:{0}".format(config.www_port)
 
-if os.path.exists(changehook_passwd):
-    www['change_hook_auth'] = [strcred.makeChecker("file:{0}".format(changehook_passwd))]
-    www['change_hook_dialects'] = {'github': True}
-
-services = []

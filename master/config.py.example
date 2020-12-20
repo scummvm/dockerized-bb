@@ -30,7 +30,8 @@ platforms_blacklist = [
 ]
 
 
-changehook_passwd = './changehook.passwd'
+# Github tokens
+github_webhook_secret = None
 
 # UI settings
 projectName = "ScummVM"
