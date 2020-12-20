@@ -1,8 +1,9 @@
 import os, random, string
 
 import docker
-from buildbot.worker.docker import DockerLatentWorker as DockerLatentWorker
-from buildbot.process.properties import Interpolate
+
+from buildbot.plugins import util
+from buildbot.plugins import worker
 
 import config
 
@@ -20,9 +21,9 @@ buildbot_ip = docker_client.inspect_network(config.docker_workers_net)['IPAM']['
 def StandardBuilderWorker(name, **kwargs):
     password = ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(32))
     tmpfs = docker.types.Mount('/tmp', None, type='tmpfs')
-    return DockerLatentWorker(name, password,
+    return worker.DockerLatentWorker(name, password,
         docker_host=config.docker_socket,
-        image=Interpolate('workers/%(prop:workerimage)s'),
+        image=util.Interpolate('workers/%(prop:workerimage)s'),
         masterFQDN=buildbot_ip,
         volumes=[
             '{0}/ccache:/data/ccache'.format(config.buildbot_data_dir),
@@ -43,7 +44,7 @@ register(StandardBuilderWorker("builder"))
 def FetcherWorker(name, **kwargs):
     password = ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(32))
     tmpfs = docker.types.Mount('/tmp', None, type='tmpfs')
-    return DockerLatentWorker(name, password,
+    return worker.DockerLatentWorker(name, password,
         docker_host=config.docker_socket,
         image='workers/{0}'.format(name),
         masterFQDN=buildbot_ip,

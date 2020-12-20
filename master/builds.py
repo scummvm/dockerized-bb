@@ -1,23 +1,15 @@
 import os, sys
 
-from buildbot.config import BuilderConfig
-from buildbot.changes.filter import ChangeFilter
-from buildbot.locks import MasterLock, WorkerLock
-from buildbot.process import factory, results
-from buildbot.process.properties import Property
-from buildbot.scheduler import Triggerable
-from buildbot.schedulers.timed import NightlyTriggerable
-from buildbot.schedulers.basic import SingleBranchScheduler
-from buildbot.schedulers.forcesched import ForceScheduler, CodebaseParameter, StringParameter, BooleanParameter
-from buildbot.steps.source.git import Git
-from buildbot.steps.trigger import Trigger
-from buildbot.steps.shell import Configure, Compile, Test
+from buildbot.plugins import util
+from buildbot.plugins import changes
+from buildbot.plugins import schedulers
+from buildbot.plugins import steps
 
 import config
-import steps
+import steps as scummsteps
 
 # Lock to avoid running more than 1 build at the same time on a worker
-lock_build = WorkerLock("worker", maxCount = 1)
+lock_build = util.WorkerLock("worker", maxCount = 1)
 
 # builds contains all build trees
 # ccache is the cache for compiled objects used by ccache
@@ -58,14 +50,14 @@ class StandardBuild(Build):
         self.nightly = nightly
         self.enable_force = enable_force
         # Lock used to avoid writing source code when it is read by another task
-        self.lock_src = MasterLock("src-{0}".format(self.name), maxCount=sys.maxsize)
+        self.lock_src = util.MasterLock("src-{0}".format(self.name), maxCount=sys.maxsize)
 
     def getGlobalSchedulers(self, platforms):
         ret = list()
-        change_filter = ChangeFilter(repository = self.baseurl, branch = self.branch)
+        change_filter = util.ChangeFilter(repository = self.baseurl, branch = self.branch)
 
         # Fetch scheduler (triggered by event source)
-        ret.append(SingleBranchScheduler(name = "fetch-{0}".format(self.name),
+        ret.append(schedulers.SingleBranchScheduler(name = "fetch-{0}".format(self.name),
                 change_filter = change_filter,
                 treeStableTimer = 5,
                 builderNames = [ "fetch-{0}".format(self.name) ]))
@@ -74,7 +66,7 @@ class StandardBuild(Build):
         # It's triggered after regular builds to take note of the last fetched source
         # Note that build is not started by trigger
         if self.nightly is not None:
-            ret.append(NightlyTriggerable(name = "nightly-{0}".format(self.name),
+            ret.append(schedulers.NightlyTriggerable(name = "nightly-{0}".format(self.name),
                 branch = self.branch,
                 builderNames = [ "nightly-{0}".format(self.name) ],
                 hour = self.nightly[0],
@@ -85,25 +77,25 @@ class StandardBuild(Build):
         comp_builders = ["{0}-{1}".format(self.name, p.name) for p in platforms if p.canBuild(self)]
         
         # Global build scheduler (triggered by fetch build)
-        ret.append(Triggerable(name = self.name, builderNames = comp_builders))
+        ret.append(schedulers.Triggerable(name = self.name, builderNames = comp_builders))
 
         # Force schedulers
         if self.enable_force:
-            ret.append(ForceScheduler(name = "force-scheduler-{0}-fetch".format(self.name),
-                reason=StringParameter(name="reason", label="Reason:", required=True, size=80),
+            ret.append(schedulers.ForceScheduler(name = "force-scheduler-{0}-fetch".format(self.name),
+                reason=util.StringParameter(name="reason", label="Reason:", required=True, size=80),
                 builderNames = [ "fetch-{0}".format(self.name) ],
-                codebases = [CodebaseParameter(codebase='', hide=True)],
+                codebases = [util.CodebaseParameter(codebase='', hide=True)],
                 properties = [
-                    BooleanParameter(name="clean", label="Clean", default=False),
-                    BooleanParameter(name="package", label="Package", default=False),
+                    util.BooleanParameter(name="clean", label="Clean", default=False),
+                    util.BooleanParameter(name="package", label="Package", default=False),
                     ]))
-            ret.append(ForceScheduler(name = "force-scheduler-{0}-build".format(self.name),
-                reason=StringParameter(name="reason", label="Reason:", required=True, size=80),
+            ret.append(schedulers.ForceScheduler(name = "force-scheduler-{0}-build".format(self.name),
+                reason=util.StringParameter(name="reason", label="Reason:", required=True, size=80),
                 builderNames = comp_builders,
-                codebases = [CodebaseParameter(codebase='', hide=True)],
+                codebases = [util.CodebaseParameter(codebase='', hide=True)],
                 properties = [
-                    BooleanParameter(name="clean", label="Clean", default=False),
-                    BooleanParameter(name="package", label="Package", default=False),
+                    util.BooleanParameter(name="clean", label="Clean", default=False),
+                    util.BooleanParameter(name="package", label="Package", default=False),
                     ]))
 
         return ret
@@ -111,29 +103,29 @@ class StandardBuild(Build):
     def getGlobalBuilders(self):
         ret = list()
 
-        f = factory.BuildFactory()
+        f = util.BuildFactory()
         f.useProgress = False
-        f.addStep(Git(mode = "incremental",
+        f.addStep(steps.Git(mode = "incremental",
             workdir = ".",
             repourl = self.giturl,
             branch = self.branch,
             locks = [ self.lock_src.access("exclusive") ],
         ))
         if len(self.PATCHES):
-            f.addStep(steps.Patch(patches = self.PATCHES,
+            f.addStep(scummsteps.Patch(patches = self.PATCHES,
                 workdir = ".",
                 locks = [ self.lock_src.access("exclusive") ],
             ))
         if self.nightly is not None:
             # Trigger nightly scheduler to let it know the source stamp
-            f.addStep(Trigger(name="Updating source stamp", hideStepIf=(lambda r, s: r == results.SUCCESS),
+            f.addStep(steps.Trigger(name="Updating source stamp", hideStepIf=(lambda r, s: r == util.SUCCESS),
                 schedulerNames = [ "nightly-{0}".format(self.name) ]))
-        f.addStep(Trigger(name="Building all platforms", schedulerNames = [ self.name ],
+        f.addStep(steps.Trigger(name="Building all platforms", schedulerNames = [ self.name ],
                             copy_properties = [ 'got_revision', 'clean', 'package' ],
                             updateSourceStamp = True,
                             waitForFinish = True))
 
-        ret.append(BuilderConfig(
+        ret.append(util.BuilderConfig(
             name = "fetch-{0}".format(self.name),
             # This is specific
             workername = 'fetcher',
@@ -143,8 +135,8 @@ class StandardBuild(Build):
         ))
 
         if self.nightly is not None:
-            f = factory.BuildFactory()
-            f.addStep(Trigger(schedulerNames = [ self.name ],
+            f = util.BuildFactory()
+            f.addStep(steps.Trigger(schedulerNames = [ self.name ],
                 copy_properties = [ 'got_revision' ],
                 updateSourceStamp = True,
                 waitForFinish = True,
@@ -152,7 +144,7 @@ class StandardBuild(Build):
                     'clean': True,
                     'package': True }))
 
-            ret.append(BuilderConfig(
+            ret.append(util.BuilderConfig(
                 name = "nightly-{0}".format(self.name),
                 # TODO: Fix this
                 workername = 'fetcher',
@@ -225,15 +217,15 @@ class ScummVMBuild(StandardBuild):
 
         env = platform.getEnv(self)
 
-        f = factory.BuildFactory()
+        f = util.BuildFactory()
         f.useProgress = False
 
-        f.addStep(steps.Clean(
+        f.addStep(scummsteps.Clean(
             dir = "",
-            doStepIf = Property("clean", False)
+            doStepIf = util.Property("clean", False)
         ))
 
-        f.addStep(steps.SetPropertyIfOlder(
+        f.addStep(scummsteps.SetPropertyIfOlder(
             name = "check config.mk freshness",
             src = configure_path,
             generated = "config.mk",
@@ -245,16 +237,16 @@ class ScummVMBuild(StandardBuild):
         else:
             platform_build_verbosity = ""
 
-        f.addStep(Configure(command = [
+        f.addStep(steps.Configure(command = [
                 configure_path,
                 "--enable-all-engines",
                 "--disable-engine=testbed",
                 platform_build_verbosity
             ] + platform.getConfigureArgs(self),
-            doStepIf = Property("do_configure", default=True, defaultWhenFalse=False),
+            doStepIf = util.Property("do_configure", default=True, defaultWhenFalse=False),
             env = env))
 
-        f.addStep(Compile(command = [
+        f.addStep(steps.Compile(command = [
                 "make",
                 "-j5"
             ],
@@ -262,10 +254,10 @@ class ScummVMBuild(StandardBuild):
 
         if platform.canBuildTests(self):
             if platform.run_tests:
-                f.addStep(Test(env = env))
+                f.addStep(steps.Test(env = env))
             else:
                 # Compile Tests (Runner), but do not execute (as binary is non-native)
-                f.addStep(Test(command = [
+                f.addStep(steps.Test(command = [
                         "make",
                         "test/runner" ],
                     env = env))
@@ -275,10 +267,10 @@ class ScummVMBuild(StandardBuild):
             packaging_cmd = platform.getPackagingCmd(self)
         else:
             if platform.getStripCmd(self) is not None:
-                f.addStep(steps.Strip(command = platform.getStripCmd()))
+                f.addStep(scummsteps.Strip(command = platform.getStripCmd()))
 
         if platform.canPackage(self):
-            f.addStep(steps.Package(disttarget = packaging_cmd,
+            f.addStep(scummsteps.Package(disttarget = packaging_cmd,
                                     srcpath = src_path,
                                     dstpath = packages_path,
                                     data_files = self.data_files,
@@ -288,7 +280,7 @@ class ScummVMBuild(StandardBuild):
                                     archive_format = platform.archiveext,
                                     env = env))
 
-        return [BuilderConfig(
+        return [util.BuilderConfig(
             name = "{0}-{1}".format(self.name, platform.name),
             workername = platform.workername,
             workerbuilddir = build_path,
@@ -340,15 +332,15 @@ class ScummVMToolsBuild(StandardBuild):
 
         env = platform.getEnv(self)
 
-        f = factory.BuildFactory()
+        f = util.BuildFactory()
         f.useProgress = False
         
-        f.addStep(steps.Clean(
+        f.addStep(scummsteps.Clean(
             dir = "",
-            doStepIf = Property("clean", False)
+            doStepIf = util.Property("clean", False)
         ))
 
-        f.addStep(steps.SetPropertyIfOlder(
+        f.addStep(scummsteps.SetPropertyIfOlder(
             name = "check config.mk freshness",
             src = configure_path,
             generated = "config.mk",
@@ -360,14 +352,14 @@ class ScummVMToolsBuild(StandardBuild):
         else:
             platform_build_verbosity = ""
 
-        f.addStep(Configure(command = [
+        f.addStep(steps.Configure(command = [
                 configure_path,
                 platform_build_verbosity
             ] + platform.getConfigureArgs(self),
-            doStepIf = Property("do_configure", default=True, defaultWhenFalse=False),
+            doStepIf = util.Property("do_configure", default=True, defaultWhenFalse=False),
             env = env))
 
-        f.addStep(Compile(command = [
+        f.addStep(steps.Compile(command = [
                 "make",
                 "-j5"
             ],
@@ -380,10 +372,10 @@ class ScummVMToolsBuild(StandardBuild):
             packaging_cmd = platform.getPackagingCmd(self)
         else:
             if platform.getStripCmd(self) is not None:
-                f.addStep(steps.Strip(command = platform.getStripCmd()))
+                f.addStep(scummsteps.Strip(command = platform.getStripCmd()))
 
         if platform.canPackage(self):
-            f.addStep(steps.Package(disttarget = packaging_cmd,
+            f.addStep(scummsteps.Package(disttarget = packaging_cmd,
                                     srcpath = src_path,
                                     dstpath = packages_path,
                                     data_files = self.data_files,
@@ -393,7 +385,7 @@ class ScummVMToolsBuild(StandardBuild):
                                     archive_format = platform.archiveext,
                                     env = env))
 
-        return [BuilderConfig(
+        return [util.BuilderConfig(
             name = "{0}-{1}".format(self.name, platform.name),
             workername = platform.workername,
             workerbuilddir = build_path,

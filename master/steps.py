@@ -3,15 +3,15 @@ from datetime import datetime
 
 from twisted.internet import defer
 
-from buildbot.process.properties import Property, renderer
+from buildbot.plugins import util
+from buildbot.plugins import steps
+
+# Kept for buildstep.ShellMixin and results.computeResultAndTermination
 from buildbot.process import buildstep, results
+# Kept for remotecommand.RemoteCommand
 from buildbot.process import remotecommand
 
-from buildbot.steps.shell import ShellCommand
-from buildbot.steps.shellsequence import ShellSequence, ShellArg
-from buildbot.steps.worker import RemoveDirectory
-
-class Patch(buildstep.ShellMixin, buildstep.BuildStep):
+class Patch(buildstep.ShellMixin, steps.BuildStep):
     name = "patch"
     renderables = [ 'patches', 'command' ]
     haltOnFailure = True
@@ -26,7 +26,7 @@ class Patch(buildstep.ShellMixin, buildstep.BuildStep):
     @defer.inlineCallbacks
     def run(self):
         terminate = False
-        overall_result = results.SUCCESS
+        overall_result = util.SUCCESS
         for patch in self.patches:
             # setup structures for reading the file
             try:
@@ -36,7 +36,7 @@ class Patch(buildstep.ShellMixin, buildstep.BuildStep):
                 # if file does not exist, bail out with an error
                 self.addCompleteLog('stderr',
                                     'File %r not available at master' % source)
-                return results.FAILURE
+                return util.FAILURE
             cmd = yield self.makeRemoteShellCommand(command=self.command,
                     initialStdin=patch_data)
             yield self.runCommand(cmd)
@@ -46,14 +46,14 @@ class Patch(buildstep.ShellMixin, buildstep.BuildStep):
             if terminate:
                 break
 
-        if overall_result == results.SUCCESS:
+        if overall_result == util.SUCCESS:
             self.descriptionDone = ["patched"]
         return overall_result
 
 
 
 # buildstep class to determine if a file is newer than another one
-class SetPropertyIfOlder(buildstep.BuildStep):
+class SetPropertyIfOlder(steps.BuildStep):
     name = "set property if older"
     renderables = ['src', 'generated', 'workdir' ]
     haltOnFailure = True
@@ -87,13 +87,13 @@ class SetPropertyIfOlder(buildstep.BuildStep):
         if statSrc.didFail():
             # Uh oh: without source no generation
             self.descriptionDone = ["source file not found."]
-            return results.FAILURE
+            return util.FAILURE
 
         if statGenerated.didFail():
             # No generated file: set property to True
             self.setProperty(self.property, True, self.name)
             self.descriptionDone = ["generated file not found."]
-            return results.SUCCESS
+            return util.SUCCESS
 
         # stat object is lost when marshalling and result is seen as a tuple, doc says st_mtime is eighth
         dateSrc = statSrc.updates["stat"][-1][8]
@@ -106,20 +106,20 @@ class SetPropertyIfOlder(buildstep.BuildStep):
         # Set to True if older
         self.setProperty(self.property, dateGenerated <= dateSrc, self.name)
         self.descriptionDone = ["generated file is {0} than source file".format("older" if dateGenerated <= dateSrc else "newer")]
-        return results.SUCCESS
+        return util.SUCCESS
 
 # buildstep class to strip binaries, only done on nightly builds.
 def Strip(command, **kwargs):
-    return ShellCommand(
+    return steps.ShellCommand(
         name = "strip",
         description = "stripping",
         descriptionDone = "strip",
         command = command,
-        doStepIf = Property("package", default=False),
+        doStepIf = util.Property("package", default=False),
         **kwargs)
 
 # buildstep class to execute cleanup commands even if main commands failed
-class CleanShellSequence(ShellSequence):
+class CleanShellSequence(steps.ShellSequence):
     renderables = ['cleanup']
 
     def __init__(self, cleanup, **kwargs):
@@ -133,7 +133,7 @@ class CleanShellSequence(ShellSequence):
         return result
 
     def getResultSummary(self):
-        return buildstep.BuildStep.getResultSummary(self)
+        return steps.BuildStep.getResultSummary(self)
 
 PACKAGE_FORMAT_COMMANDS = {
     # format: [command, options]
@@ -156,7 +156,7 @@ def Package(disttarget, srcpath, dstpath, data_files,
         files += [ f if (os.path.isabs(f) or f[0:1] == '$') else os.path.join(srcpath, f)
                 for f in platform_data_files ]
 
-    @renderer
+    @util.renderer
     def generateCommands(props):
         # Create a mutable variable from the outer one
         archive_format_ = archive_format
@@ -172,38 +172,38 @@ def Package(disttarget, srcpath, dstpath, data_files,
         commands = []
 
         if disttarget:
-            commands.append(ShellArg(["make", disttarget],
+            commands.append(util.ShellArg(["make", disttarget],
                     logfile="make", haltOnFailure=True))
 
-        commands.append(ShellArg(["mkdir", name],
+        commands.append(util.ShellArg(["mkdir", name],
             logfile="stdio", haltOnFailure=True))
         # Use a string for cp to allow shell globbing
         # WARNING: files aren't surrounded with quotes to let it happen
-        commands.append(ShellArg('cp -r ' + ' '.join(files) + ' "{0}/"'.format(name),
+        commands.append(util.ShellArg('cp -r ' + ' '.join(files) + ' "{0}/"'.format(name),
             logfile="stdio", haltOnFailure=True))
-        commands.append(ShellArg(archive_command,
+        commands.append(util.ShellArg(archive_command,
             logfile="stdio", haltOnFailure=True))
-        commands.append(ShellArg(["chmod", "644", archive],
+        commands.append(util.ShellArg(["chmod", "644", archive],
             logfile="stdio", haltOnFailure=True))
-        commands.append(ShellArg(["mkdir", "-p", dstpath+"/"],
+        commands.append(util.ShellArg(["mkdir", "-p", dstpath+"/"],
             logfile="stdio", haltOnFailure=True))
-        commands.append(ShellArg(["mv", archive, dstpath+"/"],
+        commands.append(util.ShellArg(["mv", archive, dstpath+"/"],
             logfile="stdio", haltOnFailure=True))
-        commands.append(ShellArg(["ln", "-sf", archive, os.path.join(dstpath, symlink)],
+        commands.append(util.ShellArg(["ln", "-sf", archive, os.path.join(dstpath, symlink)],
             logfile="stdio", haltOnFailure=True))
 
         return commands
 
-    @renderer
+    @util.renderer
     def generateCleanup(props):
         name = "{0}-{1}".format(buildname, props["revision"][:8])
 
         commands = []
-        commands.append(ShellArg(["rm", "-rf", name],
+        commands.append(util.ShellArg(["rm", "-rf", name],
             haltOnFailure=True))
         return commands
 
-    @renderer
+    @util.renderer
     def doPackage(props):
         return (
                 "revision" in props and props["revision"] is not None and
@@ -211,8 +211,8 @@ def Package(disttarget, srcpath, dstpath, data_files,
 
     return CleanShellSequence(
         name = "package",
-        description = [ "packaging" ],
-        descriptionDone = [ "package" ],
+        description = "packaging",
+        descriptionDone = "package",
         haltOnFailure = True,
         flunkOnFailure = True,
         commands = generateCommands,
@@ -223,7 +223,7 @@ def Package(disttarget, srcpath, dstpath, data_files,
 
 # buildstep class to wipe all build folders (eg "trunk-*")
 def Clean(**kwargs):
-    return RemoveDirectory(
+    return steps.RemoveDirectory(
         name = "clean",
         description = "cleaning",
         descriptionDone = "clean",

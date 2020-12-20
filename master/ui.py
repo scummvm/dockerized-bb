@@ -1,8 +1,9 @@
 import os
 
-from buildbot.www.authz import Authz
-from buildbot.www.auth import HTPasswdAuth
 from twisted.cred import strcred
+
+from buildbot.plugins import util
+from buildbot.plugins import reporters
 
 import config
 
@@ -17,7 +18,7 @@ www = {
 }
 
 if os.path.exists(htfile):
-    www['authz'] = Authz(auth=HTPasswdAuth(htfile),
+    www['authz'] = util.Authz(auth=util.HTPasswdAuth(htfile),
             forceBuild='auth', # only authenticated users
             forceAllBuilds='auth', # only authenticated users
             stopBuild='auth', # only authenticated users
