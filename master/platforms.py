@@ -161,7 +161,6 @@ def android(suffix, scummvm_target, ndk_target, cxx_target, abi_version):
 
     platform.workerimage = {
         builds.ScummVMBuild: "android",
-        builds.ScummVMStableBuild: "android-old",
     }
     platform.buildenv = {
         builds.ScummVMBuild: {

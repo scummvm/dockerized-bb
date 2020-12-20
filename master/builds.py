@@ -460,6 +460,6 @@ class ScummVMToolsBuild(StandardBuild):
 builds = []
 
 builds.append(ScummVMBuild("master", "https://github.com/scummvm/scummvm", "master", verbose_build=True, nightly=(4, 1)))
-builds.append(ScummVMStableBuild("stable", "https://github.com/scummvm/scummvm", "branch-2-1", verbose_build=True, nightly=(4, 1)))
+builds.append(ScummVMStableBuild("stable", "https://github.com/scummvm/scummvm", "branch-2-2", verbose_build=True, nightly=(4, 1)))
 #builds.append(ScummVMBuild("gsoc2012", "https://github.com/digitall/scummvm", "gsoc2012-scalers-cont", verbose_build=True))
 builds.append(ScummVMToolsBuild("tools-master", "https://github.com/scummvm/scummvm-tools", "master", verbose_build=True, nightly=(4, 1)))
