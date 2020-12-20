@@ -287,7 +287,8 @@ class ScummVMBuild(StandardBuild):
             packaging_cmd = platform.getPackagingCmd(self)
         else:
             if platform.getStripCmd(self) is not None:
-                f.addStep(scummsteps.Strip(command = platform.getStripCmd(self)))
+                f.addStep(scummsteps.Strip(command = platform.getStripCmd(self),
+                    env = env))
 
         if platform.canPackage(self):
             f.addStep(scummsteps.Package(disttarget = packaging_cmd,
@@ -429,7 +430,8 @@ class ScummVMToolsBuild(StandardBuild):
             packaging_cmd = platform.getPackagingCmd(self)
         else:
             if platform.getStripCmd(self) is not None:
-                f.addStep(scummsteps.Strip(command = platform.getStripCmd(self)))
+                f.addStep(scummsteps.Strip(command = platform.getStripCmd(self),
+                    env = env))
 
         if platform.canPackage(self):
             f.addStep(scummsteps.Package(disttarget = packaging_cmd,

@@ -616,7 +616,8 @@ def windows_mxe(suffix, target):
         builds.ScummVMBuild: [ "--enable-updates"],
     }
     platform.strip_cmd = {
-        builds.ScummVMBuild: ['${STRIP}', 'scummvm.exe'],
+        # As we use an environment variable, we need to use string to spawn a shell
+        builds.ScummVMBuild: '"${STRIP}" scummvm.exe',
     }
     platform.built_files = {
         builds.ScummVMBuild: [ "scummvm.exe" ],
