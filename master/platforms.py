@@ -1,5 +1,4 @@
 import copy
-import os
 
 import config
 import builds
@@ -92,7 +91,6 @@ class Platform:
     def getWorkerImage(self, build):
         return _getFromBuild(self.workerimage, build)
 
-
 platforms = []
 def register_platform(platform):
     if (config.platforms_whitelist and
@@ -107,6 +105,8 @@ def _3ds():
     platform = Platform("3ds")
     platform.workerimage = "devkit3ds"
     platform.compatibleBuilds = (builds.ScummVMBuild, )
+    # Include CA certificates bundle to allow HTTPS
+    platform.env["DIST_3DS_EXTRA_FILES"] = "${DEVKITPRO}/cacert.pem"
     platform.env["CXX"] = "ccache /opt/devkitpro/devkitARM/bin/arm-none-eabi-c++"
     platform.configureargs.append("--host=3ds")
     platform.buildconfigureargs = {
@@ -118,7 +118,6 @@ def _3ds():
     }
     platform.archiveext = "zip"
     platform.testable = False
-    platform.run_tests = False
     register_platform(platform)
 _3ds()
 
@@ -131,7 +130,7 @@ def amigaos4():
     }
     platform.packaging_cmd = {
         builds.ScummVMBuild: "amigaosdist",
-        builds.ScummVMToolsBuild: "amigaos4dist"
+        builds.ScummVMToolsBuild: "amigaosdist"
     }
     platform.built_files = {
         builds.ScummVMBuild: [ "Games:ScummVM", "Games:ScummVM.info" ],
@@ -151,11 +150,11 @@ def amigaos4():
         ],
     }
     platform.archiveext = "zip"
-    platform.testable = False
-    platform.run_tests = False
     register_platform(platform)
 amigaos4()
 
+# Android environment can't be specified in worker Dockerfile as it's a unified toolchain
+# So we must pollute our configuration
 def android(suffix, scummvm_target, ndk_target, cxx_target, abi_version):
     platform = Platform("android_{0}".format(suffix))
     platform.compatibleBuilds = (builds.ScummVMBuild, )
@@ -175,28 +174,6 @@ def android(suffix, scummvm_target, ndk_target, cxx_target, abi_version):
             "PATH": [ "${PATH}", "${{ANDROID_TOOLCHAIN}}/sysroot/usr/bin/{0}/{1}".format(
                 ndk_target, abi_version)],
         },
-        builds.ScummVMStableBuild: {
-            "AR": "${{ANDROID_TOOLCHAIN}}/bin/{0}-ar".format(
-                ndk_target),
-            "AS": "${{ANDROID_TOOLCHAIN}}/bin/{0}-as".format(
-                ndk_target),
-            "RANLIB": "${{ANDROID_TOOLCHAIN}}/bin/{0}-ranlib".format(
-                ndk_target),
-            "STRIP": "${{ANDROID_TOOLCHAIN}}/bin/{0}-strip".format(
-                ndk_target),
-            "STRINGS": "${{ANDROID_TOOLCHAIN}}/bin/{0}-strings".format(
-                ndk_target),
-            "CXX": "ccache ${{ANDROID_TOOLCHAIN}}/bin/{0}-clang++".format(
-                ndk_target),
-            "CC": "ccache ${{ANDROID_TOOLCHAIN}}/bin/{0}-clang".format(
-                ndk_target),
-            # Worker has all libraries installed in the toolchain
-            "PKG_CONFIG_LIBDIR": "${{ANDROID_TOOLCHAIN}}/sysroot/usr/lib/{0}/pkgconfig".format(
-                ndk_target),
-            # Altering PATH for curl-config, that lets us reuse environment variables instead of using configure args
-            "PATH": [ "${PATH}", "${{ANDROID_TOOLCHAIN}}/sysroot/usr/bin/{0}".format(
-                ndk_target)],
-        }
     }
 
     platform.configureargs.append("--host=android-{0}".format(scummvm_target))
@@ -207,7 +184,6 @@ def android(suffix, scummvm_target, ndk_target, cxx_target, abi_version):
     }
     platform.archiveext = "zip"
     platform.testable = False
-    platform.run_tests = False
     register_platform(platform)
 
 android(suffix="arm",
@@ -235,8 +211,15 @@ def debian_x86_64():
     platform = Platform("debian-x86_64")
     platform.env["CXX"] = "ccache g++"
     platform.configureargs.append("--host=x86_64-linux-gnu")
+    # stable build don't have this target yet
+    platform.packaging_cmd = {
+        builds.ScummVMBuild: "dist-generic",
+        builds.ScummVMStableBuild: None,
+    }
     platform.built_files = {
-        builds.ScummVMBuild: [ "scummvm" ],
+        builds.ScummVMBuild: [ "dist-generic/*" ],
+        # stable build will use produced binary and additional files mentioned in builds.py
+        builds.ScummVMStableBuild: [ "scummvm" ],
         builds.ScummVMToolsBuild: [
             "construct_mohawk",
             "create_sjisfnt",
@@ -270,8 +253,6 @@ def caanoo():
         builds.ScummVMBuild: [ "release/scummvm-caanoo.tar.bz2" ],
     }
     platform.archiveext = "tar.bz2"
-    platform.testable = False
-    platform.run_tests = False
     register_platform(platform)
 caanoo()
 
@@ -289,8 +270,6 @@ def gamecube():
         builds.ScummVMBuild: [ "wiidist/scummvm" ],
     }
     platform.archiveext = "tar.xz"
-    platform.testable = False
-    platform.run_tests = False
     register_platform(platform)
 gamecube()
 
@@ -307,8 +286,6 @@ def gp2x():
             builds.ScummVMBuild: [ "release/scummvm-gp2x.tar.bz2" ],
         }
         platform.archiveext = "tar.bz2"
-        platform.testable = False
-        platform.run_tests = False
 
     platform = Platform("gp2x-1")
     platform.buildconfigureargs = {
@@ -346,8 +323,6 @@ def ios7():
         builds.ScummVMBuild: [ "ScummVM.app" ],
     }
     platform.archiveext = "tar.bz2"
-    platform.testable = False
-    platform.run_tests = False
     register_platform(platform)
 ios7()
 
@@ -442,7 +417,6 @@ macosx_i386()
 #    }
 #    platform.archiveext = "tar.xz"
 #    platform.testable = False
-#    platform.run_tests = False
 #    register_platform(platform)
 #nds()
 
@@ -460,22 +434,20 @@ def openpandora():
         builds.ScummVMBuild: [ "release/scummvm-op-pnd.tar.bz2" ],
     }
     platform.archiveext = "tar.bz2"
-    platform.testable = False
-    platform.run_tests = False
     register_platform(platform)
 openpandora()
 
 def ps3():
     platform = Platform("ps3")
     platform.compatibleBuilds = (builds.ScummVMBuild, )
+    # Include CA certificates bundle to allow HTTPS
+    platform.env["DIST_PS3_EXTRA_FILES"] = "${PS3DEV}/cacert.pem"
     platform.env["CXX"] = "ccache powerpc64-ps3-elf-g++"
     platform.configureargs.append("--host=ps3")
     platform.packaging_cmd = "ps3pkg"
     platform.built_files = {
         builds.ScummVMBuild: [ "scummvm-ps3.pkg" ],
     }
-    platform.testable = False
-    platform.run_tests = False
     register_platform(platform)
 ps3()
 
@@ -485,16 +457,17 @@ def psp():
     platform.env["CXX"] = "ccache psp-g++"
     platform.configureargs.extend(["--host=psp", "--disable-debug", "--enable-plugins", "--default-dynamic"])
 
-    # HACK: The glk engine causes linker errors on psp buildbot, and is disabled.
-    # This was decided after discussion with dreammaster on irc.
-    # Since glk is an interactive fiction engine that requires lots of text entry,
-    # and there's no physical keyboard support on this platform, the engine is
-    # not comfortably usable on the psp anyways.
+    # HACK: The Ultima engine, when included, causes a crash in the add game dialog
+    # after selecting a game in the "Add Game" dialog and clicking on "Choose".
+    # This crash happens only on real hardware, but not on the PSP emulator PPSSPP.
+    # It was suggested that this is due to memory constraints on the platform.
+    # Due to this crash, we disable Ultima on PSP for now.
+
     # Unstable engines are disabled because they cause a crash on real hardware when
     # adding a game (see further comment in the pspfull buildbot target)
+
     platform.buildconfigureargs = {
-        builds.ScummVMBuild: [ "--disable-engines=glk", "--disable-all-unstable-engines" ],
-        builds.ScummVMStableBuild: [ ],
+        builds.ScummVMBuild: [ "--disable-engines=ultima", "--disable-all-unstable-engines" ],
     }
     platform.built_files = {
         builds.ScummVMBuild: [
@@ -508,8 +481,6 @@ def psp():
         ],
     }
     platform.archiveext = "tar.xz"
-    platform.testable = False
-    platform.run_tests = False
     register_platform(platform)
 
     # PSP full
@@ -520,15 +491,9 @@ def psp():
     # The crash happens while it loads all the plugins to determine the engine
     # that matches the game. It is a hard crash that requires removing and
     # reinserting the battery. The crash does not happen on the PPSSPP emulator.
-    #
-    # HACK: The glk engine causes linker errors on psp buildbot, and is disabled.
-    # This was decided after discussion with dreammaster on irc.
-    # Since glk is an interactive fiction engine that requires lots of text entry,
-    # and there's no physical keyboard support on this platform, the engine is
-    # not comfortably usable on the psp anyways.
+
     platform.buildconfigureargs = {
-        builds.ScummVMBuild: [ "--disable-engines=glk" ],
-        builds.ScummVMStableBuild: [ ],
+        builds.ScummVMBuild: [ ],
     }
     register_platform(platform)
 psp()
@@ -569,7 +534,6 @@ def switch():
     }
     platform.archiveext = "zip"
     platform.testable = False
-    platform.run_tests = False
     register_platform(platform)
 switch()
 
@@ -578,12 +542,19 @@ def vita():
     platform.compatibleBuilds = (builds.ScummVMBuild, )
     platform.env["CXX"] = "ccache /usr/local/vitasdk/bin/arm-vita-eabi-g++"
     platform.configureargs.append("--host=psp2")
+
+    # HACK: To prevent memory-related crash on startup that seems related to the size of the executable
+    # file, which grows with number of engines, we need to disable some of the engines...
+    # Blade Runner is unplayably slow on the Vita.
+    # Stark engine doesn't have a supported renderer on Vita.
+    # Myst 3 engine is unplayably slow on Vita.
+    # Glk is not very usable on Vita without a keyboard.
     platform.buildconfigureargs = {
         builds.ScummVMBuild: [
-            "--disable-engines=lastexpress",
+            "--disable-engines=bladerunner",
+            "--disable-engines=stark",
+            "--disable-engines=myst3",
             "--disable-engines=glk",
-            "--disable-engines=dm",
-            "--disable-engines=director",
         ],
     }
     platform.packaging_cmd = "psp2vpk"
@@ -592,7 +563,18 @@ def vita():
     }
     platform.archiveext = "zip"
     platform.testable = False
-    platform.run_tests = False
+    register_platform(platform)
+
+    # Vita full
+    platform = copy.deepcopy(platform)
+    platform.name = "vitafull"
+
+    # This Vita build includes all engines, but crashes on startup.
+    # The crash presumably happens due to the large executable size.
+
+    platform.buildconfigureargs = {
+        builds.ScummVMBuild: [ ],
+    }
     register_platform(platform)
 vita()
 
@@ -610,8 +592,6 @@ def wii():
         builds.ScummVMBuild: [ "wiidist/scummvm" ],
     }
     platform.archiveext = "tar.xz"
-    platform.testable = False
-    platform.run_tests = False
     register_platform(platform)
 wii()
 
@@ -620,8 +600,10 @@ def windows_mxe(suffix, target):
     platform.workerimage = "mxe"
 
     platform.env["CXX"] = "ccache ${{MXE_PREFIX_DIR}}/bin/{0}-c++".format(target)
+    # strip is specified below, just be coherent and define it with environment
+    platform.env["STRIP"] = "${{MXE_PREFIX_DIR}}/bin/{0}-strip".format(target)
     # strings is detected using host alias and not host, override it here
-    platform.env["STRINGS"] = "ccache ${{MXE_PREFIX_DIR}}/bin/{0}-strings".format(target)
+    platform.env["STRINGS"] = "${{MXE_PREFIX_DIR}}/bin/{0}-strings".format(target)
     platform.env["PKG_CONFIG_LIBDIR"] = "${{MXE_PREFIX_DIR}}/{0}/lib/pkgconfig".format(target)
     # Altering PATH for curl-config, that lets us reuse environment variables instead of using configure args
     platform.env["PATH"] = [ "${PATH}", "${{MXE_PREFIX_DIR}}/{0}/bin".format(target)]
@@ -632,6 +614,9 @@ def windows_mxe(suffix, target):
     platform.configureargs.append("--enable-debug")
     platform.buildconfigureargs = {
         builds.ScummVMBuild: [ "--enable-updates"],
+    }
+    platform.strip_cmd = {
+        builds.ScummVMBuild: ['${STRIP}', 'scummvm.exe'],
     }
     platform.built_files = {
         builds.ScummVMBuild: [ "scummvm.exe" ],
@@ -657,7 +642,6 @@ def windows_mxe(suffix, target):
         ],
     }
     platform.archiveext = "zip"
-    platform.run_tests = False
     register_platform(platform)
 
 windows_mxe(suffix="x86",

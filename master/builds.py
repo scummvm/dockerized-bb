@@ -165,10 +165,8 @@ class ScummVMBuild(StandardBuild):
     DATA_FILES = [
         "AUTHORS",
         "COPYING",
-        "COPYING.BSD",
-        "COPYING.FREEFONT",
         "COPYING.LGPL",
-        "COPYING.OFL",
+        "COPYING.BSD",
         "COPYRIGHT",
         "NEWS.md",
         "README.md",
@@ -179,6 +177,7 @@ class ScummVMBuild(StandardBuild):
         "dists/engine-data/access.dat",
         "dists/engine-data/cryomni3d.dat",
         "dists/engine-data/drascula.dat",
+        "dists/engine-data/fonts.dat",
         "dists/engine-data/hugo.dat",
         "dists/engine-data/kyra.dat",
         "dists/engine-data/lure.dat",
@@ -186,12 +185,23 @@ class ScummVMBuild(StandardBuild):
         "dists/engine-data/neverhood.dat",
         "dists/engine-data/queen.tbl",
         "dists/engine-data/sky.cpt",
+        "dists/engine-data/supernova.dat",
         "dists/engine-data/teenagent.dat",
+        "dists/engine-data/titanic.dat",
         "dists/engine-data/tony.dat",
         "dists/engine-data/toon.dat",
+        "dists/engine-data/ultima.dat",
         "dists/engine-data/wintermute.zip",
+        "dists/engine-data/xeen.ccs",
         "dists/networking/wwwroot.zip",
-        "dists/pred.dic"
+        "dists/pred.dic",
+        # Not in stable
+        "dists/engine-data/cryo.dat",
+        "dists/engine-data/macgui.dat",
+        "dists/engine-data/macventure.dat",
+        "dists/engine-data/myst3.dat",
+        "dists/engine-data/grim-patch.lab",
+        "dists/engine-data/monkey4-patch.m4b"
     ]
 
     def __init__(self, *args, **kwargs):
@@ -267,7 +277,7 @@ class ScummVMBuild(StandardBuild):
             packaging_cmd = platform.getPackagingCmd(self)
         else:
             if platform.getStripCmd(self) is not None:
-                f.addStep(scummsteps.Strip(command = platform.getStripCmd()))
+                f.addStep(scummsteps.Strip(command = platform.getStripCmd(self)))
 
         if platform.canPackage(self):
             f.addStep(scummsteps.Package(disttarget = packaging_cmd,
@@ -295,11 +305,48 @@ class ScummVMBuild(StandardBuild):
 
 class ScummVMStableBuild(ScummVMBuild):
     PATCHES = [
-        "./patches/fix-devkitppc.patch",
+    ]
+
+    DATA_FILES = [
+        "AUTHORS",
+        "COPYING",
+        "COPYING.LGPL",
+        "COPYING.BSD",
+        "COPYRIGHT",
+        "NEWS.md",
+        "README.md",
+        "gui/themes/translations.dat",
+        "gui/themes/scummclassic.zip",
+        "gui/themes/scummmodern.zip",
+        "gui/themes/scummremastered.zip",
+        "dists/engine-data/access.dat",
+        "dists/engine-data/cryomni3d.dat",
+        "dists/engine-data/drascula.dat",
+        "dists/engine-data/fonts.dat",
+        "dists/engine-data/hugo.dat",
+        "dists/engine-data/kyra.dat",
+        "dists/engine-data/lure.dat",
+        "dists/engine-data/mort.dat",
+        "dists/engine-data/neverhood.dat",
+        "dists/engine-data/queen.tbl",
+        "dists/engine-data/sky.cpt",
+        "dists/engine-data/supernova.dat",
+        "dists/engine-data/teenagent.dat",
+        "dists/engine-data/titanic.dat",
+        "dists/engine-data/tony.dat",
+        "dists/engine-data/toon.dat",
+        "dists/engine-data/ultima.dat",
+        "dists/engine-data/wintermute.zip",
+        "dists/engine-data/xeen.ccs",
+        "dists/networking/wwwroot.zip",
+        "dists/pred.dic"
     ]
 
 class ScummVMToolsBuild(StandardBuild):
     __slots__ = [ 'data_files', 'verbose_build' ]
+
+    PATCHES = [
+    ]
 
     DATA_FILES = [
         "COPYING",
@@ -372,7 +419,7 @@ class ScummVMToolsBuild(StandardBuild):
             packaging_cmd = platform.getPackagingCmd(self)
         else:
             if platform.getStripCmd(self) is not None:
-                f.addStep(scummsteps.Strip(command = platform.getStripCmd()))
+                f.addStep(scummsteps.Strip(command = platform.getStripCmd(self)))
 
         if platform.canPackage(self):
             f.addStep(scummsteps.Package(disttarget = packaging_cmd,
