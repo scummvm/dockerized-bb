@@ -115,7 +115,12 @@ master: $(BUILDDIR)/buildbot_installed master/buildbot.tac
 
 # Shortcut to check if config OK for buildbot
 # That avoids any downtime at restart if it was bad
-master-check: master/buildbot.tac
+# Don't depend on anything to prevent modifying state
+master-check:
+	@if [ ! -f master/buildbot.tac ]; then \
+		echo "Run make master first"; \
+		exit 1; \
+	fi; \
 	cd master && \
 		buildbot checkconfig
 
