@@ -22,11 +22,22 @@ CLANG_INCLUDE_DIR="${CLANG_LIB_DIR}/include"
 CLANG_DARWIN_LIB_DIR="${CLANG_LIB_DIR}/lib/darwin"
 
 # Don't support below 4.x and master to simplify
-CLANG_MAJOR=${CLANG_VERSION%%.*}
-BRANCH=release/$CLANG_MAJOR.x
-
+#CLANG_MAJOR=${CLANG_VERSION%%.*}
+#BRANCH=release/$CLANG_MAJOR.x
 #do_git_fetch llvm-project "https://github.com/llvm/llvm-project.git" "${BRANCH}"
 #cd compiler-rt
+
+CLANG_PATCH=${CLANG_VERSION##*.}
+CLANG_MAJMIN=${CLANG_VERSION%.*}
+# --spider doesn't work with Github/AWS so just do a 1 byte download to /dev/null
+while ! wget --header='Range: bytes=0-0' -O /dev/null \
+	"https://github.com/llvm/llvm-project/releases/download/llvmorg-${CLANG_VERSION}/compiler-rt-${CLANG_VERSION}.src.tar.xz"; do
+	if [ "$CLANG_PATCH" -eq 0 ]; then
+		exit 1
+	fi
+	CLANG_PATCH=$(($CLANG_PATCH - 1))
+	CLANG_VERSION=${CLANG_MAJMIN}.${CLANG_PATCH}
+done
 
 do_http_fetch compiler-rt "https://github.com/llvm/llvm-project/releases/download/llvmorg-${CLANG_VERSION}/compiler-rt-${CLANG_VERSION}.src.tar.xz" 'tar xJf'
 
