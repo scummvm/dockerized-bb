@@ -29,6 +29,12 @@ platforms_whitelist = [
 platforms_blacklist = [
 ]
 
+# List which builds won't receive notifications from Webhook
+# and must be polled
+# Each build entry is in the form
+# "name": { poll parameters }
+builds_to_poll = {
+}
 
 # Github tokens
 github_webhook_secret = None

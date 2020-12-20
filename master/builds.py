@@ -17,7 +17,8 @@ lock_build = util.WorkerLock("worker", maxCount = 1)
 # src contains the source trees
 # triggers is some working directory needed by triggers
 # bshomes is used for various build systems (like Gradle) to avoid downloading things at each run
-for data_dir in ["builds", "ccache", "packages", "src", "triggers", "bshomes" ]:
+# pollers is used by poll modules to maintain their state
+for data_dir in ["builds", "ccache", "packages", "src", "triggers", "bshomes", "pollers" ]:
         os.makedirs(os.path.join(config.buildbot_data_dir, data_dir), exist_ok=True)
 
 class Build:
@@ -25,6 +26,9 @@ class Build:
 
     def __init__(self, name):
         self.name = name
+
+    def getChangeSource(self):
+        pass
 
     def getGlobalSchedulers(self, platforms):
         pass
@@ -51,6 +55,12 @@ class StandardBuild(Build):
         self.enable_force = enable_force
         # Lock used to avoid writing source code when it is read by another task
         self.lock_src = util.MasterLock("src-{0}".format(self.name), maxCount=sys.maxsize)
+
+    def getChangeSource(self, settings):
+        return changes.GitPoller(repourl=self.giturl,
+            branches=[self.branch],
+            workdir=os.path.join(config.buildbot_data_dir, 'pollers'),
+            **settings)
 
     def getGlobalSchedulers(self, platforms):
         ret = list()
