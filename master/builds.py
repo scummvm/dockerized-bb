@@ -64,12 +64,12 @@ class StandardBuild(Build):
 
     def getGlobalSchedulers(self, platforms):
         ret = list()
-        change_filter = util.ChangeFilter(repository = self.baseurl, branch = self.branch)
+        change_filter = util.ChangeFilter(repository = [self.baseurl, self.giturl], branch = self.branch)
 
         # Fetch scheduler (triggered by event source)
         ret.append(schedulers.SingleBranchScheduler(name = "fetch-{0}".format(self.name),
                 change_filter = change_filter,
-                treeStableTimer = 5,
+                treeStableTimer = 60,
                 builderNames = [ "fetch-{0}".format(self.name) ]))
 
         # Nightly scheduler (started by time)
