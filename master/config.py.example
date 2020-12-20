@@ -41,4 +41,19 @@ www_port = ("127.0.0.1", 8010)
 # URL used to reach Buildbot instance
 buildbotURL = "https://buildbot.scummvm.org/"
 
+# IRC configuration
+#irc = {
+#    'server': 'chat.freenode.net',
+#    'port': 7000,
+#    'ssl': True,
+#    'nick': 'Scummette',
+#    'password': 'password',
+#    'channels': [
+#        '#scummvm'
+#    ],
+#    'nicks': ['someuser'],
+#    'admins': ['someuser'],
+#}
+
+
 htfile = './scumm_htpasswd'

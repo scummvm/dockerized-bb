@@ -41,3 +41,27 @@ try:
 except TypeError:
     www['port'] = "tcp:{0}".format(config.www_port)
 
+if hasattr(config, 'irc') and config.irc:
+    services.append(reporters.IRC(
+        host=config.irc['server'],
+        port=config.irc.get('port', 6667),
+        useSSL=config.irc.get('ssl', False),
+        nick=config.irc['nick'],
+        password=config.irc.get('password', None),
+        channels=config.irc.get('channels', []),
+        pm_to_nicks=config.irc.get('nicks', []),
+        useColors=True,
+        authz={
+            # Order of match is 'command', '*', ''/'!'
+            # Operation restricted to bot administrators
+            '': config.irc.get('admins', False),
+            # No dangerous command can be issued on IRC (real authentication required)
+            '!': False,
+        },
+        notify_events=[
+            'exception',
+            'problem',
+            'recovery',
+            'worker'
+        ]
+    ))
