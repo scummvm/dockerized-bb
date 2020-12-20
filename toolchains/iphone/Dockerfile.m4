@@ -1,6 +1,7 @@
 FROM toolchains/common AS helpers
 FROM toolchains/apple-sdks AS sdks
 
+m4_dnl These settings must be kept in sync between toolchain and worker
 m4_define(`PPA_CLANG',-10)m4_dnl
 m4_define(`IPHONE_SDK_VERSION',14.3)m4_dnl
 m4_define(`IPHONEOS_DEPLOYMENT_TARGET',7.0)m4_dnl
