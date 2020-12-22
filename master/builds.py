@@ -11,6 +11,9 @@ import config
 import steps as scummsteps
 
 # Lock to avoid running more than 1 build at the same time on a worker
+# This lock is used for builder workers to avoid too high CPU load
+# It's also used for fetcher worker to ensure that fetching will occur just before building
+# because fetcher is locked all the way through the build process
 lock_build = util.WorkerLock("worker", maxCount = 1)
 
 # builds contains all build trees
@@ -71,7 +74,7 @@ class StandardBuild(Build):
         change_filter = util.ChangeFilter(repository = [self.baseurl, self.giturl], branch = self.branch)
 
         # Fetch scheduler (triggered by event source)
-        ret.append(schedulers.SingleBranchScheduler(name = "fetch-{0}".format(self.name),
+        ret.append(schedulers.SingleBranchScheduler(name = "branch-scheduler-{0}".format(self.name),
                 change_filter = change_filter,
                 # Wait for 5 minutes before starting build
                 treeStableTimer = 300,
@@ -81,7 +84,7 @@ class StandardBuild(Build):
         # It's triggered after regular builds to take note of the last fetched source
         # Note that build is not started by trigger
         if self.nightly is not None:
-            ret.append(schedulers.NightlyTriggerable(name = "nightly-{0}".format(self.name),
+            ret.append(schedulers.NightlyTriggerable(name = "nightly-scheduler-{0}".format(self.name),
                 branch = self.branch,
                 builderNames = [ "nightly-{0}".format(self.name) ],
                 hour = self.nightly[0],
@@ -91,8 +94,8 @@ class StandardBuild(Build):
         # All compiling builders
         comp_builders = ["{0}-{1}".format(self.name, p.name) for p in platforms if p.canBuild(self)]
 
-        # Global build scheduler (triggered by fetch build)
-        ret.append(schedulers.Triggerable(name = self.name, builderNames = comp_builders))
+        # Global build scheduler (triggered by fetch build and nightly build)
+        ret.append(schedulers.Triggerable(name = "build-scheduler-{0}".format(self.name), builderNames = comp_builders))
 
         # Force schedulers
         if self.enable_force:
@@ -134,8 +137,9 @@ class StandardBuild(Build):
         if self.nightly is not None:
             # Trigger nightly scheduler to let it know the source stamp
             f.addStep(steps.Trigger(name="Updating source stamp", hideStepIf=(lambda r, s: r == util.SUCCESS),
-                schedulerNames = [ "nightly-{0}".format(self.name) ]))
-        f.addStep(steps.Trigger(name="Building all platforms", schedulerNames = [ self.name ],
+                schedulerNames = [ "nightly-scheduler-{0}".format(self.name) ]))
+        f.addStep(steps.Trigger(name="Building all platforms",
+            schedulerNames = [ "build-scheduler-{0}".format(self.name) ],
                             copy_properties = [ 'got_revision', 'clean', 'package' ],
                             updateSourceStamp = True,
                             waitForFinish = True))
@@ -147,26 +151,29 @@ class StandardBuild(Build):
             workerbuilddir = "/data/src/{0}".format(self.name),
             factory = f,
             tags = ["fetch"],
+            locks = [ lock_build.access('counting') ],
         ))
 
         if self.nightly is not None:
             f = util.BuildFactory()
-            f.addStep(steps.Trigger(schedulerNames = [ self.name ],
+            f.addStep(steps.Trigger(name="Building all platforms",
+                schedulerNames = [ "build-scheduler-{0}".format(self.name) ],
                 copy_properties = [ 'got_revision' ],
                 updateSourceStamp = True,
                 waitForFinish = True,
                 set_properties = {
                     'clean': True,
-                    'package': True }))
+                    'package': True,
+                }))
 
             ret.append(util.BuilderConfig(
                 name = "nightly-{0}".format(self.name),
-                # TODO: Fix this
+                # We use fetcher worker here as it will prevent building of other stuff like if a change had happened
                 workername = 'fetcher',
                 workerbuilddir = "/data/triggers/nightly-{0}".format(self.name),
                 factory = f,
                 tags = ["nightly"],
-                locks = [ self.lock_src.access("counting") ]
+                locks = [ lock_build.access('counting') ]
             ))
 
         return ret
