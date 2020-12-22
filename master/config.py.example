@@ -20,7 +20,6 @@ pb_protocol_port = 9989
 # Environment shared by all builds and builders
 common_env = {
     "LC_ALL": "C.UTF-8",
-    "CCACHE_COMPRESS": "1",
 }
 
 # List of platforms enabled
