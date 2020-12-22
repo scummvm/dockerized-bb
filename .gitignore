@@ -11,8 +11,9 @@
 /master/buildbot.tac
 /master/http.log*
 /master/state.sqlite*
-/master/twistd.log
+/master/twistd.log*
 /master/config.py
+/master/htpasswd
 /toolchains/*/Dockerfile.debug
 /workers/*/Dockerfile.debug
 

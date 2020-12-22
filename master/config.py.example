@@ -35,8 +35,16 @@ platforms_blacklist = [
 builds_to_poll = {
 }
 
-# Github tokens
-github_webhook_secret = None
+# Github settings
+#github_webhook_secret = None
+#github_auth_clientid = ""
+#github_auth_clientsecret = ""
+#github_organisation = "scummvm"
+#github_admin_group = "admin-group"
+
+# htpasswd file based authentication
+#ht_auth_file = './htpasswd'
+#ht_auth_admins = ['username']
 
 # UI settings
 projectName = "ScummVM"
@@ -60,5 +68,3 @@ buildbotURL = "https://buildbot.scummvm.org/"
 #    'admins': ['someuser'],
 #}
 
-
-htfile = './scumm_htpasswd'
