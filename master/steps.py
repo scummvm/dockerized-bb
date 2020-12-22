@@ -205,9 +205,10 @@ def Package(disttarget, srcpath, dstpath, data_files,
 
     @util.renderer
     def doPackage(props):
-        return (
-                "revision" in props and props["revision"] is not None and
-                "package" in props and props["package"])
+        return ("revision" in props and
+                "package" in props and
+                props["revision"] is not None and
+                bool(props["package"]))
 
     return CleanShellSequence(
         name = "package",

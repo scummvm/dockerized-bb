@@ -140,9 +140,13 @@ class StandardBuild(Build):
                 schedulerNames = [ "nightly-scheduler-{0}".format(self.name) ]))
         f.addStep(steps.Trigger(name="Building all platforms",
             schedulerNames = [ "build-scheduler-{0}".format(self.name) ],
-                            copy_properties = [ 'got_revision', 'clean', 'package' ],
-                            updateSourceStamp = True,
-                            waitForFinish = True))
+            set_properties = {
+                'got_revision': util.Property('got_revision', defaultWhenFalse=False),
+                'clean': util.Property('clean', defaultWhenFalse=False),
+                'package': util.Property('package', defaultWhenFalse=False)
+            },
+            updateSourceStamp = True,
+            waitForFinish = True))
 
         ret.append(util.BuilderConfig(
             name = "fetch-{0}".format(self.name),
@@ -158,10 +162,10 @@ class StandardBuild(Build):
             f = util.BuildFactory()
             f.addStep(steps.Trigger(name="Building all platforms",
                 schedulerNames = [ "build-scheduler-{0}".format(self.name) ],
-                copy_properties = [ 'got_revision' ],
                 updateSourceStamp = True,
                 waitForFinish = True,
                 set_properties = {
+                    'got_revision': util.Property('got_revision', defaultWhenFalse=False),
                     'clean': True,
                     'package': True,
                 }))
