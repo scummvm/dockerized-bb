@@ -5,6 +5,7 @@
 /buildbot-data/builds/
 /buildbot-data/ccache/
 /buildbot-data/packages/
+/buildbot-data/pollers/
 /buildbot-data/src/
 /buildbot-data/triggers/
 /master/buildbot.tac

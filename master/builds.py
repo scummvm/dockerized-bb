@@ -63,7 +63,7 @@ class StandardBuild(Build):
     def getChangeSource(self, settings):
         return changes.GitPoller(repourl=self.giturl,
             branches=[self.branch],
-            workdir=os.path.join(config.buildbot_data_dir, 'pollers'),
+            workdir=os.path.join(config.buildbot_data_dir, 'pollers', self.name),
             **settings)
 
     def getGlobalSchedulers(self, platforms):
@@ -73,7 +73,8 @@ class StandardBuild(Build):
         # Fetch scheduler (triggered by event source)
         ret.append(schedulers.SingleBranchScheduler(name = "fetch-{0}".format(self.name),
                 change_filter = change_filter,
-                treeStableTimer = 60,
+                # Wait for 5 minutes before starting build
+                treeStableTimer = 300,
                 builderNames = [ "fetch-{0}".format(self.name) ]))
 
         # Nightly scheduler (started by time)
