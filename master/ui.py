@@ -15,12 +15,17 @@ www = {
 # TODO:
 #    order_console_by_time: True,
     'change_hook_dialects': {
-        'github': {
-            'secret': config.github_webhook_secret
-        },
     },
 }
 services = []
+
+if hasattr(config, 'github_webhook_secret'):
+    www['change_hook_dialects']['github'] = {
+	'secret': config.github_webhook_secret,
+        # Only be strict when secret is provided
+        # When not strict, if no signature is returned, check isn't done
+        'strict': bool(config.github_webhook_secret),
+    }
 
 if os.path.exists(htfile):
     www['authz'] = util.Authz(auth=util.HTPasswdAuth(htfile),
