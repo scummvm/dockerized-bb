@@ -555,6 +555,11 @@ def vita():
             "--disable-engines=myst3",
             "--disable-engines=glk",
         ],
+        # Stable doesn't have myst3 nor stark
+        builds.ScummVMStableBuild: [
+            "--disable-engines=bladerunner",
+            "--disable-engines=glk",
+        ],
     }
     platform.packaging_cmd = "psp2vpk"
     platform.built_files = {
