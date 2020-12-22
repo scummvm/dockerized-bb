@@ -36,7 +36,7 @@ class Platform:
             'packageable', 'built_files', 'data_files',
             'packaging_cmd', 'strip_cmd', 'archiveext',
             'testable', 'run_tests',
-            'workername', 'workerimage', 'workerdatapath']
+            'workerimage']
 
     def __init__(self, name):
         self.name = name
@@ -56,9 +56,7 @@ class Platform:
         # Can run tests
         self.run_tests = False
 
-        self.workername = "builder"
         self.workerimage = name
-        self.workerdatapath = "/data/"
 
     def canBuild(self, build):
         return _buildInData(self.compatibleBuilds, build)

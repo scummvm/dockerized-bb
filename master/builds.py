@@ -246,10 +246,11 @@ class ScummVMBuild(StandardBuild):
         if not platform.canBuild(self):
             return []
 
-        src_path = "{0}/src/{1}".format(platform.workerdatapath, self.name)
+        # Don't use os.path.join as builder is a linux image
+        src_path = "{0}/src/{1}".format("/data", self.name)
         configure_path = src_path + "/configure"
-        build_path = "{0}/builds/{1}/{2}".format(platform.workerdatapath, platform.name, self.name)
-        packages_path = "{0}/packages/snapshots/{1}".format(platform.workerdatapath, self.name)
+        build_path = "{0}/builds/{1}/{2}".format("/data", platform.name, self.name)
+        packages_path = "{0}/packages/snapshots/{1}".format("/data", self.name)
 
         env = platform.getEnv(self)
 
@@ -319,7 +320,7 @@ class ScummVMBuild(StandardBuild):
 
         return [util.BuilderConfig(
             name = "{0}-{1}".format(self.name, platform.name),
-            workername = platform.workername,
+            workername = 'builder',
             workerbuilddir = build_path,
             factory = f,
             locks = [ lock_build.access('counting'), self.lock_src.access("counting") ],
@@ -399,10 +400,12 @@ class ScummVMToolsBuild(StandardBuild):
         if not platform.canBuild(self):
             return []
 
-        src_path = "{0}/src/{1}".format(platform.workerdatapath, self.name)
+        # Don't use os.path.join as builder is a linux image
+        # /data is specific to builder worker
+        src_path = "{0}/src/{1}".format("/data", self.name)
         configure_path = src_path + "/configure"
-        build_path = "{0}/builds/{1}/{2}".format(platform.workerdatapath, platform.name, self.name)
-        packages_path = "{0}/packages/snapshots/{1}".format(platform.workerdatapath, self.name)
+        build_path = "{0}/builds/{1}/{2}".format("/data", platform.name, self.name)
+        packages_path = "{0}/packages/snapshots/{1}".format("/data", self.name)
 
         env = platform.getEnv(self)
 
@@ -462,7 +465,7 @@ class ScummVMToolsBuild(StandardBuild):
 
         return [util.BuilderConfig(
             name = "{0}-{1}".format(self.name, platform.name),
-            workername = platform.workername,
+            workername = 'builder',
             workerbuilddir = build_path,
             factory = f,
             locks = [ lock_build.access('counting'), self.lock_src.access("counting") ],
