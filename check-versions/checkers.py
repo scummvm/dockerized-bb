@@ -106,6 +106,7 @@ def ignore(version):
 register('ignore', ignore)
 
 import docker_checkers
+import hg_checkers
 import git_checkers
 import svn_checkers
 import web_checkers
