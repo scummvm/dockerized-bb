@@ -3,6 +3,7 @@ import urllib.parse as urlp
 import xml.etree.ElementTree as ET
 
 import checkers
+import svn_protocol
 
 def parse_multistatus(baseurl, data):
     if data.tag != '{DAV:}multistatus':
@@ -56,18 +57,23 @@ def fetch_props(url, depth, props):
 
         return parse_multistatus(url, data)
 
-def svn_commit(version, *, repository):
+def dav_get_version(repository):
     objects = fetch_props(repository, 0, ('{DAV:}version-name', ))
     # Reply has only 1 item
     props = next(iter(objects.values()))
 
     online_version = props['{DAV:}version-name']
 
-    return online_version == version, online_version, "repository URL: {0}".format(repository)
+    return online_version
 
-checkers.register('svn commit', svn_commit)
+def svn_get_version(repository):
+    with svn_protocol.SVNClient(repository) as client:
+        props = client.get_props('')
+    online_version = props[b'svn:entry:committed-rev'].decode('utf-8')
 
-def svn_tag(version, *, repository, delimiter='.', **kwargs):
+    return online_version
+
+def dav_list_tags(repository):
     objects = fetch_props(repository, 1, tuple())
     urls = objects.keys()
 
@@ -77,15 +83,47 @@ def svn_tag(version, *, repository, delimiter='.', **kwargs):
     basepath = basepath.split('/')
     basepath[1:] = filter(None, basepath[1:])
     basepath = '/'.join(basepath)
-    # Unquote, isolate path and remove leading /
+    # Unquote, isolate path and remove trailing /
     # URLs are already normalized by urljoin
     paths = (urlp.urlsplit(urlp.unquote(url)).path.rstrip('/') for url in urls)
 
     # Remove basepath (we don't need current directory, only children)
-    matching_tags = (path.rsplit('/', 1)[1] for path in paths if path != basepath)
+    names = (path.rsplit('/', 1)[1] for path in paths if path != basepath)
+    return names
+
+def svn_list_tags(repository):
+    with svn_protocol.SVNClient(repository) as client:
+        entries = client.get_entries('', None, tuple())
+    if entries is None:
+        raise Exception("Can't list SVN entries for {0}".format(repository))
+
+    names = (entry.name.decode('utf-8') for entry in entries)
+    return names
+
+def svn_commit(version, *, repository):
+    parts = urlp.urlsplit(repository, allow_fragments=False)
+    if parts.scheme.lower() == 'svn':
+        online_version = svn_get_version(repository)
+    elif parts.scheme.lower() in('http' ,'https'):
+        online_version = dav_get_version(repository)
+    else:
+        raise Exception("Scheme {0} not supported as SVN protocol for {1}".format(parts.scheme.lower(), repository))
+
+    return online_version == version, online_version, "repository URL: {0}".format(repository)
+
+checkers.register('svn commit', svn_commit)
+
+def svn_tag(version, *, repository, **kwargs):
+    parts = urlp.urlsplit(repository, allow_fragments=False)
+    if parts.scheme.lower() == 'svn':
+        names = svn_list_tags(repository)
+    elif parts.scheme.lower() in('http' ,'https'):
+        names = dav_list_tags(repository)
+    else:
+        raise Exception("Scheme {0} not supported as SVN protocol for {1}".format(parts.scheme.lower(), repository))
 
     # Apply user filters, change delimiter and sort
-    matching_tags = checkers.prepare_versions(matching_tags, **kwargs)
+    matching_tags = checkers.prepare_versions(names, **kwargs)
 
     if len(matching_tags) == 0:
         print("WARNING: no matching tags for {0} with {1}".format(
