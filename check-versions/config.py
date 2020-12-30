@@ -59,6 +59,11 @@ discord_rpc_check = {
         'repository': 'https://github.com/discord/discord-rpc.git',
         'prefix': 'v',
 }
+libiconv_check = {
+        'check': 'git tag',
+        'repository': 'https://git.savannah.gnu.org/git/libiconv.git',
+        'prefix': 'v',
+}
 
 # The checks parameter for each version tag
 # Every entry in the dictionary is keyed by a tuple made of path (relative to ROOT) and package name
@@ -147,11 +152,7 @@ VERSIONS = {
         'prefix': 'v',
         'exclude pattern': r'.*\.(beta|rc)\d+$'
     },
-    ('./toolchains/common/packages/libiconv/build.sh', 'LIBICONV'): {
-        'check': 'git tag',
-        'repository': 'https://git.savannah.gnu.org/git/libiconv.git',
-        'prefix': 'v',
-    },
+    ('./toolchains/common/packages/libiconv/build.sh', 'LIBICONV'): libiconv_check,
 
     ('./toolchains/devkit3ds/packages/Project_CTR/build.sh', 'PROJECT_CTR'): {
         'check': 'git tag',
@@ -340,6 +341,26 @@ VERSIONS = {
         'check': 'git commit',
         'repository': 'https://github.com/pspdev/psplibraries.git',
         'branch': 'master',
+    },
+
+    ('./toolchains/riscos/packages/bindhelp/build.sh', 'BINDHELP'): {
+        'check': 'svn commit',
+        'repository': 'https://svn.code.sf.net/p/ro-oslib/code/trunk',
+    },
+    ('./toolchains/riscos/packages/iconv/build.sh', 'LIBICONV'): libiconv_check,
+    ('./toolchains/riscos/packages/libsdl1.2/build.sh', 'SDL'): {
+        'check': 'hg commit',
+        'repository': 'http://hg.libsdl.org/SDL/',
+        'branch': 'SDL-1.2',
+    },
+    ('./toolchains/riscos/packages/tokenize/build.sh', 'TOKENIZE'): {
+        'check': 'git commit',
+        'repository': 'https://github.com/steve-fryatt/tokenize.git',
+        'branch': 'master',
+    },
+    ('./toolchains/riscos/packages/toolchain/build.sh', 'GCCSDK'): {
+        'check': 'svn commit',
+        'repository': 'svn://svn.riscos.info/gccsdk/trunk/gcc4/',
     },
 
     ('./toolchains/vita/packages/vita-shader-collection/build.sh', 'VITA_SHDR_COLL') : {
