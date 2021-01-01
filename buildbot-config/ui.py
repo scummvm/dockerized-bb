@@ -25,7 +25,7 @@ if hasattr(config, 'github_webhook_secret'):
     }
 
 if hasattr(config, 'ht_auth_file') and config.ht_auth_file:
-    ht_auth_file = os.path.join(config.buildbot_base_dir, config.ht_auth_file)
+    ht_auth_file = os.path.join(config.configuration_dir, config.ht_auth_file)
     www['auth'] = util.HTPasswdAuth(ht_auth_file)
     # When using htpasswd file, we don't have any group information nor email information
     www['authz'] = util.Authz(

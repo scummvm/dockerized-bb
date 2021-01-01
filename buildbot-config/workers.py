@@ -26,11 +26,11 @@ def StandardBuilderWorker(name, **kwargs):
         image=util.Interpolate('workers/%(prop:workerimage)s'),
         masterFQDN=buildbot_ip,
         volumes=[
-            '{0}/ccache:/data/ccache'.format(config.buildbot_data_dir),
-            '{0}/src:/data/src:ro'.format(config.buildbot_data_dir),
-            '{0}/builds:/data/builds'.format(config.buildbot_data_dir, name),
-            '{0}/packages:/data/packages'.format(config.buildbot_data_dir),
-            '{0}/bshomes:/data/bshomes'.format(config.buildbot_data_dir),
+            '{0}/ccache:/data/ccache'.format(config.data_dir),
+            '{0}/src:/data/src:ro'.format(config.data_dir),
+            '{0}/builds:/data/builds'.format(config.data_dir),
+            '{0}/packages:/data/packages'.format(config.data_dir),
+            '{0}/bshomes:/data/bshomes'.format(config.data_dir),
         ],
         hostconfig={
             'network_mode': 'workers-net',
@@ -49,8 +49,8 @@ def FetcherWorker(name, **kwargs):
         image='workers/{0}'.format(name),
         masterFQDN=buildbot_ip,
         volumes=[
-            '{0}/src:/data/src'.format(config.buildbot_data_dir),
-            '{0}/triggers:/data/triggers'.format(config.buildbot_data_dir),
+            '{0}/src:/data/src'.format(config.data_dir),
+            '{0}/triggers:/data/triggers'.format(config.data_dir),
         ],
         hostconfig={
             'network_mode': 'workers-net',

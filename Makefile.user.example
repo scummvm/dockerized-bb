@@ -1,4 +1,5 @@
 #BUILDBOT_VERSION   := 
+#BUILDBOT_BASEDIR   := 
 
 # Without toolchains/ part, all is a placeholder for all detected toolchains
 TOOLCHAINS_ENABLED := 

@@ -24,9 +24,9 @@ lock_build = util.WorkerLock("worker", maxCount = 1)
 # bshomes is used for various build systems (like Gradle) to avoid downloading things at each run
 # pollers is used by poll modules to maintain their state
 for data_dir in ["builds", "ccache", "packages", "src", "triggers", "bshomes", "pollers" ]:
-    os.makedirs(os.path.join(config.buildbot_data_dir, data_dir), exist_ok=True)
-shutil.copyfile(os.path.join(config.buildbot_base_dir, "ccache.conf"),
-    os.path.join(config.buildbot_data_dir, "ccache", "ccache.conf"))
+    os.makedirs(os.path.join(config.data_dir, data_dir), exist_ok=True)
+shutil.copyfile(os.path.join(config.configuration_dir, "ccache.conf"),
+    os.path.join(config.data_dir, "ccache", "ccache.conf"))
 
 class Build:
     __slots__ = ['name']
@@ -66,7 +66,7 @@ class StandardBuild(Build):
     def getChangeSource(self, settings):
         return changes.GitPoller(repourl=self.giturl,
             branches=[self.branch],
-            workdir=os.path.join(config.buildbot_data_dir, 'pollers', self.name),
+            workdir=os.path.join(config.data_dir, 'pollers', self.name),
             **settings)
 
     def getGlobalSchedulers(self, platforms):

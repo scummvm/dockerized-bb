@@ -28,6 +28,7 @@ class Patch(buildstep.ShellMixin, steps.BuildStep):
         terminate = False
         overall_result = util.SUCCESS
         for patch in self.patches:
+            patch = os.path.join(config.config_dir, patch)
             # setup structures for reading the file
             try:
                 with open(patch, 'rb') as fp:

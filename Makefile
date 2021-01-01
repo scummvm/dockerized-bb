@@ -1,4 +1,5 @@
 BUILDBOT_VERSION   := 2.9.4
+BUILDBOT_BASEDIR   := buildbot-workdir
 
 # Without toolchains/ part, all is a placeholder for all detected toolchains
 TOOLCHAINS_ENABLED := all
@@ -79,7 +80,7 @@ negative_list = $(patsubst -%,$(2)%,$(filter -%,$(1)))
 filter_list = $(filter-out $(call negative_list,$(1),$(3)),$(call positive_list,$(1),$(2),$(3)))
 
 # All these targets are directories that should be made
-$(BUILDDIR) $(BUILDDIR)/toolchains $(BUILDDIR)/workers: %:
+$(BUILDBOT_BASEDIR) $(BUILDDIR) $(BUILDDIR)/toolchains $(BUILDDIR)/workers: %:
 	mkdir -p $@
 
 # Debug informations
@@ -111,17 +112,17 @@ ccache-stats:
 # Master rules
 
 # Prerequisites are quite redundant but that makes no harm
-master: $(BUILDDIR)/buildbot_installed master/buildbot.tac
+master: $(BUILDDIR)/buildbot_installed $(BUILDBOT_BASEDIR)/buildbot.tac
 
 # Shortcut to check if config OK for buildbot
 # That avoids any downtime at restart if it was bad
 # Don't depend on anything to prevent modifying state
 master-check:
-	@if [ ! -f master/buildbot.tac ]; then \
+	@if [ ! -f "$(BUILDBOT_BASEDIR)"/buildbot.tac ]; then \
 		echo "Run make master first"; \
 		exit 1; \
 	fi; \
-	cd master && \
+	cd "$(BUILDBOT_BASEDIR)" && \
 		buildbot checkconfig
 
 .PHONY: master master-check
@@ -132,15 +133,17 @@ $(BUILDDIR)/buildbot_installed: Makefile | $(BUILDDIR)
 	touch $(BUILDDIR)/buildbot_installed
 
 # Create startup file once buildbot is installed and up-to-date
-# Database setting is loaded from master/config.py
-# create-master with initialize the database if it doesn't exist yet
+# Database setting is loaded from buildbot-config/config.py
+# create-master will initialize the database if it doesn't exist yet
 # upgrade-master will upgrade it if it needs to be
-master/buildbot.tac: $(BUILDDIR)/buildbot_installed master/config.py
-	DBLINE=$$(cd master && python3 -c 'import config; config.init("."); print(config.db["db_url"])') && \
-		buildbot create-master -rf --db=$${DBLINE} master
-	buildbot upgrade-master master
-	rm master/master.cfg.sample
-	touch master/buildbot.tac
+$(BUILDBOT_BASEDIR)/buildbot.tac: $(BUILDDIR)/buildbot_installed buildbot-config/config.py | $(BUILDBOT_BASEDIR)
+	DBLINE=$$(cd buildbot-config && python3 -c 'import config; print(config.db["db_url"])') && \
+	       CONFIG_FILE=$$(python3 -c "import os; print(os.path.relpath(os.path.abspath('buildbot-config/master.cfg'), '$(BUILDBOT_BASEDIR)'))") && \
+		buildbot create-master -rf --db=$${DBLINE} --config=$${CONFIG_FILE} "$(BUILDBOT_BASEDIR)"
+	@rm -f "$(BUILDBOT_BASEDIR)"/master.cfg.sample
+	buildbot upgrade-master "$(BUILDBOT_BASEDIR)"
+	@rm -f "$(BUILDBOT_BASEDIR)"/master.cfg.sample
+	@touch "$(BUILDBOT_BASEDIR)"/buildbot.tac
 
 # Toolchains rules
 # List all toolchains: m4 based and raw Dockerfile based

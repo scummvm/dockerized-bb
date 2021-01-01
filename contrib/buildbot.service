@@ -4,11 +4,11 @@ Wants=network.target docker.service
 After=network.target docker.service
 
 [Service]
+# These lines should be changed to match setup
 User=buildbot
 Group=buildbot
-
 Environment=VENV_PATH="/home/buildbot/buildbot-master"
-WorkingDirectory=/home/buildbot/dockerized-bb/master
+WorkingDirectory=/home/buildbot/dockerized-bb/buildbot-workdir
 
 ExecStart=/bin/sh -c 'exec ${VENV_PATH}/bin/buildbot start --nodaemon'
 ExecReload=/bin/kill -HUP $MAINPID

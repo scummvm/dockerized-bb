@@ -1,6 +1,6 @@
 /.build/
-/Makefile.user
-/README.html
+/buildbot-config/config.py
+/buildbot-config/htpasswd
 /buildbot-data/bshomes/
 /buildbot-data/builds/
 /buildbot-data/ccache/
@@ -8,12 +8,9 @@
 /buildbot-data/pollers/
 /buildbot-data/src/
 /buildbot-data/triggers/
-/master/buildbot.tac
-/master/http.log*
-/master/state.sqlite*
-/master/twistd.log*
-/master/config.py
-/master/htpasswd
+/buildbot-workdir/
+/Makefile.user
+/README.html
 /toolchains/*/Dockerfile.debug
 /workers/*/Dockerfile.debug
 
