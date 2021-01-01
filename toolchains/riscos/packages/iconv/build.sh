@@ -14,8 +14,10 @@ do_http_fetch libiconv "http://ftp.gnu.org/pub/gnu/libiconv/libiconv-${LIBICONV_
 	"gpgurl:http://ftp.gnu.org/pub/gnu/libiconv/libiconv-${LIBICONV_VERSION}.tar.gz.sig"
 rm -Rf $HOME/.gnupg
 
-./configure --prefix=/usr/local --disable-shared --enable-extra-encodings "$@"
+# We don't use do_configure as it's a native build
+./configure --prefix="$GCCSDK_INSTALL_CROSSBIN/.." --disable-shared --enable-extra-encodings "$@"
 do_make
+# We install iconv binary here as we need it for build process
 do_make install
 
 do_clean_bdir

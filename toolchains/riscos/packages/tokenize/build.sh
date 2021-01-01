@@ -1,6 +1,6 @@
 #! /bin/sh
 
-TOKENIZE_VERSION=596792257a9f2964c014b60c15c4ce012f4cf203
+TOKENIZE_VERSION=c7ed0290df0451724818267c9ceb7d8efde7f3ea
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..
@@ -10,7 +10,9 @@ do_make_bdir
 
 do_git_fetch tokenize 'https://github.com/steve-fryatt/tokenize.git' "$TOKENIZE_VERSION"
 
-do_make obj buildlinux/tokenize
-cp buildlinux/tokenize /usr/local/bin/
+do_make buildlinux/tokenize
+
+mkdir -p "$GCCSDK_INSTALL_CROSSBIN"
+cp buildlinux/tokenize "$GCCSDK_INSTALL_CROSSBIN"
 
 do_clean_bdir

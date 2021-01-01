@@ -10,6 +10,7 @@ do_make_bdir
 
 do_svn_fetch !OSLib https://svn.code.sf.net/p/ro-oslib/code/trunk/!OSLib -r"$BINDHELP_VERSION"
 
-do_make -C Tools/BindHelp install bindir="/usr/local/bin"
+mkdir -p "$GCCSDK_INSTALL_CROSSBIN"
+do_make -C Tools/BindHelp install bindir="$GCCSDK_INSTALL_CROSSBIN"
 
 do_clean_bdir

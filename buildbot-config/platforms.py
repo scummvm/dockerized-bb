@@ -521,6 +521,39 @@ def raspberrypi():
     register_platform(platform)
 raspberrypi()
 
+def riscos(suffix, prefix_subdir, variable_suffix, host):
+    platform = Platform("riscos{0}{1}".format('-' if suffix else '', suffix))
+    platform.workerimage = 'riscos'
+    platform.compatibleBuilds = (builds.ScummVMBuild, )
+
+    if len(prefix_subdir) and prefix_subdir[-1:] != '/':
+        prefix_subdir += '/'
+
+    include_dir = "-isysroot ${{PREFIX}}/{0}include".format(prefix_subdir)
+    lib_dir = "-L${{PREFIX}}/{0}lib".format(prefix_subdir)
+    env_paths = {
+        'CFLAGS': include_dir,
+        'CPPFLAGS': include_dir,
+        'CXXFLAGS': include_dir,
+        'LDFLAGS': lib_dir,
+    }
+
+    platform.env["CXX"] = "ccache ${CXX}"
+    platform.env["PKG_CONFIG_LIBDIR"] = "${{PREFIX}}/{0}lib/pkgconfig".format(prefix_subdir)
+    for v, p in env_paths.items():
+        platform.env[v] = ' '.join([p, "${{{0}}}".format(v), "${{{0}_{1}}}".format(v, variable_suffix)])
+
+    platform.configureargs.append("--host={0}".format(host))
+    platform.packaging_cmd = "riscosdist"
+    platform.built_files = {
+        builds.ScummVMBuild: [ "!ScummVM" ],
+    }
+    platform.archiveext = "zip"
+    platform.testable = False
+    register_platform(platform)
+riscos("", "", "STD", "arm-unknown-riscos")
+riscos("vfp", "vfp", "VFP", "arm-vfp-riscos")
+
 def switch():
     platform = Platform("switch")
     platform.workerimage = "devkitswitch"
