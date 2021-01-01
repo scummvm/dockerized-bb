@@ -1,0 +1,38 @@
+Index: zip30/globals.c
+===================================================================
+--- zip30.orig/globals.c
++++ zip30/globals.c
+@@ -32,7 +32,7 @@ int pathput = 1;        /* 1=store path
+ int scanimage = 1;      /* 1=scan through image files */
+ #else
+ #ifdef FORRISCOS
+-int decomma = 0;
++int decomma = 1;
+ #endif
+ #endif
+ int method = BEST;      /* one of BEST, DEFLATE (only), or STORE (only) */
+Index: zip30/zip.c
+===================================================================
+--- zip30.orig/zip.c
++++ zip30/zip.c
+@@ -2116,7 +2116,7 @@ struct option_struct far options[] = {
+     {"/",  "exts-to-swap", o_REQUIRED_VALUE, o_NOT_NEGATABLE, '/',  "override Zip$Exts"},
+ #endif
+ #ifdef FORRISCOS
+-    {",",  "strip-type",  o_NO_VALUE,       o_NOT_NEGATABLE, ',',  "strip ,xxx extension"},
++    {",",  "strip-type",  o_NO_VALUE,       o_NEGATABLE,      ',',  "strip ,xxx extension"},
+ #endif
+     /* the end of the list */
+     {NULL, NULL,          o_NO_VALUE,       o_NOT_NEGATABLE, 0,    NULL} /* end has option_ID = 0 */
+@@ -2859,7 +2859,10 @@ char **argv;            /* command line
+ #else
+ #ifdef FORRISCOS
+         case ',':   /* Convert ,xxx to RISC OS extended filetype info */
+-          decomma = 1;
++          if (negated)
++            decomma = 0;
++          else
++            decomma = 1;
+           break;
+ #endif 
+ #endif

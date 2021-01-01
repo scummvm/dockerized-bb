@@ -1,6 +1,85 @@
---- a/zipup.c.orig	2008-01-12 22:29:14.000000000 -0800
-+++ b/zipup.c	2008-01-12 22:36:00.000000000 -0800
-@@ -118,6 +118,9 @@
+Index: zip30/globals.c
+===================================================================
+--- zip30.orig/globals.c
++++ zip30/globals.c
+@@ -30,6 +30,10 @@ int dispose = 0;        /* 1=remove file
+ int pathput = 1;        /* 1=store path with name */
+ #ifdef RISCOS
+ int scanimage = 1;      /* 1=scan through image files */
++#else
++#ifdef FORRISCOS
++int decomma = 0;
++#endif
+ #endif
+ int method = BEST;      /* one of BEST, DEFLATE (only), or STORE (only) */
+ int dosify = 0;         /* 1=make new entries look like MSDOS */
+Index: zip30/zip.c
+===================================================================
+--- zip30.orig/zip.c
++++ zip30/zip.c
+@@ -668,6 +668,9 @@ local void help()
+ ,"  -h2  show more help               -I   don't scan thru Image files"
+ #else
+ ,"  -h2  show more help"
++#ifdef FORRISCOS
++,"  -,   strip ,xxx from filename and convert to RISCOS filetype encoding"
++#endif
+ #endif
+ #endif /* ?MACOS */
+ #ifdef VMS
+@@ -1144,6 +1147,9 @@ local void version_info()
+ #if CRYPT && defined(PASSWD_FROM_STDIN)
+     "PASSWD_FROM_STDIN",
+ #endif /* CRYPT & PASSWD_FROM_STDIN */
++#ifdef FORRISCOS
++    "FORRISCOS",
++#endif
+     NULL
+   };
+ 
+@@ -2109,6 +2115,9 @@ struct option_struct far options[] = {
+ #ifdef RISCOS
+     {"/",  "exts-to-swap", o_REQUIRED_VALUE, o_NOT_NEGATABLE, '/',  "override Zip$Exts"},
+ #endif
++#ifdef FORRISCOS
++    {",",  "strip-type",  o_NO_VALUE,       o_NOT_NEGATABLE, ',',  "strip ,xxx extension"},
++#endif
+     /* the end of the list */
+     {NULL, NULL,          o_NO_VALUE,       o_NOT_NEGATABLE, 0,    NULL} /* end has option_ID = 0 */
+   };
+@@ -2847,6 +2856,12 @@ char **argv;            /* command line
+         case 'I':   /* Don't scan through Image files */
+           scanimage = 0;
+           break;
++#else
++#ifdef FORRISCOS
++        case ',':   /* Convert ,xxx to RISC OS extended filetype info */
++          decomma = 1;
++          break;
++#endif 
+ #endif
+ #ifdef MACOS
+         case o_jj:   /* store absolute path including volname */
+Index: zip30/zip.h
+===================================================================
+--- zip30.orig/zip.h
++++ zip30/zip.h
+@@ -323,6 +323,10 @@ extern int pathput;             /* Store
+ 
+ #ifdef RISCOS
+ extern int scanimage;           /* Scan through image files */
++#else
++#ifdef FORRISCOS
++extern int decomma;             /* Convert ,xxx filename to RISC OS filetype info */
++#endif
+ #endif
+ 
+ #define BEST -1                 /* Use best method (deflation or store) */
+Index: zip30/zipup.c
+===================================================================
+--- zip30.orig/zipup.c
++++ zip30/zipup.c
+@@ -139,6 +139,9 @@
  #else
     local int filetypes OF((char *, char *));
  #endif
@@ -10,7 +89,7 @@
  local unsigned file_read OF((char *buf, unsigned size));
  #ifdef USE_ZLIB
    local int zl_deflate_init OF((int pack_level));
-@@ -276,7 +279,133 @@
+@@ -379,7 +382,133 @@ char *s;                        /* list
  }
  #endif /* ?RISCOS */
  
@@ -47,7 +126,7 @@
 +  if (cptr)
 +    if ((cptr - z->iname) != (int)(strlen(z->iname)-4))
 +      cptr = NULL;  /* There was a comma, but it wasn't a ,xxx at the end! */
-+
+ 
 +  if (cptr)
 +  {
 +    *cptr='\0'; /* Chop the filename at the comma */
@@ -139,12 +218,12 @@
 +
 +  return ZE_OK;
 +}
- 
++
 +#endif /* FORRISCOS */
  
  /* Note: a zip "entry" includes a local header (which includes the file
     name), an encryption header if encrypting, the compressed data
-@@ -360,6 +489,15 @@
+@@ -552,6 +681,15 @@ struct zlist far *z;    /* zip entry to
  #if !(defined(VMS) && defined(VMS_PK_EXTRA))
      if (extra_fields) {
        /* create extra field and change z->att and z->atx if desired */
@@ -158,5 +237,5 @@
 +      else
 +#endif
        set_extra_field(z, &f_utim);
- #ifdef QLZIP
+ # ifdef QLZIP
        if(qlflag)
