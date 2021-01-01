@@ -6,11 +6,6 @@ m4_include(`debian-builder-base.m4')m4_dnl
 
 ENV HOST=arm-open2x-linux PREFIX=/opt/open2x
 
-RUN apt-get update && \
-	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-		bzip2 && \
-	rm -rf /var/lib/apt/lists/*
-
 COPY --from=toolchain $PREFIX $PREFIX/
 
 # We add PATH here for *-config and platform specific binaries

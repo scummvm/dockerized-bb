@@ -6,11 +6,6 @@ m4_include(`debian-builder-base.m4')m4_dnl
 
 ENV CAANOO=/opt/caanoo HOST=arm-gph-linux-gnueabi
 
-RUN apt-get update && \
-	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-		bzip2 && \
-	rm -rf /var/lib/apt/lists/*
-
 COPY --from=toolchain $CAANOO $CAANOO/
 
 ENV PREFIX=${CAANOO}/${HOST}/sysroot/usr

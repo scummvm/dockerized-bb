@@ -6,8 +6,7 @@ m4_include(`debian-builder-base.m4')m4_dnl
 
 RUN apt-get update && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-		libxml2 \
-		python && \
+		libxml2 && \
 	rm -rf /var/lib/apt/lists/*
 
 # Put this first to share it with all macosx workers

@@ -8,7 +8,6 @@ ENV TOOLCHAIN=/opt/openpandora HOST=arm-angstrom-linux-gnueabi
 
 RUN apt-get update && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-		bzip2 \
 		libxml2-utils \
 		squashfs-tools && \
 	rm -rf /var/lib/apt/lists/*
