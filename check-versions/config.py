@@ -99,8 +99,6 @@ VERSIONS = {
         'url': 'https://developer.android.com/studio',
         'filter pattern': r'>commandlinetools-linux-(?P<version>\d+)_latest.zip</'
     },
-    ('./toolchains/android-old/packages/ndk-old/build.sh', 'NDK'): 'ignore',
-    ('./toolchains/android-old/packages/sdk-old/build.sh', 'SDK'): 'ignore',
 
     # Android NDK must match ScummVM build system
     ('./toolchains/android/Dockerfile.m4', 'ANDROID_NDK'): 'ignore',
