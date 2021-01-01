@@ -10,6 +10,7 @@ RUN apt-get update && \
 		ccache \
 		git \
 		make \
+		pandoc \
 		pkg-config \
 		python \
 		xz-utils \
