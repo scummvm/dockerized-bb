@@ -133,18 +133,18 @@ def amigaos4():
     platform.built_files = {
         builds.ScummVMBuild: [ "Games:ScummVM", "Games:ScummVM.info" ],
         builds.ScummVMToolsBuild: [
-	    "construct_mohawk",
-	    "create_sjisfnt",
-	    "decine",
-	    #"decompile", # Decompiler currently not built - BOOST library not present
-	    "degob",
-	    "dekyra",
-	    "descumm",
-	    "desword2",
-	    "extract_mohawk",
-	    "gob_loadcalc",
-	    #"scummvm-tools", # GUI tools currently not built - WxWidgets library not present
-	    "scummvm-tools-cli"
+            "construct_mohawk",
+            "create_sjisfnt",
+            "decine",
+            #"decompile", # Decompiler currently not built - BOOST library not present
+            "degob",
+            "dekyra",
+            "descumm",
+            "desword2",
+            "extract_mohawk",
+            "gob_loadcalc",
+            #"scummvm-tools", # GUI tools currently not built - WxWidgets library not present
+            "scummvm-tools-cli"
         ],
     }
     platform.archiveext = "zip"
@@ -485,6 +485,8 @@ def psp():
     # PSP full
     platform = copy.deepcopy(platform)
     platform.name = "pspfull"
+    # Don't package as it doesn't work
+    platform.packageable = False
 
     # This psp build includes all unstable engines, but crashes when adding a game.
     # The crash happens while it loads all the plugins to determine the engine
@@ -623,6 +625,8 @@ def vita():
     # Vita full
     platform = copy.deepcopy(platform)
     platform.name = "vitafull"
+    # Don't package as it doesn't work
+    platform.packageable = False
 
     # This Vita build includes all engines, but crashes on startup.
     # The crash presumably happens due to the large executable size.
