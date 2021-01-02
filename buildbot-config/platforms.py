@@ -204,6 +204,23 @@ android(suffix="x86-64",
         cxx_target="x86_64-linux-android",
         abi_version=21)
 
+def caanoo():
+    platform = Platform("caanoo")
+    platform.workerimage = "caanoo"
+    platform.compatibleBuilds = (builds.ScummVMBuild, )
+    platform.env["CXX"] = "ccache /opt/caanoo/bin/arm-gph-linux-gnueabi-c++"
+    platform.configureargs.append("--host=caanoo")
+    platform.buildconfigureargs = {
+        builds.ScummVMBuild: [ "--enable-plugins", "--default-dynamic", "--enable-vkeybd" ],
+    }
+    platform.packaging_cmd = "caanoo-bundle"
+    platform.built_files = {
+        builds.ScummVMBuild: [ "release/scummvm-caanoo.tar.bz2" ],
+    }
+    platform.archiveext = "tar.bz2"
+    register_platform(platform)
+caanoo()
+
 def debian(name_suffix, image_suffix, host,
         package=True, tests=True, buildconfigureargs=None, tools=True):
     platform = Platform("debian-{0}".format(name_suffix))
@@ -250,23 +267,6 @@ debian("x86-64-nullbackend", "x86_64", "x86_64-linux-gnu", package=False, tests=
         builds.ScummVMBuild: [ "--backend=null" ],
     })
 debian("x86-64-clang", "x86_64-clang", "x86_64-linux-gnu", package=False, tools=False)
-
-def caanoo():
-    platform = Platform("caanoo")
-    platform.workerimage = "caanoo"
-    platform.compatibleBuilds = (builds.ScummVMBuild, )
-    platform.env["CXX"] = "ccache /opt/caanoo/bin/arm-gph-linux-gnueabi-c++"
-    platform.configureargs.append("--host=caanoo")
-    platform.buildconfigureargs = {
-        builds.ScummVMBuild: [ "--enable-plugins", "--default-dynamic", "--enable-vkeybd" ],
-    }
-    platform.packaging_cmd = "caanoo-bundle"
-    platform.built_files = {
-        builds.ScummVMBuild: [ "release/scummvm-caanoo.tar.bz2" ],
-    }
-    platform.archiveext = "tar.bz2"
-    register_platform(platform)
-caanoo()
 
 def gamecube():
     platform = Platform("gamecube")
