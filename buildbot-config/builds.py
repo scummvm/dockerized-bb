@@ -290,7 +290,7 @@ class ScummVMBuild(StandardBuild):
             env = env))
 
         if platform.canBuildTests(self):
-            if platform.run_tests:
+            if platform.canRunTests(self):
                 f.addStep(steps.Test(env = env))
             else:
                 # Compile Tests (Runner), but do not execute (as binary is non-native)
