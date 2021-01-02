@@ -204,12 +204,18 @@ android(suffix="x86-64",
         cxx_target="x86_64-linux-android",
         abi_version=21)
 
-def debian_x86_64():
-    platform = Platform("debian-x86-64")
-    platform.workerimage = "debian-x86_64"
+def debian(name_suffix, image_suffix, host,
+        package=True, tests=True, buildconfigureargs=None, tools=True):
+    platform = Platform("debian-{0}".format(name_suffix))
+    platform.workerimage = "debian-{0}".format(image_suffix)
+    if not tools:
+        platform.compatibleBuilds = (builds.ScummVMBuild, )
 
-    platform.env["CXX"] = "ccache g++"
-    platform.configureargs.append("--host=x86_64-linux-gnu")
+    platform.env["CXX"] = "ccache ${CXX}"
+    platform.configureargs.append("--host={0}".format(host))
+    if buildconfigureargs:
+        platform.buildconfigureargs = buildconfigureargs
+
     # stable build don't have this target yet
     platform.packaging_cmd = {
         builds.ScummVMBuild: "dist-generic",
@@ -234,9 +240,16 @@ def debian_x86_64():
             "scummvm-tools-cli"
         ]
     }
-    platform.run_tests = True
+    platform.run_tests = tests
+    platform.packageable = package
     register_platform(platform)
-debian_x86_64()
+debian("i686", "x86", "i686-linux-gnu")
+debian("x86-64", "x86_64", "x86_64-linux-gnu")
+debian("x86-64-nullbackend", "x86_64", "x86_64-linux-gnu", package=False, tests=False, tools=False,
+    buildconfigureargs = {
+        builds.ScummVMBuild: [ "--backend=null" ],
+    })
+debian("x86-64-clang", "x86_64-clang", "x86_64-linux-gnu", package=False, tools=False)
 
 def caanoo():
     platform = Platform("caanoo")

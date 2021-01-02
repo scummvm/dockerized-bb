@@ -2,21 +2,25 @@ m4_include(`paths.m4')m4_dnl
 
 m4_include(`debian-builder-base.m4')m4_dnl
 
+m4_define(`APT_ARCH',i386)
+
+RUN dpkg --add-architecture APT_ARCH
+
 m4_include(`debian-libraries.m4')m4_dnl
 
 RUN apt-get update && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-		g++ \
+		g++-i686-linux-gnu \
                 && \
         rm -rf /var/lib/apt/lists/*
 
-ENV HOST=x86_64-linux-gnu
+ENV HOST=i386-linux-gnu BINHOST=i686-linux-gnu
 
 ENV \
-	def_binaries(`/usr/bin/${HOST}-', `ar, as, c++filt, ld, link, nm, objcopy, objdump, ranlib, readelf, strings, strip') \
-	def_binaries(`/usr/bin/${HOST}-', `gcc, cpp') \
-	CC=/usr/bin/${HOST}-gcc \
-	CXX=/usr/bin/${HOST}-g++ \
+	def_binaries(`/usr/bin/${BINHOST}-', `ar, as, c++filt, ld, link, nm, objcopy, objdump, ranlib, readelf, strings, strip') \
+	def_binaries(`/usr/bin/${BINHOST}-', `gcc, cpp') \
+	CC=/usr/bin/${BINHOST}-gcc \
+	CXX=/usr/bin/${BINHOST}-g++ \
 	def_aclocal(`/usr') \
 	PKG_CONFIG_LIBDIR=/usr/lib/$HOST/pkgconfig
 
