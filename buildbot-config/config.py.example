@@ -4,6 +4,8 @@ import os
 configuration_dir = os.path.dirname(__file__)
 # data_dir is where all builds data is stored: intermediate files, ccache, ...
 data_dir = os.path.normpath(os.path.join(configuration_dir, "..", "buildbot-data"))
+# snapshots_dir is where all packages are moved and get served
+snapshots_dir = os.path.join(data_dir, 'packages', 'snapshots')
 
 # If a relative path is used here, it will be relative to the buildbot base directory, not configuration one
 db = {
@@ -54,6 +56,9 @@ projectURL = "https://scummvm.org/"
 www_port = ("127.0.0.1", 8010)
 # URL used to reach Buildbot instance
 buildbotURL = "https://buildbot.scummvm.org/"
+
+# URL used to download snapshots
+snapshots_url = "https://buildbot.scummvm.org/snapshots/"
 
 # IRC configuration
 #irc = {

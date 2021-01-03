@@ -1,5 +1,6 @@
 import os
 from datetime import datetime
+import urllib.parse as urlp
 
 from twisted.internet import defer
 
@@ -143,31 +144,38 @@ PACKAGE_FORMAT_COMMANDS = {
     "zip": ["zip", "-r"],
 }
 
-def Package(disttarget, srcpath, dstpath, data_files,
-        buildname, platform_built_files, platform_data_files, archive_format,
+# Helper function which generates a list of steps that build the package on the worker,
+# upload it to master and create the symlink for the latest
+def get_package_steps(buildname, srcpath, dstpath, dsturl,
+        archive_format, disttarget,
+        build_data_files, platform_data_files,
+        platform_built_files,
         **kwargs):
+    if archive_format not in PACKAGE_FORMAT_COMMANDS:
+        archive_format = "tar.bz2"
+    archive_base_command = PACKAGE_FORMAT_COMMANDS.get(archive_format)
+
     files = []
-    # dont pack up the default files if the port has its own dist target
-    if not disttarget:
-        files += [ os.path.join(srcpath, f) for f in data_files ]
+
     files += platform_built_files
     # If file is absolute or begins with a $ (environment variable) don't prepend srcpath
     if platform_data_files:
         files += [ f if (os.path.isabs(f) or f[0:1] == '$') else os.path.join(srcpath, f)
                 for f in platform_data_files ]
+    # dont pack up the default files if the port has its own dist target
+    if not disttarget:
+        files += [ os.path.join(srcpath, f) for f in build_data_files ]
+
+    def createNames(props):
+        name = "{0}-{1}".format(buildname, props["revision"][:8])
+        archive = "{0}.{1}".format(name, archive_format)
+        symlink = "{0}-latest.{1}".format(buildname, archive_format)
+        return name, archive, symlink
 
     @util.renderer
     def generateCommands(props):
-        # Create a mutable variable from the outer one
-        archive_format_ = archive_format
-        if archive_format_ not in PACKAGE_FORMAT_COMMANDS:
-            archive_format_ = "tar.bz2"
-
-        name = "{0}-{1}".format(buildname, props["revision"][:8])
-        archive = "{0}.{1}".format(name, archive_format_)
-        symlink = "{0}-latest.{1}".format(buildname, archive_format_)
-
-        archive_command = PACKAGE_FORMAT_COMMANDS.get(archive_format_) + [archive, name+"/"]
+        name, archive, _ = createNames(props)
+        archive_full_command = archive_base_command + [archive, name+"/"]
 
         commands = []
 
@@ -181,22 +189,14 @@ def Package(disttarget, srcpath, dstpath, data_files,
         # WARNING: files aren't surrounded with quotes to let it happen
         commands.append(util.ShellArg('cp -r ' + ' '.join(files) + ' "{0}/"'.format(name),
             logname="archive", haltOnFailure=True))
-        commands.append(util.ShellArg(archive_command,
+        commands.append(util.ShellArg(archive_full_command,
             logname="archive", haltOnFailure=True))
-        commands.append(util.ShellArg(["chmod", "644", archive],
-            logname="publish", haltOnFailure=True))
-        commands.append(util.ShellArg(["mkdir", "-p", dstpath+"/"],
-            logname="publish", haltOnFailure=True))
-        commands.append(util.ShellArg(["mv", archive, dstpath+"/"],
-            logname="publish", haltOnFailure=True))
-        commands.append(util.ShellArg(["ln", "-sf", archive, os.path.join(dstpath, symlink)],
-            logname="publish", haltOnFailure=True))
 
         return commands
 
     @util.renderer
     def generateCleanup(props):
-        name = "{0}-{1}".format(buildname, props["revision"][:8])
+        name, _, _ = createNames(props)
 
         commands = []
         commands.append(util.ShellArg(["rm", "-rf", name],
@@ -210,7 +210,27 @@ def Package(disttarget, srcpath, dstpath, data_files,
                 props["revision"] is not None and
                 bool(props["package"]))
 
-    return CleanShellSequence(
+    @util.renderer
+    def getWorkerSrc(props):
+        _, archive, _ = createNames(props)
+        return archive
+
+    @util.renderer
+    def getMasterDest(props):
+        _, archive, _ = createNames(props)
+        return os.path.join(dstpath, archive)
+
+    @util.renderer
+    def getArchiveURL(props):
+        _, archive, _ = createNames(props)
+        return urlp.urljoin(dsturl, archive)
+
+    @util.renderer
+    def getLinkCommand(props):
+        _, archive, symlink = createNames(props)
+        return "ln", "-sf", archive, os.path.join(dstpath, symlink)
+
+    build_package = CleanShellSequence(
         name = "package",
         description = "packaging",
         descriptionDone = "package",
@@ -221,6 +241,28 @@ def Package(disttarget, srcpath, dstpath, data_files,
         doStepIf = doPackage,
         **kwargs
     )
+
+    # dstpath will get created by FileUpload
+    upload_package = steps.FileUpload(
+        name = "upload package",
+        description = "uploading",
+        descriptionDone = "uploaded",
+        haltOnFailure = True,
+        flunkOnFailure = True,
+        workersrc = getWorkerSrc,
+        masterdest = getMasterDest,
+        mode = 0o0644,
+        url = getArchiveURL if dsturl else None)
+    link = steps.MasterShellCommand(
+        name = "link latest snapshot",
+        description = "linking",
+        descriptionDone = "linked",
+        haltOnFailure = True,
+        flunkOnFailure = True,
+        command = getLinkCommand,
+        env = {})
+
+    return build_package, upload_package, link
 
 # buildstep class to wipe all build folders (eg "trunk-*")
 def Clean(**kwargs):

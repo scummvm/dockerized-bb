@@ -29,7 +29,6 @@ def StandardBuilderWorker(name, **kwargs):
             '{0}/ccache:/data/ccache'.format(config.data_dir),
             '{0}/src:/data/src:ro'.format(config.data_dir),
             '{0}/builds:/data/builds'.format(config.data_dir),
-            '{0}/packages:/data/packages'.format(config.data_dir),
             '{0}/bshomes:/data/bshomes'.format(config.data_dir),
         ],
         hostconfig={

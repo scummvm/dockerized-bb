@@ -1,6 +1,7 @@
 import os
 import shutil
 import sys
+import urllib.parse as urlp
 
 from buildbot.plugins import util
 from buildbot.plugins import changes
@@ -18,12 +19,11 @@ lock_build = util.WorkerLock("worker", maxCount = 1)
 
 # builds contains all build trees
 # ccache is the cache for compiled objects used by ccache
-# packages contains all final packages generated
 # src contains the source trees
 # triggers is some working directory needed by triggers
 # bshomes is used for various build systems (like Gradle) to avoid downloading things at each run
 # pollers is used by poll modules to maintain their state
-for data_dir in ["builds", "ccache", "packages", "src", "triggers", "bshomes", "pollers" ]:
+for data_dir in ["builds", "ccache", "src", "triggers", "bshomes", "pollers" ]:
     os.makedirs(os.path.join(config.data_dir, data_dir), exist_ok=True)
 shutil.copyfile(os.path.join(config.configuration_dir, "ccache.conf"),
     os.path.join(config.data_dir, "ccache", "ccache.conf"))
@@ -250,7 +250,11 @@ class ScummVMBuild(StandardBuild):
         src_path = "{0}/src/{1}".format("/data", self.name)
         configure_path = src_path + "/configure"
         build_path = "{0}/builds/{1}/{2}".format("/data", platform.name, self.name)
-        packages_path = "{0}/packages/snapshots/{1}".format("/data", self.name)
+
+        # snapshots_path is used in Package step on master side
+        snapshots_path = os.path.join(config.snapshots_dir, self.name)
+        # Ensure last path component doesn't get removed here and in packaging step
+        snapshots_url = urlp.urljoin(config.snapshots_url + '/', self.name + '/')
 
         env = platform.getEnv(self)
 
@@ -308,15 +312,17 @@ class ScummVMBuild(StandardBuild):
                     env = env))
 
         if platform.canPackage(self):
-            f.addStep(scummsteps.Package(disttarget = packaging_cmd,
-                                    srcpath = src_path,
-                                    dstpath = packages_path,
-                                    data_files = self.data_files,
-                                    buildname = "{0}-{1}".format(platform.name, self.name),
-                                    platform_built_files = platform.getBuiltFiles(self),
-                                    platform_data_files = platform.getDataFiles(self),
-                                    archive_format = platform.archiveext,
-                                    env = env))
+            f.addSteps(scummsteps.get_package_steps(
+                buildname = "{0}-{1}".format(platform.name, self.name),
+                srcpath = src_path,
+                dstpath = snapshots_path,
+                dsturl = snapshots_url,
+                archive_format = platform.archiveext,
+                disttarget = packaging_cmd,
+                build_data_files = self.data_files,
+                platform_data_files = platform.getDataFiles(self),
+                platform_built_files = platform.getBuiltFiles(self),
+                env = env))
 
         return [util.BuilderConfig(
             name = "{0}-{1}".format(self.name, platform.name),
@@ -405,7 +411,11 @@ class ScummVMToolsBuild(StandardBuild):
         src_path = "{0}/src/{1}".format("/data", self.name)
         configure_path = src_path + "/configure"
         build_path = "{0}/builds/{1}/{2}".format("/data", platform.name, self.name)
-        packages_path = "{0}/packages/snapshots/{1}".format("/data", self.name)
+
+        # snapshots_path is used in Package step on master side
+        snapshots_path = os.path.join(config.snapshots_dir, self.name)
+        # Ensure last path component doesn't get removed here and in packaging step
+        snapshots_url = urlp.urljoin(config.snapshots_url + '/', self.name + '/')
 
         env = platform.getEnv(self)
 
@@ -453,15 +463,17 @@ class ScummVMToolsBuild(StandardBuild):
                     env = env))
 
         if platform.canPackage(self):
-            f.addStep(scummsteps.Package(disttarget = packaging_cmd,
-                                    srcpath = src_path,
-                                    dstpath = packages_path,
-                                    data_files = self.data_files,
-                                    buildname = "{0}-{1}".format(platform.name, self.name),
-                                    platform_built_files = platform.getBuiltFiles(self),
-                                    platform_data_files = platform.getDataFiles(self),
-                                    archive_format = platform.archiveext,
-                                    env = env))
+            f.addSteps(scummsteps.get_package_steps(
+                buildname = "{0}-{1}".format(platform.name, self.name),
+                srcpath = src_path,
+                dstpath = snapshots_path,
+                dsturl = snapshots_url,
+                archive_format = platform.archiveext,
+                disttarget = packaging_cmd,
+                build_data_files = self.data_files,
+                platform_data_files = platform.getDataFiles(self),
+                platform_built_files = platform.getBuiltFiles(self),
+                env = env))
 
         return [util.BuilderConfig(
             name = "{0}-{1}".format(self.name, platform.name),
