@@ -222,7 +222,9 @@ def caanoo():
 caanoo()
 
 def debian(name_suffix, image_suffix, host,
-        package=True, tests=True, buildconfigureargs=None, tools=True):
+        package=True,
+        build_tests=True, run_tests=True,
+        buildconfigureargs=None, tools=True):
     platform = Platform("debian-{0}".format(name_suffix))
     platform.workerimage = "debian-{0}".format(image_suffix)
     if not tools:
@@ -257,20 +259,24 @@ def debian(name_suffix, image_suffix, host,
             "scummvm-tools-cli"
         ]
     }
-    platform.run_tests = tests
+    platform.testable = build_tests
+    platform.run_tests = run_tests
     platform.packageable = package
     register_platform(platform)
 debian("i686", "x86", "i686-linux-gnu")
 debian("x86-64", "x86_64", "x86_64-linux-gnu")
-debian("x86-64-nullbackend", "x86_64", "x86_64-linux-gnu", package=False, tests=False, tools=False,
+debian("x86-64-nullbackend", "x86_64", "x86_64-linux-gnu", package=False, tools=False,
+    build_tests=False, run_tests=False,
     buildconfigureargs = {
         builds.ScummVMBuild: [ "--backend=null" ],
     })
-debian("x86-64-testengine", "x86_64", "x86_64-linux-gnu", package=False, tests=False, tools=False,
+debian("x86-64-testengine", "x86_64", "x86_64-linux-gnu", package=False, tools=False,
+    build_tests=False, run_tests=False,
     buildconfigureargs = {
         builds.ScummVMBuild: [ "--disable-all-engines", "--enable-engine=testbed",],
     })
-debian("x86-64-clang", "x86_64-clang", "x86_64-linux-gnu", package=False, tools=False)
+debian("x86-64-clang", "x86_64-clang", "x86_64-linux-gnu", package=False, tools=False,
+    run_tests=False)
 
 def gamecube():
     platform = Platform("gamecube")
