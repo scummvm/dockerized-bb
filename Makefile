@@ -1,4 +1,4 @@
-BUILDBOT_VERSION   := 2.9.4
+BUILDBOT_VERSION   := 2.10.0
 BUILDBOT_BASEDIR   := buildbot-workdir
 
 # Without toolchains/ part, all is a placeholder for all detected toolchains

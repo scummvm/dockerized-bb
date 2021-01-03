@@ -8,7 +8,7 @@ from buildbot.plugins import schedulers
 from buildbot.plugins import steps
 
 import config
-import steps as scummsteps
+import scummsteps
 
 # Lock to avoid running more than 1 build at the same time on a worker
 # This lock is used for builder workers to avoid too high CPU load

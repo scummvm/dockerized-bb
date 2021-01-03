@@ -51,8 +51,6 @@ class Patch(buildstep.ShellMixin, steps.BuildStep):
             self.descriptionDone = ["patched"]
         return overall_result
 
-
-
 # buildstep class to determine if a file is newer than another one
 class SetPropertyIfOlder(steps.BuildStep):
     name = "set property if older"
@@ -130,11 +128,12 @@ class CleanShellSequence(steps.ShellSequence):
     @defer.inlineCallbacks
     def run(self):
         result = yield self.runShellSequence(self.commands)
+        # Backup the last command run in normal steps to restore it after cleanup
+        # This ensures summary won't be polluted by the cleanup commands
+        command = self.command
         yield self.runShellSequence(self.cleanup)
+        self.command = command
         return result
-
-    def getResultSummary(self):
-        return steps.BuildStep.getResultSummary(self)
 
 PACKAGE_FORMAT_COMMANDS = {
     # format: [command, options]
@@ -174,24 +173,24 @@ def Package(disttarget, srcpath, dstpath, data_files,
 
         if disttarget:
             commands.append(util.ShellArg(["make", disttarget],
-                    logfile="make", haltOnFailure=True))
+                    logname="make {0}".format(disttarget), haltOnFailure=True))
 
         commands.append(util.ShellArg(["mkdir", name],
-            logfile="stdio", haltOnFailure=True))
+            logname="archive", haltOnFailure=True))
         # Use a string for cp to allow shell globbing
         # WARNING: files aren't surrounded with quotes to let it happen
         commands.append(util.ShellArg('cp -r ' + ' '.join(files) + ' "{0}/"'.format(name),
-            logfile="stdio", haltOnFailure=True))
+            logname="archive", haltOnFailure=True))
         commands.append(util.ShellArg(archive_command,
-            logfile="stdio", haltOnFailure=True))
+            logname="archive", haltOnFailure=True))
         commands.append(util.ShellArg(["chmod", "644", archive],
-            logfile="stdio", haltOnFailure=True))
+            logname="publish", haltOnFailure=True))
         commands.append(util.ShellArg(["mkdir", "-p", dstpath+"/"],
-            logfile="stdio", haltOnFailure=True))
+            logname="publish", haltOnFailure=True))
         commands.append(util.ShellArg(["mv", archive, dstpath+"/"],
-            logfile="stdio", haltOnFailure=True))
+            logname="publish", haltOnFailure=True))
         commands.append(util.ShellArg(["ln", "-sf", archive, os.path.join(dstpath, symlink)],
-            logfile="stdio", haltOnFailure=True))
+            logname="publish", haltOnFailure=True))
 
         return commands
 
@@ -201,7 +200,7 @@ def Package(disttarget, srcpath, dstpath, data_files,
 
         commands = []
         commands.append(util.ShellArg(["rm", "-rf", name],
-            haltOnFailure=True))
+            logname="cleanup", haltOnFailure=True))
         return commands
 
     @util.renderer
