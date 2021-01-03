@@ -50,12 +50,12 @@ builds_to_poll = {
 #ht_auth_admins = ['username']
 
 # UI settings
-projectName = "ScummVM"
-projectURL = "https://scummvm.org/"
+project_name = "ScummVM"
+project_url = "https://scummvm.org/"
 # Where web server must listen
 www_port = ("127.0.0.1", 8010)
 # URL used to reach Buildbot instance
-buildbotURL = "https://buildbot.scummvm.org/"
+buildbot_url = "https://buildbot.scummvm.org/"
 
 # URL used to download snapshots
 snapshots_url = "https://buildbot.scummvm.org/snapshots/"
