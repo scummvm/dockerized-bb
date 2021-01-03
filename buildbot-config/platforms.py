@@ -266,6 +266,10 @@ debian("x86-64-nullbackend", "x86_64", "x86_64-linux-gnu", package=False, tests=
     buildconfigureargs = {
         builds.ScummVMBuild: [ "--backend=null" ],
     })
+debian("x86-64-testengine", "x86_64", "x86_64-linux-gnu", package=False, tests=False, tools=False,
+    buildconfigureargs = {
+        builds.ScummVMBuild: [ "--disable-all-engines", "--enable-engine=testbed",],
+    })
 debian("x86-64-clang", "x86_64-clang", "x86_64-linux-gnu", package=False, tools=False)
 
 def gamecube():
