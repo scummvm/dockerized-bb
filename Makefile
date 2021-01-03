@@ -286,6 +286,7 @@ ALL_WORKERS     := $(ALL_WORKERS_M4) $(ALL_WORKERS_DOC)
 
 WORKERS_RESTRICTED := workers/macosx workers/macosx-i386 workers/iphone
 
+# Override because we use the provided value and calculate the real one
 override WORKERS_ENABLED := $(call filter_list,$(WORKERS_ENABLED),$(ALL_WORKERS),workers/)
 override WORKERS_BUILT   := $(call filter_list,$(WORKERS_BUILT),$(WORKERS_ENABLED),workers/)
 ifeq ($(DOCKER_PRIVATE),1)
@@ -341,7 +342,7 @@ $(WORKERS_PULL): %/pull: | $(BUILDDIR)/workers
 # They generate a timestamp file in $(BUILDDIR)
 $(WORKERS_DOC_TS): $(BUILDDIR)/%: %/Dockerfile | $(BUILDDIR)/workers
 	@echo "Building $*"
-	docker build --build-arg BUILDBOT_VERSION=$(BUILDBOT_VERSION) -t $@ -f $< $(<D)
+	docker build --build-arg BUILDBOT_VERSION=$(BUILDBOT_VERSION) -t $* -f $< $(<D)
 	touch "$@"
 
 # m4 Dockerfile workers are preprocessed using GNU m4 before being built by docker
