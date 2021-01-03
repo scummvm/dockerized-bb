@@ -107,7 +107,11 @@ status:
 # Debug ccache used by workers
 ccache-stats:
 	@CCACHE_DIR=buildbot-data/ccache ccache -s
-.PHONY: status ccache-stats
+
+check-versions:
+	@python3 check-versions/check-versions.py
+
+.PHONY: status ccache-stats check-versions
 
 # Master rules
 
