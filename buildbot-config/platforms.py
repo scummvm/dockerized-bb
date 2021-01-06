@@ -36,7 +36,8 @@ class Platform:
             'packageable', 'built_files', 'data_files',
             'packaging_cmd', 'strip_cmd', 'archiveext',
             'testable', 'run_tests',
-            'workerimage']
+            'workerimage',
+            'icon', 'description_']
 
     def __init__(self, name):
         self.name = name
@@ -57,6 +58,18 @@ class Platform:
         self.run_tests = False
 
         self.workerimage = name
+
+        # For snapshots list
+        self.icon = None
+        self.description_ = None
+
+    @property
+    def description(self):
+        return self.description_ or self.name
+
+    @description.setter
+    def description(self, value):
+        self.description_ = value
 
     def canBuild(self, build):
         return _buildInData(self.compatibleBuilds, build)
@@ -116,6 +129,10 @@ def _3ds():
     }
     platform.archiveext = "zip"
     platform.testable = False
+
+    platform.icon = "3ds"
+    platform.description = "Nintendo 3DS"
+
     register_platform(platform)
 _3ds()
 
@@ -148,12 +165,17 @@ def amigaos4():
         ],
     }
     platform.archiveext = "zip"
+
+    platform.icon = "amiga"
+    platform.description = "Amiga OS4"
+
     register_platform(platform)
 amigaos4()
 
 # Android environment can't be specified in worker Dockerfile as it's a unified toolchain
 # So we must pollute our configuration
-def android(suffix, scummvm_target, ndk_target, cxx_target, abi_version):
+def android(suffix, scummvm_target, ndk_target, cxx_target, abi_version,
+        description=None):
     platform = Platform("android-{0}".format(suffix))
     platform.compatibleBuilds = (builds.ScummVMBuild, )
 
@@ -181,28 +203,35 @@ def android(suffix, scummvm_target, ndk_target, cxx_target, abi_version):
     }
     platform.archiveext = "zip"
     platform.testable = False
-    register_platform(platform)
 
+    platform.icon = "android"
+    platform.description = description
+
+    register_platform(platform)
 android(suffix="arm",
         scummvm_target="arm-v7a",
         ndk_target="arm-linux-androideabi",
         cxx_target="armv7a-linux-androideabi",
-        abi_version=16)
+        abi_version=16,
+        description="Android (ARM)")
 android(suffix="arm64",
         scummvm_target="arm64-v8a",
         ndk_target="aarch64-linux-android",
         cxx_target="aarch64-linux-android",
-        abi_version=21)
+        abi_version=21,
+        description="Android (ARM 64\xa0bits)")
 android(suffix="x86",
         scummvm_target="x86",
         ndk_target="i686-linux-android",
         cxx_target="i686-linux-android",
-        abi_version=16)
+        abi_version=16,
+        description="Android (x86)")
 android(suffix="x86-64",
         scummvm_target="x86_64",
         ndk_target="x86_64-linux-android",
         cxx_target="x86_64-linux-android",
-        abi_version=21)
+        abi_version=21,
+        description="Android (x86 64\xa0bits)")
 
 def caanoo():
     platform = Platform("caanoo")
@@ -218,13 +247,18 @@ def caanoo():
         builds.ScummVMBuild: [ "release/scummvm-caanoo.tar.bz2" ],
     }
     platform.archiveext = "tar.bz2"
+
+    platform.icon = "caanoo"
+    platform.description = "GamePark Caanoo"
+
     register_platform(platform)
 caanoo()
 
 def debian(name_suffix, image_suffix, host,
         package=True,
         build_tests=True, run_tests=True,
-        buildconfigureargs=None, tools=True):
+        buildconfigureargs=None, tools=True,
+        description=None):
     platform = Platform("debian-{0}".format(name_suffix))
     platform.workerimage = "debian-{0}".format(image_suffix)
     if not tools:
@@ -262,9 +296,13 @@ def debian(name_suffix, image_suffix, host,
     platform.testable = build_tests
     platform.run_tests = run_tests
     platform.packageable = package
+
+    platform.description = description
+    platform.icon = 'debian'
+
     register_platform(platform)
-debian("i686", "x86", "i686-linux-gnu")
-debian("x86-64", "x86_64", "x86_64-linux-gnu")
+debian("i686", "x86", "i686-linux-gnu", description="Debian (32\xa0bits)")
+debian("x86-64", "x86_64", "x86_64-linux-gnu", description="Debian (64\xa0bits)")
 debian("x86-64-nullbackend", "x86_64", "x86_64-linux-gnu", package=False, tools=False,
     build_tests=False, run_tests=False,
     buildconfigureargs = {
@@ -292,6 +330,10 @@ def gamecube():
         builds.ScummVMBuild: [ "wiidist/scummvm" ],
     }
     platform.archiveext = "tar.xz"
+
+    platform.description = "Nintendo Gamecube"
+    platform.icon = 'gc'
+
     register_platform(platform)
 gamecube()
 
@@ -309,12 +351,15 @@ def gp2x():
         }
         platform.archiveext = "tar.bz2"
 
+        platform.icon = 'gp2x'
+
     platform = Platform("gp2x-1")
     platform.buildconfigureargs = {
         builds.ScummVMBuild: [ "--enable-vkeybd",
             # Disable big engines
             "--disable-engines=bladerunner,glk,kyra,lastexpress,titanic,tsage,ultima" ],
     }
+    platform.description = "GamePark GP2X (all except Blade Runner, Glk, Kyra, The Last Express, Starship Titanic, TsAGE, Ultima)"
     setup(platform)
     register_platform(platform)
 
@@ -325,6 +370,7 @@ def gp2x():
             "--disable-all-engines",
             "--enable-engines=bladerunner,glk,kyra,lastexpress,titanic,tsage,ultima" ],
     }
+    platform.description = "GamePark GP2X (Blade Runner, Glk, Kyra, The Last Express, Starship Titanic, TsAGE, Ultima)"
     setup(platform)
     register_platform(platform)
 gp2x()
@@ -345,6 +391,10 @@ def ios7():
         builds.ScummVMBuild: [ "ScummVM.app" ],
     }
     platform.archiveext = "tar.bz2"
+
+    platform.description = "iOS 7.1+"
+    platform.icon = 'iphone'
+
     register_platform(platform)
 ios7()
 
@@ -386,6 +436,10 @@ def macosx():
         ]
     }
     platform.archiveext = "tar.xz"
+
+    platform.description = "Mac OS X (Intel x64)"
+    platform.icon = 'macos'
+
     register_platform(platform)
 macosx()
 
@@ -422,6 +476,10 @@ def macosx_i386():
         ]
     }
     platform.archiveext = "tar.xz"
+
+    platform.description = "Mac OS X (Intel x86)"
+    platform.icon = 'macos'
+
     register_platform(platform)
 macosx_i386()
 
@@ -439,6 +497,10 @@ macosx_i386()
 #    }
 #    platform.archiveext = "tar.xz"
 #    platform.testable = False
+#
+#    platform.description = "Nintendo DS"
+#    platform.icon = 'ds'
+#
 #    register_platform(platform)
 #nds()
 
@@ -456,6 +518,10 @@ def openpandora():
         builds.ScummVMBuild: [ "release/scummvm-op-pnd.tar.bz2" ],
     }
     platform.archiveext = "tar.bz2"
+
+    platform.description = "OpenPandora"
+    platform.icon = 'openpandora'
+
     register_platform(platform)
 openpandora()
 
@@ -470,6 +536,10 @@ def ps3():
     platform.built_files = {
         builds.ScummVMBuild: [ "scummvm-ps3.pkg" ],
     }
+
+    platform.description = "PlayStation 3"
+    platform.icon = 'ps3'
+
     register_platform(platform)
 ps3()
 
@@ -503,6 +573,10 @@ def psp():
         ],
     }
     platform.archiveext = "tar.xz"
+
+    platform.description = "PlayStation Portable"
+    platform.icon = 'psp'
+
     register_platform(platform)
 
     # PSP full
@@ -519,6 +593,9 @@ def psp():
     platform.buildconfigureargs = {
         builds.ScummVMBuild: [ ],
     }
+
+    platform.description = None
+
     register_platform(platform)
 psp()
 
@@ -543,10 +620,14 @@ def raspberrypi():
             "scummvm-tools-cli"
         ]
     }
+
+    platform.description = "Raspberry Pi"
+    platform.icon = 'raspberry'
+
     register_platform(platform)
 raspberrypi()
 
-def riscos(suffix, prefix_subdir, variable_suffix, host):
+def riscos(suffix, prefix_subdir, variable_suffix, host, description = None):
     if len(prefix_subdir) and prefix_subdir[-1:] != '/':
         prefix_subdir += '/'
 
@@ -576,6 +657,8 @@ def riscos(suffix, prefix_subdir, variable_suffix, host):
         platform.archiveext = "zip"
         platform.testable = False
 
+        platform.icon = 'riscos'
+
     platform = Platform("riscos{0}{1}-1".format('-' if suffix else '', suffix))
     platform.buildconfigureargs = {
         builds.ScummVMBuild: [
@@ -583,6 +666,9 @@ def riscos(suffix, prefix_subdir, variable_suffix, host):
             "--disable-engines=bladerunner,glk,kyra,lastexpress,titanic,tsage,ultima" ],
     }
     setup(platform)
+
+    platform.description = description + ' (all except Blade Runner, Glk, Kyra, The Last Express, Starship Titanic, TsAGE, Ultima)'
+
     register_platform(platform)
 
     platform = Platform("riscos{0}{1}-2".format('-' if suffix else '', suffix))
@@ -593,9 +679,12 @@ def riscos(suffix, prefix_subdir, variable_suffix, host):
             "--enable-engines=bladerunner,glk,kyra,lastexpress,titanic,tsage,ultima" ],
     }
     setup(platform)
+
+    platform.description = description + ' (Blade Runner, Glk, Kyra, The Last Express, Starship Titanic, TsAGE, Ultima)'
+
     register_platform(platform)
-riscos("", "", "STD", "arm-unknown-riscos")
-riscos("vfp", "vfp", "VFP", "arm-vfp-riscos")
+riscos("", "", "STD", "arm-unknown-riscos", "RiscOS")
+riscos("vfp", "vfp", "VFP", "arm-vfp-riscos", "RiscOS with VFP")
 
 def switch():
     platform = Platform("switch")
@@ -609,6 +698,10 @@ def switch():
     }
     platform.archiveext = "zip"
     platform.testable = False
+
+    platform.description = "Nintendo Switch"
+    platform.icon = 'switch'
+
     register_platform(platform)
 switch()
 
@@ -643,6 +736,10 @@ def vita():
     }
     platform.archiveext = "zip"
     platform.testable = False
+
+    platform.description = "PlayStation Vita"
+    platform.icon = 'psp2'
+
     register_platform(platform)
 
     # Vita full
@@ -657,6 +754,9 @@ def vita():
     platform.buildconfigureargs = {
         builds.ScummVMBuild: [ ],
     }
+
+    platform.description = None
+
     register_platform(platform)
 vita()
 
@@ -674,10 +774,14 @@ def wii():
         builds.ScummVMBuild: [ "wiidist/scummvm" ],
     }
     platform.archiveext = "tar.xz"
+
+    platform.description = "Nintendo Wii"
+    platform.icon = 'wii'
+
     register_platform(platform)
 wii()
 
-def windows_mxe(suffix, target):
+def windows_mxe(suffix, target, description=None):
     platform = Platform("windows-{0}".format(suffix))
     platform.workerimage = "mxe"
 
@@ -725,9 +829,15 @@ def windows_mxe(suffix, target):
         ],
     }
     platform.archiveext = "zip"
+
+    platform.description = description
+    platform.icon = 'windows'
+
     register_platform(platform)
 
 windows_mxe(suffix="x86",
-        target="i686-w64-mingw32.static")
+        target="i686-w64-mingw32.static",
+        description="Windows (32\xa0bits)")
 windows_mxe(suffix="x86-64",
-        target="x86_64-w64-mingw32.static")
+        target="x86_64-w64-mingw32.static",
+        description="Windows (64\xa0bits)")
