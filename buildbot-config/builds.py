@@ -130,7 +130,9 @@ class StandardBuild(Build):
             locks = [ self.lock_src.access("exclusive") ],
         ))
         if len(self.PATCHES):
-            f.addStep(scummsteps.Patch(patches = self.PATCHES,
+            f.addStep(scummsteps.Patch(
+                base_dir = config.configuration_dir,
+                patches = self.PATCHES,
                 workdir = ".",
                 locks = [ self.lock_src.access("exclusive") ],
             ))
