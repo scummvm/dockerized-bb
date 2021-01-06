@@ -47,11 +47,15 @@ class Build:
         pass
 
 class StandardBuild(Build):
-    __slots__ = ['baseurl', 'giturl', 'branch', 'nightly', 'enable_force', 'lock_src']
+    __slots__ = [
+        'baseurl', 'giturl', 'branch',
+        'nightly', 'enable_force',
+        'description_',
+        'lock_src']
 
     PATCHES = []
 
-    def __init__(self, name, baseurl, branch, nightly = None, enable_force = True, giturl = None):
+    def __init__(self, name, baseurl, branch, nightly = None, enable_force = True, giturl = None, description = None):
         super().__init__(name)
         if giturl is None:
             giturl = baseurl + ".git"
@@ -60,8 +64,17 @@ class StandardBuild(Build):
         self.branch = branch
         self.nightly = nightly
         self.enable_force = enable_force
+        self.description_ = description
         # Lock used to avoid writing source code when it is read by another task
         self.lock_src = util.MasterLock("src-{0}".format(self.name), maxCount=sys.maxsize)
+
+    @property
+    def description(self):
+        return self.description_ or self.name
+
+    @description.setter
+    def description(self, value):
+        self.description_ = value
 
     def getChangeSource(self, settings):
         return changes.GitPoller(repourl=self.giturl,
@@ -233,10 +246,8 @@ class ScummVMBuild(StandardBuild):
     ]
 
     def __init__(self, *args, **kwargs):
-        verbose_build = kwargs.get('verbose_build', False)
-        kwargs.pop('verbose_build', None)
-        data_files = kwargs.get('data_files', None)
-        kwargs.pop('data_files', None)
+        verbose_build = kwargs.pop('verbose_build', False)
+        data_files = kwargs.pop('data_files', None)
 
         super().__init__(*args, **kwargs)
         self.verbose_build = verbose_build
@@ -393,10 +404,8 @@ class ScummVMToolsBuild(StandardBuild):
     ]
 
     def __init__(self, *args, **kwargs):
-        verbose_build = kwargs.get('verbose_build', False)
-        kwargs.pop('verbose_build', None)
-        data_files = kwargs.get('data_files', None)
-        kwargs.pop('data_files', None)
+        verbose_build = kwargs.pop('verbose_build', False)
+        data_files = kwargs.pop('data_files', None)
 
         super().__init__(*args, **kwargs)
         self.verbose_build = verbose_build
@@ -492,7 +501,7 @@ class ScummVMToolsBuild(StandardBuild):
 
 builds = []
 
-builds.append(ScummVMBuild("master", "https://github.com/scummvm/scummvm", "master", verbose_build=True, nightly=(4, 1)))
-builds.append(ScummVMStableBuild("stable", "https://github.com/scummvm/scummvm", "branch-2-2", verbose_build=True, nightly=(4, 1)))
+builds.append(ScummVMBuild("master", "https://github.com/scummvm/scummvm", "master", verbose_build=True, nightly=(4, 1), description="ScummVM latest"))
+builds.append(ScummVMStableBuild("stable", "https://github.com/scummvm/scummvm", "branch-2-2", verbose_build=True, nightly=(4, 1), description="ScummVM stable"))
 #builds.append(ScummVMBuild("gsoc2012", "https://github.com/digitall/scummvm", "gsoc2012-scalers-cont", verbose_build=True))
-builds.append(ScummVMToolsBuild("tools-master", "https://github.com/scummvm/scummvm-tools", "master", verbose_build=True, nightly=(4, 1)))
+builds.append(ScummVMToolsBuild("tools-master", "https://github.com/scummvm/scummvm-tools", "master", verbose_build=True, nightly=(4, 1), description="ScummVM tools"))
