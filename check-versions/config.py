@@ -75,6 +75,11 @@ VERSIONS = {
         'prefix': 'v',
         'exclude pattern': r'.*(b|rc)\d+'
     },
+    ('./Makefile', 'BOTTLE'): {
+        'check': 'git tag',
+        'repository': 'https://github.com/bottlepy/bottle.git',
+        'exclude pattern': r'.*(b|rc).*'
+    },
 
     ('./toolchains/amigaos4/packages/libsdl2/build.sh', 'SDL2'): {
         'check': 'git tag',

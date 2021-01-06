@@ -58,7 +58,13 @@ www_port = ("127.0.0.1", 8010)
 buildbot_url = "https://buildbot.scummvm.org/"
 
 # URL used to download snapshots
+# If serve_snapshots is True, it will be:
+# snapshots_url = buildbot_url + "wsgi_dashboards/snapshots/packages/"
 snapshots_url = "https://buildbot.scummvm.org/snapshots/"
+
+enable_list_snapshots = True
+# Serving snapshots is only available when listing snapshots too
+serve_snapshots = False
 
 # IRC configuration
 #irc = {

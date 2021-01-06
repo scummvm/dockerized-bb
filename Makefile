@@ -1,6 +1,8 @@
 BUILDBOT_VERSION   := 2.10.0
 BUILDBOT_BASEDIR   := buildbot-workdir
 
+BOTTLE_VERSION     := 0.12.19
+
 # Without toolchains/ part, all is a placeholder for all detected toolchains
 TOOLCHAINS_ENABLED := all
 TOOLCHAINS_BUILT   := all
@@ -133,7 +135,9 @@ master-check:
 
 # buildbot depend on Makefile as we modify version here
 $(BUILDDIR)/buildbot_installed: Makefile | $(BUILDDIR)
-	pip install 'buildbot[bundle]==$(BUILDBOT_VERSION)'
+	pip install 'buildbot[bundle]==$(BUILDBOT_VERSION)' \
+		'buildbot-wsgi-dashboards==$(BUILDBOT_VERSION)' \
+		'bottle==$(BOTTLE_VERSION)'
 	touch $(BUILDDIR)/buildbot_installed
 
 # Create startup file once buildbot is installed and up-to-date
