@@ -1,5 +1,6 @@
-import os
 from datetime import datetime
+import os
+import re
 import urllib.parse as urlp
 
 from twisted.internet import defer
@@ -145,9 +146,26 @@ PACKAGE_FORMAT_COMMANDS = {
     "zip": ["zip", "-r"],
 }
 
+# Helper to generate file names
+def createNames(buildname, platformname, archive_format, revision):
+    if archive_format not in PACKAGE_FORMAT_COMMANDS:
+        archive_format = "tar.bz2"
+    if revision is not None:
+        name = "{0}-{1}-{2}".format(platformname, buildname, revision[:8])
+        archive = "{0}.{1}".format(name, archive_format)
+    else:
+        name = archive = ''
+    symlink = "{0}-{1}-latest.{2}".format(platformname, buildname, archive_format)
+    return name, archive, symlink
+
+PACKAGE_NAME_RE = re.compile(r'.+-[^-]+-([0-9a-fA-F]+)\..*')
+def getRevisionFromName(name):
+    mtch = PACKAGE_NAME_RE.match(name)
+    return mtch.group(1) if mtch else None
+
 # Helper function which generates a list of steps that build the package on the worker,
 # upload it to master and create the symlink for the latest
-def get_package_steps(buildname, srcpath, dstpath, dsturl,
+def get_package_steps(buildname, platformname, srcpath, dstpath, dsturl,
         archive_format, disttarget,
         build_data_files, platform_data_files,
         platform_built_files,
@@ -167,15 +185,12 @@ def get_package_steps(buildname, srcpath, dstpath, dsturl,
     if not disttarget:
         files += [ os.path.join(srcpath, f) for f in build_data_files ]
 
-    def createNames(props):
-        name = "{0}-{1}".format(buildname, props["revision"][:8])
-        archive = "{0}.{1}".format(name, archive_format)
-        symlink = "{0}-latest.{1}".format(buildname, archive_format)
-        return name, archive, symlink
+    def namesFromProps(props):
+        return createNames(buildname, platformname, archive_format, props["revision"])
 
     @util.renderer
     def generateCommands(props):
-        name, archive, _ = createNames(props)
+        name, archive, _ = namesFromProps(props)
         archive_full_command = archive_base_command + [archive, name+"/"]
 
         commands = []
@@ -197,7 +212,7 @@ def get_package_steps(buildname, srcpath, dstpath, dsturl,
 
     @util.renderer
     def generateCleanup(props):
-        name, _, _ = createNames(props)
+        name, _, _ = namesFromProps(props)
 
         commands = []
         commands.append(util.ShellArg(["rm", "-rf", name],
@@ -213,22 +228,22 @@ def get_package_steps(buildname, srcpath, dstpath, dsturl,
 
     @util.renderer
     def getWorkerSrc(props):
-        _, archive, _ = createNames(props)
+        _, archive, _ = namesFromProps(props)
         return archive
 
     @util.renderer
     def getMasterDest(props):
-        _, archive, _ = createNames(props)
+        _, archive, _ = namesFromProps(props)
         return os.path.join(dstpath, archive)
 
     @util.renderer
     def getArchiveURL(props):
-        _, archive, _ = createNames(props)
+        _, archive, _ = namesFromProps(props)
         return urlp.urljoin(dsturl, archive)
 
     @util.renderer
     def getLinkCommand(props):
-        _, archive, symlink = createNames(props)
+        _, archive, symlink = namesFromProps(props)
         return "ln", "-sf", archive, os.path.join(dstpath, symlink)
 
     build_package = CleanShellSequence(

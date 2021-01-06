@@ -326,7 +326,8 @@ class ScummVMBuild(StandardBuild):
 
         if platform.canPackage(self):
             f.addSteps(scummsteps.get_package_steps(
-                buildname = "{0}-{1}".format(platform.name, self.name),
+                buildname = self.name,
+                platformname = platform.name,
                 srcpath = src_path,
                 dstpath = snapshots_path,
                 dsturl = snapshots_url,
@@ -475,7 +476,8 @@ class ScummVMToolsBuild(StandardBuild):
 
         if platform.canPackage(self):
             f.addSteps(scummsteps.get_package_steps(
-                buildname = "{0}-{1}".format(platform.name, self.name),
+                buildname = self.name,
+                platformname = platform.name,
                 srcpath = src_path,
                 dstpath = snapshots_path,
                 dsturl = snapshots_url,
