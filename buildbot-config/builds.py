@@ -1,3 +1,4 @@
+import multiprocessing
 import os
 import shutil
 import sys
@@ -10,6 +11,8 @@ from buildbot.plugins import steps
 
 import config
 import scummsteps
+
+max_jobs = getattr(config, 'max_jobs', None) or (multiprocessing.cpu_count() + 1)
 
 # Lock to avoid running more than 1 build at the same time on a worker
 # This lock is used for builder workers to avoid too high CPU load
@@ -307,7 +310,7 @@ class ScummVMBuild(StandardBuild):
 
         f.addStep(steps.Compile(command = [
                 "make",
-                "-j5"
+                "-j{0}".format(max_jobs)
             ],
             env = env))
 
@@ -465,7 +468,7 @@ class ScummVMToolsBuild(StandardBuild):
 
         f.addStep(steps.Compile(command = [
                 "make",
-                "-j5"
+                "-j{0}".format(max_jobs)
             ],
             env = env))
 

@@ -33,6 +33,9 @@ platforms_blacklist = [
 
 # How many builds can be run in parallel
 max_parallel_builds = 1
+# How many compilers to run in parallel (make -j value)
+# Falsy value means to use cpu core count
+max_jobs = None
 
 # List which builds won't receive notifications from Webhook
 # and must be polled
