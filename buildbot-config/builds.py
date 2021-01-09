@@ -81,7 +81,9 @@ class StandardBuild(Build):
         self.description_ = value
 
     def getChangeSource(self, settings):
-        return changes.GitPoller(repourl=self.giturl,
+        return changes.GitPoller(
+            name="poller-{0}".format(self.name),
+            repourl=self.giturl,
             branches=[self.branch],
             workdir=os.path.join(config.data_dir, 'pollers', self.name),
             **settings)
