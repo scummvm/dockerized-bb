@@ -6,7 +6,7 @@ Quick setup
 
 To setup the whole thing:
 
- - `apt install docker.io git make m4`
+ - `apt install docker.io git make m4 acl`
  - `useradd -Um -s /bin/bash buildbot`
  - `usermod -aG docker buildbot`
  - `apt install \  
