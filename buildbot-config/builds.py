@@ -172,7 +172,7 @@ class StandardBuild(Build):
             workernames = workers.workers_by_type['fetcher'],
             workerbuilddir = "/data/src/{0}".format(self.name),
             factory = f,
-            tags = ["fetch"],
+            tags = ["fetch", self.name],
             locks = [ lock_build.access('counting') ],
         ))
 
@@ -194,7 +194,7 @@ class StandardBuild(Build):
                 workernames = workers.workers_by_type['fetcher'],
                 workerbuilddir = "/data/triggers/nightly-{0}".format(self.name),
                 factory = f,
-                tags = ["nightly"],
+                tags = ["nightly", self.name],
                 locks = [ lock_build.access('counting') ]
             ))
 
@@ -347,7 +347,7 @@ class ScummVMBuild(StandardBuild):
             workerbuilddir = build_path,
             factory = f,
             locks = [ lock_build.access('counting'), self.lock_src.access("counting") ],
-            tags = [self.name],
+            tags = ["build", self.name, platform.name],
             properties = {
                 "platformname": platform.name,
                 "workerimage": platform.getWorkerImage(self),
@@ -497,7 +497,7 @@ class ScummVMToolsBuild(StandardBuild):
             workerbuilddir = build_path,
             factory = f,
             locks = [ lock_build.access('counting'), self.lock_src.access("counting") ],
-            tags = [self.name],
+            tags = ["build", self.name, platform.name],
             properties = {
                 "platformname": platform.name,
                 "workerimage": platform.getWorkerImage(self),
