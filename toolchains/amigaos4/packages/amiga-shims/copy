@@ -1,5 +1,76 @@
 #! /bin/sh
 
-# TODO: Parse arguments
+src=
+dst=
+quiet=
+flags=
+while [ $# -gt 0 ]; do
+	arg=$1
+	shift
+	if [ "$arg" = "FROM" ]; then
+		if [ -n "$src" ]; then
+			echo "$0: Two much paths" >&2
+			exit 1
+		fi
+		src=$1
+		shift
+	elif [ "$arg" = "TO" ]; then
+		if [ -n "$dst" ]; then
+			echo "$0: Two much paths" >&2
+			exit 1
+		fi
+		dst=$1
+		shift
+	elif [ "$arg" = "ALL" ]; then
+		flags="${flags}r"
+	elif [ "$arg" = "QUIET" ]; then
+		quiet=1
+	elif [ "$arg" = "CLONE" ]; then
+		flags="${flags}a"
+	elif [ "$arg" = "DATES" ]; then
+		echo "$0: Warning $arg not supported"
+	elif [ "$arg" = "NOPRO" ]; then
+		echo "$0: Warning $arg not supported"
+	elif [ "$arg" = "COM" ]; then
+		echo "$0: Warning $arg not supported"
+	elif [ "$arg" = "NOREQ" ]; then
+		flags="${flags}n"
+	elif [ "$arg" = "NOREPLACE" ]; then
+		echo "$0: Warning $arg not supported"
+	elif [ "$arg" = "INTERACTIVE" ]; then
+		flags="${flags}i"
+	elif [ "$arg" = "FORCE" ]; then
+		flags="${flags}f"
+	elif [ "$arg" = "ARCHIVE" ]; then
+		echo "$0: Warning $arg not supported"
+	elif [ "$arg" = "NEWER" ]; then
+		flags="${flags}u"
+	elif [ "$arg" = "COPYLINKS" ]; then
+		flags="${flags}L"
+	elif [ "$arg" = "FOLLOWLINKS" ]; then
+		echo "$0: Warning $arg not supported"
+	else
+		case "$arg" in
+		BUFFER*|BUF*)
+			echo "$0: Warning $arg not supported"
+			;;
+		esac
+		if [ -z "$src" ]; then
+			src=$arg
+		elif [ -z "$dst" ]; then
+			dst=$arg
+		else
+			echo "$0: Two much paths" >&2
+			exit 1
+		fi
+	fi
+done
 
-exec cp "$@"
+if [ -z "$quiet" ]; then
+	flags="${flags}v"
+fi
+if [ -n "$flags" ]; then
+	flags="-$flags"
+fi
+
+exec cp $flags "$src" "$dst"

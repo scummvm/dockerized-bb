@@ -1,5 +1,19 @@
 #! /bin/sh
 
-# TODO: Parse arguments
+path=
+flags=
+for arg in "$@"; do
+	if [ "$arg" = "ALL" ]; then
+		flags=-p
+	elif [ "$arg" = "FORCE" ]; then
+		# Not really a force
+		flags=-p
+	elif [ -z "$path" ]; then
+		path=$arg
+	else
+		echo "$0: Two paths specified"
+		exit 1
+	fi
+done
 
-exec mkdir "$@"
+exec mkdir $flags "$path"

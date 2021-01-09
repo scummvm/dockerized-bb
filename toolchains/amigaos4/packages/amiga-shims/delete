@@ -1,5 +1,35 @@
 #! /bin/sh
 
-# TODO: Parse arguments
+path=
+quiet=
+flags=
+for arg in "$@"; do
+	if [ "$arg" = "ALL" ]; then
+		flags="${flags}r"
+	elif [ "$arg" = "QUIET" ]; then
+		quiet=1
+	elif [ "$arg" = "INTER" ]; then
+		flags="${flags}i"
+	elif [ "$arg" = "INTERACTIVE" ]; then
+		flags="${flags}i"
+	elif [ "$arg" = "FORCE" ]; then
+		flags="${flags}f"
+	elif [ "$arg" = "WIPE" ]; then
+		echo "$0: Warning $arg not supported"
+	elif [ -z "$path" ]; then
+		path=$arg
+	else
+		echo "$0: Two paths specified"
+		exit 1
+	fi
+done
 
-exec rm "$@"
+if [ -z "$quiet" ]; then
+	flags="${flags}v"
+fi
+if [ -n "$flags" ]; then
+	flags="-$flags"
+fi
+
+# AmigaOS can delete empty directories too, we don't
+exec rm $flags "$path"
