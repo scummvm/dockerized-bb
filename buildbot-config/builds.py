@@ -15,7 +15,12 @@ import scummsteps
 # This lock is used for builder workers to avoid too high CPU load
 # It's also used for fetcher worker to ensure that fetching will occur just before building
 # because fetcher is locked all the way through the build process
-lock_build = util.WorkerLock("worker", maxCount = 1)
+# hence fetcher must have a maxCount of 1 in all cases
+lock_build = util.WorkerLock("worker", maxCount = 1,
+    maxCountForWorker = {
+        'fetcher': 1,
+        'builder': getattr(config, 'max_parallel_builds', 1),
+    })
 
 # builds contains all build trees
 # ccache is the cache for compiled objects used by ccache

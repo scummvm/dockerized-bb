@@ -31,6 +31,9 @@ platforms_whitelist = [
 platforms_blacklist = [
 ]
 
+# How many builds can be run in parallel
+max_parallel_builds = 1
+
 # List which builds won't receive notifications from Webhook
 # and must be polled
 # Each build entry is in the form
