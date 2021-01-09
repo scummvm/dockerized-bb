@@ -11,19 +11,15 @@ from buildbot.plugins import steps
 
 import config
 import scummsteps
+import workers
 
 max_jobs = getattr(config, 'max_jobs', None) or (multiprocessing.cpu_count() + 1)
 
 # Lock to avoid running more than 1 build at the same time on a worker
 # This lock is used for builder workers to avoid too high CPU load
 # It's also used for fetcher worker to ensure that fetching will occur just before building
-# because fetcher is locked all the way through the build process
-# hence fetcher must have a maxCount of 1 in all cases
-lock_build = util.WorkerLock("worker", maxCount = 1,
-    maxCountForWorker = {
-        'fetcher': 1,
-        'builder': getattr(config, 'max_parallel_builds', 1),
-    })
+# thanks to fetcher being locked all the way through the build process
+lock_build = util.WorkerLock("worker", maxCount = 1)
 
 # builds contains all build trees
 # ccache is the cache for compiled objects used by ccache
@@ -173,8 +169,7 @@ class StandardBuild(Build):
 
         ret.append(util.BuilderConfig(
             name = "fetch-{0}".format(self.name),
-            # This is specific
-            workername = 'fetcher',
+            workernames = workers.workers_by_type['fetcher'],
             workerbuilddir = "/data/src/{0}".format(self.name),
             factory = f,
             tags = ["fetch"],
@@ -196,7 +191,7 @@ class StandardBuild(Build):
             ret.append(util.BuilderConfig(
                 name = "nightly-{0}".format(self.name),
                 # We use fetcher worker here as it will prevent building of other stuff like if a change had happened
-                workername = 'fetcher',
+                workernames = workers.workers_by_type['fetcher'],
                 workerbuilddir = "/data/triggers/nightly-{0}".format(self.name),
                 factory = f,
                 tags = ["nightly"],
@@ -348,7 +343,7 @@ class ScummVMBuild(StandardBuild):
 
         return [util.BuilderConfig(
             name = "{0}-{1}".format(self.name, platform.name),
-            workername = 'builder',
+            workernames = workers.workers_by_type['builder'],
             workerbuilddir = build_path,
             factory = f,
             locks = [ lock_build.access('counting'), self.lock_src.access("counting") ],
@@ -498,7 +493,7 @@ class ScummVMToolsBuild(StandardBuild):
 
         return [util.BuilderConfig(
             name = "{0}-{1}".format(self.name, platform.name),
-            workername = 'builder',
+            workernames = workers.workers_by_type['builder'],
             workerbuilddir = build_path,
             factory = f,
             locks = [ lock_build.access('counting'), self.lock_src.access("counting") ],

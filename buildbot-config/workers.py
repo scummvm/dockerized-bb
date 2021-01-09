@@ -1,3 +1,4 @@
+import collections
 import os
 import random
 import string
@@ -11,9 +12,12 @@ from buildbot.plugins import worker
 import config
 
 workers = []
+# This will contain lists of worker names by type for builds module
+workers_by_type = collections.defaultdict(list)
 
-def register(worker):
+def register(type_, worker):
     workers.append(worker)
+    workers_by_type[type_].append(worker.name)
 
 docker_client = docker.APIClient(base_url=config.docker_socket)
 if len(docker_client.networks(names=[config.docker_workers_net])) == 0:
@@ -73,7 +77,9 @@ def StandardBuilderWorker(name, **kwargs):
         },
         **kwargs
     )
-register(StandardBuilderWorker("builder"))
+
+for i in range(1, getattr(config, 'max_parallel_builds', 1) + 1):
+    register('builder', StandardBuilderWorker('builder-{0}'.format(i)))
 
 # The worker used for all preping stuff (fetching and triggering)
 def FetcherWorker(name, **kwargs):
@@ -97,4 +103,4 @@ def FetcherWorker(name, **kwargs):
         },
         **kwargs
     )
-register(FetcherWorker("fetcher"))
+register('fetcher', FetcherWorker("fetcher"))
