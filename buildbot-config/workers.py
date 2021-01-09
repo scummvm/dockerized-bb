@@ -59,7 +59,7 @@ def StandardBuilderWorker(name, **kwargs):
         '{0}/bshomes'.format(config.data_dir): '/data/bshomes',
         '{0}/builds'.format(config.data_dir): '/data/builds',
         '{0}/ccache'.format(config.data_dir): '/data/ccache',
-        '{0}/src'.format(config.data_dir): '/data/src',
+        '{0}/src'.format(config.data_dir): '/data/src:ro',
     }
     for vol in volumes:
         apply_acls(vol, buildbot_root_uid + BUILDBOT_UID, buildbot_root_gid + BUILDBOT_GID)
