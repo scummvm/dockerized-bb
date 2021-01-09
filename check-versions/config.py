@@ -366,7 +366,12 @@ VERSIONS = {
         'repository': 'svn://svn.riscos.info/gccsdk/trunk/gcc4/',
     },
 
-    ('./toolchains/vita/packages/vita-shader-collection/build.sh', 'VITA_SHDR_COLL') : {
+    ('./toolchains/vita/packages/toolchain/build.sh', 'VITA'): {
+        'check': 'git tag',
+        'repository': 'https://github.com/vitasdk/autobuilds.git',
+        'prefix': 'master-linux-v',
+    },
+    ('./toolchains/vita/packages/vita-shader-collection/build.sh', 'VITA_SHDR_COLL'): {
         'check': 'git tag',
         'repository': 'https://github.com/frangarcj/vita-shader-collection.git',
         # Use pattern as prefix would remove it
