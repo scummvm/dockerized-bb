@@ -39,14 +39,19 @@ builds_to_poll = {
 }
 
 # Github settings
+## Secret used when configuring webhook
 #github_webhook_secret = None
+## Credentials for GitHub OAuth application
 #github_auth_clientid = ""
 #github_auth_clientsecret = ""
+## Define organization and team membership used to determine rights
 #github_organisation = "scummvm"
 #github_admin_group = "admin-group"
 
 # htpasswd file based authentication
+## Plaintext file with username:password lines
 #ht_auth_file = './htpasswd'
+## List of usernames with admin rights
 #ht_auth_admins = ['username']
 
 # UI settings
@@ -68,15 +73,21 @@ serve_snapshots = False
 
 # IRC configuration
 #irc = {
+#    # IRC server configuration: hostname, port, ssl
 #    'server': 'chat.freenode.net',
 #    'port': 7000,
 #    'ssl': True,
+#    # nickname and password to identify to NickServ
 #    'nick': 'Scummette',
 #    'password': 'password',
+#    # channels the bot will join and talk to
 #    'channels': [
-#        '#scummvm'
+#        '#scummvm',
+#        {'channel': '#secret', 'password': 'secret'}
 #    ],
+#    # nicknames the bot will talk to
 #    'nicks': ['someuser'],
+#    # nicknames allowed to talk to bot, when commented out bot won't listen at anyone
 #    'admins': ['someuser'],
 #}
 
