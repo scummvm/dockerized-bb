@@ -342,8 +342,14 @@ def gp2x():
         platform.workerimage = "open2x"
         platform.compatibleBuilds = (builds.ScummVMBuild, )
         platform.env["CXX"] = "ccache /opt/open2x/bin/arm-open2x-linux-g++"
+
+        # ScummVM configure adds -march
         # Override CXXFLAGS to avoid warnings about redundant setting between -march and -mcpu
-        platform.env["CXXFLAGS"] = "-O3 -ffast-math -fomit-frame-pointer"
+        cxxflags = platform.env.get("CXXFLAGS", '').replace('${CXXFLAGS}', '')
+        cxxflags += " -O3 -ffast-math -fomit-frame-pointer"
+        platform.buildenv[builds.ScummVMBuild] = {
+            'CXXFLAGS': cxxflags,
+        }
         platform.configureargs.append("--host=gp2x")
         platform.packaging_cmd = "gp2x-bundle"
         platform.built_files = {
@@ -401,9 +407,6 @@ ios7()
 def macosx():
     platform = Platform("macosx")
     platform.env["CXX"] = "ccache x86_64-apple-darwin20.2-c++"
-    # Put back worker CXXFLAGS
-    if "CXXFLAGS" in platform.env:
-        platform.env["CXXFLAGS"] += "${CXXFLAGS}"
     # configure script doesn't compile discord check with proper flags
     platform.env["DISCORD_LIBS"] = "-framework AppKit"
 
@@ -446,9 +449,6 @@ macosx()
 def macosx_i386():
     platform = Platform("macosx-i386")
     platform.env["CXX"] = "ccache i386-apple-darwin17-c++"
-    # Put back worker CXXFLAGS
-    if "CXXFLAGS" in platform.env:
-        platform.env["CXXFLAGS"] += "${CXXFLAGS}"
     platform.configureargs.append("--host=i386-apple-darwin17")
     platform.buildconfigureargs = {
         builds.ScummVMBuild: [ "--enable-static", "--with-staticlib-prefix=${DESTDIR}/${PREFIX}",
@@ -647,7 +647,11 @@ def riscos(suffix, prefix_subdir, variable_suffix, host, description = None):
         platform.env["CXX"] = "ccache ${CXX}"
         platform.env["PKG_CONFIG_LIBDIR"] = "${{PREFIX}}/{0}lib/pkgconfig".format(prefix_subdir)
         for v, p in env_paths.items():
-            platform.env[v] = ' '.join([p, "${{{0}}}".format(v), "${{{0}_{1}}}".format(v, variable_suffix)])
+            platform.env[v] = ' '.join([
+                p, # Path specified above
+                platform.env.get(v, "${{{0}}}".format(v)), # User provided flags or worker default ones
+                "${{{0}_{1}}}".format(v, variable_suffix) # Variant specific flags (vfp...)
+            ])
 
         platform.configureargs.append("--host={0}".format(host))
         platform.packaging_cmd = "riscosdist"

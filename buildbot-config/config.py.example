@@ -21,6 +21,8 @@ docker_workers_net = 'workers-net'
 pb_protocol_port = 9989
 
 # Environment shared by all builds and builders
+# When specifying *FLAGS variables, use ${*FLAGS} to recall worker ones
+# Failure to comply implies build failures
 common_env = {
     "LC_ALL": "C.UTF-8",
 }
