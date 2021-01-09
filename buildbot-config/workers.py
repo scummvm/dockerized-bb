@@ -52,10 +52,10 @@ def apply_acls(volume, uid, gid):
 # The worker used for all build stuff, image name depends on build property
 def StandardBuilderWorker(name, **kwargs):
     volumes = {
+        '{0}/bshomes'.format(config.data_dir): '/data/bshomes',
+        '{0}/builds'.format(config.data_dir): '/data/builds',
         '{0}/ccache'.format(config.data_dir): '/data/ccache',
         '{0}/src'.format(config.data_dir): '/data/src',
-        '{0}/builds'.format(config.data_dir): '/data/builds',
-        '{0}/bshomes'.format(config.data_dir): '/data/bshomes',
     }
     for vol in volumes:
         apply_acls(vol, buildbot_root_uid + BUILDBOT_UID, buildbot_root_gid + BUILDBOT_GID)
