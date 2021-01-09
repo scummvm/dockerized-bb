@@ -32,7 +32,7 @@ def StandardBuilderWorker(name, **kwargs):
             '{0}/bshomes:/data/bshomes'.format(config.data_dir),
         ],
         hostconfig={
-            'network_mode': 'workers-net',
+            'network_mode': config.docker_workers_net,
             'read_only': True,
             'mounts': [tmpfs],
         },
@@ -52,7 +52,7 @@ def FetcherWorker(name, **kwargs):
             '{0}/triggers:/data/triggers'.format(config.data_dir),
         ],
         hostconfig={
-            'network_mode': 'workers-net',
+            'network_mode': config.docker_workers_net,
             'read_only': True,
             'mounts': [tmpfs],
         },
