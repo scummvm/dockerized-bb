@@ -315,7 +315,8 @@ class ScummVMBuild(StandardBuild):
                 "make",
                 "-j{0}".format(max_jobs)
             ],
-            env = env))
+            env = env,
+            timeout = 3600))
 
         if platform.canBuildTests(self):
             if platform.canRunTests(self):
