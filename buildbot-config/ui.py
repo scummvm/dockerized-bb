@@ -8,9 +8,14 @@ from buildbot.plugins import reporters
 import config
 
 www = {
-    'plugins': dict(waterfall_view={}, console_view={}, grid_view={}),
-# TODO:
-#    order_console_by_time: True,
+    'plugins': {
+        'waterfall_view': True,
+        'console_view': True,
+        'grid_view': True,
+    },
+    # Our builds use GitHub so let use GitHub avatars
+    'avatar_methods': [util.AvatarGitHub()],
+    # Prepare change hooks if any
     'change_hook_dialects': {
     },
 }
