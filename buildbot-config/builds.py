@@ -157,8 +157,14 @@ class StandardBuild(Build):
             ))
         if self.nightly is not None:
             # Trigger nightly scheduler to let it know the source stamp
-            f.addStep(steps.Trigger(name="Updating source stamp", hideStepIf=(lambda r, s: r == util.SUCCESS),
-                schedulerNames = [ "nightly-scheduler-{0}".format(self.name) ]))
+            f.addStep(steps.Trigger(name="Updating source stamp",
+                schedulerNames = [ "nightly-scheduler-{0}".format(self.name) ],
+                set_properties = {
+                    'got_revision': util.Property('got_revision', defaultWhenFalse=False),
+                },
+                updateSourceStamp = True,
+                hideStepIf=(lambda r, s: r == util.SUCCESS),
+            ))
         f.addStep(steps.Trigger(name="Building all platforms",
             schedulerNames = [ "build-scheduler-{0}".format(self.name) ],
             set_properties = {
