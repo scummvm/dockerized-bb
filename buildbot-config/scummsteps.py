@@ -38,7 +38,7 @@ class Patch(buildstep.ShellMixin, steps.BuildStep):
                     patch_data = fp.read()
             except IOError:
                 # if file does not exist, bail out with an error
-                self.addCompleteLog('stderr',
+                yield self.addCompleteLog('stderr',
                                     'File %r not available at master' % source)
                 return util.FAILURE
             cmd = yield self.makeRemoteShellCommand(command=self.command,
@@ -103,7 +103,7 @@ class SetPropertyIfOlder(steps.BuildStep):
 
         log = "{0}: {1!s}\n".format(self.src, datetime.fromtimestamp(dateSrc))
         log += "{0}: {1!s}\n".format(self.generated, datetime.fromtimestamp(dateGenerated))
-        self.addCompleteLog('timestamps', log)
+        yield self.addCompleteLog('timestamps', log)
 
         # Set to True if older
         self.setProperty(self.property, dateGenerated <= dateSrc, self.name)
