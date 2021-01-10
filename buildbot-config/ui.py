@@ -13,8 +13,7 @@ www = {
         'console_view': True,
         'grid_view': True,
     },
-    # Our builds use GitHub so let use GitHub avatars
-    'avatar_methods': [util.AvatarGitHub()],
+    'avatar_methods': [],
     # Prepare change hooks if any
     'change_hook_dialects': {
     },
