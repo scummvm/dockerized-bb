@@ -54,12 +54,17 @@ class StandardBuild(Build):
     __slots__ = [
         'baseurl', 'giturl', 'branch',
         'nightly', 'enable_force',
+        'verbose_build',
         'description_',
         'lock_src']
 
     PATCHES = []
+    DATA_FILES = []
+    VERBOSE_BUILD_FLAG = None
 
-    def __init__(self, name, baseurl, branch, nightly = None, enable_force = True, giturl = None, description = None):
+    def __init__(self, name, baseurl, branch, *,
+            nightly = None, enable_force = True, giturl = None,
+            verbose_build = False, description = None):
         super().__init__(name)
         if giturl is None:
             giturl = baseurl + ".git"
@@ -68,6 +73,7 @@ class StandardBuild(Build):
         self.branch = branch
         self.nightly = nightly
         self.enable_force = enable_force
+        self.verbose_build = verbose_build
         self.description_ = description
         # Lock used to avoid writing source code when it is read by another task
         self.lock_src = util.MasterLock("src-{0}".format(self.name), maxCount=sys.maxsize)
@@ -208,8 +214,139 @@ class StandardBuild(Build):
 
         return ret
 
+    def getPerPlatformBuilders(self, platform):
+        if not platform.canBuild(self):
+            return []
+
+        # Don't use os.path.join as builder is a linux image
+        src_path = "{0}/src/{1}".format("/data", self.name)
+        configure_path = src_path + "/configure"
+        build_path = "{0}/builds/{1}/{2}".format("/data", platform.name, self.name)
+
+        # snapshots_path is used in Package step on master side
+        snapshots_path = os.path.join(config.snapshots_dir, self.name)
+        # Ensure last path component doesn't get removed here and in packaging step
+        snapshots_url = urlp.urljoin(config.snapshots_url + '/', self.name + '/')
+
+        env = platform.getEnv(self)
+
+        f = util.BuildFactory()
+        f.useProgress = False
+
+        self.addCleanSteps(f, platform,
+            env = env)
+
+        self.addConfigureSteps(f, platform,
+            configure_path=configure_path,
+            env = env)
+
+        self.addBuildSteps(f, platform,
+            env = env)
+
+        self.addTestsSteps(f, platform,
+            env = env)
+
+        self.addPackagingSteps(f, platform,
+            env = env,
+            src_path = src_path,
+            snapshots_path = snapshots_path,
+            snapshots_url = snapshots_url)
+
+        locks = [ lock_build.access('counting'), self.lock_src.access("counting") ]
+        if platform.lock_access:
+            locks.append(platform.lock_access(self))
+
+        return [util.BuilderConfig(
+            name = "{0}-{1}".format(self.name, platform.name),
+            workernames = workers.workers_by_type['builder'],
+            workerbuilddir = build_path,
+            factory = f,
+            locks = locks,
+            tags = ["build", self.name, platform.name],
+            properties = {
+                "platformname": platform.name,
+                "workerimage": platform.getWorkerImage(self),
+            },
+        )]
+
+    def addCleanSteps(self, f, platform, *, env):
+        # Standard way of cleaning build directory (current working one)
+        f.addStep(scummsteps.Clean(
+            dir = "",
+            doStepIf = util.Property("clean", False)
+        ))
+
+    def addConfigureSteps(self, f, platform, *,
+            env, configure_path, additional_args=None, generated_file="config.mk"):
+        if additional_args is None:
+            additional_args = []
+
+        f.addStep(scummsteps.SetPropertyIfOlder(
+            name = "check config.mk freshness",
+            src = configure_path,
+            generated = generated_file,
+            property = "do_configure"
+            ))
+
+        command = [ configure_path ]
+        command.extend(additional_args)
+        if self.verbose_build and self.VERBOSE_BUILD_FLAG:
+            command.append(self.VERBOSE_BUILD_FLAG)
+        command.extend(platform.getConfigureArgs(self))
+
+        f.addStep(steps.Configure(command = command,
+            doStepIf = util.Property("do_configure", default=True, defaultWhenFalse=False),
+            env = env))
+
+    def addBuildSteps(self, f, platform, *, env, **kwargs):
+        f.addStep(steps.Compile(command = [
+                "make",
+                "-j{0}".format(max_jobs)
+            ],
+            env = env,
+            **kwargs))
+
+    def addTestsSteps(self, f, platform, *, env, **kwargs):
+        if not platform.canBuildTests(self):
+            return
+
+        if platform.canRunTests(self):
+            f.addStep(steps.Test(env = env, **kwargs))
+        else:
+            # Compile Tests (Runner), but do not execute (as binary is non-native)
+            f.addStep(steps.Test(command = [
+                    "make",
+                    "test/runner" ],
+                env = env, **kwargs))
+
+    def addPackagingSteps(self, f, platform, *, env,
+        src_path, snapshots_path, snapshots_url):
+
+        packaging_cmd = platform.getPackagingCmd(self)
+        strip_cmd = platform.getStripCmd(self)
+
+        # If there is a packaging command, no need to strip it would be done there
+        if packaging_cmd is None and strip_cmd is not None:
+            f.addStep(scummsteps.Strip(
+                command = strip_cmd,
+                env = env))
+
+        if platform.canPackage(self):
+            f.addSteps(scummsteps.get_package_steps(
+                buildname = self.name,
+                platformname = platform.name,
+                srcpath = src_path,
+                dstpath = snapshots_path,
+                dsturl = snapshots_url,
+                archive_format = platform.archiveext,
+                disttarget = packaging_cmd,
+                build_data_files = self.DATA_FILES,
+                platform_data_files = platform.getDataFiles(self),
+                platform_built_files = platform.getBuiltFiles(self),
+                env = env))
+
 class ScummVMBuild(StandardBuild):
-    __slots__ = [ 'data_files', 'verbose_build' ]
+    __slots__ = [ 'verbose_build' ]
 
     PATCHES = [
     ]
@@ -255,117 +392,26 @@ class ScummVMBuild(StandardBuild):
         "dists/engine-data/grim-patch.lab",
         "dists/engine-data/monkey4-patch.m4b"
     ]
+    VERBOSE_BUILD_FLAG = "--enable-verbose-build"
 
     def __init__(self, *args, **kwargs):
         verbose_build = kwargs.pop('verbose_build', False)
-        data_files = kwargs.pop('data_files', None)
 
         super().__init__(*args, **kwargs)
         self.verbose_build = verbose_build
-        if data_files is None:
-            data_files = self.DATA_FILES
-        self.data_files = data_files
 
-    def getPerPlatformBuilders(self, platform):
-        if not platform.canBuild(self):
-            return []
+    def addConfigureSteps(self, *args, **kwargs):
+        # Override to call parent with ScummVM specific configure arguments
+        other_args = kwargs.pop('additional_args', [])
+        additional_args = ["--enable-all-engines", "--disable-engine=testbed"]
+        additional_args.extend(other_args)
+        super().addConfigureSteps(*args, **kwargs, additional_args = additional_args)
 
-        # Don't use os.path.join as builder is a linux image
-        src_path = "{0}/src/{1}".format("/data", self.name)
-        configure_path = src_path + "/configure"
-        build_path = "{0}/builds/{1}/{2}".format("/data", platform.name, self.name)
-
-        # snapshots_path is used in Package step on master side
-        snapshots_path = os.path.join(config.snapshots_dir, self.name)
-        # Ensure last path component doesn't get removed here and in packaging step
-        snapshots_url = urlp.urljoin(config.snapshots_url + '/', self.name + '/')
-
-        env = platform.getEnv(self)
-
-        f = util.BuildFactory()
-        f.useProgress = False
-
-        f.addStep(scummsteps.Clean(
-            dir = "",
-            doStepIf = util.Property("clean", False)
-        ))
-
-        f.addStep(scummsteps.SetPropertyIfOlder(
-            name = "check config.mk freshness",
-            src = configure_path,
-            generated = "config.mk",
-            property = "do_configure"
-            ))
-
-        if self.verbose_build:
-            platform_build_verbosity = "--enable-verbose-build"
-        else:
-            platform_build_verbosity = ""
-
-        f.addStep(steps.Configure(command = [
-                configure_path,
-                "--enable-all-engines",
-                "--disable-engine=testbed",
-                platform_build_verbosity
-            ] + platform.getConfigureArgs(self),
-            doStepIf = util.Property("do_configure", default=True, defaultWhenFalse=False),
-            env = env))
-
-        f.addStep(steps.Compile(command = [
-                "make",
-                "-j{0}".format(max_jobs)
-            ],
-            env = env,
-            timeout = 3600))
-
-        if platform.canBuildTests(self):
-            if platform.canRunTests(self):
-                f.addStep(steps.Test(env = env))
-            else:
-                # Compile Tests (Runner), but do not execute (as binary is non-native)
-                f.addStep(steps.Test(command = [
-                        "make",
-                        "test/runner" ],
-                    env = env))
-
-        packaging_cmd = None
-        if platform.getPackagingCmd(self) is not None:
-            packaging_cmd = platform.getPackagingCmd(self)
-        else:
-            if platform.getStripCmd(self) is not None:
-                f.addStep(scummsteps.Strip(command = platform.getStripCmd(self),
-                    env = env))
-
-        if platform.canPackage(self):
-            f.addSteps(scummsteps.get_package_steps(
-                buildname = self.name,
-                platformname = platform.name,
-                srcpath = src_path,
-                dstpath = snapshots_path,
-                dsturl = snapshots_url,
-                archive_format = platform.archiveext,
-                disttarget = packaging_cmd,
-                build_data_files = self.data_files,
-                platform_data_files = platform.getDataFiles(self),
-                platform_built_files = platform.getBuiltFiles(self),
-                env = env))
-
-        locks = [ lock_build.access('counting'), self.lock_src.access("counting") ]
-        if platform.lock_access:
-            locks.append(platform.lock_access(self))
-
-        return [util.BuilderConfig(
-            name = "{0}-{1}".format(self.name, platform.name),
-            workernames = workers.workers_by_type['builder'],
-            workerbuilddir = build_path,
-            factory = f,
-            locks = locks,
-            tags = ["build", self.name, platform.name],
-            properties = {
-                "platformname": platform.name,
-                "workerimage": platform.getWorkerImage(self),
-            },
-        )]
+    def addBuildSteps(self, *args, **kwargs):
+        # ScummVM builds are longer
+        timeout = kwargs.pop('timeout', 0)
+        timeout = max(3600, timeout)
+        super().addBuildSteps(*args, **kwargs, timeout = timeout)
 
 class ScummVMStableBuild(ScummVMBuild):
     PATCHES = [
@@ -407,7 +453,7 @@ class ScummVMStableBuild(ScummVMBuild):
     ]
 
 class ScummVMToolsBuild(StandardBuild):
-    __slots__ = [ 'data_files', 'verbose_build' ]
+    __slots__ = [ 'verbose_build' ]
 
     PATCHES = [
     ]
@@ -419,107 +465,17 @@ class ScummVMToolsBuild(StandardBuild):
         "convert_dxa.sh",
         "convert_dxa.bat"
     ]
+    VERBOSE_BUILD_FLAG = "--enable-verbose-build"
 
     def __init__(self, *args, **kwargs):
         verbose_build = kwargs.pop('verbose_build', False)
-        data_files = kwargs.pop('data_files', None)
 
         super().__init__(*args, **kwargs)
         self.verbose_build = verbose_build
-        if data_files is None:
-            data_files = self.DATA_FILES
-        self.data_files = data_files
 
-    def getPerPlatformBuilders(self, platform):
-        if not platform.canBuild(self):
-            return []
-
-        # Don't use os.path.join as builder is a linux image
-        # /data is specific to builder worker
-        src_path = "{0}/src/{1}".format("/data", self.name)
-        configure_path = src_path + "/configure"
-        build_path = "{0}/builds/{1}/{2}".format("/data", platform.name, self.name)
-
-        # snapshots_path is used in Package step on master side
-        snapshots_path = os.path.join(config.snapshots_dir, self.name)
-        # Ensure last path component doesn't get removed here and in packaging step
-        snapshots_url = urlp.urljoin(config.snapshots_url + '/', self.name + '/')
-
-        env = platform.getEnv(self)
-
-        f = util.BuildFactory()
-        f.useProgress = False
-
-        f.addStep(scummsteps.Clean(
-            dir = "",
-            doStepIf = util.Property("clean", False)
-        ))
-
-        f.addStep(scummsteps.SetPropertyIfOlder(
-            name = "check config.mk freshness",
-            src = configure_path,
-            generated = "config.mk",
-            property = "do_configure"
-            ))
-
-        if self.verbose_build:
-            platform_build_verbosity = "--enable-verbose-build"
-        else:
-            platform_build_verbosity = ""
-
-        f.addStep(steps.Configure(command = [
-                configure_path,
-                platform_build_verbosity
-            ] + platform.getConfigureArgs(self),
-            doStepIf = util.Property("do_configure", default=True, defaultWhenFalse=False),
-            env = env))
-
-        f.addStep(steps.Compile(command = [
-                "make",
-                "-j{0}".format(max_jobs)
-            ],
-            env = env))
-
-        # No tests
-
-        packaging_cmd = None
-        if platform.getPackagingCmd(self) is not None:
-            packaging_cmd = platform.getPackagingCmd(self)
-        else:
-            if platform.getStripCmd(self) is not None:
-                f.addStep(scummsteps.Strip(command = platform.getStripCmd(self),
-                    env = env))
-
-        if platform.canPackage(self):
-            f.addSteps(scummsteps.get_package_steps(
-                buildname = self.name,
-                platformname = platform.name,
-                srcpath = src_path,
-                dstpath = snapshots_path,
-                dsturl = snapshots_url,
-                archive_format = platform.archiveext,
-                disttarget = packaging_cmd,
-                build_data_files = self.data_files,
-                platform_data_files = platform.getDataFiles(self),
-                platform_built_files = platform.getBuiltFiles(self),
-                env = env))
-
-        locks = [ lock_build.access('counting'), self.lock_src.access("counting") ]
-        if platform.lock_access:
-            locks.append(platform.lock_access(self))
-
-        return [util.BuilderConfig(
-            name = "{0}-{1}".format(self.name, platform.name),
-            workernames = workers.workers_by_type['builder'],
-            workerbuilddir = build_path,
-            factory = f,
-            locks = locks,
-            tags = ["build", self.name, platform.name],
-            properties = {
-                "platformname": platform.name,
-                "workerimage": platform.getWorkerImage(self),
-            },
-        )]
+    def addTestsSteps(self, f, platform, *, env, **kwargs):
+        # Don't do anything: we don't have tests of tools
+        pass
 
 builds = []
 
