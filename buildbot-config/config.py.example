@@ -69,6 +69,8 @@ project_url = "https://scummvm.org/"
 www_port = ("127.0.0.1", 8010)
 # URL used to reach Buildbot instance
 buildbot_url = "https://buildbot.scummvm.org/"
+# Retention time for data (in weeks)
+data_retention_weeks = 4
 
 # URL used to download snapshots
 # If serve_snapshots is True, it will be:

@@ -1,3 +1,4 @@
+import datetime
 import os
 
 from twisted.cred import strcred
@@ -120,3 +121,15 @@ if hasattr(config, 'enable_list_snapshots') and config.enable_list_snapshots:
         'order': -1,
         'icon': 'archive'
     }]
+
+janitor = util.JanitorConfigurator(
+    logHorizon=datetime.timedelta(
+        weeks=config.data_retention_weeks)
+        if hasattr(config, 'data_retention_weeks') else None,
+    build_data_horizon=datetime.timedelta(
+        weeks=config.data_retention_weeks)
+        if hasattr(config, 'data_retention_weeks') else None,
+    # 5 o'clock on sundays
+    hour=5,
+    dayOfWeek=6
+)
