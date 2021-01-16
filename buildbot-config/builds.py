@@ -350,12 +350,16 @@ class ScummVMBuild(StandardBuild):
                 platform_built_files = platform.getBuiltFiles(self),
                 env = env))
 
+        locks = [ lock_build.access('counting'), self.lock_src.access("counting") ]
+        if platform.lock_access:
+            locks.append(platform.lock_access(self))
+
         return [util.BuilderConfig(
             name = "{0}-{1}".format(self.name, platform.name),
             workernames = workers.workers_by_type['builder'],
             workerbuilddir = build_path,
             factory = f,
-            locks = [ lock_build.access('counting'), self.lock_src.access("counting") ],
+            locks = locks,
             tags = ["build", self.name, platform.name],
             properties = {
                 "platformname": platform.name,
@@ -500,12 +504,16 @@ class ScummVMToolsBuild(StandardBuild):
                 platform_built_files = platform.getBuiltFiles(self),
                 env = env))
 
+        locks = [ lock_build.access('counting'), self.lock_src.access("counting") ]
+        if platform.lock_access:
+            locks.append(platform.lock_access(self))
+
         return [util.BuilderConfig(
             name = "{0}-{1}".format(self.name, platform.name),
             workernames = workers.workers_by_type['builder'],
             workerbuilddir = build_path,
             factory = f,
-            locks = [ lock_build.access('counting'), self.lock_src.access("counting") ],
+            locks = locks,
             tags = ["build", self.name, platform.name],
             properties = {
                 "platformname": platform.name,

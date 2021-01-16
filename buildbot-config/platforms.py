@@ -1,5 +1,7 @@
 import copy
 
+from buildbot.plugins import util
+
 import config
 import builds
 import workers
@@ -36,7 +38,7 @@ class Platform:
             'packageable', 'built_files', 'data_files',
             'packaging_cmd', 'strip_cmd', 'archiveext',
             'testable', 'run_tests',
-            'workerimage',
+            'workerimage', 'lock_access',
             'icon', 'description_']
 
     def __init__(self, name):
@@ -58,6 +60,9 @@ class Platform:
         self.run_tests = False
 
         self.workerimage = name
+        # A callable taking the build object as argument and
+        # which returns a LockAccess to be used when building platform
+        self.lock_access = None
 
         # For snapshots list
         self.icon = None
@@ -179,6 +184,8 @@ def android(suffix, scummvm_target, ndk_target, cxx_target, abi_version,
     platform = Platform("android-{0}".format(suffix))
     platform.compatibleBuilds = (builds.ScummVMBuild, )
 
+    # Use a lock between all Android builds to avoid concurrency conflicts in gradle
+    platform.lock_access = (lambda build: android.lock.access('exclusive'))
     platform.workerimage = {
         builds.ScummVMBuild: "android",
     }
@@ -208,6 +215,7 @@ def android(suffix, scummvm_target, ndk_target, cxx_target, abi_version,
     platform.description = description
 
     register_platform(platform)
+android.lock = util.MasterLock("android")
 android(suffix="arm",
         scummvm_target="arm-v7a",
         ndk_target="arm-linux-androideabi",
