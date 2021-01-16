@@ -1,3 +1,4 @@
+m4_define(`MXE_VERSION',281c783ea35f847e6084cfbae163caed2fd08f98)m4_dnl
 FROM toolchains/common AS helpers
 
 m4_include(`paths.m4')m4_dnl
@@ -43,7 +44,7 @@ RUN apt-get update && \
 # As MXE changes are mainly packages related, set version here instead of in toolchain script
 ENV MXE_DIR=/opt/mxe-src \
 	MXE_PREFIX_DIR=/opt/mxe \
-	MXE_VERSION=f4df56d24db24ab150a99f2d9eae87fa519e02cb
+	`MXE_VERSION'=MXE_VERSION
 
 local_package(toolchain)
 
