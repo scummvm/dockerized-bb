@@ -25,15 +25,15 @@ These builds are totally untested, may not be nicely packaged (i.e. may not run 
 {{ platform.description }}
 </td>
 {% for build in builds -%}
-  {% set info = packages[build] -%}
-    {% if not info -%}
+  {% set package = packages[build] -%}
+    {% if not package -%}
   <td> <span class="label label-default">N/A</span> </td>
     {% else -%}
-      {% set stat = info.path | status -%}
-      {% if not stat -%}
+      {% set snapshot = package | to_snapshot -%}
+      {% if not snapshot -%}
   <td> <span class="label label-danger">Missing</span> </td>
       {% else -%}
-  <td> <a class="label label-success" href="{{info.url }}">{{ stat }}</a> </td>
+  <td> <a class="label label-success" href="{{snapshot.url }}">{{ snapshot.revision }}</a> </td>
       {% endif -%}
     {% endif -%}
   {% endfor -%}

@@ -14,7 +14,10 @@ from bottle import request, response
 
 __all__ = [ 'get_application' ]
 
-PackageInfo = collections.namedtuple('PackageInfo', ['path', 'url'])
+# PackageInfo is generic and is built at startup
+PackageInfo = collections.namedtuple('PackageInfo', ['path', 'base_url'])
+# SnapshotInfo is resolved in real time from a PackageInfo
+SnapshotInfo = collections.namedtuple('SnaphshotInfo', ['revision', 'url'])
 Helpers = collections.namedtuple('Helpers', ['get_names', 'get_revision'])
 
 # Subclass Bottle to have a pretty configuration
@@ -88,25 +91,27 @@ def get_package_infos(snapshots_dir, snapshots_url, helpers,
             revision=None)
     path = os.path.join(snapshots_dir, build.name, symlink)
 
-    url = urlp.urljoin(snapshots_url + '/', build.name + '/')
-    url = urlp.urljoin(url, symlink)
+    base_url = urlp.urljoin(snapshots_url + '/', build.name + '/')
 
-    return PackageInfo(path, url)
+    return PackageInfo(path, base_url)
 
 # Filter for list_snapshots template
 # Determine the revision pointed by symlink
-def get_status(path):
+def to_snapshot(pkg_info):
     helpers = request.app.helpers
 
-    path = os.path.realpath(path)
+    path = os.path.realpath(pkg_info.path)
     if not os.path.isfile(path):
         # Either a broken symlink, a directory(?), ...
         return False
 
     basename = os.path.basename(path)
+    # Create a revision dependent URL
+    url = urlp.urljoin(pkg_info.base_url, basename)
 
     rev = helpers[1](basename)
-    return rev or False
+
+    return SnapshotInfo(rev, url) if rev else False
 
 # Build an URL pointing to assets
 def static_url(item):
@@ -120,7 +125,7 @@ def static_url(item):
     template_lookup=tmpl_path,
     template_settings=dict(
         filters={
-            'status': get_status,
+            'to_snapshot': to_snapshot,
             'static_url': static_url,
         },
     ))
