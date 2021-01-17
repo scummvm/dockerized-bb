@@ -467,7 +467,7 @@ def macosx_i386():
         builds.ScummVMToolsBuild: None
     }
     platform.built_files = {
-        builds.ScummVMBuild: [ "scummvm" ],
+        builds.ScummVMBuild: [ "ScummVM.app" ],
         builds.ScummVMToolsBuild: [
             "construct_mohawk",
             "create_sjisfnt",
