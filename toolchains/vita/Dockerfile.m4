@@ -1,3 +1,5 @@
+m4_define(`vdpm_package', RUN lib-helpers/install-vdpm.sh $1)m4_dnl
+
 FROM toolchains/common AS helpers
 
 m4_include(`paths.m4')m4_dnl
@@ -14,10 +16,7 @@ COPY --from=helpers /lib-helpers/prepare.sh lib-helpers/
 RUN lib-helpers/prepare.sh
 
 COPY --from=helpers /lib-helpers/functions.sh lib-helpers/
-COPY functions-platform.sh lib-helpers/
-
-# Use a common build script for vdpm packages
-COPY packages/common lib-helpers/packages/common/
+COPY functions-platform.sh install-vdpm.sh lib-helpers/
 
 RUN apt-get update && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
@@ -40,40 +39,40 @@ ENV \
 	def_pkg_config(`${PREFIX}') \
         PATH=$PATH:${VITASDK}/bin:${PREFIX}/bin
 
-local_package(zlib)
+vdpm_package(zlib)
 
-local_package(libpng)
+vdpm_package(libpng)
 
-local_package(libjpeg-turbo)
+vdpm_package(libjpeg-turbo)
 
-local_package(libmad)
+vdpm_package(libmad)
 
-local_package(libogg)
+vdpm_package(libogg)
 
-local_package(libvorbis)
+vdpm_package(libvorbis)
 
-helpers_package(libtheora)
+vdpm_package(libtheora)
 
-local_package(flac)
+vdpm_package(flac)
 
 helpers_package(faad2)
 
-local_package(libmpeg2)
+vdpm_package(libmpeg2)
 
 # These functions aren't implemented on Vita but they are not needed either
 helpers_package(libiconv, , ac_cv_func_sigprocmask=yes ac_cv_func_getprogname=yes)
 
-local_package(openssl)
+vdpm_package(openssl)
 
-local_package(curl)
+vdpm_package(curl)
 
-local_package(freetype)
+vdpm_package(freetype)
 
 helpers_package(fribidi)
 
-local_package(sdl2)
+vdpm_package(sdl2)
 
-local_package(sdl2_net)
+vdpm_package(sdl2_net)
 
 local_package(vita2dlib_fbo)
 
