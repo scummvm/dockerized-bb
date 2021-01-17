@@ -53,7 +53,7 @@ builds_to_poll = {
 #github_auth_clientid = ""
 #github_auth_clientsecret = ""
 ## Define organization and team membership used to determine rights
-#github_organisation = "scummvm"
+#github_organization = "scummvm"
 #github_admin_group = "admin-group"
 
 # htpasswd file based authentication

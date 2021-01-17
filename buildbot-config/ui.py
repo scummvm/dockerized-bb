@@ -64,7 +64,7 @@ elif hasattr(config, 'github_auth_clientid') and config.github_auth_clientid:
             util.AnyControlEndpointMatcher(role=config.github_admin_group)
         ],
         roleMatchers=[
-            util.RolesFromGroups(groupPrefix="{0}/".format(config.github_organisation)),
+            util.RolesFromGroups(groupPrefix="{0}/".format(config.github_organization)),
             # role owner is granted when property owner matches the email of the user
             util.RolesFromOwner(role="owner")
         ]
