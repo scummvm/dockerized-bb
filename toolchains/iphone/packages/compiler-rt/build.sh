@@ -27,16 +27,22 @@ CLANG_DARWIN_LIB_DIR="${CLANG_LIB_DIR}/lib/darwin"
 #do_git_fetch llvm-project "https://github.com/llvm/llvm-project.git" "${BRANCH}"
 #cd compiler-rt
 
-CLANG_PATCH=${CLANG_VERSION##*.}
-CLANG_MAJMIN=${CLANG_VERSION%.*}
+CLANG_MAJOR=$(echo ${CLANG_VERSION} | cut -d. -f1)
+CLANG_MINOR=$(echo ${CLANG_VERSION} | cut -d. -f2)
+CLANG_PATCH=$(echo ${CLANG_VERSION} | cut -d. -f3)
 # --spider doesn't work with Github/AWS so just do a 1 byte download to /dev/null
 while ! wget --header='Range: bytes=0-0' -O /dev/null \
 	"https://github.com/llvm/llvm-project/releases/download/llvmorg-${CLANG_VERSION}/compiler-rt-${CLANG_VERSION}.src.tar.xz"; do
 	if [ "$CLANG_PATCH" -eq 0 ]; then
-		exit 1
+		if [ "$CLANG_MINOR" -eq 0 ]; then
+			exit 1
+		fi
+		CLANG_MINOR=$(($CLANG_MINOR - 1))
+		# llvm didn't went above 3 in patch version
+		CLANG_PATCH=10
 	fi
 	CLANG_PATCH=$(($CLANG_PATCH - 1))
-	CLANG_VERSION=${CLANG_MAJMIN}.${CLANG_PATCH}
+	CLANG_VERSION=${CLANG_MAJOR}.${CLANG_MINOR}.${CLANG_PATCH}
 done
 
 do_http_fetch compiler-rt "https://github.com/llvm/llvm-project/releases/download/llvmorg-${CLANG_VERSION}/compiler-rt-${CLANG_VERSION}.src.tar.xz" 'tar xJf'
