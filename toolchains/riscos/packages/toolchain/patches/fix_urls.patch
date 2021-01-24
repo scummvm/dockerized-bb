@@ -1,0 +1,22 @@
+Index: Makefile
+===================================================================
+--- a/Makefile	(revision 7467)
++++ b/Makefile	(working copy)
+@@ -702,7 +702,7 @@
+ # Download gmp source:
+ $(SRCORIGDIR)/gmp-$(GMP_VERSION).tar.bz2:
+ 	-mkdir -p $(SRCORIGDIR)
+-	cd $(SRCORIGDIR) && wget -c https://gmplib.org/download/gmp-$(GMP_VERSION)/gmp-$(GMP_VERSION).tar.bz2
++	cd $(SRCORIGDIR) && wget -c https://ftpmirror.gnu.org/gmp/gmp-$(GMP_VERSION).tar.bz2
+ 	touch $@
+ 
+ # Download mpc source:
+@@ -714,7 +714,7 @@
+ # Download mpfr source:
+ $(SRCORIGDIR)/mpfr-$(MPFR_VERSION).tar.bz2:
+ 	-mkdir -p $(SRCORIGDIR)
+-	cd $(SRCORIGDIR) && wget -c https://www.mpfr.org/mpfr-$(MPFR_VERSION)/mpfr-$(MPFR_VERSION).tar.bz2
++	cd $(SRCORIGDIR) && wget -c https://ftpmirror.gnu.org/mpfr/mpfr-$(MPFR_VERSION).tar.bz2
+ 	touch $@
+ 
+ # Download ppl source:
