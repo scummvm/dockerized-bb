@@ -1,24 +1,14 @@
 m4_define(`DEVKITPPC_VERSION',20190212)
-FROM toolchains/common AS helpers
-
 # This version of devkitPPC depends on a Debian Stretch
 # For now it works with stable-slim, we will have to ensure it stays like that
 FROM devkitpro/devkitppc:DEVKITPPC_VERSION AS original-toolchain
 
 m4_include(`paths.m4')m4_dnl
-
 m4_include(`packages.m4')m4_dnl
 
-FROM debian:stable-slim
-USER root
-
-WORKDIR /usr/src
-
-# Copy and execute each step separately to avoid invalidating cache
-COPY --from=helpers /lib-helpers/prepare.sh lib-helpers/
-RUN lib-helpers/prepare.sh
-
-COPY --from=helpers /lib-helpers/functions.sh lib-helpers/
+m4_dnl Include Debian base preparation steps
+m4_dnl This ensures all common steps are shared by all toolchains
+m4_include(`debian-toolchain-base.m4')m4_dnl
 
 RUN apt-get update && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \

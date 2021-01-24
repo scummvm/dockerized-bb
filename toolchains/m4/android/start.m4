@@ -1,28 +1,17 @@
 m4_define(`local_sdk_package', COPY packages/$1 lib-helpers/packages/$1/
 RUN $3 lib-helpers/packages/$1/build.sh $2)m4_dnl
-
 m4_define(`local_package', COPY packages/$1 lib-helpers/packages/$1/
 RUN $3 lib-helpers/multi-build.sh lib-helpers/packages/$1/build.sh $2)m4_dnl
-
 m4_define(`helpers_package', COPY --from=helpers /lib-helpers/packages/$1 lib-helpers/packages/$1/
 RUN $3 lib-helpers/multi-build.sh lib-helpers/packages/$1/build.sh $2)m4_dnl
-
 m4_define(`android_package', COPY --from=android-helpers /lib-helpers/packages/$1 lib-helpers/packages/$1/
 RUN $3 lib-helpers/multi-build.sh lib-helpers/packages/$1/build.sh $2)
 
-FROM toolchains/common AS helpers
 FROM toolchains/android-common AS android-helpers
 
-FROM debian:stable-slim
-USER root
-
-WORKDIR /usr/src
-
-# Copy and execute each step separately to avoid invalidating cache
-COPY --from=helpers /lib-helpers/prepare.sh lib-helpers/
-RUN lib-helpers/prepare.sh
-
-COPY --from=helpers /lib-helpers/functions.sh lib-helpers/
+m4_dnl Include Debian base preparation steps
+m4_dnl This ensures all common steps are shared by all toolchains
+m4_include(`debian-toolchain-base.m4')m4_dnl
 
 COPY --from=android-helpers /lib-helpers/functions-platform.sh \
 	/lib-helpers/multi-build.sh lib-helpers/

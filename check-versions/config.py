@@ -65,6 +65,23 @@ libiconv_check = {
         'prefix': 'v',
 }
 
+# Distributions images checks
+debian_check = {
+    'check': 'docker tag',
+    'registry': 'https://registry-1.docker.io',
+    'image name': 'library/debian',
+    'architecture': 'amd64',
+    'reference': 'stable-slim',
+    'tag_format': 'stable-{0}-slim',
+}
+alpine_check = {
+    'check': 'docker tag',
+    'registry': 'https://registry-1.docker.io',
+    'image name': 'library/alpine',
+    'architecture': 'amd64',
+    'reference': 'latest',
+}
+
 # The checks parameter for each version tag
 # Every entry in the dictionary is keyed by a tuple made of path (relative to ROOT) and package name
 # Every value is a dictionnary with a 'check' entry specifying the check to use and its parameters
@@ -80,6 +97,8 @@ VERSIONS = {
         'repository': 'https://github.com/bottlepy/bottle.git',
         'exclude pattern': r'.*(b|rc).*'
     },
+
+    ('./toolchains/m4/debian-toolchain-base.m4', 'DEBIAN'): debian_check,
 
     ('./toolchains/amigaos4/packages/libsdl2/build.sh', 'SDL2'): {
         'check': 'git tag',
@@ -391,4 +410,7 @@ VERSIONS = {
         'repository': 'https://github.com/frangarcj/vita2dlib.git',
         'branch': 'fbo',
     },
+
+    ('./workers/fetcher/Dockerfile.m4', 'ALPINE'): alpine_check,
+    ('./workers/m4/debian-builder-base.m4', 'DEBIAN'): debian_check,
 }

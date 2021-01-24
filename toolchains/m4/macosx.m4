@@ -1,25 +1,16 @@
-FROM toolchains/common AS helpers
-FROM toolchains/apple-sdks AS sdks
-FROM toolchains/macosx-common AS macosx-common
-
 m4_include(`paths.m4')m4_dnl
-
 m4_include(`packages.m4')m4_dnl
 m4_define(`helpers_package', helpers_package($1,$2,$3) && osxcross-macports fake-install $1 && rm -Rf ${TARGET_DIR}/macports/cache)m4_dnl
 m4_define(`common_package', COPY --from=macosx-common /lib-helpers/packages/$1 lib-helpers/packages/$1/
 RUN $3 lib-helpers/packages/$1/build.sh $2)m4_dnl
 m4_define(`ports_package', RUN $3 osxcross-macports ``${MACOSX_PORTS_ARCH_ARG}'' -s install $1 $2 && rm -Rf ${TARGET_DIR}/macports/cache)m4_dnl
 
-FROM debian:stable-slim
-USER root
+FROM toolchains/apple-sdks AS sdks
+FROM toolchains/macosx-common AS macosx-common
 
-WORKDIR /usr/src
-
-# Copy and execute each step separately to avoid invalidating cache
-COPY --from=helpers /lib-helpers/prepare.sh lib-helpers/
-RUN lib-helpers/prepare.sh
-
-COPY --from=helpers /lib-helpers/functions.sh lib-helpers/
+m4_dnl Include Debian base preparation steps
+m4_dnl This ensures all common steps are shared by all toolchains
+m4_include(`debian-toolchain-base.m4')m4_dnl
 
 RUN apt-get update && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \

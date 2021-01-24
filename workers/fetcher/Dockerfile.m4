@@ -1,4 +1,5 @@
-FROM alpine:latest
+m4_define(`ALPINE_VERSION',3.13.0)m4_dnl
+FROM alpine:ALPINE_VERSION
 m4_define(`BASE_ALPINE',`')m4_dnl
 USER root
 

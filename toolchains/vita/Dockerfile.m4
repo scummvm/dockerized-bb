@@ -1,21 +1,11 @@
+m4_include(`paths.m4')m4_dnl
+m4_include(`packages.m4')m4_dnl
 m4_define(`vdpm_package', RUN lib-helpers/install-vdpm.sh $1)m4_dnl
 
-FROM toolchains/common AS helpers
+m4_dnl Include Debian base preparation steps
+m4_dnl This ensures all common steps are shared by all toolchains
+m4_include(`debian-toolchain-base.m4')m4_dnl
 
-m4_include(`paths.m4')m4_dnl
-
-m4_include(`packages.m4')m4_dnl
-
-FROM debian:stable-slim
-USER root
-
-WORKDIR /usr/src
-
-# Copy and execute each step separately to avoid invalidating cache
-COPY --from=helpers /lib-helpers/prepare.sh lib-helpers/
-RUN lib-helpers/prepare.sh
-
-COPY --from=helpers /lib-helpers/functions.sh lib-helpers/
 COPY functions-platform.sh install-vdpm.sh lib-helpers/
 
 RUN apt-get update && \
