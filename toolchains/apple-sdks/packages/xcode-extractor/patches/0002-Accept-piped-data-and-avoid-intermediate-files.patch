@@ -1,0 +1,342 @@
+From 3872debcaa91739da7a3cc04a5a6d45996f9ff4d Mon Sep 17 00:00:00 2001
+From: Le Philousophe <lephilousophe@users.noreply.github.com>
+Date: Sun, 24 Jan 2021 19:18:24 +0100
+Subject: [PATCH 2/4] Accept piped data and avoid intermediate files
+
+---
+ tools/gen_sdk_package_pbzx.sh | 193 +++++++++++++++++++++++++++++++++-
+ tools/tools.sh                | 105 ++++++++++++++++++
+ 2 files changed, 295 insertions(+), 3 deletions(-)
+
+diff --git a/tools/gen_sdk_package_pbzx.sh b/tools/gen_sdk_package_pbzx.sh
+index f2ae9de..60480a2 100755
+--- a/tools/gen_sdk_package_pbzx.sh
++++ b/tools/gen_sdk_package_pbzx.sh
+@@ -23,6 +23,192 @@ pushd $BUILD_DIR &>/dev/null
+ build_xar
+ 
+ get_sources https://github.com/tpoechtrager/pbzx.git $PBZX_VERSION
++patch -d "$CURRENT_BUILD_PROJECT_NAME" -p1 <<-'EOF'
++commit 3fc6a63b1489c18150cd171f8901d15269a79ea2
++Author: Le Philousophe <lephilousophe@users.noreply.github.com>
++Date:   Sun Jan 24 19:06:57 2021 +0100
++
++    Add XIP and stream handling to pbzx
++
++diff --git a/pbzx.c b/pbzx.c
++index d01ef35..3470aa6 100644
++--- a/pbzx.c
+++++ b/pbzx.c
++@@ -32,10 +32,17 @@
++ #define ZBSZ 1024 * XBSZ
++ #define VERSION "1.0.2"
++ 
+++/* Possible types for the #stream structure. */
+++enum {
+++    STREAM_XAR = 1,
+++    STREAM_XIP,
+++    STREAM_FP
+++};
+++
++ /* Structure to hold the command-line options. */
++ struct options {
+++    int  type;    /* Type of input data: XAR or XIP archive or directly the pbzx Payload */
++     bool stdin;    /* True if data should be read from stdin. */
++-    bool noxar;    /* The input data is not a XAR archive but the pbzx Payload. */
++     bool help;     /* Print usage with details and exit. */
++     bool version;  /* Print version and exit. */
++ };
++@@ -43,7 +50,7 @@ struct options {
++ /* Prints usage information and exit. Optionally, displays an error message and
++  * exits with an error code. */
++ static void usage(char const* error) {
++-    fprintf(stderr, "usage: pbzx [-v] [-h] [-n] [-] [filename]\n");
+++    fprintf(stderr, "usage: pbzx [-v] [-h] [-ni] [-] [filename]\n");
++     if (error) {
++         fprintf(stderr, "error: %s\n", error);
++         exit(EINVAL);
++@@ -70,12 +77,14 @@ static void version() {
++ /* Parses command-line flags into the #options structure and adjusts the
++  * argument count and values on the fly to remain only positional arguments. */
++ static void parse_args(int* argc, char const** argv, struct options* opts) {
+++    opts->type = STREAM_XAR;
++     for (int i = 0; i < *argc; ++i) {
++         /* Skip arguments that are not flags. */
++         if (argv[i][0] != '-') continue;
++         /* Match available arguments. */
++         if      (strcmp(argv[i], "-")  == 0) opts->stdin = true;
++-        else if (strcmp(argv[i], "-n") == 0) opts->noxar = true;
+++        else if (strcmp(argv[i], "-n") == 0) opts->type = STREAM_FP;
+++        else if (strcmp(argv[i], "-i") == 0) opts->type = STREAM_XIP;
++         else if (strcmp(argv[i], "-h") == 0) opts->help = true;
++         else if (strcmp(argv[i], "-v") == 0) opts->version = true;
++         else usage("unrecognized flag");
++@@ -91,25 +100,21 @@ static inline uint32_t min(uint32_t a, uint32_t b) {
++     return (a < b ? a : b);
++ }
++ 
++-/* Possible types for the #stream structure. */
++-enum {
++-    STREAM_XAR = 1,
++-    STREAM_FP
++-};
++-
++ /* Generic datastructure that can represent a streamed file in a XAR archive
++  * or a C FILE pointer. The stream is initialized respectively depending on
++  * the command-line flags. */
++ struct stream {
++-    int type;       /* One of #STREAM_XAR and #STREAM_FP. */
++-    xar_t xar;      /* Only valid if #type == #STREAM_XAR. */
++-    xar_stream xs;  /* Only valid if #type == #STREAM_XAR. */
+++    int type;       /* One of #STREAM_XAR, #STREAM_XIP and #STREAM_FP. */
+++    bool pipe;      /* true if we can't seek */
+++    xar_t xar;      /* Only valid if #type == #STREAM_XAR or #STREAM_XIP. */
+++    xar_stream xs;  /* Only valid if #type == #STREAM_XAR or #STREAM_XIP. */
++     FILE* fp;       /* Only valid if #type == #STREAM_FP. */
++ };
++ 
++ /* Initialize an empty stream. */
++ static void stream_init(struct stream* s) {
++     s->type = 0;
+++    s->pipe = false;
++     s->xar = NULL;
++     memset(&s->xs, 0, sizeof(s->xs));
++     s->fp = NULL;
++@@ -119,27 +124,60 @@ static void stream_init(struct stream* s) {
++ static bool stream_open(struct stream* s, int type, const char* filename) {
++     stream_init(s);
++     s->type = type;
+++    if (!filename) {
+++        s->pipe = true;
+++    } else {
+++        FILE *ftest = fopen(filename, "rb");
+++        if (!ftest) return false;  /* File can not be opened. */
+++        if (fseek(ftest, 0, SEEK_SET) == -1 && errno == ESPIPE) {
+++            s->pipe = true;
+++        }
+++        fclose(ftest);
+++    }
++     switch (type) {
++-        case STREAM_XAR: {
+++        case STREAM_XAR:
+++        case STREAM_XIP: {
+++            const char *member_name;
+++            size_t member_name_size;
+++            if (type == STREAM_XAR) {
+++                member_name = "Payload";
+++                member_name_size = 7;
+++            }
+++            else if (type == STREAM_XIP) {
+++                member_name = "Content";
+++                member_name_size = 7;
+++            }
+++            else {
+++                return false;
+++            }
++             s->xar = xar_open(filename, READ);
++             if (!s->xar) return false;
++             xar_iter_t i = xar_iter_new();
++             xar_file_t f = xar_file_first(s->xar, i);
++             char* path = NULL;
++             /* Find the Payload file in the archive. */
++-            while (strncmp((path = xar_get_path(f)), "Payload", 7) &&
+++            while (strncmp((path = xar_get_path(f)), member_name, member_name_size) &&
++                    (f = xar_file_next(i))) {
++                 free(path);
++             }
++             free(path);
++             xar_iter_free(i);
++             if (!f) return false;  /* No Payload. */
++-            if (xar_verify(s->xar, f) != XAR_STREAM_OK) return false;  /* File verification failed. */
+++            /* Verify here only when not a pipe as it implies going backward in stream after */
+++            if (!s->pipe) {
+++                fprintf(stderr, "Verifying...");
+++                if (xar_verify(s->xar, f) != XAR_STREAM_OK) return false; /* File verification failed. */
+++            }
+++            fprintf(stderr, "Extracting...");
++             if (xar_extract_tostream_init(s->xar, f, &s->xs) != XAR_STREAM_OK) return false;  /* XAR Stream init failed. */
++             return true;
++         }
++         case STREAM_FP: {
++-            s->fp = fopen(filename, "rb");
+++            if (filename) {
+++                s->fp = fopen(filename, "rb");
+++            } else {
+++                s->fp = stdin;
+++            }
++             if (!s->fp) return false;  /* File can not be opened. */
++             return true;
++         }
++@@ -152,7 +190,10 @@ static bool stream_open(struct stream* s, int type, const char* filename) {
++ static void stream_close(struct stream* s) {
++     switch (s->type) {
++         case STREAM_XAR:
++-            xar_extract_tostream_end(&s->xs);
+++            if (xar_extract_tostream_end(&s->xs)) {
+++                fprintf(stderr, "!! WARNING: File verification failed !!\nYou must ignore everything which got extracted");
+++                exit(1);
+++            }
++             xar_close(s->xar);
++             break;
++         case STREAM_FP:
++@@ -215,18 +256,11 @@ int main(int argc, const char** argv) {
++     /* Open a stream to the payload. */
++     struct stream stream;
++     stream_init(&stream);
++-    bool success = false;
+++    bool success;
++     if (opts.stdin) {
++-        stream.type = STREAM_FP;
++-        stream.fp = stdin;
++-        success = true;
++-    }
++-    else if (opts.noxar) {
++-        success = stream_open(&stream, STREAM_FP, filename);
++-    }
++-    else {
++-        success = stream_open(&stream, STREAM_XAR, filename);
+++        filename = NULL;
++     }
+++    success = stream_open(&stream, opts.type, filename);
++     if (!success) {
++         fprintf(stderr, "failed to open: %s\n", filename);
++         return 1;
++EOF
+ 
+ if [ $f_res -eq 1 ]; then
+   pushd $CURRENT_BUILD_PROJECT_NAME &>/dev/null
+@@ -40,11 +226,12 @@ pushd $TMP_DIR &>/dev/null
+ 
+ echo "Extracting $XCODE (this may take several minutes) ..."
+ 
+-LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$TARGET_DIR/lib \
+-  verbose_cmd "$TARGET_DIR/bin/xar -xf $XCODE -C $TMP_DIR"
++set -o pipefail
+ 
+ LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$TARGET_DIR/lib \
+-  verbose_cmd "$TARGET_DIR/SDK/tools/bin/pbzx -n Content | cpio -i"
++  verbose_cmd "$TARGET_DIR/SDK/tools/bin/pbzx -i $XCODE | cpio -i"
++
++set +o pipefail
+ 
+ popd &>/dev/null # TMP_DIR
+ popd &>/dev/null # BUILD_DIR
+diff --git a/tools/tools.sh b/tools/tools.sh
+index ca22cc2..cde7ecb 100644
+--- a/tools/tools.sh
++++ b/tools/tools.sh
+@@ -473,6 +473,111 @@ function build_xar()
+   pushd $BUILD_DIR &>/dev/null
+ 
+   get_sources https://github.com/tpoechtrager/xar.git $XAR_VERSION
++  patch -d "$CURRENT_BUILD_PROJECT_NAME" -p1 <<-'EOF'
++commit 9047e5820c2a65829100f183dae342700d5cf604
++Author: Le Philousophe <lephilousophe@users.noreply.github.com>
++Date:   Sun Jan 24 17:22:23 2021 +0100
++
++    Allow stdin to be used
++
++diff --git a/xar/lib/archive.c b/xar/lib/archive.c
++index adbe79b..b274965 100644
++--- a/xar/lib/archive.c
+++++ b/xar/lib/archive.c
++@@ -39,6 +39,7 @@
++ #define _FILE_OFFSET_BITS 64
++ 
++ #include "config.h"
+++#include <assert.h>
++ #include <stdlib.h>
++ #include <stdio.h>
++ #include <string.h>
++@@ -193,11 +194,22 @@ static int32_t xar_parse_header(xar_t x) {
++ 	}
++ 
++ 	off = XAR(x)->header.size - sz2read;
++-	if( off > 0 )
+++	if( off > 0 ) {
++ 		r = (int)lseek(XAR(x)->fd, (off_t)off, SEEK_CUR);
++ 
++-	if ( (r == -1) && (errno != ESPIPE) ) {
++-		/* Some fatal error here perhaps? */
+++		if (r == -1) {
+++			if ( errno == ESPIPE ) {
+++				void *buf = malloc(off);
+++				assert(buf);
+++				r = xar_read_fd(XAR(x)->fd, buf, off);
+++				free(buf);
+++				if( r < (ssize_t)off ) {
+++					return -1;
+++				}
+++			} else {
+++				return -1; /* Failed to seek */
+++			}
+++		}
++ 	}
++ 
++ 	return 0;
++@@ -405,8 +417,32 @@ xar_t xar_open(const char *file, int32_t flags) {
++ 
++ 		XAR(ret)->heap_offset = (off_t)(xar_get_heap_offset(ret) + offset);
++ 		if( lseek(XAR(ret)->fd, XAR(ret)->heap_offset, SEEK_SET) == -1 ) {
++-			xar_close(ret);
++-			return NULL;
+++			if ( errno == ESPIPE ) {
+++				/* Calculate where we are */
+++				size_t current = XAR(ret)->header.size + XAR(ret)->toc_count;
+++				size_t toread = XAR(ret)->heap_offset - current;
+++				void *buf;
+++				ssize_t r;
+++				if ( XAR(ret)->heap_offset < current) {
+++					/* Can't seek backwards */
+++					fprintf(stderr, "Trying to seek backward\n");
+++					xar_close(ret);
+++					return NULL;
+++				}
+++				if (toread) {
+++					buf = malloc(toread);
+++					assert(buf);
+++					r = xar_read_fd(XAR(ret)->fd, buf, toread);
+++					free(buf);
+++					if( r < (ssize_t)toread ) {
+++						xar_close(ret);
+++						return NULL;
+++					}
+++				}
+++			} else {
+++				xar_close(ret);
+++				return NULL;
+++			}
++ 		}
++ 		if( xar_prop_get( XAR_FILE(ret) , "checksum/size", &value) == 0 ) {
++ 			errno = 0;
++diff --git a/xar/lib/io.c b/xar/lib/io.c
++index c1115f3..768f0fb 100644
++--- a/xar/lib/io.c
+++++ b/xar/lib/io.c
++@@ -191,16 +191,16 @@ static void xar_io_seek(xar_t x, xar_file_t f, off_t seekoff) {
++ 			if( errno == ESPIPE ) {
++ 				ssize_t rr;
++ 				char *buf;
++-				unsigned int len;
+++				size_t len;
++ 
++-				len = (unsigned)(seekoff - (off_t)xar_get_heap_offset(x));
+++				len = (size_t)seekoff;
++ 				if( XAR(x)->heap_offset > len ) {
++ 					xar_err_new(x);
++ 					xar_err_set_file(x, f);
++ 					xar_err_set_string(x, "Unable to seek");
++ 					xar_err_callback(x, XAR_SEVERITY_NONFATAL, XAR_ERR_ARCHIVE_EXTRACTION);
++ 				} else {
++-					len -= (unsigned)XAR(x)->heap_offset;
+++					len -= (size_t)XAR(x)->heap_offset;
++ 					buf = malloc(len);
++ 					assert(buf);
++ 					rr = xar_read_fd(XAR(x)->fd, buf, len);
++EOF
+ 
+   if [ $f_res -eq 1 ]; then
+     pushd $CURRENT_BUILD_PROJECT_NAME/xar &>/dev/null
+-- 
+2.25.1
+

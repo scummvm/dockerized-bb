@@ -1,0 +1,47 @@
+From c95716e86a9353fb6d4dee5b624c3188e6f0ce29 Mon Sep 17 00:00:00 2001
+From: Le Philousophe <lephilousophe@users.noreply.github.com>
+Date: Sun, 24 Jan 2021 20:28:04 +0100
+Subject: [PATCH 4/4] Lighten extraction more
+
+---
+ tools/gen_sdk_package_pbzx.sh | 19 ++++++++++++++++++-
+ 1 file changed, 18 insertions(+), 1 deletion(-)
+
+diff --git a/tools/gen_sdk_package_pbzx.sh b/tools/gen_sdk_package_pbzx.sh
+index 60480a2..8ae8c8e 100755
+--- a/tools/gen_sdk_package_pbzx.sh
++++ b/tools/gen_sdk_package_pbzx.sh
+@@ -224,12 +224,29 @@ create_tmp_dir
+ 
+ pushd $TMP_DIR &>/dev/null
+ 
++cat <<'EOF' > cpio.filters
++./Xcode.app
++./Xcode.app/Contents
++./Xcode.app/Contents/Developer
++./Xcode.app/Contents/Developer/Toolchains
++./Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain
++./Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr
++./Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/*
++./Xcode.app/Contents/Developer/Platforms
++EOF
++for platform in $SDK_PLATFORMS; do
++	echo "./Xcode.app/Contents/Developer/Platforms/${platform}.platform" >> cpio.filters
++	echo "./Xcode.app/Contents/Developer/Platforms/${platform}.platform/Developer" >> cpio.filters
++	echo "./Xcode.app/Contents/Developer/Platforms/${platform}.platform/Developer/SDKs" >> cpio.filters
++	echo "./Xcode.app/Contents/Developer/Platforms/${platform}.platform/Developer/SDKs/*" >> cpio.filters
++done
++
+ echo "Extracting $XCODE (this may take several minutes) ..."
+ 
+ set -o pipefail
+ 
+ LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$TARGET_DIR/lib \
+-  verbose_cmd "$TARGET_DIR/SDK/tools/bin/pbzx -i $XCODE | cpio -i"
++  verbose_cmd "$TARGET_DIR/SDK/tools/bin/pbzx -i $XCODE | cpio -i -E cpio.filters"
+ 
+ set +o pipefail
+ 
+-- 
+2.25.1
+
