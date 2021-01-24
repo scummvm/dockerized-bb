@@ -346,6 +346,15 @@ VERSIONS = {
         'branch': 'master',
     },
 
+    ('./toolchains/raspberrypi/packages/compilers/build.sh', 'DIST'): {
+        'check': 'scrape',
+        'url': 'http://archive.raspbian.org/raspbian/dists/stable/Release',
+        'filter pattern': r'(?m)^Codename: (?P<version>[a-z]+)$',
+        'case insensitive': True,
+    },
+    # It's quite hard to determine which GCC version Raspbian uses and it's tied to DIST
+    ('./toolchains/raspberrypi/packages/compilers/build.sh', 'GCC'): 'ignore',
+
     ('./toolchains/riscos/packages/bindhelp/build.sh', 'BINDHELP'): {
         'check': 'svn commit',
         'repository': 'https://svn.code.sf.net/p/ro-oslib/code/trunk',

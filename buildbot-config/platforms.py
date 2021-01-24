@@ -609,10 +609,18 @@ psp()
 
 def raspberrypi():
     platform = Platform("raspberrypi")
-    platform.env["CXX"] = "ccache arm-linux-gnueabihf-g++"
+    platform.env["CXX"] = "ccache ${CXX}"
     platform.configureargs.append("--host=raspberrypi")
+
+    # stable build don't have this target yet
+    platform.packaging_cmd = {
+        builds.ScummVMBuild: "dist-generic",
+        builds.ScummVMStableBuild: None,
+    }
     platform.built_files = {
-        builds.ScummVMBuild: [ "scummvm" ],
+        builds.ScummVMBuild: [ "dist-generic/*" ],
+        # stable build will use produced binary and additional files mentioned in builds.py
+        builds.ScummVMStableBuild: [ "scummvm" ],
         builds.ScummVMToolsBuild: [
             "construct_mohawk",
             "create_sjisfnt",
