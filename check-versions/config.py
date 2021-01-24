@@ -213,9 +213,9 @@ VERSIONS = {
     },
 
     ('./toolchains/mxe/Dockerfile.m4', 'MXE'): {
-        'check': 'git commit',
+        'check': 'git tag',
         'repository': 'https://github.com/mxe/mxe.git',
-        'branch': 'master',
+        'pattern': '^build-',
     },
     ('./toolchains/mxe/packages/discord-rpc/discord-rpc.mk', ''): discord_rpc_check,
     ('./toolchains/mxe/packages/discord-rpc/rapidjson.mk', ''): {

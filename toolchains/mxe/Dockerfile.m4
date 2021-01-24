@@ -1,4 +1,4 @@
-m4_define(`MXE_VERSION',281c783ea35f847e6084cfbae163caed2fd08f98)m4_dnl
+m4_define(`MXE_VERSION',build-2021-01-10)m4_dnl
 FROM toolchains/common AS helpers
 
 m4_include(`paths.m4')m4_dnl
