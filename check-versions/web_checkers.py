@@ -35,7 +35,7 @@ def fetch_page(url, *, encoding=None, **kwargs):
 
         return data
 
-def scrape(version, *, url, filter_pattern, all_versions=False, **kwargs):
+def scrape(version, *, url, filter_pattern, all_versions=False, case_insensitive=False, **kwargs):
     data = fetch_page(url, **kwargs)
 
     versions = re.finditer(filter_pattern, data)
@@ -45,17 +45,21 @@ def scrape(version, *, url, filter_pattern, all_versions=False, **kwargs):
     versions = checkers.prepare_versions(versions, **kwargs)
 
     if len(versions) == 0:
-        print("WARNING: no matching versions for {0}, pattern {1} with {1}".format(
+        print("WARNING: no matching versions for {0}, pattern {1} with {2}".format(
             url, filter_pattern,
             checkers.describe_filter(**kwargs)))
         return True, 'none', "page URL: {0}".format(url)
+
+    if case_insensitive:
+        version = version.lower()
+        versions = [version.lower() for version in versions]
 
     # On a webpage you may not have all versions so don't warn if not expected
     try:
         current_idx = versions.index(version)
     except ValueError:
         if all_versions:
-            print("WARNING: version {2} not in versions for {0}, pattern {1} and with {2}".format(
+            print("WARNING: version {3} not in versions for {0}, pattern {1} and with {2}".format(
                 url, filter_pattern,
                 checkers.describe_filter(**kwargs)), version)
         current_idx = -1
