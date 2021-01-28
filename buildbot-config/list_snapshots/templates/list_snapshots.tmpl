@@ -32,8 +32,10 @@ These builds are totally untested, may not be nicely packaged (i.e. may not run 
       {% set snapshot = package | to_snapshot -%}
       {% if not snapshot -%}
   <td> <span class="label label-danger">Missing</span> </td>
+      {% elif not snapshot.revision -%}
+  <td> <a class="label label-warning" href="{{snapshot.url}}">Unknown</a> </td>
       {% else -%}
-  <td> <a class="label label-success" href="{{snapshot.url }}">{{ snapshot.revision }}</a> </td>
+  <td> <a class="label label-success" href="{{snapshot.url}}">{{ snapshot.revision }}</a> </td>
       {% endif -%}
     {% endif -%}
   {% endfor -%}

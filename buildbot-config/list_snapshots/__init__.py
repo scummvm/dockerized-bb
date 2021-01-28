@@ -111,7 +111,7 @@ def to_snapshot(pkg_info):
 
     rev = helpers[1](basename)
 
-    return SnapshotInfo(rev, url) if rev else False
+    return SnapshotInfo(rev, url)
 
 # Build an URL pointing to assets
 def static_url(item):
