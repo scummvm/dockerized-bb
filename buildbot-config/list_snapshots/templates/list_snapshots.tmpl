@@ -17,13 +17,9 @@ These builds are totally untested, may not be nicely packaged (i.e. may not run 
 {% for platform, packages in platforms.items() -%}
 <tr>
   <td>
-{%- if platform.icon -%}
-<img class="platform-icon" src="https://www.scummvm.org/images/icons/platforms/{{ platform.icon }}.png">
-{%- else -%}
-<span class="platform-icon"></span>
-{%- endif -%}
-{{ platform.description }}
-</td>
+    <span class="sprite sprite-platforms-{{ platform.icon or 'unknown' }}"></span>
+    {{ platform.description }}
+  </td>
 {% for build in builds -%}
   {% set package = packages[build] -%}
     {% if not package -%}
@@ -45,3 +41,4 @@ These builds are totally untested, may not be nicely packaged (i.e. may not run 
 </div>
 </div>
 <link href="{{ 'snapshots.css' | static_url }}" rel="stylesheet" />
+<link href="https://www.scummvm.org/css/platforms.css" rel="stylesheet" />
