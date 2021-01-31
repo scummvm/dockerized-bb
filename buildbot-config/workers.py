@@ -19,11 +19,11 @@ def register(type_, worker):
     workers.append(worker)
     workers_by_type[type_].append(worker.name)
 
-docker_client = docker.APIClient(base_url=config.docker_socket)
-if len(docker_client.networks(names=[config.docker_workers_net])) == 0:
-	docker_client.create_network(config.docker_workers_net)
+with docker.APIClient(base_url=config.docker_socket) as docker_client:
+    if len(docker_client.networks(names=[config.docker_workers_net])) == 0:
+        docker_client.create_network(config.docker_workers_net)
 
-buildbot_ip = docker_client.inspect_network(config.docker_workers_net)['IPAM']['Config'][0]['Gateway']
+    buildbot_ip = docker_client.inspect_network(config.docker_workers_net)['IPAM']['Config'][0]['Gateway']
 
 # Those are setup in docker images
 BUILDBOT_UID, BUILDBOT_GID = 1000, 1000
