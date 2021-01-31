@@ -117,7 +117,7 @@ if hasattr(config, 'enable_list_snapshots') and config.enable_list_snapshots:
         'name': 'snapshots',
         'caption': 'Snapshots',
         'app': list_snapshots.get_application(
-            (scummsteps.createNames, scummsteps.getRevisionFromName),
+            (scummsteps.create_names, scummsteps.parse_package_name),
             config.snapshots_dir, config.snapshots_url,
             builds.builds, platforms.platforms,
             serve_snapshots = serve_snapshots),

@@ -147,7 +147,7 @@ PACKAGE_FORMAT_COMMANDS = {
 }
 
 # Helper to generate file names
-def createNames(buildname, platformname, archive_format, revision):
+def create_names(buildname, platformname, archive_format, revision):
     if archive_format not in PACKAGE_FORMAT_COMMANDS:
         archive_format = "tar.bz2"
     if revision is not None:
@@ -158,10 +158,16 @@ def createNames(buildname, platformname, archive_format, revision):
     symlink = "{0}-{1}-latest.{2}".format(platformname, buildname, archive_format)
     return name, archive, symlink
 
-PACKAGE_NAME_RE = re.compile(r'.+-[^-]+-([0-9a-fA-F]+)\..*')
-def getRevisionFromName(name):
-    mtch = PACKAGE_NAME_RE.match(name)
-    return mtch.group(1) if mtch else None
+# Curly braces here are used by format not re
+PACKAGE_NAME_RE = r'(?P<platform>{0})-(?P<build>{1})-(?P<revision>[0-9a-fA-F]*|latest)\..*'
+# When both build and platform are None, detection will be wrong when builds have dashes
+def parse_package_name(name, *, build = None, platform = None):
+    if build is None:
+        build = '[^-]+'
+    if platform is None:
+        platform = '.+'
+    mtch = re.match(PACKAGE_NAME_RE.format(platform, build), name)
+    return mtch
 
 # Helper function which generates a list of steps that build the package on the worker,
 # upload it to master and create the symlink for the latest
@@ -186,7 +192,7 @@ def get_package_steps(buildname, platformname, srcpath, dstpath, dsturl,
         files += [ os.path.join(srcpath, f) for f in build_data_files ]
 
     def namesFromProps(props):
-        return createNames(buildname, platformname, archive_format, props["revision"])
+        return create_names(buildname, platformname, archive_format, props["revision"])
 
     @util.renderer
     def generateCommands(props):

@@ -15,10 +15,10 @@ from bottle import request, response
 __all__ = [ 'get_application' ]
 
 # PackageInfo is generic and is built at startup
-PackageInfo = collections.namedtuple('PackageInfo', ['path', 'base_url'])
+PackageInfo = collections.namedtuple('PackageInfo', ['build', 'platform', 'path', 'base_url'])
 # SnapshotInfo is resolved in real time from a PackageInfo
 SnapshotInfo = collections.namedtuple('SnaphshotInfo', ['revision', 'url'])
-Helpers = collections.namedtuple('Helpers', ['get_names', 'get_revision'])
+Helpers = collections.namedtuple('Helpers', ['get_names', 'parse_name'])
 
 # Subclass Bottle to have a pretty configuration
 @implementer(IConfigured)
@@ -84,7 +84,7 @@ def get_packaged_data(snapshots_dir, snapshots_url, helpers,
 def get_package_infos(snapshots_dir, snapshots_url, helpers,
         build, platform):
 
-    _, _, symlink = helpers[0](
+    _, _, symlink = helpers.get_names(
             buildname=build.name,
             platformname=platform.name,
             archive_format=platform.archiveext,
@@ -93,7 +93,7 @@ def get_package_infos(snapshots_dir, snapshots_url, helpers,
 
     base_url = urlp.urljoin(snapshots_url + '/', build.name + '/')
 
-    return PackageInfo(path, base_url)
+    return PackageInfo(build.name, platform.name, path, base_url)
 
 # Filter for list_snapshots template
 # Determine the revision pointed by symlink
@@ -109,7 +109,8 @@ def to_snapshot(pkg_info):
     # Create a revision dependent URL
     url = urlp.urljoin(pkg_info.base_url, basename)
 
-    rev = helpers[1](basename)
+    parsed = helpers.parse_name(basename, build = pkg_info.build, platform = pkg_info.platform)
+    rev = parsed['revision'] if parsed else None
 
     return SnapshotInfo(rev, url)
 
