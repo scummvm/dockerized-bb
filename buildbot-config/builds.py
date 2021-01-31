@@ -183,9 +183,9 @@ class StandardBuild(Build):
         ret = list()
 
         f = util.BuildFactory()
+        f.workdir = ""
         f.useProgress = False
         f.addStep(steps.Git(mode = "incremental",
-            workdir = ".",
             repourl = self.giturl,
             branch = self.branch,
             locks = [ self.lock_src.access("exclusive") ],
@@ -194,7 +194,6 @@ class StandardBuild(Build):
             f.addStep(scummsteps.Patch(
                 base_dir = config.configuration_dir,
                 patches = self.PATCHES,
-                workdir = ".",
                 locks = [ self.lock_src.access("exclusive") ],
             ))
         if self.nightly is not None:
@@ -266,6 +265,7 @@ class StandardBuild(Build):
         env = platform.getEnv(self)
 
         f = util.BuildFactory()
+        f.workdir = ""
         f.useProgress = False
 
         self.addCleanSteps(f, platform,
