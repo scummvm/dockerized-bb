@@ -8,3 +8,8 @@ m4_define(`MACOSX_DEPLOYMENT_TARGET',10.6)m4_dnl
 m4_define(`MACOSX_ARCHITECTURES',`i386')m4_dnl
 m4_define(`MACOSX_PORTS_ARCH_ARG',`--i386')m4_dnl
 m4_include(`macosx.m4')m4_dnl
+
+# Our compiler is c++11 compliant but our libstdc++ is too old for that
+# So far it kind of works but glew needs cstdint
+# Please it by providing it
+COPY cstdint ${TARGET_DIR}/SDK/MacOSX`'MACOSX_SDK_VERSION`'.sdk/usr/include/c++/4.2.1/cstdint
