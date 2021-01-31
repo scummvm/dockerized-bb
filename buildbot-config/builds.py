@@ -1,3 +1,4 @@
+import collections.abc
 import multiprocessing
 import os
 import shutil
@@ -52,6 +53,7 @@ class Build:
 
 class StandardBuild(Build):
     __slots__ = [
+        'names',
         'baseurl', 'giturl', 'branch',
         'nightly', 'enable_force',
         'verbose_build',
@@ -77,6 +79,36 @@ class StandardBuild(Build):
         self.description_ = description
         # Lock used to avoid writing source code when it is read by another task
         self.lock_src = util.MasterLock("src-{0}".format(self.name), maxCount=sys.maxsize)
+        self.buildNames()
+
+    def buildNames(self):
+        # Sort schedulers by definition order
+        # Sort builder by type and definition order
+        self.names = dict()
+        # Pollers
+        self.names['poller'] = "poller-{0}".format(self.name)
+        # Schedulers
+        self.names['sch-sb'] = "branch-scheduler-{0}".format(self.name)
+        self.names['sch-nightly'] = "nightly-scheduler-{0}".format(self.name)
+        self.names['sch-build'] = "build-scheduler-{0}".format(self.name)
+        # Force schedulers
+        # Force scheduler ID must begin with letter and not contain spaces
+        self.names['sch-force-id-fetch'] = "force-fetch-{0}".format(self.name)
+        self.names['sch-force-name-fetch'] = "Force fetch {0}".format(self.name)
+        self.names['sch-force-id-build'] = "force-build-{0}".format(self.name)
+        self.names['sch-force-name-build'] = "Force build".format(self.name)
+        # Builders
+        self.names['bld-fetch'] = "fetch-{0}".format(self.name)
+        self.names['bld-nightly'] = "nightly-{0}".format(self.name)
+        # Platform builders
+        builder_platform = "{0}-{{0}}".format(self.name)
+        def get_platform_name(platforms):
+            if isinstance(platforms, collections.abc.Iterable):
+                return (builder_platform.format(platform.name) for platform in platforms)
+            else:
+                return builder_platform.format(platforms.name)
+
+        self.names['bld-platform'] = get_platform_name
 
     @property
     def description(self):
@@ -88,7 +120,7 @@ class StandardBuild(Build):
 
     def getChangeSource(self, settings):
         return changes.GitPoller(
-            name="poller-{0}".format(self.name),
+            name=self.names['poller'],
             repourl=self.giturl,
             branches=[self.branch],
             workdir=os.path.join(config.data_dir, 'pollers', self.name),
@@ -99,40 +131,44 @@ class StandardBuild(Build):
         change_filter = util.ChangeFilter(repository = [self.baseurl, self.giturl], branch = self.branch)
 
         # Fetch scheduler (triggered by event source)
-        ret.append(schedulers.SingleBranchScheduler(name = "branch-scheduler-{0}".format(self.name),
+        ret.append(schedulers.SingleBranchScheduler(name = self.names['sch-sb'],
                 change_filter = change_filter,
                 # Wait for 5 minutes before starting build
                 treeStableTimer = 300,
-                builderNames = [ "fetch-{0}".format(self.name) ]))
+                builderNames = [ self.names['bld-fetch'] ]))
 
         # Nightly scheduler (started by time)
         # It's triggered after regular builds to take note of the last fetched source
         # Note that build is not started by trigger
         if self.nightly is not None:
-            ret.append(schedulers.NightlyTriggerable(name = "nightly-scheduler-{0}".format(self.name),
+            ret.append(schedulers.NightlyTriggerable(name = self.names['sch-nightly'],
                 branch = self.branch,
-                builderNames = [ "nightly-{0}".format(self.name) ],
+                builderNames = [ self.names['bld-nightly'] ],
                 hour = self.nightly[0],
                 minute = self.nightly[1],
                 onlyIfChanged = True))
 
         # All compiling builders
-        comp_builders = ["{0}-{1}".format(self.name, p.name) for p in platforms if p.canBuild(self)]
+        comp_builders = list(self.names['bld-platform'](p for p in platforms if p.canBuild(self)))
 
         # Global build scheduler (triggered by fetch build and nightly build)
-        ret.append(schedulers.Triggerable(name = "build-scheduler-{0}".format(self.name), builderNames = comp_builders))
+        ret.append(schedulers.Triggerable(name = self.names['sch-build'], builderNames = comp_builders))
 
         # Force schedulers
         if self.enable_force:
-            ret.append(schedulers.ForceScheduler(name = "force-scheduler-{0}-fetch".format(self.name),
+            ret.append(schedulers.ForceScheduler(name = self.names['sch-force-id-fetch'],
+                buttonName=self.names['sch-force-name-fetch'],
+                label=self.names['sch-force-name-fetch'],
                 reason=util.StringParameter(name="reason", label="Reason:", required=True, size=80),
-                builderNames = [ "fetch-{0}".format(self.name) ],
+                builderNames = [ self.names['bld-fetch'] ],
                 codebases = [util.CodebaseParameter(codebase='', hide=True)],
                 properties = [
                     util.BooleanParameter(name="clean", label="Clean", default=False),
                     util.BooleanParameter(name="package", label="Package", default=False),
                     ]))
-            ret.append(schedulers.ForceScheduler(name = "force-scheduler-{0}-build".format(self.name),
+            ret.append(schedulers.ForceScheduler(name = self.names['sch-force-id-build'],
+                buttonName=self.names['sch-force-name-build'],
+                label=self.names['sch-force-name-build'],
                 reason=util.StringParameter(name="reason", label="Reason:", required=True, size=80),
                 builderNames = comp_builders,
                 codebases = [util.CodebaseParameter(codebase='', hide=True)],
@@ -172,7 +208,7 @@ class StandardBuild(Build):
                 hideStepIf=(lambda r, s: r == util.SUCCESS),
             ))
         f.addStep(steps.Trigger(name="Building all platforms",
-            schedulerNames = [ "build-scheduler-{0}".format(self.name) ],
+            schedulerNames = [ self.names['sch-build'] ],
             set_properties = {
                 'got_revision': util.Property('got_revision', defaultWhenFalse=False),
                 'clean': util.Property('clean', defaultWhenFalse=False),
@@ -182,7 +218,7 @@ class StandardBuild(Build):
             waitForFinish = True))
 
         ret.append(util.BuilderConfig(
-            name = "fetch-{0}".format(self.name),
+            name = self.names['bld-fetch'],
             workernames = workers.workers_by_type['fetcher'],
             workerbuilddir = "/data/src/{0}".format(self.name),
             factory = f,
@@ -193,7 +229,7 @@ class StandardBuild(Build):
         if self.nightly is not None:
             f = util.BuildFactory()
             f.addStep(steps.Trigger(name="Building all platforms",
-                schedulerNames = [ "build-scheduler-{0}".format(self.name) ],
+                schedulerNames = [ self.names['sch-build'] ],
                 updateSourceStamp = True,
                 waitForFinish = True,
                 set_properties = {
@@ -201,9 +237,8 @@ class StandardBuild(Build):
                     'clean': True,
                     'package': True,
                 }))
-
             ret.append(util.BuilderConfig(
-                name = "nightly-{0}".format(self.name),
+                name = self.names['bld-nightly'],
                 # We use fetcher worker here as it will prevent building of other stuff like if a change had happened
                 workernames = workers.workers_by_type['fetcher'],
                 workerbuilddir = "/data/triggers/nightly-{0}".format(self.name),
@@ -257,7 +292,7 @@ class StandardBuild(Build):
             locks.append(platform.lock_access(self))
 
         return [util.BuilderConfig(
-            name = "{0}-{1}".format(self.name, platform.name),
+            name = self.names['bld-platform'](platform),
             workernames = workers.workers_by_type['builder'],
             workerbuilddir = build_path,
             factory = f,

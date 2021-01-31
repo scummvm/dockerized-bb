@@ -6,6 +6,9 @@ from twisted.cred import strcred
 from buildbot.plugins import util
 from buildbot.plugins import reporters
 
+# To patch janitor name
+import buildbot.configurators.janitor
+
 import config
 
 www = {
@@ -122,6 +125,7 @@ if hasattr(config, 'enable_list_snapshots') and config.enable_list_snapshots:
         'icon': 'archive'
     }]
 
+buildbot.configurators.janitor.JANITOR_NAME = "zzz_janitor"
 janitor = util.JanitorConfigurator(
     logHorizon=datetime.timedelta(
         weeks=config.data_retention_weeks)
