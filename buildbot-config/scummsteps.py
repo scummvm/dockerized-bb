@@ -1,4 +1,6 @@
-from datetime import datetime
+from collections import defaultdict
+from datetime import datetime, timedelta
+import operator
 import os
 import re
 import urllib.parse as urlp
@@ -295,3 +297,138 @@ def Clean(**kwargs):
         description = "cleaning",
         descriptionDone = "clean",
         **kwargs)
+
+class CleanupSnapshots(steps.BuildStep):
+    name = "cleanup old snapshots"
+    renderables = [ 'dstpath', 'buildname', 'platformnames', 'keep_builds', 'obsolete', 'cleanup_unknown', 'dry_run' ]
+    haltOnFailure = True
+    flunkOnFailure = True
+
+    def __init__(self,
+            dstpath,
+            buildname,
+            platformnames,
+            keep_builds = 14,
+            obsolete = timedelta(days=30),
+            cleanup_unknown = True,
+            dry_run = False,
+            **kwargs):
+        super().__init__(**kwargs)
+
+        self.dstpath = dstpath
+        self.buildname = buildname
+        self.platformnames = platformnames
+        self.keep_builds = keep_builds
+        self.obsolete = obsolete
+        self.cleanup_unknown = cleanup_unknown
+        self.dry_run = dry_run
+
+    @defer.inlineCallbacks
+    def run(self):
+        to_clean = []
+        latests = {}
+        histories = defaultdict(list)
+
+        log = yield self.addLog('log')
+
+        yield log.addHeader("Cleaning directory {0}\nBuild: {1}\nPlatforms: {2}\n"
+                "Keeping: {3} packages per platform\nObsolete after: {4}\n{5} unknown packages\n".format(
+                    self.dstpath, self.buildname, ' '.join(self.platformnames), self.keep_builds, self.obsolete,
+                    "Cleaning" if self.cleanup_unknown else "Not cleaning"))
+
+        try:
+            dir_iter = os.scandir(self.dstpath)
+        except OSerror as e:
+            yield log.addStderr("An exception occurred while scanning the directory: {}\n".format(e))
+            return util.FAILURE
+
+        result = util.SUCCESS
+        with dir_iter:
+            for dir_entry in dir_iter:
+                parsed = parse_package_name(dir_entry.name, build = self.buildname)
+
+                if parsed is None:
+                    if self.cleanup_unknown:
+                        to_clean.append(dir_entry.path)
+                    continue
+                if parsed['build'] != self.buildname:
+                    if self.cleanup_unknown:
+                        to_clean.append(dir_entry.path)
+                    continue
+
+                if parsed['platform'] not in self.platformnames:
+                    if self.cleanup_unknown:
+                        to_clean.append(dir_entry.path)
+                        # Here we try to apply our rules on outdated platforms
+                        continue
+
+                if parsed['revision'] == 'latest':
+                    if parsed['platform'] not in self.platformnames:
+                        # We remove latest symlink when platform is unknown
+                        # We will keep packages during some time just in case
+                        to_clean.append(dir_entry.path)
+                        continue
+
+                    if not dir_entry.is_symlink():
+                        # Latest is not a symlink: that's fishy
+                        to_clean.append(dir_entry.path)
+                        continue
+
+                    path = os.path.realpath(dir_entry.path)
+                    if not os.path.isfile(path):
+                        # Either a broken symlink, a directory(?), ...
+                        to_clean.append(dir_entry.path)
+                        continue
+
+                    latests[parsed['platform']] = (dir_entry.path, path)
+                    continue
+
+                if not dir_entry.is_file(follow_symlinks=False):
+                    # Not a file, fishy too
+                    to_clean.append(dir_entry.path)
+                    continue
+
+                try:
+                    stat_result = dir_entry.stat(follow_symlinks=False)
+                    histories[parsed['platform']].append((dir_entry.path, datetime.fromtimestamp(stat_result.st_mtime)))
+                except OSError as e:
+                    yield log.addStderr("An exception occurred while stat()ing the file {}: {}\n".format(dir_entry.path, e))
+                    result = util.WARNING
+                    # File can't be stated: cleanup
+                    to_clean.append(dir_entry.path)
+
+        for platform, history in histories.items():
+            # Sort by mtime, most recent first
+            history.sort(key=operator.itemgetter(1), reverse=True)
+            symlink, latest = latests.pop(platform, None)
+            # Exclude N first files from cleaning: that's our history
+            # If latest point at it, don't clean it too. That shouldn't, but in case.
+            to_clean.extend(path for path, mtime in history[self.keep_builds:] if path != latest)
+            # Cleanup obsolete remaining packages except latest
+            obsolete = datetime.now() - self.obsolete
+            to_clean.extend(path for path, mtime in history if path != latest and mtime < obsolete)
+
+        for platform, (symlink, latest) in latests.items():
+            # Those must be some valid symlink but not pointing at a recognized package: clean up symlink
+            to_clean.append(symlink)
+
+        to_clean.sort()
+
+        removed = 0
+        yield log.addStdout("Would clean:\n" if self.dry_run else "Cleaning:\n")
+        for f in to_clean:
+            yield log.addStdout('{0}\n'.format(f))
+            try:
+                if not self.dry_run:
+                    os.remove(f)
+                removed += 1
+            except OSError as e:
+                yield log.addStderr("An exception occurred while removing {}: {}\n".format(dir_entry.path, e))
+                # We don't need specific test as we keep increasing error level
+                result = util.FAILURE
+
+        log.finish()
+        self.descriptionDone = [("would have removed {0} files" if self.dry_run
+            else "removed {0} files").format(removed)]
+
+        return result

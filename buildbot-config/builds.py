@@ -97,9 +97,13 @@ class StandardBuild(Build):
         self.names['sch-force-name-fetch'] = "Force fetch {0}".format(self.name)
         self.names['sch-force-id-build'] = "force-build-{0}".format(self.name)
         self.names['sch-force-name-build'] = "Force build".format(self.name)
+        self.names['sch-force-id-clean'] = "force-clean-{0}".format(self.name)
+        self.names['sch-force-name-clean'] = "Force clean {0} snapshots".format(self.name)
         # Builders
         self.names['bld-fetch'] = "fetch-{0}".format(self.name)
         self.names['bld-nightly'] = "nightly-{0}".format(self.name)
+        # Put clean builders in last position
+        self.names['bld-clean'] = "zzz_clean-{0}".format(self.name)
         # Platform builders
         builder_platform = "{0}-{{0}}".format(self.name)
         def get_platform_name(platforms):
@@ -140,10 +144,11 @@ class StandardBuild(Build):
         # Nightly scheduler (started by time)
         # It's triggered after regular builds to take note of the last fetched source
         # Note that build is not started by trigger
+        # We cleanup after it because we just generated a new package
         if self.nightly is not None:
             ret.append(schedulers.NightlyTriggerable(name = self.names['sch-nightly'],
                 branch = self.branch,
-                builderNames = [ self.names['bld-nightly'] ],
+                builderNames = [ self.names['bld-nightly'], self.names['bld-clean'] ],
                 hour = self.nightly[0],
                 minute = self.nightly[1],
                 onlyIfChanged = True))
@@ -176,10 +181,19 @@ class StandardBuild(Build):
                     util.BooleanParameter(name="clean", label="Clean", default=False),
                     util.BooleanParameter(name="package", label="Package", default=False),
                     ]))
+            ret.append(schedulers.ForceScheduler(name = self.names['sch-force-id-clean'],
+                buttonName=self.names['sch-force-name-clean'],
+                label=self.names['sch-force-name-clean'],
+                reason=util.StringParameter(name="reason", hide=True),
+                builderNames = [ self.names['bld-clean'] ],
+                codebases = [util.CodebaseParameter(codebase='', hide=True)],
+                properties = [
+                    util.BooleanParameter(name="dry_run", label="Dry run", default=False),
+                    ]))
 
         return ret
 
-    def getGlobalBuilders(self):
+    def getGlobalBuilders(self, platforms):
         ret = list()
 
         f = util.BuildFactory()
@@ -245,6 +259,26 @@ class StandardBuild(Build):
                 tags = ["nightly", self.name],
                 locks = [ lock_build.access('counting') ]
             ))
+
+        snapshots_path = os.path.join(config.snapshots_dir, self.name)
+
+        # Builder to clean packages
+        f = util.BuildFactory()
+        f.addStep(scummsteps.CleanupSnapshots(
+            dstpath = snapshots_path,
+            buildname = self.name,
+            platformnames = [ platform.name
+                for platform in platforms
+                if platform.canPackage(self) ],
+            dry_run = util.Property("dry_run", False)))
+        ret.append(util.BuilderConfig(
+            name = self.names['bld-clean'],
+            workernames = workers.workers_by_type['fetcher'],
+            workerbuilddir = "/data/triggers/cleanup-{0}".format(self.name),
+            factory = f,
+            tags = ["cleanup", self.name],
+            locks = [ lock_build.access('counting') ]
+        ))
 
         return ret
 
