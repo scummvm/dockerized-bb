@@ -1,4 +1,5 @@
 import collections.abc
+from datetime import timedelta
 import multiprocessing
 import os
 import shutil
@@ -270,7 +271,11 @@ class StandardBuild(Build):
             platformnames = [ platform.name
                 for platform in platforms
                 if platform.canPackage(self) ],
-            dry_run = util.Property("dry_run", False)))
+            dry_run = util.Property("dry_run", False),
+            keep_builds = getattr(config, 'snapshots_keep_builds', 14),
+            obsolete = timedelta(days=getattr(config, 'snapshots_obsolete_days', 30)),
+            cleanup_unknown = getattr(config, 'snapshots_clean_unknown', True),
+        ))
         ret.append(util.BuilderConfig(
             name = self.names['bld-clean'],
             workernames = workers.workers_by_type['fetcher'],

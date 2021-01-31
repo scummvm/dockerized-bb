@@ -39,6 +39,15 @@ max_parallel_builds = 1
 # Falsy value means to use cpu core count
 max_jobs = None
 
+# Snapshots retention settings
+# Number of snapshots to keep
+snapshots_keep_builds = 14
+# Number of days to keep a snapshot
+# Latest one will always be spared from cleaning
+snapshots_obsolete_days = 30
+# Whether to remove unknown files in directory
+snapshots_clean_unknown = True
+
 # List which builds won't receive notifications from Webhook
 # and must be polled
 # Each build entry is in the form
