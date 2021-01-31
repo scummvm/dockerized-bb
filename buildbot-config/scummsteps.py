@@ -338,7 +338,7 @@ class CleanupSnapshots(steps.BuildStep):
 
         try:
             dir_iter = os.scandir(self.dstpath)
-        except OSerror as e:
+        except OSError as e:
             yield log.addStderr("An exception occurred while scanning the directory: {}\n".format(e))
             return util.FAILURE
 
