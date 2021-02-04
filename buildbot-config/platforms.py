@@ -491,26 +491,26 @@ def macosx_i386():
     register_platform(platform)
 macosx_i386()
 
-#def nds():
-#    platform = Platform("nds")
-#    platform.workerimage = "devkitnds"
-#    platform.compatibleBuilds = (builds.ScummVMBuild, )
-#    platform.env["CXX"] = "ccache /opt/devkitpro/devkitARM/bin/arm-none-eabi-c++"
-#    platform.configureargs.append("--host=ds")
-#    platform.buildconfigureargs = {
-#        builds.ScummVMBuild: [ "--enable-plugins", "--default-dynamic" ],
-#    }
-#    platform.built_files = {
-#        builds.ScummVMBuild: [ "scummvm.nds", "plugins" ],
-#    }
-#    platform.archiveext = "tar.xz"
-#    platform.testable = False
-#
-#    platform.description = "Nintendo DS"
-#    platform.icon = 'ds'
-#
-#    register_platform(platform)
-#nds()
+def nds():
+    platform = Platform("nds")
+    platform.workerimage = "devkitnds"
+    platform.compatibleBuilds = (builds.ScummVMBuild, )
+    platform.env["CXX"] = "ccache /opt/devkitpro/devkitARM/bin/arm-none-eabi-c++"
+    platform.configureargs.append("--host=ds")
+    platform.buildconfigureargs = {
+        builds.ScummVMBuild: [ "--enable-plugins", "--default-dynamic" ],
+    }
+    platform.built_files = {
+        builds.ScummVMBuild: [ "scummvm.nds" ],
+    }
+    platform.archiveext = "zip"
+    platform.testable = False
+
+    platform.icon = 'ds'
+    platform.description = "Nintendo DS"
+
+    register_platform(platform)
+nds()
 
 def openpandora():
     platform = Platform("openpandora")
