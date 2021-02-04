@@ -24,30 +24,8 @@ ENV \
 	LDFLAGS="-L${PREFIX}/lib -L${DEVKITPRO}/libnds/lib" \
 	LIBS="-lnds9"
 
-# libpng is already installed in original toolchain
+# The number of extra libraries should be kept to a minimum due to RAM limitations
 
-helpers_package(libjpeg-turbo)
+# zlib is already installed in original toolchain
 
-helpers_package(faad2)
-
-helpers_package(libmad)
-
-helpers_package(libogg)
-
-helpers_package(libtheora)
-
-helpers_package(libvorbisidec)
-
-helpers_package(flac)
-
-helpers_package(mpeg2dec)
-
-helpers_package(a52dec)
-
-# curl
-
-# freetype is already installed in original toolchain
-
-helpers_package(fribidi)
-
-# No fluidsynth
+helpers_package(libmad, --enable-fpm=arm --enable-speed --enable-sso)
