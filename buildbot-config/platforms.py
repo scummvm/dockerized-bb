@@ -412,6 +412,48 @@ def ios7():
     register_platform(platform)
 ios7()
 
+def macosx_arm64():
+    platform = Platform("macosx-arm64")
+    platform.env["CXX"] = "ccache arm64-apple-darwin20.2-c++"
+    # configure script doesn't compile discord check with proper flags
+    platform.env["DISCORD_LIBS"] = "-framework AppKit"
+
+    platform.configureargs.append("--host=aarch64-apple-darwin20.2")
+    platform.buildconfigureargs = {
+        builds.ScummVMBuild: [ "--enable-static",
+            "--with-staticlib-prefix=${DESTDIR}/${PREFIX}",
+            "--with-sparkle-prefix=${DESTDIR}/${PREFIX}/Library/Frameworks",
+            "--disable-osx-dock-plugin", "--enable-updates"],
+    }
+    platform.packaging_cmd = {
+        builds.ScummVMBuild: "bundle",
+        builds.ScummVMToolsBuild: None
+    }
+    platform.built_files = {
+        builds.ScummVMBuild: [ "ScummVM.app" ],
+        builds.ScummVMToolsBuild: [
+            "construct_mohawk",
+            "create_sjisfnt",
+            "decine",
+            #"decompile", # Decompiler currently not built - BOOST library not present
+            "degob",
+            "dekyra",
+            "descumm",
+            "desword2",
+            "extract_mohawk",
+            "gob_loadcalc",
+            #"scummvm-tools", # GUI tools currently not built - WxWidgets library not present
+            "scummvm-tools-cli"
+        ]
+    }
+    platform.archiveext = "tar.xz"
+
+    platform.description = "Mac OS X (M1)"
+    platform.icon = 'macos'
+
+    register_platform(platform)
+macosx_arm64()
+
 def macosx_x86_64():
     platform = Platform("macosx-x86_64")
     platform.env["CXX"] = "ccache x86_64-apple-darwin20.2-c++"
