@@ -135,8 +135,8 @@ def _3ds():
     platform.archiveext = "zip"
     platform.testable = False
 
-    platform.icon = "3ds"
     platform.description = "Nintendo 3DS"
+    platform.icon = "3ds"
 
     register_platform(platform)
 _3ds()
@@ -171,8 +171,8 @@ def amigaos4():
     }
     platform.archiveext = "zip"
 
-    platform.icon = "amiga"
     platform.description = "Amiga OS4"
+    platform.icon = "amiga"
 
     register_platform(platform)
 amigaos4()
@@ -211,8 +211,8 @@ def android(suffix, scummvm_target, ndk_target, cxx_target, abi_version,
     platform.archiveext = "zip"
     platform.testable = False
 
-    platform.icon = "android"
     platform.description = description
+    platform.icon = "android"
 
     register_platform(platform)
 android.lock = util.MasterLock("android")
@@ -256,8 +256,8 @@ def caanoo():
     }
     platform.archiveext = "tar.bz2"
 
-    platform.icon = "caanoo"
     platform.description = "GamePark Caanoo"
+    platform.icon = "caanoo"
 
     register_platform(platform)
 caanoo()
@@ -506,8 +506,8 @@ def nds():
     platform.archiveext = "zip"
     platform.testable = False
 
-    platform.icon = 'ds'
     platform.description = "Nintendo DS"
+    platform.icon = 'ds'
 
     register_platform(platform)
 nds()
