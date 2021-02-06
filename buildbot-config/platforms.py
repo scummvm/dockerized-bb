@@ -412,8 +412,8 @@ def ios7():
     register_platform(platform)
 ios7()
 
-def macosx():
-    platform = Platform("macosx")
+def macosx_x86_64():
+    platform = Platform("macosx-x86_64")
     platform.env["CXX"] = "ccache x86_64-apple-darwin20.2-c++"
     # configure script doesn't compile discord check with proper flags
     platform.env["DISCORD_LIBS"] = "-framework AppKit"
@@ -452,7 +452,7 @@ def macosx():
     platform.icon = 'macos'
 
     register_platform(platform)
-macosx()
+macosx_x86_64()
 
 def macosx_i386():
     platform = Platform("macosx-i386")
