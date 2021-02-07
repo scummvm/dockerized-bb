@@ -104,7 +104,6 @@ if hasattr(config, 'irc') and config.irc:
             'exception',
             'problem',
             'recovery',
-            'worker'
         ]
     ))
 
