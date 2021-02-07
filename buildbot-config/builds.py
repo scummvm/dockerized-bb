@@ -11,8 +11,8 @@ from buildbot.plugins import changes
 from buildbot.plugins import schedulers
 from buildbot.plugins import steps
 
+from utils import scummsteps
 import config
-import scummsteps
 import workers
 
 max_jobs = getattr(config, 'max_jobs', None) or (multiprocessing.cpu_count() + 1)

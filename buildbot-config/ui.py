@@ -109,9 +109,9 @@ if hasattr(config, 'irc') and config.irc:
 
 if hasattr(config, 'enable_list_snapshots') and config.enable_list_snapshots:
     serve_snapshots = hasattr(config, 'serve_snapshots') and config.serve_snapshots
-    import list_snapshots
     import builds, platforms
-    import scummsteps
+    from utils import list_snapshots
+    from utils import scummsteps
     www['plugins']['wsgi_dashboards'] = [{
         'name': 'snapshots',
         'caption': 'Snapshots',
