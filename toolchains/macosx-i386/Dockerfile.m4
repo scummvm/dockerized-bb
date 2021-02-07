@@ -10,6 +10,10 @@ m4_define(`MACOSX_PORTS_ARCH_ARG',`--i386')m4_dnl
 m4_include(`macosx.m4')m4_dnl
 
 # Our compiler is c++11 compliant but our libstdc++ is too old for that
-# So far it kind of works but glew needs cstdint
-# Please it by providing it
+# So far it worked but several fixes are now needed
+# glew needs cstdint
 COPY cstdint ${TARGET_DIR}/SDK/MacOSX`'MACOSX_SDK_VERSION`'.sdk/usr/include/c++/4.2.1/cstdint
+# ScummVM needs initializer_list
+COPY initializer_list ${TARGET_DIR}/SDK/MacOSX`'MACOSX_SDK_VERSION`'.sdk/usr/include/c++/4.2.1/initializer_list
+# nullptr_t is needed in libstdc++
+RUN sed -i -e '/_GLIBCXX_BEGIN_NAMESPACE(std)/a     typedef decltype(nullptr) nullptr_t;' ${TARGET_DIR}/SDK/MacOSX`'MACOSX_SDK_VERSION`'.sdk/usr/include/c++/4.2.1/cstddef
