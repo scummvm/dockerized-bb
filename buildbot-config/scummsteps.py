@@ -400,7 +400,7 @@ class CleanupSnapshots(steps.BuildStep):
         for platform, history in histories.items():
             # Sort by mtime, most recent first
             history.sort(key=operator.itemgetter(1), reverse=True)
-            symlink, latest = latests.pop(platform, None)
+            symlink, latest = latests.pop(platform, (None, None))
             # Exclude N first files from cleaning: that's our history
             # If latest point at it, don't clean it too. That shouldn't, but in case.
             to_clean.extend(path for path, mtime in history[self.keep_builds:] if path != latest)
