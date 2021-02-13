@@ -107,6 +107,24 @@ if hasattr(config, 'irc') and config.irc:
         ]
     ))
 
+if hasattr(config, 'discord_reporter') and config.discord_reporter:
+    from utils import discord
+    from buildbot.reporters.generators.buildset import BuildSetStatusGenerator
+    from buildbot.reporters.generators.build import BuildStatusGenerator
+    services.append(discord.DiscordStatusPush(config.discord_reporter,
+        generators=[
+            BuildSetStatusGenerator(
+                message_formatter=discord.DiscordFormatter(),
+                # Only report builder aggregated in a buildset and not fetch or nightly
+                tags=['build'],
+                mode=("change", "exception")),
+            BuildStatusGenerator(
+                message_formatter=discord.DiscordFormatter(),
+                # Report cleanup too
+                tags=['cleanup'],
+                mode=("change", "exception"))
+    ]))
+
 if hasattr(config, 'enable_list_snapshots') and config.enable_list_snapshots:
     serve_snapshots = hasattr(config, 'serve_snapshots') and config.serve_snapshots
     import builds, platforms

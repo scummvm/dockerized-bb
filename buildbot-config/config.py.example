@@ -110,3 +110,5 @@ serve_snapshots = False
 #    'admins': ['someuser'],
 #}
 
+# Discord webhook URL to report build status to
+#discord_reporter = None
