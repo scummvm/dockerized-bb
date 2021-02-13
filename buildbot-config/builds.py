@@ -40,13 +40,13 @@ class Build:
     def __init__(self, name):
         self.name = name
 
-    def getChangeSource(self):
+    def getChangeSource(self, settings):
         pass
 
     def getGlobalSchedulers(self, platforms):
         pass
 
-    def getGlobalBuilders(self):
+    def getGlobalBuilders(self, platforms):
         pass
 
     def getPerPlatformBuilders(self, platform):
