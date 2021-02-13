@@ -41,7 +41,7 @@ class Patch(buildstep.ShellMixin, steps.BuildStep):
             except IOError:
                 # if file does not exist, bail out with an error
                 yield self.addCompleteLog('stderr',
-                                    'File %r not available at master' % source)
+                                    'File %r not available at master' % patch)
                 return util.FAILURE
             cmd = yield self.makeRemoteShellCommand(command=self.command,
                     initialStdin=patch_data)
