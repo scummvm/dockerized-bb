@@ -8,8 +8,7 @@ HELPERS_DIR=$PACKAGE_DIR/../..
 
 do_make_bdir
 
-do_http_fetch libgxflux \
-	"https://repo.or.cz/libgxflux.git/snapshot/${GXFLUX_VERSION}.tar.gz" 'tar xzf'
+do_git_fetch libgxflux 'https://repo.or.cz/libgxflux.git' "$GXFLUX_VERSION"
 
 do_make lib
 do_make install
