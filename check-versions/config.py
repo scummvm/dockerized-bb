@@ -384,9 +384,9 @@ VERSIONS = {
     },
     ('./toolchains/riscos/packages/iconv/build.sh', 'LIBICONV'): libiconv_check,
     ('./toolchains/riscos/packages/libsdl1.2/build.sh', 'SDL'): {
-        'check': 'hg commit',
-        'repository': 'http://hg.libsdl.org/SDL/',
-        'branch': 'SDL-1.2',
+        'check': 'git commit',
+        'repository': 'https://github.com/libsdl-org/SDL-1.2.git',
+        'branch': 'main',
     },
     ('./toolchains/riscos/packages/tokenize/build.sh', 'TOKENIZE'): {
         'check': 'git commit',
