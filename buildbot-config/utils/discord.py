@@ -83,7 +83,9 @@ class DiscordFormatter(MessageFormatterBase):
         embed['author'] = dict()
         embed['author']['name'] = build['builder']['name']
         embed['author']['url'] = context['buildbot_url']
-        embed['author']['icon_url'] = '{}/img/icon.svg'.format(context['buildbot_url'])
+        # Don't use too much icons which don't provide information
+        # User is free to set up a global one in Discord
+        #embed['author']['icon_url'] = '{}/img/icon.svg'.format(context['buildbot_url'])
         embed['footer'] = dict()
         embed['footer']['text'] = context['buildbot_title']
         #embed['footer']['icon_url'] = ''
