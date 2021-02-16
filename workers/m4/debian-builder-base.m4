@@ -1,4 +1,4 @@
-m4_define(`DEBIAN_VERSION',20210111)
+m4_define(`DEBIAN_VERSION',20210208)
 m4_define(`BASE_DEBIAN',`')m4_dnl
 FROM debian:stable-DEBIAN_VERSION-slim
 USER root
