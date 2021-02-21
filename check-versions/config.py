@@ -215,6 +215,18 @@ VERSIONS = {
         'image name': 'devkitpro/devkita64',
     },
 
+    ('./toolchains/dreamcast/packages/libronin/build.sh', 'LIBRONIN'): {
+        'check': 'git tag',
+        'repository': 'https://github.com/sega-dreamcast/libronin.git',
+        'prefix': 'ronin_',
+    },
+    # Dreamcast toolchain is taken from KallistiOS dc-chain and we stick to their versions
+    ('./toolchains/dreamcast/packages/toolchain-arm/build.sh', 'BINUTILS'): 'ignore',
+    ('./toolchains/dreamcast/packages/toolchain-arm/build.sh', 'GCC'): 'ignore',
+    ('./toolchains/dreamcast/packages/toolchain-sh4/build.sh', 'BINUTILS'): 'ignore',
+    ('./toolchains/dreamcast/packages/toolchain-sh4/build.sh', 'GCC'): 'ignore',
+    ('./toolchains/dreamcast/packages/toolchain-sh4/build.sh', 'NEWLIB'): 'ignore',
+
     ('./toolchains/iphone/packages/gas-preprocessor/build.sh', 'GAS_PREPROCESSOR'): {
         'check': 'git commit',
         'repository': 'https://github.com/libjpeg-turbo/gas-preprocessor.git',

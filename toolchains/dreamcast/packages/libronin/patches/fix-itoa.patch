@@ -1,0 +1,121 @@
+diff --git a/examples/ex_vmsfscheck.c b/examples/ex_vmsfscheck.c
+index 3938282..31c4e04 100644
+--- a/examples/ex_vmsfscheck.c
++++ b/examples/ex_vmsfscheck.c
+@@ -356,7 +356,7 @@ int main(int argc, char **argv)
+         if(RESTOREDRAM[x] != i) {
+           reportf("\nVerification failed at count %d!\n", x);
+           gwrite("Verification failed.", C_RED);
+-	  gwrite(itoa(x), C_RED);
++	  gwrite(ronin_itoa(x), C_RED);
+           break;
+         } else if(x==(SRAMSIZE-1)) {
+           report("\nVerification successfull. A-OK!\n");
+diff --git a/report.c b/report.c
+index 6628d53..6a943ee 100644
+--- a/report.c
++++ b/report.c
+@@ -7,7 +7,7 @@
+ 
+ //! Returns the int @[x] converted to a string.
+ //FIXME: Move it to some string lib or something instead.
+-char *itoa(int x) 
++char *ronin_itoa(int x)
+ { 
+   static char buf[30];
+   int minus = 0;
+@@ -56,7 +56,7 @@ void reportf(const char *fmt, ...)
+ 
+        case 's': serial_puts( va_arg(va, char *) );   break;
+        case '%': serial_putc('%'); break;
+-       case 'd': serial_puts( itoa(va_arg(va, int)) ); break;
++       case 'd': serial_puts( ronin_itoa(va_arg(va, int)) ); break;
+        case 'p': serial_puts("(void *)0x");
+        case 'x': 
+        {
+diff --git a/report.h b/report.h
+index 536cf30..f5f3144 100644
+--- a/report.h
++++ b/report.h
+@@ -10,7 +10,7 @@
+ START_EXTERN_C
+ void report(const char *str);
+ void reportf(const char *fmt, ...);
+-char *itoa(int x);
++char *ronin_itoa(int x);
+ END_EXTERN_C
+ 
+ #endif //_RONIN_REPORT_H
+diff --git a/vmsfs.c b/vmsfs.c
+index f50621e..d9f8682 100644
+--- a/vmsfs.c
++++ b/vmsfs.c
+@@ -112,7 +112,7 @@ char *vmsfs_describe_error()
+      return "No error.";
+    case VMSFS_EOUS:
+      strcpy(buf, "Not enough space on VMU. Need ");
+-     strcat(buf, itoa(ous_want));
++     strcat(buf, ronin_itoa(ous_want));
+      strcat(buf, " blocks.");
+      return buf;
+    case VMSFS_EFORMAT:
+@@ -125,7 +125,7 @@ char *vmsfs_describe_error()
+      return "Failed to write block.";
+    case VMSFS_EWRITE:
+      strcpy(buf, "Failed to write block number ");
+-     strcat(buf, itoa(ous_want));
++     strcat(buf, ronin_itoa(ous_want));
+      strcat(buf, ".");
+      return buf;     
+    case VMSFS_ENODIR:
+@@ -142,27 +142,27 @@ char *vmsfs_describe_error()
+      return "Refused to verify block >= 0x10000.";
+    case VMSFS_EREAD:
+      strcpy(buf, "Failed to read block number ");
+-     strcat(buf, itoa(ous_want));
++     strcat(buf, ronin_itoa(ous_want));
+      strcat(buf, ".");
+      return buf;
+    case VMSFS_EVFYR:
+      strcpy(buf, "Failed to read block number ");
+-     strcat(buf, itoa(ous_want));
++     strcat(buf, ronin_itoa(ous_want));
+      strcat(buf, " while verifying.");
+      return buf;
+    case VMSFS_EVFY:
+      strcpy(buf, "Verification failed on block number ");
+-     strcat(buf, itoa(ous_want));
++     strcat(buf, ronin_itoa(ous_want));
+      strcat(buf, ".");
+      return buf;
+    case VMSFS_EBBLKR:
+      strcpy(buf, "Special error in vmsfs_read_file while reading block ");
+-     strcat(buf, itoa(ous_want));
++     strcat(buf, ronin_itoa(ous_want));
+      strcat(buf, ".");
+      return buf;
+    case VMSFS_EBBLKO:
+      strcpy(buf, "Special error in vmsfs_open_file while reading block ");
+-     strcat(buf, itoa(ous_want));
++     strcat(buf, ronin_itoa(ous_want));
+      strcat(buf, ".");
+      return buf;
+ 
+@@ -175,7 +175,7 @@ char *vmsfs_describe_error()
+ 
+    default:
+      strcpy(buf, "Unknown error '");
+-     strcat(buf, itoa(vmsfs_errno));
++     strcat(buf, ronin_itoa(vmsfs_errno));
+      strcat(buf, "'!");
+      return buf;
+   }
+@@ -204,7 +204,7 @@ int vmsfs_check_unit(int unit, int part, struct vmsinfo *info)
+     report("A1 ");
+   else if(res[0] != MAPLE_RESPONSE_DEVINFO) {
+     report("A2 ");
+-    report(itoa(res[0]));
++    report(ronin_itoa(res[0]));
+     report(" ");
+   }
+   else if(!(res[3]>=28))

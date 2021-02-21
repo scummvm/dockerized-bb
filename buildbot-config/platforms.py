@@ -324,6 +324,34 @@ debian("x86-64-testengine", "x86_64", "x86_64-linux-gnu", package=False, tools=F
 debian("x86-64-clang", "x86_64-clang", "x86_64-linux-gnu", package=False, tools=False,
     run_tests=False)
 
+def dreamcast():
+    platform = Platform("dreamcast")
+    platform.compatibleBuilds = (builds.ScummVMBuild, )
+    platform.env["CXX"] = "ccache ${CXX}"
+    platform.configureargs.append("--host=dreamcast")
+    platform.buildconfigureargs = {
+        builds.ScummVMBuild: [ "--enable-plugins", "--default-dynamic", "--enable-vkeybd" ],
+    }
+    platform.packaging_cmd = "dcdist"
+    platform.built_files = {
+        builds.ScummVMBuild: [ "dcdist/scummvm" ],
+    }
+    platform.archiveext = "tar.xz"
+
+    platform.description = "Dreamcast"
+    platform.icon = 'dc'
+
+    register_platform(platform)
+
+    # Dreamcast with serial debugging
+    platform = copy.deepcopy(platform)
+    platform.name = "dreamcast-debug"
+
+    platform.buildconfigureargs[builds.ScummVMBuild].append('--enable-debug')
+
+    register_platform(platform)
+dreamcast()
+
 def gamecube():
     platform = Platform("gamecube")
     platform.workerimage = "devkitppc"

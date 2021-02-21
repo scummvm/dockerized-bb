@@ -1,0 +1,25 @@
+diff --git a/Makefile b/Makefile
+index 5957f1b..2f3837e 100644
+--- a/Makefile
++++ b/Makefile
+@@ -229,16 +229,16 @@ arm_sound_code.h: arm_sound_code.bin
+ 	./tools/encode_armcode.pike < $< > $@
+ 
+ arm_sound_code.bin: arm_sound_code.elf
+-	arm-elf-objcopy -O binary $< $@
++	arm-eabi-objcopy -O binary $< $@
+ 
+ arm_sound_code.elf: arm_startup.o arm_sound_code.o
+-	arm-elf-gcc $(ARMFLAGS) -Wl,-Ttext,0 -nostdlib -nostartfiles -o $@ $^ -lgcc -lgcc
++	arm-eabi-gcc $(ARMFLAGS) -Wl,-Ttext,0 -nostdlib -nostartfiles -o $@ $^ -lgcc -lgcc
+ 
+ arm_sound_code.o: arm_sound_code.c soundcommon.h
+-	arm-elf-gcc -c -Wall $(ARMFLAGS) -o $@ $<
++	arm-eabi-gcc -c -Wall $(ARMFLAGS) -o $@ $<
+ 
+ arm_startup.o: arm_startup.s
+-	arm-elf-as -marm7 -o $@ $<
++	arm-eabi-as -mcpu=arm7 -o $@ $<
+ 
+ #Automatic extension conversion.
+ .SUFFIXES: .o .cpp .c .cc .h .m .i .S .asm .elf .srec .bin
