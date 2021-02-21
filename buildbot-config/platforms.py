@@ -349,6 +349,8 @@ def dreamcast():
 
     platform.buildconfigureargs[builds.ScummVMBuild].append('--enable-debug')
 
+    platform.description = "Dreamcast with serial port debugging"
+
     register_platform(platform)
 dreamcast()
 
