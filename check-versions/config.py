@@ -59,10 +59,18 @@ discord_rpc_check = {
         'repository': 'https://github.com/discord/discord-rpc.git',
         'prefix': 'v',
 }
+
 libiconv_check = {
         'check': 'git tag',
         'repository': 'https://git.savannah.gnu.org/git/libiconv.git',
         'prefix': 'v',
+}
+
+crosstool_ng_check = {
+    'check': 'git tag',
+    'repository': 'https://github.com/crosstool-ng/crosstool-ng.git',
+    'prefix': 'crosstool-ng-',
+    'exclude pattern': r'.*-rc\d+$',
 }
 
 # Distributions images checks
@@ -162,9 +170,9 @@ VERSIONS = {
     ('./toolchains/caanoo/packages/libsdl/build.sh', 'SDL'): 'ignore',
     ('./toolchains/caanoo/packages/libvorbisidec/build.sh', 'LIBTREMOR'): 'ignore',
     ('./toolchains/caanoo/packages/sdl-net1.2/build.sh', 'SDL_NET'): 'ignore',
-    ('./toolchains/caanoo/packages/toolchain/build.sh', 'CT_NG'): 'ignore',
     ('./toolchains/caanoo/packages/tslib/build.sh', 'TSLIB'): 'ignore',
     ('./toolchains/caanoo/packages/zlib/build.sh', 'ZLIB'): 'ignore',
+    ('./toolchains/caanoo/packages/toolchain/build.sh', 'CT_NG'): crosstool_ng_check,
 
     ('./toolchains/common/packages/discord-rpc/build.sh', 'DISCORD_RPC'): discord_rpc_check,
     ('./toolchains/common/packages/fluidsynth-lite/build.sh', 'FLUIDSYNTH'): {
@@ -302,12 +310,7 @@ VERSIONS = {
     ('./toolchains/openpandora/packages/x11/build.sh', 'LIBXRENDER'): 'ignore',
     ('./toolchains/openpandora/packages/x11/build.sh', 'LIBXRANDR'): 'ignore',
     ('./toolchains/openpandora/packages/zlib/build.sh', 'ZLIB'): 'ignore',
-    ('./toolchains/openpandora/packages/toolchain/build.sh', 'CT_NG'): {
-        'check': 'git tag',
-        'repository': 'https://github.com/crosstool-ng/crosstool-ng.git',
-        'prefix': 'crosstool-ng-',
-        'exclude pattern': r'.*-rc\d+$',
-    },
+    ('./toolchains/openpandora/packages/toolchain/build.sh', 'CT_NG'): crosstool_ng_check,
 
     ('./toolchains/ps3/packages/sdl_psl1ght/build.sh', 'SDL_PSL1GHT'): {
         'check': 'git commit',
