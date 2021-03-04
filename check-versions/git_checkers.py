@@ -154,8 +154,7 @@ def git_tag(version, *, repository, **kwargs):
         current_idx = matching_refs.index(version)
     except ValueError:
         print("WARNING: version {2} not in matched references for {0} with {1}".format(
-            repository, checkers.describe_filter(**kwargs)),
-            version)
+            repository, checkers.describe_filter(**kwargs), version))
         current_idx = -1
 
     latest = matching_refs[0]
