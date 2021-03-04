@@ -1,0 +1,176 @@
+#
+# crosstool-NG  Configuration
+#
+CT_CONFIG_VERSION="3"
+
+#
+# Paths and misc options
+#
+
+#
+# crosstool-NG behavior
+#
+# uClibc version is obsolete but it's what OpenDingux has
+CT_OBSOLETE=y
+
+#
+# Paths
+#
+# Define all paths
+#
+CT_LOCAL_TARBALLS_DIR="${CT_TOP_DIR}/.tarballs"
+CT_WORK_DIR="${CT_TOP_DIR}/.build"
+CT_BUILD_TOP_DIR="${CT_WORK_DIR:-${CT_TOP_DIR}/.build}/${CT_HOST:+HOST-${CT_HOST}/}${CT_TARGET}"
+CT_PREFIX_DIR="${CT_PREFIX:-${CT_TOP_DIR}/toolchain}"
+# Don't put toolchain R/O as we need to install libraries in it
+# CT_PREFIX_DIR_RO is not set
+
+#
+# Target options
+#
+# That's a MIPS 32r2
+CT_ARCH_MIPS=y
+CT_ARCH_TUNE="mips32r2"
+
+#
+# Options for mips
+#
+
+#
+# Generic target options
+#
+# Little endian
+CT_ARCH_LE=y
+# Quite simply o32
+CT_ARCH_32=y
+
+#
+# Target optimisations
+#
+# Specify precise arch
+CT_ARCH_ARCH="mips32r2"
+# No hardfloat on the target
+CT_ARCH_FLOAT_SW=y
+
+#
+# Toolchain options
+#
+
+#
+# General toolchain options
+#
+
+#
+# Tuple completion and aliasing
+#
+
+#
+# Toolchain type
+#
+CT_CROSS=y
+
+#
+# Build system
+#
+
+#
+# Misc options
+#
+
+#
+# Operating System
+#
+CT_KERNEL_LINUX=y
+
+#
+# Options for linux
+#
+# Use 2.6.36 kernel like the one running on the target
+CT_LINUX_SRC_RELEASE=y
+CT_LINUX_V_2_6_36=y
+
+#
+# Common kernel options
+#
+
+#
+# Binary utilities
+#
+
+#
+# Options for binutils
+#
+
+#
+# GNU binutils
+#
+
+#
+# C-library
+#
+CT_LIBC_UCLIBC=y
+
+#
+# Options for uClibc
+#
+# Use same uClibc as the target to avoid static linking of it
+CT_UCLIBC_USE_UCLIBC_ORG=y
+CT_UCLIBC_SRC_RELEASE=y
+CT_UCLIBC_V_0_9_31=y
+CT_LIBC_UCLIBC_CONFIG_FILE="${CT_TOP_DIR}/uclibc.config"
+# CT_LIBC_UCLIBC_LOCALES is not set
+# CT_LIBC_UCLIBC_IPV6 is not set
+CT_LIBC_UCLIBC_WCHAR=y
+# CT_LIBC_UCLIBC_FENV is not set
+# CT_LIBC_UCLIBC_RPC is not set
+# CT_LIBC_UCLIBC_HAS_SSP is not set
+
+#
+# Common C library options
+#
+# Use LT threads (no other choice though)
+CT_THREADS_LT=y
+
+#
+# C compiler
+#
+CT_CC_GCC=y
+
+#
+# Options for gcc
+#
+# Don't build shared libgcc_s and libstdc++ as we are way more recent than the target compiler
+CT_CC_GCC_EXTRA_CONFIG_ARRAY="--disable-shared"
+
+#
+# Optimisation features
+#
+# Make the toolchain lighter
+# CT_CC_GCC_USE_GRAPHITE is not set
+# CT_CC_GCC_USE_LTO is not set
+
+#
+# Settings for libraries running on target
+#
+
+#
+# Misc. obscure options.
+#
+
+#
+# Additional supported languages:
+#
+# Support C++
+CT_CC_LANG_CXX=y
+
+#
+# Debug facilities
+#
+
+#
+# Companion libraries
+#
+
+#
+# Companion tools
+#

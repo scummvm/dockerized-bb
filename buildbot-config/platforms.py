@@ -604,6 +604,28 @@ def nds():
     register_platform(platform)
 nds()
 
+def opendingux():
+    platform = Platform("opendingux")
+    platform.compatibleBuilds = (builds.ScummVMBuild, )
+    platform.env["CXX"] = "ccache ${CXX}"
+    platform.configureargs.append("--host=dingux")
+    platform.buildconfigureargs = {
+        builds.ScummVMBuild: [ "--enable-plugins", "--default-dynamic", "--enable-vkeybd",
+            # Our Tremor decoder is too old for use with Theora, we could have a more recent version
+            # but Theora is quite CPU intensive anyway
+            "--disable-theoradec" ],
+    }
+    platform.built_files = {
+        builds.ScummVMBuild: [ "scummvm", "plugins" ],
+    }
+    platform.archiveext = "tar.xz"
+
+    platform.description = "OpenDingux"
+    platform.icon = 'dingux'
+
+    register_platform(platform)
+opendingux()
+
 def openpandora():
     platform = Platform("openpandora")
     platform.workerimage = "openpandora"

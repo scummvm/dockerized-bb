@@ -299,6 +299,22 @@ VERSIONS = {
     # Use same libsdl as Open2x toolchain
     ('./toolchains/open2x/packages/libsdl/build.sh', 'SDL'): 'ignore',
 
+    # OpenDingux packages (except toolchain) are set by (old) firmware
+    ('./toolchains/opendingux/packages/alsa-lib/build.sh', 'ALSA_LIB'): 'ignore',
+    ('./toolchains/opendingux/packages/flac/build.sh', 'FLAC'): 'ignore',
+    ('./toolchains/opendingux/packages/freetype/build.sh', 'FREETYPE'): 'ignore',
+    ('./toolchains/opendingux/packages/libiconv/build.sh', 'LIBICONV'): 'ignore',
+    ('./toolchains/opendingux/packages/libjpeg/build.sh', 'JPEG'): 'ignore',
+    ('./toolchains/opendingux/packages/libmad/build.sh', 'LIBMAD'): 'ignore',
+    ('./toolchains/opendingux/packages/libogg/build.sh', 'LIBOGG'): 'ignore',
+    ('./toolchains/opendingux/packages/libpng/build.sh', 'LIBPNG'): 'ignore',
+    ('./toolchains/opendingux/packages/libsdl/build.sh', 'SDL'): 'ignore',
+    ('./toolchains/opendingux/packages/libtheora/build.sh', 'LIBTHEORA'): 'ignore',
+    ('./toolchains/opendingux/packages/libvorbisidec/build.sh', 'LIBTREMOR'): 'ignore',
+    ('./toolchains/opendingux/packages/sdl-net1.2/build.sh', 'SDL_NET'): 'ignore',
+    ('./toolchains/opendingux/packages/zlib/build.sh', 'ZLIB'): 'ignore',
+    ('./toolchains/opendingux/packages/toolchain/build.sh', 'CT_NG'): crosstool_ng_check,
+
     # OpenPandora packages (except toolchain) are set by (old) firmware
     ('./toolchains/openpandora/packages/alsa-lib/build.sh', 'ALSA_LIB'): 'ignore',
     ('./toolchains/openpandora/packages/curl/build.sh', 'CURL'): 'ignore',
