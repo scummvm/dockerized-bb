@@ -375,6 +375,26 @@ def gamecube():
     register_platform(platform)
 gamecube()
 
+def gcw0():
+    platform = Platform("gcw0")
+    platform.compatibleBuilds = (builds.ScummVMBuild, )
+    platform.env["CXX"] = "ccache ${CXX}"
+    platform.configureargs.append("--host=gcw0")
+    platform.buildconfigureargs = {
+        builds.ScummVMBuild: [ "--enable-plugins", "--default-dynamic", "--enable-vkeybd" ],
+    }
+    platform.packaging_cmd = "gcw-opk"
+    platform.built_files = {
+        builds.ScummVMBuild: [ "scummvm.opk" ],
+    }
+    platform.archiveext = "tar.bz2"
+
+    platform.description = "GCW-Zero"
+    platform.icon = 'gcw0'
+
+    register_platform(platform)
+gcw0()
+
 def gp2x():
     def setup(p):
         platform.workerimage = "open2x"

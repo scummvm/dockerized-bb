@@ -1,0 +1,45 @@
+From cd02b6212271534cdbb6254993158eb7590e517f Mon Sep 17 00:00:00 2001
+From: Le Philousophe <lephilousophe@users.noreply.github.com>
+Date: Sun, 28 Feb 2021 10:38:18 +0100
+Subject: [PATCH 2/4] Allow static libstdc++
+
+---
+ .../8.3.0/9999-allow-static-libstdc++.patch   | 26 +++++++++++++++++++
+ 1 file changed, 26 insertions(+)
+ create mode 100644 packages/gcc/8.3.0/9999-allow-static-libstdc++.patch
+
+diff --git a/packages/gcc/8.3.0/9999-allow-static-libstdc++.patch b/packages/gcc/8.3.0/9999-allow-static-libstdc++.patch
+new file mode 100644
+index 00000000..725130fd
+--- /dev/null
++++ b/packages/gcc/8.3.0/9999-allow-static-libstdc++.patch
+@@ -0,0 +1,26 @@
++--- a/libstdc++-v3/configure.ac
+++++ b/libstdc++-v3/configure.ac
++@@ -121,8 +121,8 @@ if test "$enable_shared" = yes; then
++   glibcxx_compiler_shared_flag="-D_GLIBCXX_SHARED"
++ 
++ else
++-  glibcxx_lt_pic_flag=
++-  glibcxx_compiler_pic_flag=
+++  glibcxx_lt_pic_flag="-prefer-pic"
+++  glibcxx_compiler_pic_flag="$lt_prog_compiler_pic_CXX"
++   glibcxx_compiler_shared_flag=
++ fi
++ AC_SUBST(glibcxx_lt_pic_flag)
++--- a/libstdc++-v3/configure
+++++ b/libstdc++-v3/configure
++@@ -15025,8 +15025,8 @@ if test "$enable_shared" = yes; then
++   glibcxx_compiler_shared_flag="-D_GLIBCXX_SHARED"
++ 
++ else
++-  glibcxx_lt_pic_flag=
++-  glibcxx_compiler_pic_flag=
+++  glibcxx_lt_pic_flag="-prefer-pic"
+++  glibcxx_compiler_pic_flag="$lt_prog_compiler_pic_CXX"
++   glibcxx_compiler_shared_flag=
++ fi
++ 
+-- 
+2.25.1
+

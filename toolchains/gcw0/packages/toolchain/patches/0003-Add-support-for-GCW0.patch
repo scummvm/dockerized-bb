@@ -1,0 +1,45 @@
+From a3c323fbf1d0f8b71e400003b2d609020ffb3d89 Mon Sep 17 00:00:00 2001
+From: Le Philousophe <lephilousophe@users.noreply.github.com>
+Date: Sun, 28 Feb 2021 17:16:47 +0100
+Subject: [PATCH 3/4] Add support for GCW0
+
+---
+ .../uClibc/0.9.33.2/9999-pregen-before-install.patch  | 11 +++++++++++
+ scripts/build/arch/mips.sh                            |  3 ++-
+ 2 files changed, 13 insertions(+), 1 deletion(-)
+ create mode 100644 packages/uClibc/0.9.33.2/9999-pregen-before-install.patch
+
+diff --git a/packages/uClibc/0.9.33.2/9999-pregen-before-install.patch b/packages/uClibc/0.9.33.2/9999-pregen-before-install.patch
+new file mode 100644
+index 00000000..92eadc1c
+--- /dev/null
++++ b/packages/uClibc/0.9.33.2/9999-pregen-before-install.patch
+@@ -0,0 +1,11 @@
++--- a/Makefile.in	2021-02-28 16:21:57.126540862 +0100
+++++ b/Makefile.in	2021-02-28 16:22:06.266488008 +0100
++@@ -303,7 +303,7 @@
++ 	$(do_mkdir)
++ endif
++ endif
++-install_headers: headers $(top_builddir)extra/scripts/unifdef | $(PREFIX)$(DEVEL_PREFIX)include
+++install_headers: pregen $(top_builddir)extra/scripts/unifdef | $(PREFIX)$(DEVEL_PREFIX)include
++ 	@$(call disp_install,"include -> $(PREFIX)$(DEVEL_PREFIX)include")
++ 	$(Q)top_builddir=$(top_builddir) \
++ 	$(top_srcdir)extra/scripts/install_headers.sh \
+diff --git a/scripts/build/arch/mips.sh b/scripts/build/arch/mips.sh
+index acb88511..9122617b 100644
+--- a/scripts/build/arch/mips.sh
++++ b/scripts/build/arch/mips.sh
+@@ -43,7 +43,8 @@ CT_DoArchUClibcConfig() {
+     CT_KconfigDeleteOption "CONFIG_MIPS_ISA_3" "${cfg}"
+     CT_KconfigDeleteOption "CONFIG_MIPS_ISA_4" "${cfg}"
+     CT_KconfigDeleteOption "CONFIG_MIPS_ISA_MIPS32" "${cfg}"
+-    CT_KconfigDeleteOption "CONFIG_MIPS_ISA_MIPS32R2" "${cfg}"
++    # Let enable MIPS32R2
++    #CT_KconfigDeleteOption "CONFIG_MIPS_ISA_MIPS32R2" "${cfg}"
+     CT_KconfigDeleteOption "CONFIG_MIPS_ISA_MIPS64" "${cfg}"
+     CT_KconfigDeleteOption "CONFIG_MIPS_ISA_MIPS64R2" "${cfg}"
+ }
+-- 
+2.25.1
+
