@@ -1,0 +1,59 @@
+From efb1701bf3baf6f5b05fd1a7a5a4ff990a7dc460 Mon Sep 17 00:00:00 2001
+From: Michael Haubenwallner <michael.haubenwallner@salomon.at>
+Date: Thu, 14 Nov 2013 16:12:02 +0100
+Subject: [PATCH] Use AC_HEADER_MAJOR
+
+Instead of checking for sys/mkdev.h headerfile, there is the
+AC_HEADER_MAJOR helper for how to get major(), minor(), makedev().
+
+https://bugzilla.gnome.org/show_bug.cgi?id=712314
+---
+ configure.ac       | 3 ++-
+ gio/gdbusmessage.c | 9 ++++++---
+ 2 files changed, 8 insertions(+), 4 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index a2839dfd87..186c9ab910 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -840,7 +840,7 @@ AC_CHECK_HEADERS([sys/time.h sys/times.h sys/wait.h unistd.h values.h])
+ AC_CHECK_HEADERS([sys/select.h sys/types.h stdint.h inttypes.h sched.h malloc.h])
+ AC_CHECK_HEADERS([sys/vfs.h sys/vmount.h sys/statfs.h sys/statvfs.h sys/filio.h])
+ AC_CHECK_HEADERS([mntent.h sys/mnttab.h sys/vfstab.h sys/mntctl.h fstab.h])
+-AC_CHECK_HEADERS([sys/uio.h sys/mkdev.h])
++AC_CHECK_HEADERS([sys/uio.h])
+ AC_CHECK_HEADERS([linux/magic.h])
+ AC_CHECK_HEADERS([sys/prctl.h])
+ 
+@@ -851,6 +851,7 @@ AC_CHECK_HEADERS([sys/mount.h sys/sysctl.h], [], [],
+ ])
+ AC_CHECK_FUNCS(sysctlbyname)
+ 
++AC_HEADER_MAJOR
+ AC_CHECK_HEADERS([xlocale.h])
+ 
+ # check for structure fields
+diff --git a/gio/gdbusmessage.c b/gio/gdbusmessage.c
+index ad77aa60b0..d52143c157 100644
+--- a/gio/gdbusmessage.c
++++ b/gio/gdbusmessage.c
+@@ -29,13 +29,16 @@
+ #include <errno.h>
+ #include <sys/types.h>
+ #include <sys/stat.h>
+-#ifdef HAVE_SYS_MKDEV_H
+-#include <sys/mkdev.h>
+-#endif
+ #ifdef HAVE_UNISTD_H
+ #include <unistd.h>
+ #endif
+ 
++#if MAJOR_IN_MKDEV
++#include <sys/mkdev.h>
++#elif MAJOR_IN_SYSMACROS
++#include <sys/sysmacros.h>
++#endif
++
+ #include "gdbusutils.h"
+ #include "gdbusmessage.h"
+ #include "gdbuserror.h"

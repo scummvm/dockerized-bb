@@ -17,10 +17,12 @@ RUN apt-get update && \
 		gperf \
 		g++ \
 		help2man \
+		libffi-dev \
 		libncurses-dev \
 		libtool-bin \
 		python-libxml2 \
-		texinfo && \
+		texinfo \
+		zlib1g-dev && \
 	ln -s /nonexistent /etc/alternatives/awk.1.gz && \
 	ln -s /nonexistent /etc/alternatives/nawk.1.gz && \
 	rm -rf /var/lib/apt/lists/*
@@ -98,7 +100,7 @@ local_package(etna_viv)
 # Use same version as official toolchain
 local_package(mesa3d-etna_viv)
 
-# Dependency of libsdl
+# Dependency of libsdl and fluidsynth
 # Use same version as official toolchain
 local_package(alsa-lib)
 
@@ -122,6 +124,21 @@ local_package(libsdl)
 # Use same version as official toolchain
 local_package(sdl-net1.2)
 
-# TODO: openssl and curl
+# Dependency of libglib2
+# Use same version as official toolchain
+local_package(libffi)
 
-# fluidsynth-lite is unlikely to be fast enough.
+# Dependency of libglib2
+# Use same version as official toolchain
+local_package(gettext)
+
+# Dependency of fluidsynth
+# Use same version as official toolchain
+local_package(libglib2)
+
+# Dependency of fluidsynth
+# Use same version as official toolchain
+local_package(libsndfile)
+
+# Use same version as official toolchain
+local_package(fluidsynth)
