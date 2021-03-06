@@ -27,5 +27,6 @@ do_make -C include
 
 do_make -C src install-exec
 do_make -C include install
+do_make -C utils install
 
 do_clean_bdir

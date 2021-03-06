@@ -12,7 +12,7 @@ do_make_bdir
 # GPG key used for signing 1.14 is unknown...
 do_http_fetch libiconv "http://ftp.gnu.org/pub/gnu/libiconv/libiconv-${LIBICONV_VERSION}.tar.gz" 'tar xzf'
 
-do_configure
+do_configure_shared
 
 do_make
 

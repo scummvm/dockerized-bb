@@ -31,13 +31,17 @@ local_package(toolchain)
 
 ENV PREFIX=${DINGUX_TOOLCHAIN}/${HOST}/sysroot/usr
 
+# Use buildroot CFLAGS
 ENV \
 	def_binaries(`${DINGUX_TOOLCHAIN}/bin/${HOST}-', `ar, as, c++filt, ld, nm, objcopy, objdump, ranlib, readelf, strings, strip') \
 	def_binaries(`${DINGUX_TOOLCHAIN}/bin/${HOST}-', `gcc, cpp, c++') \
 	CC=${DINGUX_TOOLCHAIN}/bin/$HOST-gcc \
 	def_aclocal(`${PREFIX}') \
 	def_pkg_config(`${PREFIX}') \
-	PATH=$PATH:${PREFIX}/bin
+	PATH=$PATH:${PREFIX}/bin \
+	CPPFLAGS="-D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64" \
+	CFLAGS="-march=mips32r2 -mtune=mips32r2 -mabi=32 -msoft-float -O2 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64" \
+	CXXFLAGS="-march=mips32r2 -mtune=mips32r2 -mabi=32 -msoft-float -O2 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64"
 
 # Use same version as official toolchain
 local_package(zlib)

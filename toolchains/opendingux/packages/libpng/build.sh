@@ -14,15 +14,15 @@ do_http_fetch libpng "http://download.sourceforge.net/project/libpng/libpng12/ol
 	'tar xjf' "sha256:${LIBPNG_SHA256}"
 
 # Enable shared objects to make binary lighter
-do_configure_shared
+do_configure_shared --without-libpng-compat
 do_make
 
 # Don't install man pages and binaries
 do_make install-libLTLIBRARIES \
 	install-binSCRIPTS \
-	install-exec-hook \
 	install-pkgconfigDATA \
-	install-pkgincludeHEADERS \
+	install-pkgincludeHEADERS
+do_make install-exec-hook \
 	install-data-hook
 
 do_clean_bdir
