@@ -323,6 +323,16 @@ debian("x86-64-testengine", "x86_64", "x86_64-linux-gnu", package=False, tools=F
     })
 debian("x86-64-clang", "x86_64-clang", "x86_64-linux-gnu", package=False, tools=False,
     run_tests=False)
+debian("x86-64-plugins", "x86_64", "x86_64-linux-gnu", package=False, tools=False,
+    build_tests=False, run_tests=False,
+    buildconfigureargs = {
+        builds.ScummVMBuild: [ "--enable-plugins", "--default-dynamic" ],
+    })
+debian("x86-64-dynamic-detection", "x86_64", "x86_64-linux-gnu", package=False, tools=False,
+    build_tests=False, run_tests=False,
+    buildconfigureargs = {
+        builds.ScummVMBuild: [ "--enable-plugins", "--default-dynamic", "--enable-detection-dynamic" ],
+    })
 
 def dreamcast():
     platform = Platform("dreamcast")
