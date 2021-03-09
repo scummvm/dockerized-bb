@@ -64,6 +64,10 @@ builds_to_poll = {
 ## Define organization and team membership used to determine rights
 #github_organization = "scummvm"
 #github_admin_group = "admin-group"
+# Enable GitHub avatar display
+github_avatars = True
+# To increase requests limits to GitHub API use a Personal Access Token
+#github_token = None
 
 # htpasswd file based authentication
 ## Plaintext file with username:password lines

@@ -24,6 +24,10 @@ www = {
 }
 services = []
 
+if hasattr(config, 'github_avatars') and config.github_avatars:
+    token = (hasattr(config, 'github_token') and config.github_token) or None
+    www['avatar_methods'].append(util.AvatarGitHub(token=token))
+
 if hasattr(config, 'github_webhook_secret'):
     www['change_hook_dialects']['github'] = {
 	'secret': config.github_webhook_secret,
