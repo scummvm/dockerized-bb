@@ -332,6 +332,8 @@ debian("x86-64-dynamic-detection", "x86_64", "x86_64-linux-gnu", package=False, 
     build_tests=False, run_tests=False,
     buildconfigureargs = {
         builds.ScummVMBuild: [ "--enable-plugins", "--default-dynamic", "--enable-detection-dynamic" ],
+        # In stable, detection code was in engines
+        builds.ScummVMStableBuild: [ "--enable-plugins", "--default-dynamic" ],
     })
 
 def dreamcast():
