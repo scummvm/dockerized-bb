@@ -775,7 +775,6 @@ def riscos(suffix, prefix_subdir, variable_suffix, host, description = None):
 
     def setup(platform):
         platform.workerimage = 'riscos'
-        platform.compatibleBuilds = (builds.ScummVMBuild, )
 
         include_dir = "-isysroot ${{PREFIX}}/{0}include".format(prefix_subdir)
         lib_dir = "-L${{PREFIX}}/{0}lib".format(prefix_subdir)
@@ -799,6 +798,7 @@ def riscos(suffix, prefix_subdir, variable_suffix, host, description = None):
         platform.packaging_cmd = "riscosdist"
         platform.built_files = {
             builds.ScummVMBuild: [ "!ScummVM" ],
+            builds.ScummVMToolsBuild: [ "!ScummTool" ],
         }
         platform.archiveext = "zip"
         platform.testable = False
@@ -818,6 +818,7 @@ def riscos(suffix, prefix_subdir, variable_suffix, host, description = None):
     register_platform(platform)
 
     platform = Platform("riscos{0}{1}-2".format('-' if suffix else '', suffix))
+    platform.compatibleBuilds = (builds.ScummVMBuild, )
     platform.buildconfigureargs = {
         builds.ScummVMBuild: [
             # Only the other ones
