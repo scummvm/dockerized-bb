@@ -829,8 +829,8 @@ def riscos(suffix, prefix_subdir, variable_suffix, host, description = None):
     platform.description = description + ' (AGS, Blade Runner, Glk, Kyra, The Last Express, Starship Titanic, TsAGE, Ultima)'
 
     register_platform(platform)
-riscos("", "", "STD", "arm-unknown-riscos", "RiscOS")
-riscos("vfp", "vfp", "VFP", "arm-vfp-riscos", "RiscOS with VFP")
+riscos("", "", "STD", "arm-unknown-riscos", "RISC OS")
+riscos("vfp", "vfp", "VFP", "arm-vfp-riscos", "RISC OS with VFP")
 
 def switch():
     platform = Platform("switch")
