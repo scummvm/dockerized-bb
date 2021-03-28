@@ -65,6 +65,8 @@ class StandardBuild(Build):
     DATA_FILES = []
     VERBOSE_BUILD_FLAG = None
 
+    CONFIGURE_GENERATED_FILE = None
+
     def __init__(self, name, baseurl, branch, *,
             nightly = None, enable_force = True, giturl = None,
             verbose_build = False, description = None):
@@ -78,6 +80,10 @@ class StandardBuild(Build):
         self.enable_force = enable_force
         self.verbose_build = verbose_build
         self.description_ = description
+
+        if self.CONFIGURE_GENERATED_FILE is None:
+            raise Exception("Invalid CONFIGURE_GENERATED_FILE setting")
+
         # Lock used to avoid writing source code when it is read by another task
         self.lock_src = util.MasterLock("src-{0}".format(self.name), maxCount=sys.maxsize)
         self.buildNames()
@@ -351,14 +357,14 @@ class StandardBuild(Build):
         ))
 
     def addConfigureSteps(self, f, platform, *,
-            env, configure_path, additional_args=None, generated_file="config.mk"):
+            env, configure_path, additional_args=None):
         if additional_args is None:
             additional_args = []
 
         f.addStep(scummsteps.SetPropertyIfOlder(
-            name = "check config.mk freshness",
+            name = "check {0} freshness".format(self.CONFIGURE_GENERATED_FILE),
             src = configure_path,
-            generated = generated_file,
+            generated = self.CONFIGURE_GENERATED_FILE,
             property = "do_configure"
             ))
 
@@ -467,6 +473,7 @@ class ScummVMBuild(StandardBuild):
         "dists/engine-data/monkey4-patch.m4b"
     ]
     VERBOSE_BUILD_FLAG = "--enable-verbose-build"
+    CONFIGURE_GENERATED_FILE = "configure.stamp"
 
     def __init__(self, *args, **kwargs):
         verbose_build = kwargs.pop('verbose_build', False)
@@ -491,6 +498,7 @@ class ScummVMStableBuild(ScummVMBuild):
     PATCHES = [
     ]
 
+    # These settings must be updated when release is done
     DATA_FILES = [
         "AUTHORS",
         "COPYING",
@@ -525,6 +533,7 @@ class ScummVMStableBuild(ScummVMBuild):
         "dists/networking/wwwroot.zip",
         "dists/pred.dic"
     ]
+    CONFIGURE_GENERATED_FILE = "config.mk"
 
 class ScummVMToolsBuild(StandardBuild):
     __slots__ = [ 'verbose_build' ]
@@ -540,6 +549,7 @@ class ScummVMToolsBuild(StandardBuild):
         "convert_dxa.bat"
     ]
     VERBOSE_BUILD_FLAG = "--enable-verbose-build"
+    CONFIGURE_GENERATED_FILE = "config.mk"
 
     def __init__(self, *args, **kwargs):
         verbose_build = kwargs.pop('verbose_build', False)
