@@ -1,3 +1,12 @@
+From 465c17edcc469bfb752356b6332b2eeddbe420a1 Mon Sep 17 00:00:00 2001
+From: Le Philousophe <lephilousophe@users.noreply.github.com>
+Date: Sun, 28 Mar 2021 17:40:17 +0200
+Subject: [PATCH 2/3] GCC has deprecated arm-elf prefix, use arm-eabi
+
+---
+ Makefile | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
 diff --git a/Makefile b/Makefile
 index 5957f1b..2f3837e 100644
 --- a/Makefile
@@ -23,3 +32,6 @@ index 5957f1b..2f3837e 100644
  
  #Automatic extension conversion.
  .SUFFIXES: .o .cpp .c .cc .h .m .i .S .asm .elf .srec .bin
+-- 
+2.25.1
+

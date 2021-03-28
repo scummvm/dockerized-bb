@@ -1,0 +1,63 @@
+From d951967bee22fe885d32f6569a9310eba3d742cf Mon Sep 17 00:00:00 2001
+From: Le Philousophe <lephilousophe@users.noreply.github.com>
+Date: Sun, 28 Mar 2021 17:44:51 +0200
+Subject: [PATCH 3/3] Fix build with new binutils
+
+Rename main to avoid it being placed first
+Pass -N flag to linker to have .bss placed directly after .text
+---
+ Makefile         | 2 +-
+ arm_sound_code.c | 2 +-
+ arm_startup.s    | 3 ++-
+ 3 files changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index 2f3837e..fcdcb31 100644
+--- a/Makefile
++++ b/Makefile
+@@ -232,7 +232,7 @@ arm_sound_code.bin: arm_sound_code.elf
+ 	arm-eabi-objcopy -O binary $< $@
+ 
+ arm_sound_code.elf: arm_startup.o arm_sound_code.o
+-	arm-eabi-gcc $(ARMFLAGS) -Wl,-Ttext,0 -nostdlib -nostartfiles -o $@ $^ -lgcc -lgcc
++	arm-eabi-gcc $(ARMFLAGS) -Wl,-Ttext,0,-N -nostdlib -nostartfiles -e _start -o $@ $^ -lgcc -lgcc
+ 
+ arm_sound_code.o: arm_sound_code.c soundcommon.h
+ 	arm-eabi-gcc -c -Wall $(ARMFLAGS) -o $@ $<
+diff --git a/arm_sound_code.c b/arm_sound_code.c
+index a25d38e..30c0a91 100644
+--- a/arm_sound_code.c
++++ b/arm_sound_code.c
+@@ -146,7 +146,7 @@ void *memcpy(void *s1, const void *s2, unsigned int n)
+ }
+ */
+ 
+-int main()
++int arm_main()
+ {
+   /* int n = 1; */
+ 
+diff --git a/arm_startup.s b/arm_startup.s
+index a912db0..42938a3 100644
+--- a/arm_startup.s
++++ b/arm_startup.s
+@@ -5,6 +5,7 @@
+ #
+ 	
+ 	.globl	_start
++	.globl  arm_main
+ 
+ 	.text
+ 
+@@ -50,7 +51,7 @@ reset:
+ 	# Set stack
+ 	ldr   sp,stack_base
+ 	# Call main
+-	bl	main
++	bl	arm_main
+ 
+ 	# Done.  Stay put.
+ done:	b	done
+-- 
+2.25.1
+

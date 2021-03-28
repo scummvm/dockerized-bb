@@ -8,7 +8,7 @@ HELPERS_DIR=$PACKAGE_DIR/../..
 
 do_make_bdir
 
-do_http_fetch libronin "https://github.com/sega-dreamcast/libronin/archive/ronin_${LIBRONIN_VERSION}.tar.gz" 'tar xzf'
+do_http_fetch ihi-libronin "https://bitbucket.org/ihi/libronin/get/ronin_${LIBRONIN_VERSION}.tar.gz" 'tar xzf'
 
 export PATH=$PATH:${DCTOOLCHAIN}/bin:${DCTOOLCHAIN}/sh-elf/bin:${DCTOOLCHAIN}/arm-eabi/bin
 
