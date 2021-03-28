@@ -46,7 +46,7 @@ RUN apt-get update && \
 
 ENV TARGET_DIR=/opt/iphone
 
-ENV HOST=arm-apple-darwin11 \
+ENV HOST=aarch64-apple-darwin11 \
 	`IPHONEOS_DEPLOYMENT_TARGET'=IPHONEOS_DEPLOYMENT_TARGET \
 	PREFIX=${TARGET_DIR}/SDK/iPhoneOS`'IPHONE_SDK_VERSION`'.sdk/usr
 

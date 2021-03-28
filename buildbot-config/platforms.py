@@ -451,12 +451,12 @@ def gp2x():
     register_platform(platform)
 gp2x()
 
-def ios7():
-    platform = Platform("ios7")
+def ios7_arm64():
+    platform = Platform("ios7-arm64")
     platform.workerimage = "iphone"
     platform.compatibleBuilds = (builds.ScummVMBuild, )
-    platform.env["CXX"] = "ccache arm-apple-darwin11-clang++"
-    platform.configureargs.append("--host=ios7")
+    platform.env["CXX"] = "ccache ${CXX}"
+    platform.configureargs.append("--host=ios7-arm64")
     platform.buildconfigureargs = {
         builds.ScummVMBuild: [ "--enable-static", "--with-staticlib-prefix=${PREFIX}"],
     }
@@ -468,11 +468,11 @@ def ios7():
     }
     platform.archiveext = "tar.bz2"
 
-    platform.description = "iOS 7.1+"
+    platform.description = "iOS 7.1+ (arm64)"
     platform.icon = 'iphone'
 
     register_platform(platform)
-ios7()
+ios7_arm64()
 
 def macosx_arm64():
     platform = Platform("macosx-arm64")

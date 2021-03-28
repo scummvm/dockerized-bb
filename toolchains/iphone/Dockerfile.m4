@@ -65,7 +65,7 @@ local_package(toolchain)
 # GAS preprocessor to have ARM assembly in libjpeg-turbo
 local_package(gas-preprocessor)
 
-ENV HOST=arm-apple-darwin11 \
+ENV HOST=aarch64-apple-darwin11 \
 	PREFIX=${TARGET_DIR}/SDK/iPhoneOS`'IPHONE_SDK_VERSION`'.sdk/usr
 
 # We add PATH here for *-config and platform specific binaries
@@ -88,7 +88,7 @@ helpers_package(bzip2)
 
 helpers_package(libpng1.6)
 
-helpers_package(libjpeg-turbo, --with-simd, CCASFLAGS="-fno-integrated-as $CFLAGS")
+helpers_package(libjpeg-turbo, --with-simd)
 
 helpers_package(faad2)
 

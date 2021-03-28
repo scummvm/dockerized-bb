@@ -1,0 +1,32 @@
+From f3305adbec3376fd71c60a6d1c814518f9ae2085 Mon Sep 17 00:00:00 2001
+From: Le Philousophe <lephilousophe@users.noreply.github.com>
+Date: Fri, 19 Mar 2021 12:18:30 +0100
+Subject: [PATCH 3/4] Make minimum target version configurable
+
+---
+ usage_examples/ios_toolchain/build.sh | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/usage_examples/ios_toolchain/build.sh b/usage_examples/ios_toolchain/build.sh
+index 860448f..ee29dfc 100755
+--- a/usage_examples/ios_toolchain/build.sh
++++ b/usage_examples/ios_toolchain/build.sh
+@@ -155,10 +155,14 @@ elif ! which dsymutil &>/dev/null; then
+     echo "int main(){return 0;}" | cc -xc -O2 -o $TARGETDIR/bin/dsymutil -
+ fi
+ 
++if [ -z "${IPHONEOS_DEPLOYMENT_TARGET}" ]; then
++	IPHONEOS_DEPLOYMENT_TARGET=$SDK_VERSION
++fi
++
+ verbose_cmd cc -O2 -Wall -Wextra -pedantic wrapper.c \
+     -DSDK_DIR=\"\\\"$WRAPPER_SDKDIR\\\"\" \
+     -DTARGET_CPU=\"\\\"$2\\\"\" \
+-    -DOS_VER_MIN=\"\\\"$SDK_VERSION\\\"\" \
++    -DOS_VER_MIN=\"\\\"$IPHONEOS_DEPLOYMENT_TARGET\\\"\" \
+     -o $TARGETDIR/bin/$TRIPLE-clang
+ 
+ pushd $TARGETDIR/bin &>/dev/null
+-- 
+2.25.1
+

@@ -1,0 +1,25 @@
+From c4342bffb5b8be38557d07931296eaabafd596b9 Mon Sep 17 00:00:00 2001
+From: Le Philousophe <lephilousophe@users.noreply.github.com>
+Date: Fri, 19 Mar 2021 12:17:45 +0100
+Subject: [PATCH 1/4] Set versions with environment variables
+
+---
+ usage_examples/ios_toolchain/build.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/usage_examples/ios_toolchain/build.sh b/usage_examples/ios_toolchain/build.sh
+index 42ecb81..e175323 100755
+--- a/usage_examples/ios_toolchain/build.sh
++++ b/usage_examples/ios_toolchain/build.sh
+@@ -169,7 +169,7 @@ rm -rf tmp
+ 
+ mkdir -p tmp
+ pushd tmp &>/dev/null
+-git_clone_repository https://github.com/tpoechtrager/ldid.git master
++git_clone_repository https://github.com/tpoechtrager/ldid.git $LDID_VERSION
+ pushd ldid &>/dev/null
+ make INSTALLPREFIX=$TARGETDIR -j$JOBS install
+ popd &>/dev/null
+-- 
+2.25.1
+
