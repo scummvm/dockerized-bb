@@ -1,0 +1,37 @@
+From c6c8da36e9d80efdb9af84361adc41fd1e63cb4e Mon Sep 17 00:00:00 2001
+From: Paul Cercueil <paul@crapouillou.net>
+Date: Sat, 10 May 2014 19:01:21 +0200
+Subject: [PATCH 4/6] video: fbdev: Set mouse and keyboard focus to the only
+ window
+
+---
+ src/video/fbdev/SDL_fbvideo.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/src/video/fbdev/SDL_fbvideo.c b/src/video/fbdev/SDL_fbvideo.c
+index 5a78b4129..672815369 100644
+--- a/src/video/fbdev/SDL_fbvideo.c
++++ b/src/video/fbdev/SDL_fbvideo.c
+@@ -31,6 +31,8 @@
+ 
+ #include "SDL_fbvideo.h"
+ #include "SDL_fbopengles.h"
++#include "../../events/SDL_mouse_c.h"
++#include "../../events/SDL_keyboard_c.h"
+ 
+ static int
+ FB_Available(void)
+@@ -188,6 +190,10 @@ FB_CreateWindow(_THIS, SDL_Window * window)
+     /* Setup driver data for this window */
+     window->driverdata = wdata;
+ 
++    /* One window, it always has focus */
++    SDL_SetMouseFocus(window);
++    SDL_SetKeyboardFocus(window);
++
+     /* Window has been successfully created */
+     return 0;
+ }
+-- 
+2.25.1
+

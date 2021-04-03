@@ -1,7 +1,8 @@
 #! /bin/sh
 
-# Stick with toolchain version
-SDL_VERSION=ec72e543fece666ce97b9f37f08518f40e2a2aea
+# Original toolchain used a fork by P. Cercueil which is not available anymore
+# Use base commit from official git repository and apply GCW0 patches on it
+SDL_VERSION=ec5f6ad5955c413c0fb42dc2c6d4ecaaff49db23
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..
@@ -9,7 +10,7 @@ HELPERS_DIR=$PACKAGE_DIR/../..
 
 do_make_bdir
 
-do_http_fetch SDL2 "https://github.com/pcercuei/SDL2/archive/${SDL_VERSION}.tar.gz" 'tar xzf'
+do_http_fetch SDL "https://github.com/libsdl-org/SDL/archive/${SDL_VERSION}.tar.gz" 'tar xzf'
 
 ./autogen.sh
 
