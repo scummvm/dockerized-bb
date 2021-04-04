@@ -1,39 +1,17 @@
-From 46e770b0283979ec1e7c741fe6e49a4e4112335f Mon Sep 17 00:00:00 2001
+From 53d5dd1cd894e87bbd9f0162d96f05803773cafc Mon Sep 17 00:00:00 2001
 From: Le Philousophe <lephilousophe@users.noreply.github.com>
 Date: Sat, 6 Feb 2021 23:22:32 +0100
 Subject: [PATCH 2/2] Add arm64 support to osxcross-macports
 
 ---
- tools/osxcross-macports | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ tools/osxcross-macports | 2 ++
+ 1 file changed, 2 insertions(+)
 
 diff --git a/tools/osxcross-macports b/tools/osxcross-macports
-index a3f45c9..40c8389 100755
+index e3f88b0..208121b 100755
 --- a/tools/osxcross-macports
 +++ b/tools/osxcross-macports
-@@ -80,6 +80,9 @@ case $MACOSX_DEPLOYMENT_TARGET in
-   10.13* ) OSXVERSION="darwin_17" ;;
-   10.14* ) OSXVERSION="darwin_18" ;;
-   10.15* ) OSXVERSION="darwin_19" ;;
-+  10.16* ) OSXVERSION="darwin_20" ;;
-+  11.0*  ) OSXVERSION="darwin_20.1" ;;
-+  11.1*  ) OSXVERSION="darwin_20.2" ;;
-        * ) unsupportedDepTarget ;;
- esac
- 
-@@ -296,9 +299,9 @@ getPkgUrl()
-     verboseMsg "  $p"
-   done
- 
--  local pkg=$(echo "$pkgs" | grep $OSXVERSION | grep $ARCH | uniq | tail -n1)
-+  local pkg=$(echo "$pkgs" | grep -F "$OSXVERSION." | grep $ARCH | uniq | tail -n1)
-   if [ -z "$pkg" ]; then
--    pkg=$(echo "$pkgs" | grep $OSXVERSION | grep "noarch" | uniq | tail -n1)
-+    pkg=$(echo "$pkgs" | grep -F "$OSXVERSION." | grep "noarch" | uniq | tail -n1)
-   fi
- 
-   verboseMsg " selected: $pkg"
-@@ -584,6 +587,8 @@ main()
+@@ -586,6 +586,8 @@ main()
          ARCH="i386"
        elif [ $opt == "-universal" -o $opt == "--universal" ]; then
          ARCH="i386-x86_64"

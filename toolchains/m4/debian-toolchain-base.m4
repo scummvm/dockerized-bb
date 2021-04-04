@@ -1,4 +1,4 @@
-m4_define(`DEBIAN_VERSION',20210311)
+m4_define(`DEBIAN_VERSION',20210329)
 FROM toolchains/common AS helpers
 
 FROM debian:stable-DEBIAN_VERSION-slim m4_ifdef(`STAGE_IMAGE_NAME',AS STAGE_IMAGE_NAME,)
