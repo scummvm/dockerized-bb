@@ -290,14 +290,14 @@ def debian(name_suffix, image_suffix, host,
             "construct_mohawk",
             "create_sjisfnt",
             "decine",
-            #"decompile", # Decompiler currently not built - BOOST library not present
+            "decompile",
             "degob",
             "dekyra",
             "descumm",
             "desword2",
             "extract_mohawk",
             "gob_loadcalc",
-            #"scummvm-tools", # GUI tools currently not built - WxWidgets library not present
+            "scummvm-tools",
             "scummvm-tools-cli"
         ]
     }
@@ -314,7 +314,7 @@ debian("x86-64", "x86_64", "x86_64-linux-gnu", description="Debian (64\xa0bits)"
 debian("x86-64-nullbackend", "x86_64", "x86_64-linux-gnu", package=False, tools=False,
     build_tests=False, run_tests=False,
     buildconfigureargs = {
-        builds.ScummVMBuild: [ "--backend=null" ],
+        builds.ScummVMBuild: [ "--backend=null", "--enable-opl2lpt", "--enable-text-console" ],
     })
 debian("x86-64-testengine", "x86_64", "x86_64-linux-gnu", package=False, tools=False,
     build_tests=False, run_tests=False,
@@ -751,14 +751,14 @@ def raspberrypi():
             "construct_mohawk",
             "create_sjisfnt",
             "decine",
-            #"decompile", # Decompiler currently not built - BOOST library not present
+            "decompile",
             "degob",
             "dekyra",
             "descumm",
             "desword2",
             "extract_mohawk",
             "gob_loadcalc",
-            #"scummvm-tools", # GUI tools currently not built - WxWidgets library not present
+            "scummvm-tools",
             "scummvm-tools-cli"
         ]
     }
