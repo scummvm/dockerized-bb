@@ -52,6 +52,8 @@ mxe_package(libpng)
 # Patch libjpeg-turbo to not install it in its own subdirectory
 local_mxe_package(libjpeg-turbo)
 
+mxe_package(giflib)
+
 mxe_package(faad2)
 
 mxe_package(libmad)

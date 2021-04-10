@@ -35,6 +35,8 @@ vdpm_package(libpng)
 
 vdpm_package(libjpeg-turbo)
 
+helpers_package(giflib)
+
 vdpm_package(libmad)
 
 vdpm_package(libogg)

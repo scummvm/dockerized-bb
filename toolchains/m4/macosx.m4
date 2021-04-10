@@ -100,6 +100,9 @@ ports_package(libpng)
 
 ports_package(libjpeg-turbo)
 
+# giflib5 in ports is installed in subdirectory not standard
+helpers_package(giflib)
+
 ports_package(faad2)
 
 ports_package(libmad)

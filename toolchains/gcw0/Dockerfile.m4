@@ -54,6 +54,9 @@ local_package(libpng)
 # Use same version as official toolchain
 local_package(libjpeg)
 
+# No giflib in the original toolchain build ours statically
+helpers_package(giflib)
+
 # No libfaad2 in the original toolchain build ours statically
 helpers_package(faad2)
 

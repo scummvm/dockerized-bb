@@ -51,6 +51,8 @@ ENV \
 	def_pkg_config(`${PREFIX}') \
         PATH=$PATH:${PS3DEV}/bin:${PS3DEV}/ppu/bin:${PS3DEV}/spu/bin:${PS3DEV}/portlibs/ppu/bin
 
+helpers_package(giflib)
+
 helpers_package(mpeg2dec)
 
 helpers_package(a52dec)

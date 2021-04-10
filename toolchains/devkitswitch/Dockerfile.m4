@@ -57,6 +57,8 @@ ENV \
 
 # libjpeg-turbo is already installed in original toolchain
 
+# giflib is already installed in original toolchain
+
 helpers_package(faad2)
 
 # libmad is already installed in original toolchain

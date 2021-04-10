@@ -9,6 +9,7 @@ RUN apt-get update && \
 		libfluidsynth-dev`'APT_ARCH \
 		libfreetype6-dev`'APT_ARCH \
 		libfribidi-dev`'APT_ARCH \
+		libgif-dev`'APT_ARCH \
 		libglew-dev`'APT_ARCH \
 		libgtk-3-dev`'APT_ARCH \
 		libieee1284-3-dev`'APT_ARCH \

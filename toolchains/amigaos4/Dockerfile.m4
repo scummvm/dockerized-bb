@@ -48,6 +48,8 @@ local_package(libpng)
 
 local_package(libjpeg)
 
+local_package(giflib)
+
 #helpers_package(faad2)
 
 local_package(libmad)

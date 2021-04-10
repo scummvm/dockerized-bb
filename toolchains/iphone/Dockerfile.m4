@@ -90,6 +90,8 @@ helpers_package(libpng1.6)
 
 helpers_package(libjpeg-turbo, --with-simd)
 
+helpers_package(giflib)
+
 helpers_package(faad2)
 
 helpers_package(libmad)
