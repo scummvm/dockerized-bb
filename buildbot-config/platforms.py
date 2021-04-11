@@ -866,6 +866,7 @@ def vita():
     # Glk is not very usable on Vita without a keyboard.
     platform.buildconfigureargs = {
         builds.ScummVMBuild: [
+            "--disable-all-unstable-engines",
             "--disable-engines=bladerunner",
             "--disable-engines=stark",
             "--disable-engines=myst3",
@@ -873,6 +874,7 @@ def vita():
         ],
         # Stable doesn't have myst3 nor stark
         builds.ScummVMStableBuild: [
+            "--disable-all-unstable-engines",
             "--disable-engines=bladerunner",
             "--disable-engines=glk",
         ],
