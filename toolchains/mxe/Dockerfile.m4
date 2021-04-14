@@ -80,7 +80,7 @@ mxe_package(fribidi)
 
 mxe_package(glew)
 
-mxe_package(sdl2)
+local_mxe_package(sdl2)
 
 mxe_package(sdl2_net)
 

@@ -1,0 +1,13 @@
+diff --git a/configure.ac b/configure.ac
+index b6783a08..28234207 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -3889,7 +3889,7 @@ case "$host" in
+         VERSION_SOURCES="$srcdir/src/main/windows/*.rc"
+         SDLMAIN_SOURCES="$srcdir/src/main/windows/*.c"
+         SDL_CFLAGS="$SDL_CFLAGS -Dmain=SDL_main"
+-        SDL_LIBS="-lSDL2main $SDL_LIBS -mwindows"
++        SDL_LIBS="-lSDL2main $SDL_LIBS -mconsole"
+ 
+         # Check to see if this is a mingw or cygwin build
+         have_mingw32=
