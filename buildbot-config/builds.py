@@ -256,6 +256,8 @@ class StandardBuild(Build):
                     'got_revision': util.Property('got_revision', defaultWhenFalse=False),
                     'clean': True,
                     'package': True,
+                    # Ensure our tag is put first and is split from the others
+                    'owner': '  Nightly build  ',
                 }))
             ret.append(util.BuilderConfig(
                 name = self.names['bld-nightly'],
