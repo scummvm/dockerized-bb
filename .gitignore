@@ -9,7 +9,8 @@
 /buildbot-data/src/
 /buildbot-data/triggers/
 /buildbot-workdir/
-/Makefile.user
+/Makefile.user*
+!/Makefile.user.example
 /README.html
 /toolchains/*/Dockerfile.debug
 /workers/*/Dockerfile.debug
