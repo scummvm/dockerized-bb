@@ -13,7 +13,10 @@ WORKERS_BUILT      := all
 
 DOCKER_PRIVATE     := 0
 DOCKER_REGISTRY    := lephilousophe/scummvm
-DOCKER_SEPARATOR   := :
+# This separator is between DOCKER_REGISTRY and image name
+DOCKER_BASE_SEP    := :
+# This separator is used to replace /
+DOCKER_PATH_SEP    := -
 
 VERBOSE  := 0
 BUILDDIR := .build
@@ -62,7 +65,7 @@ endef
 m4_cmdline = m4 -P -EE $(3) -I $(dir $(1))m4 -I $(1) toolchains/m4/library.m4 $(2)
 
 # Return the docker URL with path sanitized
-build_docker_url = $(DOCKER_REGISTRY)$(DOCKER_SEPARATOR)$(subst /,-,$(1))
+build_docker_url = $(DOCKER_REGISTRY)$(DOCKER_BASE_SEP)$(subst /,$(DOCKER_PATH_SEP),$(1))
 
 # Let's create a list taking whitelist and blacklist into account
 # First create a positive list: that takes all words which don't start with a dash,
