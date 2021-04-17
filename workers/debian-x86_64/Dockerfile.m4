@@ -6,9 +6,11 @@ m4_include(`debian-libraries.m4')m4_dnl
 
 RUN apt-get update && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+		libsdl1.2-dev \
+		libsdl-net1.2-dev \
 		g++ \
-                && \
-        rm -rf /var/lib/apt/lists/*
+	&& \
+	rm -rf /var/lib/apt/lists/*
 
 ENV HOST=x86_64-linux-gnu
 

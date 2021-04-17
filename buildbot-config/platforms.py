@@ -265,7 +265,7 @@ caanoo()
 def debian(name_suffix, image_suffix, host,
         package=True,
         build_tests=True, run_tests=True,
-        buildconfigureargs=None, tools=True,
+        buildconfigureargs=None, env=None, tools=True,
         description=None):
     platform = Platform("debian-{0}".format(name_suffix))
     platform.workerimage = "debian-{0}".format(image_suffix)
@@ -273,6 +273,8 @@ def debian(name_suffix, image_suffix, host,
         platform.compatibleBuilds = (builds.ScummVMBuild, )
 
     platform.env["CXX"] = "ccache ${CXX}"
+    if env:
+        platform.env.update(env)
     platform.configureargs.append("--host={0}".format(host))
     if buildconfigureargs:
         platform.buildconfigureargs = buildconfigureargs
@@ -334,6 +336,14 @@ debian("x86-64-dynamic-detection", "x86_64", "x86_64-linux-gnu", package=False, 
         builds.ScummVMBuild: [ "--enable-plugins", "--default-dynamic", "--enable-detection-dynamic" ],
         # In stable, detection code was in engines
         builds.ScummVMStableBuild: [ "--enable-plugins", "--default-dynamic" ],
+    })
+debian("x86-64-sdl1.2", "x86_64", "x86_64-linux-gnu", package=False, tools=False,
+    build_tests=False, run_tests=False,
+    buildconfigureargs = {
+        builds.ScummVMBuild: [ "--disable-all-engines", "--enable-engine=testbed",],
+    },
+    env = {
+        'SDL_CONFIG':'sdl-config',
     })
 
 def dreamcast():
