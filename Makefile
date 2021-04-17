@@ -12,11 +12,11 @@ WORKERS_ENABLED    := all
 WORKERS_BUILT      := all
 
 DOCKER_PRIVATE     := 0
-DOCKER_REGISTRY    := lephilousophe/scummvm
+DOCKER_REGISTRY    := scummvm/dockerized
 # This separator is between DOCKER_REGISTRY and image name
-DOCKER_BASE_SEP    := :
+DOCKER_BASE_SEP    := -
 # This separator is used to replace /
-DOCKER_PATH_SEP    := -
+DOCKER_PATH_SEP    := :
 
 VERBOSE  := 0
 BUILDDIR := .build
