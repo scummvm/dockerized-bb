@@ -21,7 +21,8 @@ M4_DEBUG := -dcxaeq
 
 # To let user override previous values easily
 # User can also set values on command line
--include Makefile.user
+USER_CONFIG = Makefile.user
+-include $(USER_CONFIG)
 
 # Helpers
 
@@ -87,6 +88,7 @@ $(BUILDBOT_BASEDIR) $(BUILDDIR) $(BUILDDIR)/toolchains $(BUILDDIR)/workers: %:
 
 # Debug informations
 status:
+	@echo "User configuration:               " $(USER_CONFIG)
 	@echo "Buildbot version:                 " $(BUILDBOT_VERSION)
 	@echo "Timestamps directory:             " $(BUILDDIR)
 	@echo "Toolchains to preprocess:         " $(ALL_TOOLCHAINS_M4)
