@@ -84,6 +84,8 @@ local_package(libfreetype)
 
 local_package(libfribidi)
 
+local_package(minigl)
+
 local_package(libsdl2)
 
 local_package(libsdl2_net)

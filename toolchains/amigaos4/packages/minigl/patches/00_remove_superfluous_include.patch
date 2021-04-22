@@ -1,0 +1,10 @@
+--- a/MiniGL/SDK/local/common/include/mgl/context.h	2021-03-20 20:31:26.139338893 +0100
++++ b/MiniGL/SDK/local/common/include/mgl/context.h	2021-03-20 20:30:48.511452239 +0100
+@@ -24,7 +24,6 @@
+ #include "mgl/state.h"
+ 
+ #include <devices/timer.h>
+-#include <intuition/intuition.h>
+ 
+ #include "mgl/profiling.h"
+ 
