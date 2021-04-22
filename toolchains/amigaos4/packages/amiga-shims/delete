@@ -4,17 +4,18 @@ path=
 quiet=
 flags=
 for arg in "$@"; do
-	if [ "$arg" = "ALL" ]; then
+	argi=$(echo "$arg" | tr 'a-z' 'A-Z')
+	if [ "$argi" = "ALL" ]; then
 		flags="${flags}r"
-	elif [ "$arg" = "QUIET" ]; then
+	elif [ "$argi" = "QUIET" ]; then
 		quiet=1
-	elif [ "$arg" = "INTER" ]; then
+	elif [ "$argi" = "INTER" ]; then
 		flags="${flags}i"
-	elif [ "$arg" = "INTERACTIVE" ]; then
+	elif [ "$argi" = "INTERACTIVE" ]; then
 		flags="${flags}i"
-	elif [ "$arg" = "FORCE" ]; then
+	elif [ "$argi" = "FORCE" ]; then
 		flags="${flags}f"
-	elif [ "$arg" = "WIPE" ]; then
+	elif [ "$argi" = "WIPE" ]; then
 		echo "$0: Warning $arg not supported"
 	elif [ -z "$path" ]; then
 		path=$arg

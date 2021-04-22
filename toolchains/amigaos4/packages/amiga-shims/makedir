@@ -3,9 +3,10 @@
 path=
 flags=
 for arg in "$@"; do
-	if [ "$arg" = "ALL" ]; then
+	argi=$(echo "$arg" | tr 'a-z' 'A-Z')
+	if [ "$argi" = "ALL" ]; then
 		flags=-p
-	elif [ "$arg" = "FORCE" ]; then
+	elif [ "$argi" = "FORCE" ]; then
 		# Not really a force
 		flags=-p
 	elif [ -z "$path" ]; then

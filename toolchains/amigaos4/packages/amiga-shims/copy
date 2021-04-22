@@ -6,51 +6,52 @@ quiet=
 flags=
 while [ $# -gt 0 ]; do
 	arg=$1
+	argi=$(echo "$arg" | tr 'a-z' 'A-Z')
 	shift
-	if [ "$arg" = "FROM" ]; then
+	if [ "$argi" = "FROM" ]; then
 		if [ -n "$src" ]; then
 			echo "$0: Two much paths" >&2
 			exit 1
 		fi
 		src=$1
 		shift
-	elif [ "$arg" = "TO" ]; then
+	elif [ "$argi" = "TO" ]; then
 		if [ -n "$dst" ]; then
 			echo "$0: Two much paths" >&2
 			exit 1
 		fi
 		dst=$1
 		shift
-	elif [ "$arg" = "ALL" ]; then
+	elif [ "$argi" = "ALL" ]; then
 		flags="${flags}r"
-	elif [ "$arg" = "QUIET" ]; then
+	elif [ "$argi" = "QUIET" ]; then
 		quiet=1
-	elif [ "$arg" = "CLONE" ]; then
+	elif [ "$argi" = "CLONE" ]; then
 		flags="${flags}a"
-	elif [ "$arg" = "DATES" ]; then
+	elif [ "$argi" = "DATES" ]; then
 		echo "$0: Warning $arg not supported"
-	elif [ "$arg" = "NOPRO" ]; then
+	elif [ "$argi" = "NOPRO" ]; then
 		echo "$0: Warning $arg not supported"
-	elif [ "$arg" = "COM" ]; then
+	elif [ "$argi" = "COM" ]; then
 		echo "$0: Warning $arg not supported"
-	elif [ "$arg" = "NOREQ" ]; then
+	elif [ "$argi" = "NOREQ" ]; then
 		flags="${flags}n"
-	elif [ "$arg" = "NOREPLACE" ]; then
+	elif [ "$argi" = "NOREPLACE" ]; then
 		echo "$0: Warning $arg not supported"
-	elif [ "$arg" = "INTERACTIVE" ]; then
+	elif [ "$argi" = "INTERACTIVE" ]; then
 		flags="${flags}i"
-	elif [ "$arg" = "FORCE" ]; then
+	elif [ "$argi" = "FORCE" ]; then
 		flags="${flags}f"
-	elif [ "$arg" = "ARCHIVE" ]; then
+	elif [ "$argi" = "ARCHIVE" ]; then
 		echo "$0: Warning $arg not supported"
-	elif [ "$arg" = "NEWER" ]; then
+	elif [ "$argi" = "NEWER" ]; then
 		flags="${flags}u"
-	elif [ "$arg" = "COPYLINKS" ]; then
+	elif [ "$argi" = "COPYLINKS" ]; then
 		flags="${flags}L"
-	elif [ "$arg" = "FOLLOWLINKS" ]; then
+	elif [ "$argi" = "FOLLOWLINKS" ]; then
 		echo "$0: Warning $arg not supported"
 	else
-		case "$arg" in
+		case "$argi" in
 		BUFFER*|BUF*)
 			echo "$0: Warning $arg not supported"
 			;;

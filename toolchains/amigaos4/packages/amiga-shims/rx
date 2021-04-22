@@ -6,6 +6,6 @@ BIN_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 export PATH=$PATH:$BIN_DIR
 
 # Ask for Amiga Rexx version
-export REGINA_OPTIONS="AREXX_BIFS AREXX_SEMANTICS"
+export REGINA_OPTIONS="AREXX_BIFS AREXX_SEMANTICS BROKEN_ADDRESS_COMMAND"
 
 exec "$BIN_DIR"/rexx "$@"

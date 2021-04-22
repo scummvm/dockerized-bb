@@ -32,6 +32,10 @@ local_package(regina-rexx)
 # Install various wrappers
 local_package(amiga-shims)
 
+# These symlinks are here for Ext_Inst_so.rexx which uses readelf and gcc commands without architecture prefix
+RUN ln -s ${CROSS_PREFIX}/bin/${HOST}-gcc ${PREFIX}/bin/gcc
+RUN ln -s ${CROSS_PREFIX}/bin/${HOST}-readelf ${PREFIX}/bin/readelf
+
 # We add PATH here for *-config and platform specific binaries
 ENV \
 	def_binaries(`${CROSS_PREFIX}/bin/${HOST}-', `ar, as, c++filt, ld, nm, objcopy, objdump, ranlib, readelf, strings, strip') \
