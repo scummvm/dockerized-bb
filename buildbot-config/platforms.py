@@ -153,7 +153,8 @@ def amigaos4():
         builds.ScummVMToolsBuild: "amigaosdist"
     }
     platform.built_files = {
-        builds.ScummVMBuild: [ "Games:ScummVM", "Games:ScummVM.info" ],
+        builds.ScummVMBuild: [ "install", "install.info" ],
+        builds.ScummVMStableBuild: [ "Games:ScummVM", "Games:ScummVM.info" ],
         builds.ScummVMToolsBuild: [
             "construct_mohawk",
             "create_sjisfnt",
