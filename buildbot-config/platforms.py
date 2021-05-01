@@ -487,11 +487,11 @@ ios7_arm64()
 
 def macosx_arm64():
     platform = Platform("macosx-arm64")
-    platform.env["CXX"] = "ccache arm64-apple-darwin20.2-c++"
+    platform.env["CXX"] = "ccache arm64-apple-darwin20.4-c++"
     # configure script doesn't compile discord check with proper flags
     platform.env["DISCORD_LIBS"] = "-framework AppKit"
 
-    platform.configureargs.append("--host=aarch64-apple-darwin20.2")
+    platform.configureargs.append("--host=aarch64-apple-darwin20.4")
     platform.buildconfigureargs = {
         builds.ScummVMBuild: [ "--enable-static",
             "--with-staticlib-prefix=${DESTDIR}/${PREFIX}",
@@ -529,11 +529,11 @@ macosx_arm64()
 
 def macosx_x86_64():
     platform = Platform("macosx-x86_64")
-    platform.env["CXX"] = "ccache x86_64-apple-darwin20.2-c++"
+    platform.env["CXX"] = "ccache x86_64-apple-darwin20.4-c++"
     # configure script doesn't compile discord check with proper flags
     platform.env["DISCORD_LIBS"] = "-framework AppKit"
 
-    platform.configureargs.append("--host=x86_64-apple-darwin20.2")
+    platform.configureargs.append("--host=x86_64-apple-darwin20.4")
     platform.buildconfigureargs = {
         builds.ScummVMBuild: [ "--enable-static",
             "--with-staticlib-prefix=${DESTDIR}/${PREFIX}",
