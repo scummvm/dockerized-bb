@@ -1,6 +1,6 @@
 #! /bin/sh
 
-BINDHELP_VERSION=458
+BINDHELP_VERSION=467
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..
