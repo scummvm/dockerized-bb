@@ -108,6 +108,10 @@ do_lha_install () {
 			sed -i -e "s#^exec_prefix=.*\$#exec_prefix=$PREFIX#" "$dstlib/pkgconfig/$f"
 			sed -i -e 's#^libdir=.*$#libdir=${pcfiledir}/..#' "$dstlib/pkgconfig/$f"
 			sed -i -e 's#^includedir=.*/include#includedir=${prefix}/include#' "$dstlib/pkgconfig/$f"
+			# If we don't install dynamic version, strip out -use-dynld flag
+			if [ -z "$dynamic" ]; then
+				sed -i -e 's# -use-dynld ##g' "$dstlib/pkgconfig/$f"
+			fi
 		done
 	done
 
@@ -125,6 +129,10 @@ do_lha_install () {
 		sed -i -e 's#^[ \t]*exec_prefix=.*$#exec_prefix="${prefix}"#' "$f"
 		sed -i -e 's#^[ \t]*libdir=.*$#libdir="${prefix}/lib"#' "$f"
 		sed -i -e 's#^[ \t]*includedir=\("\?\).*/include#includedir=\1${prefix}/include#' "$f"
+		# If we don't install dynamic version, strip out -use-dynld flag
+		if [ -z "$dynamic" ]; then
+			sed -i -e 's# -use-dynld ##g' "$f"
+		fi
 		chmod +x "$f"
 	done
 
