@@ -36,6 +36,9 @@ ENV MXE_DIR=/opt/mxe-src \
 	MXE_PREFIX_DIR=/opt/mxe \
 	`MXE_VERSION'=MXE_VERSION
 
+# Add MXE bin directory to PATH
+ENV PATH=$PATH:${MXE_PREFIX_DIR}/bin
+
 local_package(toolchain)
 
 # Install CMake now as it's used for several packages later as it's cleaner
@@ -60,17 +63,15 @@ mxe_package(libmad)
 
 mxe_package(ogg)
 
-mxe_package(theora)
-
 mxe_package(vorbis)
+
+mxe_package(theora)
 
 mxe_package(flac)
 
 mxe_package(libmpeg2)
 
 mxe_package(a52dec)
-
-# No iconv as Win32 API is used instead
 
 local_mxe_package(curl-light)
 
@@ -79,6 +80,8 @@ mxe_package(freetype-bootstrap)
 mxe_package(fribidi)
 
 mxe_package(glew)
+
+mxe_package(libiconv)
 
 local_mxe_package(sdl2)
 
