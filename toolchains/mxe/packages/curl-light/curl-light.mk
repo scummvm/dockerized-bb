@@ -2,7 +2,7 @@
 
 PKG             := curl-light
 $(PKG)_WEBSITE  := https://curl.haxx.se/libcurl/
-$(PKG)_DESCR    := cURL (without deps)
+$(PKG)_DESCR    := cURL (without deps or IDN)
 $(PKG)_IGNORE   = $(curl_IGNORE)
 $(PKG)_VERSION  = $(curl_VERSION)
 $(PKG)_CHECKSUM = $(curl_CHECKSUM)
@@ -23,7 +23,7 @@ define $(PKG)_BUILD
         $(MXE_CONFIGURE_OPTS) \
         --with-winssl \
         --without-ssl \
-        --with-winidn \
+        --without-winidn \
         --enable-sspi \
         --enable-ipv6 \
         --enable-threaded-resolver \
