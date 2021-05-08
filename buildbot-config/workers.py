@@ -9,6 +9,7 @@ import docker
 from buildbot.plugins import util
 from buildbot.plugins import worker
 
+import builds
 import config
 
 workers = []
