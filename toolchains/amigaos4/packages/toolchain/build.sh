@@ -27,6 +27,8 @@ HOME="$(pwd)" gild/bin/gild checkout gcc "${GCC_VER}"
 
 do_make -C native-build gcc-cross
 
+do_make -C native-build additionals-libs
+
 # Fix missing rights for library files
 chmod -R go+rX "${CROSS_PREFIX}"
 

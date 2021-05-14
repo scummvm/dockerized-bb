@@ -1,0 +1,19 @@
+commit dc599576c9238edcfb92fe3efe023205c3e49544
+Author: Le Philousophe <lephilousophe@users.noreply.github.com>
+Date:   Tue May 11 18:53:22 2021 +0200
+
+    Fix additional libs for SDK 53.30
+
+diff --git a/native-build/makefile b/native-build/makefile
+index 7cab4f4..05b2c4f 100644
+--- a/native-build/makefile
++++ b/native-build/makefile
+@@ -205,7 +205,7 @@ additionals-libs:
+ 	mkdir -p $(CROSS_PREFIX)/ppc-amigaos/SDK/local/common/include
+ 	mkdir -p /tmp/abcd
+ 	cd downloads && lha xw=/tmp/abcd SDK_$(SDK_VERSION).lha
+-	cd /tmp/abcd/SDK_Install && lha x pthread.lha && lha x zlib-1.2.3.lha
++	cd /tmp/abcd/SDK_Install && lha x pthreads-53.11.lha
+ 	cp -Rf /tmp/abcd/SDK_Install/Local/* $(CROSS_PREFIX)/ppc-amigaos/SDK/local
+ 	rm -Rf /tmp/abcd
+ 

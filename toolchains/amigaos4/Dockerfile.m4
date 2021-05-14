@@ -75,7 +75,6 @@ local_package(codesets)
 local_package(libopenssl)
 
 # Needed by precompiled libcurl
-local_package(pthreads)
 local_package(librtmp)
 
 local_package(libcurl)
