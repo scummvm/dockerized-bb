@@ -146,7 +146,9 @@ def amigaos4():
     platform.env["CXX"] = "ccache /usr/local/amigaos4/bin/ppc-amigaos-c++"
     platform.configureargs.append("--host=ppc-amigaos")
     platform.buildconfigureargs = {
-        builds.ScummVMBuild: [ "--enable-static" ],
+        builds.ScummVMBuild: [ "--enable-plugins", "--default-dynamic", "--enable-detection-dynamic" ],
+        # Stable build doesn't have all necessary patches to make it work dynamic
+        builds.ScummVMStableBuild: [ "--enable-static" ],
     }
     platform.packaging_cmd = {
         builds.ScummVMBuild: "amigaosdist",
