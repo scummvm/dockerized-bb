@@ -706,7 +706,11 @@ def psp():
     # adding a game (see further comment in the pspfull buildbot target)
 
     platform.buildconfigureargs = {
-        builds.ScummVMBuild: [ "--disable-engines=ultima", "--disable-all-unstable-engines" ],
+        builds.ScummVMBuild: [
+            "--disable-engines=ultima",
+            "--disable-all-unstable-engines",
+            "--enable-engine=testbed",
+        ],
     }
     platform.built_files = {
         builds.ScummVMBuild: [
@@ -886,12 +890,14 @@ def vita():
             "--disable-engines=myst3",
             "--disable-engines=glk",
             "--disable-engines=grim",
+            "--enable-engine=testbed",
         ],
         # Stable doesn't have myst3 nor stark
         builds.ScummVMStableBuild: [
             "--disable-all-unstable-engines",
             "--disable-engines=bladerunner",
             "--disable-engines=glk",
+            "--enable-engine=testbed",
         ],
     }
     platform.packaging_cmd = "psp2vpk"
