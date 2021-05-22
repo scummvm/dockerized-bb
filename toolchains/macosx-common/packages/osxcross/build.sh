@@ -1,8 +1,7 @@
 #! /bin/sh
 
-OSXCROSS_VERSION=5771a847950abefed9a37e2d16ee10e0dd90c641
+OSXCROSS_VERSION=8a716a43a72dab1db9630d7824ee0af3730cb8f9
 export XAR_VERSION=2b9a4ab7003f1db8c54da4fea55fcbb424fdecb0
-export LDID_VERSION=4bf8f4d60384a0693dbbe2084ce62a35bfeb87ab
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..

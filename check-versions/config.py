@@ -272,7 +272,7 @@ VERSIONS = {
     ('./toolchains/iphone/packages/gas-preprocessor/build.sh', 'GAS_PREPROCESSOR'): {
         'check': 'git commit',
         'repository': 'https://github.com/libjpeg-turbo/gas-preprocessor.git',
-        'branch': 'master',
+        'branch': 'main',
     },
     ('./toolchains/iphone/packages/toolchain/build.sh', 'CCTOOLS_PORT'): cctools_port_check,
     ('./toolchains/iphone/packages/toolchain/build.sh', 'LDID'): {

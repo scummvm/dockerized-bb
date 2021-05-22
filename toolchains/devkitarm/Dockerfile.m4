@@ -1,4 +1,4 @@
-m4_define(`DEVKITARM_VERSION',20200730)
+m4_define(`DEVKITARM_VERSION',20210510)
 # This version of devkitARM depends on a Debian Stretch
 # For now it works with stable-slim, we will have to ensure it stays like that
 FROM devkitpro/devkitarm:DEVKITARM_VERSION AS original-toolchain
