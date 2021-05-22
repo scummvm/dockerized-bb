@@ -34,7 +34,7 @@ def parse_multistatus(baseurl, data):
     return all_files
 
 @checkers.cache
-def fetch_props(url, depth, props):
+def fetch_props(url, depth, props, context=None):
     parts = urlp.urlsplit(url, allow_fragments=False)
     if parts.scheme.lower() not in('http' ,'https'):
         raise Exception("HTTP and HTTPS are the only schemes supported for SVN protocol for {0}".format(url))
@@ -49,7 +49,7 @@ def fetch_props(url, depth, props):
 
     req = urlr.Request(url, method="PROPFIND", data=data)
     req.add_header('Depth', str(depth))
-    with urlr.urlopen(req) as reply:
+    with urlr.urlopen(req, context=context) as reply:
         if reply.status != 207:
             raise Exception("Can't load SVN informations for {0}".format(repository))
 
@@ -57,8 +57,8 @@ def fetch_props(url, depth, props):
 
         return parse_multistatus(url, data)
 
-def dav_get_version(repository):
-    objects = fetch_props(repository, 0, ('{DAV:}version-name', ))
+def dav_get_version(repository, context=None):
+    objects = fetch_props(repository, 0, ('{DAV:}version-name', ), context)
     # Reply has only 1 item
     props = next(iter(objects.values()))
 
@@ -73,8 +73,8 @@ def svn_get_version(repository):
 
     return online_version
 
-def dav_list_tags(repository):
-    objects = fetch_props(repository, 1, tuple())
+def dav_list_tags(repository, context=None):
+    objects = fetch_props(repository, 1, tuple(), context)
     urls = objects.keys()
 
     # Unquote, isolate path and remove leading /
@@ -100,12 +100,12 @@ def svn_list_tags(repository):
     names = (entry.name.decode('utf-8') for entry in entries)
     return names
 
-def svn_commit(version, *, repository):
+def svn_commit(version, *, repository, context=None):
     parts = urlp.urlsplit(repository, allow_fragments=False)
     if parts.scheme.lower() == 'svn':
         online_version = svn_get_version(repository)
     elif parts.scheme.lower() in('http' ,'https'):
-        online_version = dav_get_version(repository)
+        online_version = dav_get_version(repository, context)
     else:
         raise Exception("Scheme {0} not supported as SVN protocol for {1}".format(parts.scheme.lower(), repository))
 
@@ -113,12 +113,12 @@ def svn_commit(version, *, repository):
 
 checkers.register('svn commit', svn_commit)
 
-def svn_tag(version, *, repository, **kwargs):
+def svn_tag(version, *, repository, context=None, **kwargs):
     parts = urlp.urlsplit(repository, allow_fragments=False)
     if parts.scheme.lower() == 'svn':
         names = svn_list_tags(repository)
     elif parts.scheme.lower() in('http' ,'https'):
-        names = dav_list_tags(repository)
+        names = dav_list_tags(repository, context)
     else:
         raise Exception("Scheme {0} not supported as SVN protocol for {1}".format(parts.scheme.lower(), repository))
 

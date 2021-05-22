@@ -95,7 +95,7 @@ def parse_smart_refs(reply):
     return refsd
 
 @checkers.cache
-def fetch_refs(repository):
+def fetch_refs(repository, context=None):
     parts = urlp.urlsplit(repository, allow_fragments=False)
     if parts.scheme.lower() not in('http' ,'https'):
         raise Exception("HTTP and HTTPS are the only schemes supported for Git protocol for {0}".format(repository))
@@ -108,7 +108,7 @@ def fetch_refs(repository):
     req = urlr.Request(refs_url, method="GET")
     # We don't support v2
     req.add_header('Git-Protocol', 'version=1')
-    with urlr.urlopen(req) as reply:
+    with urlr.urlopen(req, context=context) as reply:
         if reply.status != 200:
             raise Exception("Can't load Git references for {0}".format(repository))
 
@@ -119,8 +119,8 @@ def fetch_refs(repository):
             refs = parse_dumb_refs(reply)
     return refs
 
-def git_commit(version, *, repository, branch):
-    refs = fetch_refs(repository)
+def git_commit(version, *, repository, branch, context=None):
+    refs = fetch_refs(repository, context)
 
     ref_name = 'refs/heads/{0}'.format(branch)
     obj = refs.get(ref_name, None)
@@ -132,8 +132,8 @@ def git_commit(version, *, repository, branch):
 
 checkers.register('git commit', git_commit)
 
-def git_tag(version, *, repository, **kwargs):
-    refs = fetch_refs(repository)
+def git_tag(version, *, repository, context=None, **kwargs):
+    refs = fetch_refs(repository, context)
 
     matching_refs = list(refs.keys())
 

@@ -6,12 +6,12 @@ import urllib.parse as urlp
 import checkers
 
 @checkers.cache
-def fetch_page(url, *, encoding=None, **kwargs):
+def fetch_page(url, *, encoding=None, context=None, **kwargs):
     # Don't pass all kwargs because some are not for Request
     kwargs = { k: v for k, v in kwargs.items() if k in ['data', 'headers', 'method'] }
 
     req = urlr.Request(url, **kwargs)
-    with urlr.urlopen(req) as reply:
+    with urlr.urlopen(req, context=context) as reply:
         if not (200 <= reply.status < 300):
             raise Exception("Can't load web page at URL {0}".format(url))
 

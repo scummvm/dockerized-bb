@@ -4,7 +4,7 @@ import urllib.parse as urlp
 import checkers
 
 @checkers.cache
-def lookup(repository, obj):
+def lookup(repository, obj, context=None):
     parts = urlp.urlsplit(repository, allow_fragments=False)
     if parts.scheme.lower() not in('http' ,'https'):
         raise Exception("HTTP and HTTPS are the only schemes supported as Mercurial protocol for {0}".format(repository))
@@ -18,7 +18,7 @@ def lookup(repository, obj):
     lookup_url = urlp.urlunsplit(parts)
 
     req = urlr.Request(lookup_url, method="GET")
-    with urlr.urlopen(req) as reply:
+    with urlr.urlopen(req, context=context) as reply:
         content_type = reply.getheader('Content-Type')
         if content_type != 'application/mercurial-0.1':
             raise Exception("Invalid Content-Type received when looking up object for {0}".format(repository))
@@ -36,7 +36,7 @@ def lookup(repository, obj):
     return obj.decode('ascii')
 
 @checkers.cache
-def tags(repository, head):
+def tags(repository, head, context=None):
     # This is kind of a hack: we just download .hgtags from specified head using hgweb
     # Not really the proper way
 
@@ -50,7 +50,7 @@ def tags(repository, head):
     lookup_url = urlp.urlunsplit(parts)
 
     req = urlr.Request(lookup_url, method="GET")
-    with urlr.urlopen(req) as reply:
+    with urlr.urlopen(req, context=context) as reply:
         data = reply.read()
         refs = dict()
         for line in data.split(b'\n'):
@@ -60,8 +60,8 @@ def tags(repository, head):
 
     return refs
 
-def hg_commit(version, *, repository, branch):
-    obj = lookup(repository, branch)
+def hg_commit(version, *, repository, branch, context=None):
+    obj = lookup(repository, branch, context)
 
     shortobj = obj
     if len(version) > 0 and len(version) < len(obj):
@@ -71,8 +71,8 @@ def hg_commit(version, *, repository, branch):
 
 checkers.register('hg commit', hg_commit)
 
-def hg_tag(version, *, repository, head="tip", **kwargs):
-    refs = tags(repository, head)
+def hg_tag(version, *, repository, head="tip", context=None, **kwargs):
+    refs = tags(repository, head, context)
 
     matching_refs = list(refs.keys())
 
