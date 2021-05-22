@@ -20,4 +20,7 @@ for f in "${TARGET_DIR}"/bin/aarch64-apple-darwin11-*; do
 	ln -s "$(basename "$f")" "$(echo "$f" | sed -e 's|/aarch64-|/arm64-|')"
 done
 
+# Install codesign shim
+cp "${PACKAGE_DIR}"/codesign "${TARGET_DIR}"/bin
+
 do_clean_bdir

@@ -1,3 +1,14 @@
+import ssl
+
+# saurik's ldid uses outdated TLSv1.0...
+TLSv1_CONTEXT = ssl.create_default_context()
+try:
+    TLSv1_CONTEXT.minimum_version = ssl.TLSVersion.TLSv1
+    TLSv1_CONTEXT.set_ciphers("EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH:@SECLEVEL=1")
+except AttributeError:
+    # Too old python won't have TLSVersion, let's hope it will allow TLSv1.0
+    pass
+
 __all__ = ["PATHS", "FILE_PATTERNS", "VERSIONS_REGEXPS", "VERSIONS"]
 
 # This is the root of all paths in this configuration file
@@ -31,11 +42,6 @@ VERSIONS_REGEXPS = [
 cctools_port_check = {
     'check': 'git commit',
     'repository': 'https://github.com/tpoechtrager/cctools-port.git',
-    'branch': 'master',
-}
-ldid_check = {
-    'check': 'git commit',
-    'repository': 'https://github.com/tpoechtrager/ldid.git',
     'branch': 'master',
 }
 osxcross_check = {
@@ -269,13 +275,23 @@ VERSIONS = {
         'branch': 'master',
     },
     ('./toolchains/iphone/packages/toolchain/build.sh', 'CCTOOLS_PORT'): cctools_port_check,
-    ('./toolchains/iphone/packages/toolchain/build.sh', 'LDID'): ldid_check,
+    ('./toolchains/iphone/packages/toolchain/build.sh', 'LDID'): {
+        'check': 'git commit',
+        'repository': 'https://github.com/tpoechtrager/ldid.git',
+        'branch': 'master',
+    },
     ('./toolchains/iphone/packages/xar/build.sh', 'XAR'): xar_check,
 
     ('./toolchains/macosx-common/packages/osxcross-clang/build.sh', 'OSXCROSS'): osxcross_check,
     ('./toolchains/macosx-common/packages/osxcross/build.sh', 'OSXCROSS'): osxcross_check,
     ('./toolchains/macosx-common/packages/osxcross/build.sh', 'XAR'): xar_check,
-    ('./toolchains/macosx-common/packages/osxcross/build.sh', 'LDID'): ldid_check,
+    ('./toolchains/macosx-common/packages/ldid/build.sh', 'LDID'): {
+        # For MacOSX we need upstream ldid with latest MacOS support
+        'check': 'git tag',
+        'repository': 'https://git.saurik.com/ldid.git',
+        'context': TLSv1_CONTEXT,
+        'prefix': 'v',
+    },
     ('./toolchains/macosx-common/packages/sparkle/build.sh', 'SPARKLE'): {
         'check': 'git tag',
         'repository': 'https://github.com/sparkle-project/Sparkle.git',

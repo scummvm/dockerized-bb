@@ -63,6 +63,9 @@ m4_ifdef(`PATCH_OSXCROSS',
 COPY packages/osxcross lib-helpers/packages/osxcross,)
 common_package(osxcross)
 
+# Install ldid for ad-hoc signing
+common_package(ldid)
+
 # Use same prefix as in MacPorts and DESTDIR to install at correct place
 # That way, we can use osxcross pkg-config wrapper even for our packages
 ENV HOST=MACOSX_TARGET_ARCH-apple-darwin`'MACOSX_TARGET_VERSION \
