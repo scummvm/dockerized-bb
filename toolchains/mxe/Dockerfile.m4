@@ -69,7 +69,7 @@ mxe_package(theora)
 
 mxe_package(flac)
 
-mxe_package(libmpeg2)
+local_mxe_package(libmpeg2)
 
 mxe_package(a52dec)
 
