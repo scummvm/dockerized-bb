@@ -1,4 +1,4 @@
-From 53d5dd1cd894e87bbd9f0162d96f05803773cafc Mon Sep 17 00:00:00 2001
+From 3589fd3f17631c976659ce650ce9886bab12f691 Mon Sep 17 00:00:00 2001
 From: Le Philousophe <lephilousophe@users.noreply.github.com>
 Date: Sat, 6 Feb 2021 23:22:32 +0100
 Subject: [PATCH 2/2] Add arm64 support to osxcross-macports

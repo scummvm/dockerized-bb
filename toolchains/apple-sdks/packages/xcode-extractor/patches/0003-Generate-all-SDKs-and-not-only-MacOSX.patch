@@ -1,4 +1,4 @@
-From cc8bb1a8f1a25545152e25e7d471859ba191ec4e Mon Sep 17 00:00:00 2001
+From b43b9339fc84f75c0d5b448b5636e3d1fd4e9ea0 Mon Sep 17 00:00:00 2001
 From: Le Philousophe <lephilousophe@users.noreply.github.com>
 Date: Sun, 24 Jan 2021 19:19:14 +0100
 Subject: [PATCH 3/4] Generate all SDKs and not only MacOSX
@@ -8,7 +8,7 @@ Subject: [PATCH 3/4] Generate all SDKs and not only MacOSX
  1 file changed, 7 insertions(+), 6 deletions(-)
 
 diff --git a/tools/gen_sdk_package.sh b/tools/gen_sdk_package.sh
-index d9ca301..a5ed371 100755
+index 238a63f..a5ed371 100755
 --- a/tools/gen_sdk_package.sh
 +++ b/tools/gen_sdk_package.sh
 @@ -124,8 +124,8 @@ set -e
@@ -26,7 +26,7 @@ index d9ca301..a5ed371 100755
    fi
  fi
  
--SDKS=$(ls | grep -E "^MacOSX11.*|^MacOSX10.*" | grep -v "Patch")
+-SDKS=$(ls | grep -E "^MacOSX12.*|^MacOSX11.*|^MacOSX10.*" | grep -v "Patch")
 +SDKS=$(for platform in $SDK_PLATFORMS; do ls -1d ${platform}.platform/Developer/SDKs/*.*.sdk | grep -v 'Patch'; done)
  
  if [ -z "$SDKS" ]; then
