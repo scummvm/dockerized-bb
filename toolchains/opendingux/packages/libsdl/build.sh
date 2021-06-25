@@ -10,7 +10,7 @@ HELPERS_DIR=$PACKAGE_DIR/../..
 do_make_bdir
 
 # GPG key of Sam Lantinga
-gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 0xA7763BE6
+gpg --keyserver hkps://keyserver.ubuntu.com --recv-keys 0xA7763BE6
 do_http_fetch SDL "https://www.libsdl.org/release/SDL-${SDL_VERSION}.tar.gz" 'tar xzf' \
 	"gpgurl:http://www.libsdl.org/release/SDL-${SDL_VERSION}.tar.gz.sig"
 rm -Rf $HOME/.gnupg

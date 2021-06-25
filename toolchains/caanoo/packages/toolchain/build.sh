@@ -12,7 +12,7 @@ HELPERS_DIR=$PACKAGE_DIR/../..
 do_make_bdir
 
 # GPG keys of Bryan Hundven and Alexey Neyman
-gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 0x35B871D1 0x11D618A4
+gpg --keyserver hkps://keyserver.ubuntu.com --recv-keys 0x35B871D1 0x11D618A4
 do_http_fetch crosstool-ng "http://crosstool-ng.org/download/crosstool-ng/crosstool-ng-${CT_NG_VERSION}.tar.bz2" 'tar xjf' \
 	"gpgurl:http://crosstool-ng.org/download/crosstool-ng/crosstool-ng-${CT_NG_VERSION}.tar.bz2.sig"
 rm -Rf $HOME/.gnupg

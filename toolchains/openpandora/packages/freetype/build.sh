@@ -10,7 +10,7 @@ HELPERS_DIR=$PACKAGE_DIR/../..
 do_make_bdir
 
 # GPG key of Werner Lemberg <wl@gnu.org> 
-gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 0xC1A60EACE707FDA5
+gpg --keyserver hkps://keyserver.ubuntu.com --recv-keys 0xC1A60EACE707FDA5
 do_http_fetch freetype "http://download.savannah.gnu.org/releases/freetype/freetype-old/freetype-${FREETYPE_VERSION}.tar.bz2" \
        'tar xjf' "gpgurl:http://download.savannah.gnu.org/releases/freetype/freetype-old/freetype-${FREETYPE_VERSION}.tar.bz2.sig"
 rm -Rf $HOME/.gnupg
