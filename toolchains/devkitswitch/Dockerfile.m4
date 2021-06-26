@@ -29,11 +29,6 @@ ENV DEVKITA64=${DEVKITPRO}/devkitA64
 # Copy A64 toolchain
 COPY --from=original-toolchain ${DEVKITPRO}/ ${DEVKITPRO}
 
-# As fluidsynth-lite is using cmake, we need to get the platform cmake definitions
-# Instead of installing them with pacman (and lose reproductibility) just copy them
-# We have patched switch.cmake to make it use CMAKE_EXE_LINKER_FLAGS_INIT instead of CMAKE_EXE_LINKER_FLAGS
-COPY devkita64.cmake switch.cmake ${DEVKITPRO}/
-
 ENV PREFIX=${DEVKITPRO}/portlibs/switch HOST=aarch64-none-elf
 
 # We add PATH here for *-config and platform specific binaries
@@ -81,15 +76,12 @@ helpers_package(a52dec)
 
 # freetype is already installed in original toolchain
 
-helpers_package(fribidi)
+# fribidi is already installed in original toolchain
 
 # sdl2 is already installed in original toolchain
 
 # sdl2_net is already installed in original toolchain
 
-# CMake can't determine endinanness of Switch by running tests
-# CMake platform files expect to have compilers in PATH
-# CMake don't use CPPFLAGS so add them to CFLAGS
 # Copy specific Switch support
 COPY packages/fluidsynth-lite lib-helpers/packages/fluidsynth-lite
-helpers_package(fluidsynth-lite, -DCMAKE_TOOLCHAIN_FILE=${DEVKITPRO}/switch.cmake -DHAVE_WORDS_BIGENDIAN=true, PATH="${PATH}:${DEVKITA64}/bin")
+helpers_package(fluidsynth-lite, -DCMAKE_TOOLCHAIN_FILE=${DEVKITPRO}/portlibs/switch/share/switch.cmake)
