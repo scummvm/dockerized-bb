@@ -1,4 +1,4 @@
-m4_define(`DEVKITA64_VERSION',20210514)
+m4_define(`DEVKITA64_VERSION',20210703)
 # This version of devkitA64 depends on a Debian Stretch
 # For now it works with stable-slim, we will have to ensure it stays like that
 FROM devkitpro/devkita64:DEVKITA64_VERSION AS original-toolchain
@@ -33,8 +33,10 @@ ENV PREFIX=${DEVKITPRO}/portlibs/switch HOST=aarch64-none-elf
 
 # We add PATH here for *-config and platform specific binaries
 ENV \
-	def_binaries(`${DEVKITA64}/bin/${HOST}-', `ar, as, c++filt, ld, link, nm, objcopy, objdump, ranlib, readelf, strings, strip') \
+	def_binaries(`${DEVKITA64}/bin/${HOST}-', `as, c++filt, ld, link, nm, objcopy, objdump, readelf, strings, strip') \
 	def_binaries(`${DEVKITA64}/bin/${HOST}-', `gcc, cpp, c++') \
+	AR=${DEVKITA64}/bin/${HOST}-gcc-ar \
+	RANLIB=${DEVKITA64}/bin/${HOST}-gcc-ranlib \
 	CC=${DEVKITA64}/bin/${HOST}-gcc \
 	def_aclocal(`${PREFIX}') \
 	def_pkg_config(`${PREFIX}') \
@@ -84,4 +86,4 @@ helpers_package(a52dec)
 
 # Copy specific Switch support
 COPY packages/fluidsynth-lite lib-helpers/packages/fluidsynth-lite
-helpers_package(fluidsynth-lite, -DCMAKE_TOOLCHAIN_FILE=${DEVKITPRO}/portlibs/switch/share/switch.cmake)
+helpers_package(fluidsynth-lite, -DCMAKE_TOOLCHAIN_FILE=${DEVKITPRO}/cmake/Switch.cmake)

@@ -15,8 +15,10 @@ COPY --from=toolchain ${DEVKITPRO}/tools ${DEVKITPRO}/tools/
 
 # We add PATH here for *-config and platform specific binaries
 ENV \
-	def_binaries(`${DEVKITA64}/bin/${HOST}-', `ar, as, c++filt, ld, link, nm, objcopy, objdump, ranlib, readelf, strings, strip') \
+	def_binaries(`${DEVKITA64}/bin/${HOST}-', `as, c++filt, ld, link, nm, objcopy, objdump, readelf, strings, strip') \
 	def_binaries(`${DEVKITA64}/bin/${HOST}-', `gcc, cpp, c++') \
+	AR=${DEVKITA64}/bin/${HOST}-gcc-ar \
+	RANLIB=${DEVKITA64}/bin/${HOST}-gcc-ranlib \
 	CC=${DEVKITA64}/bin/${HOST}-gcc \
 	def_aclocal(`${PREFIX}') \
 	def_pkg_config(`${PREFIX}') \
