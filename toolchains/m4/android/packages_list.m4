@@ -5,7 +5,7 @@ android_package(zlib)
 
 helpers_package(libpng1.6)
 
-helpers_package(libjpeg-turbo)
+helpers_package(libjpeg-turbo, --with-pic)
 
 helpers_package(giflib)
 
