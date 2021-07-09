@@ -11,6 +11,7 @@ RUN apt-get update && \
 		flex \
 		gcc \
 		g++ \
+		genromfs \
 		libgmp-dev \
 		libisl-dev \
 		libmpc-dev \
@@ -24,14 +25,12 @@ ENV N64SDK=/opt/toolchains/mips64-n64
 
 local_package(toolchain-mips64)
 
-# local_package(makeip)
-
-# local_package(scramble)
-
 local_package(hkz-libn64)
 
+# TODO: ucon64
+
 ENV HOST=mips64
-ENV PREFIX=$N64SDK/mips64/${HOST}
+ENV PREFIX=$N64SDK/${HOST}
 
 # We add PATH here for *-config and platform specific binaries
 ENV \
@@ -40,10 +39,15 @@ ENV \
 	CC=${N64SDK}/bin/${HOST}-gcc \
 	def_aclocal(`${PREFIX}') \
 	def_pkg_config(`${PREFIX}') \
-	PATH=$PATH:${N64SDK}/bin
+	PATH=$PATH:${N64SDK}/bin \
+	ASFLAGS="-mno-extern-sdata -march=vr4300 -mtune=vr4300" \
+	CFLAGS="-mno-extern-sdata -O2 -fomit-frame-pointer -march=vr4300 -mtune=vr4300"
+
 
 # The number of extra libraries should be kept to a minimum due to RAM limitations
 
-# TODO: zlib
+helpers_package(zlib)
 
 # TODO: vorbis
+
+# TODO: mad?
