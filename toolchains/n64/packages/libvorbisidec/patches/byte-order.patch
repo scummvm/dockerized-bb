@@ -1,0 +1,12 @@
+diff --git a/misc.h b/misc.h
+index d0a522a..0947b3d 100644
+--- a/misc.h
++++ b/misc.h
+@@ -46,6 +46,7 @@ extern void _VDBG_free(void *ptr,char *file,long line);
+ #ifndef  _LOW_ACCURACY_
+ /* 64 bit multiply */
+ 
++#include <machine/endian.h>
+ #include <sys/types.h>
+ 
+ #if BYTE_ORDER==LITTLE_ENDIAN

@@ -1,0 +1,8 @@
+libn64-hkz, based off alt-libn64 free library found here (http://sourceforge.net/projects/n64dev/).
+The library is almost completely rewritten to fix bugs and add features (romfs, controller pak i/o, 
+new audio and video code, system timer, expansion ram, crash handler, etc...), by Hkz (hkzlabnet@gmail.com).
+
+All sourcecode is under GPLv3.
+
+TODO: Write a decent readme...
+
