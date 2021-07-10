@@ -7,6 +7,7 @@ m4_include(`debian-toolchain-base.m4')m4_dnl
 
 RUN apt-get update && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+		bc \
 		bison \
 		flex \
 		gcc \
@@ -27,7 +28,7 @@ local_package(toolchain-mips64)
 
 local_package(hkz-libn64)
 
-# TODO: ucon64
+local_package(ucon64)
 
 ENV HOST=mips64
 ENV PREFIX=$N64SDK/${HOST}
@@ -48,6 +49,6 @@ ENV \
 
 helpers_package(zlib)
 
-# TODO: vorbis
+helpers_package(libmad)
 
-# TODO: mad?
+local_package(libvorbisidec)
