@@ -17,7 +17,6 @@ RUN apt-get update && \
 		libisl-dev \
 		libmpc-dev \
 		libmpfr-dev \
-		pike8.0 \
 		texinfo \
 		xz-utils && \
 	rm -rf /var/lib/apt/lists/*
