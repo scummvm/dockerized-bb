@@ -640,8 +640,9 @@ def opendingux():
             # but Theora is quite CPU intensive anyway
             "--disable-theoradec" ],
     }
+    platform.packaging_cmd = "dingux-dist"
     platform.built_files = {
-        builds.ScummVMBuild: [ "scummvm", "plugins" ],
+        builds.ScummVMBuild: [ "dingux-dist/scummvm" ],
     }
     platform.archiveext = "tar.xz"
 
