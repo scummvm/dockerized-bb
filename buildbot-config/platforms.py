@@ -617,8 +617,15 @@ def nds():
     platform.buildconfigureargs = {
         builds.ScummVMBuild: [ "--enable-plugins", "--default-dynamic" ],
     }
+    # stable build don't have this target yet
+    platform.packaging_cmd = {
+        builds.ScummVMBuild: "dsdist",
+        builds.ScummVMStableBuild: None,
+    }
     platform.built_files = {
-        builds.ScummVMBuild: [ "scummvm.nds" ],
+        builds.ScummVMBuild: [ "dsdist/*" ],
+        # stable build will use produced binary and additional files mentioned in builds.py
+        builds.ScummVMStableBuild: [ "scummvm.nds" "plugins" ],
     }
     platform.archiveext = "zip"
     platform.testable = False
