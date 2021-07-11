@@ -50,6 +50,8 @@ ENV \
 	LDFLAGS="-march=armv8-a+crc+crypto -mtune=cortex-a57 -mtp=soft -fPIC -ftls-model=local-exec -L${PREFIX}/lib -L${DEVKITPRO}/libnx/lib" \
 	LIBS="-lnx"
 
+# zlib is already installed in original toolchain
+
 # libpng is already installed in original toolchain
 
 # libjpeg-turbo is already installed in original toolchain
@@ -71,8 +73,6 @@ helpers_package(faad2)
 helpers_package(mpeg2dec)
 
 helpers_package(a52dec)
-
-# libtimidity is already installed in original toolchain
 
 # curl is already installed in original toolchain
 
