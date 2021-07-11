@@ -51,6 +51,8 @@ ENV \
 	CPPFLAGS="-I${PREFIX}/include" \
 	LDFLAGS="-L${PREFIX}/lib"
 
+# zlib is already installed in original toolchain
+
 # libpng is already installed in original-toolchain
 
 # libjpeg-turbo is already installed in original-toolchain
@@ -65,7 +67,7 @@ helpers_package(faad2)
 
 helpers_package(libtheora)
 
-# libvorbisidec is already installed in original-toolchain
+# libvorbis is already installed in original-toolchain
 
 # Disable AltiVec as it's not supported by targets and SSE2 because configure script enables it
 # Copy specific patch to disable FORTIFY as toolchain doesn't seem to support it

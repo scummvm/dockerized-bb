@@ -37,6 +37,8 @@ ENV \
 	LDFLAGS="-L${PREFIX}/lib -L${DEVKITPRO}/libctru/lib" \
 	LIBS="-lctru"
 
+# zlib is already installed in original toolchain
+
 # libpng is already installed in original toolchain
 
 # libjpeg-turbo is already installed in original toolchain
@@ -49,7 +51,7 @@ helpers_package(faad2)
 
 # libogg is already installed in original toolchain
 
-helpers_package(libtheora)
+# libtheora is already installed in original toolchain
 
 # libvorbisidec is already installed in original toolchain
 
