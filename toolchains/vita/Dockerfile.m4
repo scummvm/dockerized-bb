@@ -12,7 +12,8 @@ RUN apt-get update && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 		libc6-i386 \
 		lib32stdc++6 \
-		lib32gcc1 && \
+		lib32gcc1 \
+		zip && \
 	rm -rf /var/lib/apt/lists/*
 
 ENV VITASDK=/usr/local/vitasdk HOST=arm-vita-eabi
@@ -51,8 +52,7 @@ helpers_package(faad2)
 
 vdpm_package(libmpeg2)
 
-# These functions aren't implemented on Vita but they are not needed either
-helpers_package(libiconv, , ac_cv_func_sigprocmask=yes ac_cv_func_getprogname=yes)
+helpers_package(a52dec)
 
 vdpm_package(openssl)
 
@@ -62,9 +62,16 @@ vdpm_package(freetype)
 
 helpers_package(fribidi)
 
+vdpm_package(FluidLite)
+
 vdpm_package(sdl2)
 
 vdpm_package(sdl2_net)
+
+# The following packages are not used in the current development version.
+
+# These functions aren't implemented on Vita but they are not needed either
+helpers_package(libiconv, , ac_cv_func_sigprocmask=yes ac_cv_func_getprogname=yes)
 
 local_package(vita2dlib_fbo)
 
