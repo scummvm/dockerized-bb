@@ -1,0 +1,97 @@
+From a4af6c3840265134ac5f5624148053c95cbb19b4 Mon Sep 17 00:00:00 2001
+From: Le Philousophe <lephilousophe@users.noreply.github.com>
+Date: Sun, 11 Jul 2021 22:06:50 +0200
+Subject: [PATCH 2/2] Fix geohot tool for big executables
+
+---
+ patches/psl1ght-fix-big-exe.patch | 64 +++++++++++++++++++++++++++++++
+ scripts/008-psl1ght.sh            |  3 ++
+ 2 files changed, 67 insertions(+)
+ create mode 100644 patches/psl1ght-fix-big-exe.patch
+
+diff --git a/patches/psl1ght-fix-big-exe.patch b/patches/psl1ght-fix-big-exe.patch
+new file mode 100644
+index 0000000..2e0219a
+--- /dev/null
++++ b/patches/psl1ght-fix-big-exe.patch
+@@ -0,0 +1,64 @@
++commit c8905b904491d5103f899ba697a077b9bcdb9ecd
++Author: Le Philousophe <lephilousophe@users.noreply.github.com>
++Date:   Sun Jul 11 21:59:48 2021 +0200
++
++    Don't use fixed buffer size it fails with big executables
++
++diff --git a/tools/geohot/make_self.c b/tools/geohot/make_self.c
++index 565fc3e..4a79e4c 100644
++--- a/tools/geohot/make_self.c
+++++ b/tools/geohot/make_self.c
++@@ -78,11 +78,9 @@ AES_KEY aes_key;
++ 
++ u8* input_elf_data;
++ 
++-#define ZLIB_LEVEL 6
++-#define DEFLATION_BUFFER_SIZE 0x1000000
++-u8 def_buffer[DEFLATION_BUFFER_SIZE];
+++#define ZLIB_LEVEL 9
++ 
++-int def(u8 *source, int source_size, u8 *dest, int* dest_size) {
+++int def(u8 *source, int source_size, u8 **dest, int* dest_size) {
++   int ret;
++   unsigned have;
++   z_stream strm;
++@@ -91,14 +89,18 @@ int def(u8 *source, int source_size, u8 *dest, int* dest_size) {
++   strm.zalloc = Z_NULL;
++   strm.zfree = Z_NULL;
++   strm.opaque = Z_NULL;
++-  strm.avail_in = source_size;
++-  strm.next_in = source;
++-  strm.avail_out = *dest_size;
++-  strm.next_out = dest;
++   ret = deflateInit(&strm, ZLIB_LEVEL);
++   if(ret != Z_OK)
++     return ret;
++ 
+++  *dest_size = deflateBound(&strm, source_size);
+++  *dest = (u8 *)malloc(*dest_size);
+++
+++  strm.avail_in = source_size;
+++  strm.next_in = source;
+++  strm.avail_out = *dest_size;
+++  strm.next_out = *dest;
+++
++   ret = deflate(&strm, Z_FINISH);
++   (*dest_size) -= strm.avail_out;
++ 
++@@ -208,11 +210,12 @@ void enumerate_segments() {
++     u8* in_data = &input_elf_data[in_data_offset];
++ 
++     if(segment_ptr->compressed) {
++-      int def_size = DEFLATION_BUFFER_SIZE;
++-      printf("deflated...", def(in_data, segment_ptr->rlen, def_buffer, &def_size)); fflush(stdout);
+++      int def_size;
+++	  u8 *def_buffer;
+++      printf("deflated... %s ", def(in_data, segment_ptr->rlen, &def_buffer, &def_size) == Z_OK ? "OK" : "FAIL");
+++	  fflush(stdout);
++       segment_ptr->len = def_size;
++-      segment_ptr->data = (u8*)malloc(segment_ptr->len);
++-      memcpy(segment_ptr->data, def_buffer, def_size);
+++      segment_ptr->data = def_buffer;
++     } else {
++       segment_ptr->len = segment_ptr->rlen;
++       segment_ptr->data = (u8*)malloc(segment_ptr->len);
+diff --git a/scripts/008-psl1ght.sh b/scripts/008-psl1ght.sh
+index 3815aa4..90d2848 100755
+--- a/scripts/008-psl1ght.sh
++++ b/scripts/008-psl1ght.sh
+@@ -10,5 +10,8 @@ rm -Rf psl1ght && mkdir psl1ght && tar --strip-components=1 --directory=psl1ght
+ ## Create the build directory.
+ cd psl1ght
+ 
++## Patch geohot tool for big executables
++cat ../../patches/psl1ght-fix-big-exe.patch | patch -p1
++
+ ## Compile and install.
+ ${MAKE:-make} install-ctrl && ${MAKE:-make} && ${MAKE:-make} install
+-- 
+2.30.2
+

@@ -1,3 +1,15 @@
+From b9d633c709d7e70aaf8e6f5e16009a439c92b4b7 Mon Sep 17 00:00:00 2001
+From: Le Philousophe <lephilousophe@users.noreply.github.com>
+Date: Sun, 11 Jul 2021 22:01:59 +0200
+Subject: [PATCH 1/2] Allow to set checked out versions
+
+---
+ patches/ps3libraries-set-versions.patch | 39 +++++++++++++++++++++++++
+ scripts/008-psl1ght.sh                  |  2 +-
+ scripts/009-ps3libraries.sh             |  5 +++-
+ 3 files changed, 44 insertions(+), 2 deletions(-)
+ create mode 100644 patches/ps3libraries-set-versions.patch
+
 diff --git a/patches/ps3libraries-set-versions.patch b/patches/ps3libraries-set-versions.patch
 new file mode 100644
 index 0000000..92948c2
@@ -75,3 +87,6 @@ index 67fd2ad..c732dc1 100755
 +
  ## Compile and install.
  ./libraries.sh
+-- 
+2.30.2
+
