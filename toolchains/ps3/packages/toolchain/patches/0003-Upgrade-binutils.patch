@@ -1,0 +1,33 @@
+From 454b9ab88efb6355fdab42e024c4250ba6200ca1 Mon Sep 17 00:00:00 2001
+From: Le Philousophe <lephilousophe@users.noreply.github.com>
+Date: Wed, 14 Jul 2021 23:56:24 +0200
+Subject: [PATCH 3/3] Upgrade binutils
+
+This avoids linker bug with stub not being produced although TOC address
+must be adjusted
+---
+ scripts/001-binutils-PPU.sh | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/scripts/001-binutils-PPU.sh b/scripts/001-binutils-PPU.sh
+index 14e295c..c1be760 100755
+--- a/scripts/001-binutils-PPU.sh
++++ b/scripts/001-binutils-PPU.sh
+@@ -1,7 +1,7 @@
+ #!/bin/sh -e
+ # binutils-PPU.sh by Naomi Peori (naomi@peori.ca)
+ 
+-BINUTILS="binutils-2.22"
++BINUTILS="binutils-2.36.1"
+ 
+ if [ ! -d ${BINUTILS} ]; then
+ 
+@@ -48,4 +48,4 @@ cd ${BINUTILS}/build-ppu
+ ## Compile and install.
+ PROCS="$(nproc --all 2>&1)" || ret=$?
+ if [ ! -z $ret ]; then PROCS=4; fi
+-${MAKE:-make} -j $PROCS && ${MAKE:-make} libdir=host-libs/lib install
++${MAKE:-make} -j $PROCS && ${MAKE:-make} libdir=$(pwd)/host-libs/lib install
+-- 
+2.30.2
+
