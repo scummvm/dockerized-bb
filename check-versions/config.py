@@ -193,6 +193,11 @@ VERSIONS = {
         'exclude pattern': r'.*\.(beta|rc)\d+$'
     },
     ('./toolchains/common/packages/libiconv/build.sh', 'LIBICONV'): libiconv_check,
+    ('./toolchains/common/packages/libsdl1.2/build.sh', 'SDL'): {
+        'check': 'git commit',
+        'repository': 'https://github.com/libsdl-org/SDL-1.2.git',
+        'branch': 'main',
+    },
 
     ('./toolchains/devkit3ds/packages/Project_CTR/build.sh', 'PROJECT_CTR'): {
         'check': 'git tag',
@@ -458,11 +463,6 @@ VERSIONS = {
         'repository': 'https://svn.code.sf.net/p/ro-oslib/code/trunk',
     },
     ('./toolchains/riscos/packages/iconv/build.sh', 'LIBICONV'): libiconv_check,
-    ('./toolchains/riscos/packages/libsdl1.2/build.sh', 'SDL'): {
-        'check': 'git commit',
-        'repository': 'https://github.com/libsdl-org/SDL-1.2.git',
-        'branch': 'main',
-    },
     ('./toolchains/riscos/packages/tokenize/build.sh', 'TOKENIZE'): {
         'check': 'git commit',
         'repository': 'https://github.com/steve-fryatt/tokenize.git',
