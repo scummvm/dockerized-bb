@@ -198,6 +198,11 @@ VERSIONS = {
         'repository': 'https://github.com/libsdl-org/SDL-1.2.git',
         'branch': 'main',
     },
+    ('./toolchains/common/packages/sdl-net1.2/build.sh', 'SDL_NET'): {
+        'check': 'git commit',
+        'repository': 'https://github.com/libsdl-org/SDL_net.git',
+        'branch': 'SDL-1.2',
+    },
 
     ('./toolchains/devkit3ds/packages/Project_CTR/build.sh', 'PROJECT_CTR'): {
         'check': 'git tag',
