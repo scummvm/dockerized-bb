@@ -8,6 +8,8 @@ do_make_bdir
 
 do_pkg_fetch a52dec
 
+sed -i '/AC_C_ALWAYS_INLINE/d' configure.in
+
 autoreconf -fi
 do_configure
 do_make -C liba52

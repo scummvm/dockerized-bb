@@ -495,6 +495,11 @@ VERSIONS = {
         'branch': 'fbo',
     },
 
+    ('./toolchains/windows-9x/packages/toolchain/build.sh', 'BINUTILS'): 'ignore',
+    ('./toolchains/windows-9x/packages/toolchain/build.sh', 'GCC'): 'ignore',
+    ('./toolchains/windows-9x/packages/toolchain/build.sh', 'MINGWRT'): 'ignore',
+    ('./toolchains/windows-9x/packages/toolchain/build.sh', 'W32API'): 'ignore',
+
     ('./workers/fetcher/Dockerfile.m4', 'ALPINE'): alpine_check,
     ('./workers/m4/debian-builder-base.m4', 'DEBIAN'): debian_check,
 }

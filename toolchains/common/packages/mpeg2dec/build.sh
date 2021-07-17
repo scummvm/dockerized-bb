@@ -8,6 +8,8 @@ do_make_bdir
 
 do_pkg_fetch mpeg2dec
 
+sed -i '/AC_C_ALWAYS_INLINE/d' configure.ac
+
 # Apply patches to configure.ac brought by Debian
 autoreconf -fi
 

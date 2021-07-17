@@ -1,0 +1,9 @@
+--- a/SDL_net.pc.in.orig  2012-01-15 16:20:10 +0000
++++ b/SDL_net.pc.in       2020-08-30 17:42:19 +0100
+@@ -7,5 +7,5 @@
+ Description: net library for Simple DirectMedia Layer
+ Version: @VERSION@
+ Requires: sdl >= @SDL_VERSION@
+-Libs: -L${libdir} -lSDL_net
++Libs: -L${libdir} -lSDL_net @INETLIB@
+ Cflags: -I${includedir}/SDL
