@@ -1,12 +1,14 @@
 #! /bin/sh
 
+SDL_NET_VERSION=9a629d643ae770727d935aec3050efc17a011e0f
+
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..
 . $HELPERS_DIR/functions.sh
 
 do_make_bdir
 
-do_pkg_fetch sdl-net1.2
+do_http_fetch SDL_net "https://github.com/libsdl-org/SDL_net/archive/${SDL_NET_VERSION}.tar.gz" 'tar xzf'
 do_configure --with-sdl-prefix=$PREFIX
 
 # showinterfaces.c indirectly includes SDL_main.h which #defines main to
