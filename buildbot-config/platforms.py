@@ -1019,3 +1019,35 @@ windows_mxe(suffix="x86",
 windows_mxe(suffix="x86-64",
         target="x86_64-w64-mingw32.static",
         description="Windows (64\xa0bits)")
+
+def win9x():
+    platform = Platform("win9x")
+    platform.workerimage = "windows-9x"
+
+    platform.env["CXX"] = "ccache ${CXX}"
+
+    platform.configureargs.append("--host=mingw32")
+    platform.built_files = {
+        builds.ScummVMBuild: [ "scummvm.exe" ],
+        builds.ScummVMToolsBuild: [
+            "construct_mohawk.exe",
+            "create_sjisfnt.exe",
+            "decine.exe",
+            #"decompile.exe", # Decompiler currently not built - BOOST library not present
+            "degob.exe",
+            "dekyra.exe",
+            "descumm.exe",
+            "desword2.exe",
+            "extract_mohawk.exe",
+            "gob_loadcalc.exe",
+            #"scummvm-tools.exe", # GUI tools currently not built - WxWidgets library not present
+            "scummvm-tools-cli.exe"
+        ]
+    }
+    platform.archiveext = "zip"
+
+    platform.description = "Windows 9x"
+    platform.icon = 'win95'
+
+    register_platform(platform)
+win9x()

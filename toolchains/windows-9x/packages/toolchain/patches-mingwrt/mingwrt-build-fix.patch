@@ -1,0 +1,62 @@
+diff --git a/mingwrt/Makefile.in b/mingwrt/Makefile.in
+index dc0c8c7..590f8c1 100644
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -150,7 +150,7 @@ w%.$(OBJEXT): %.c
+ # make how to compile them.
+ #
+ %.$(OBJEXT): %.sx
+-	$(COMPILE.sx) $($*_cflags) -o $@ $<
++	$(COMPILE.sx) $(ALL_CPPFLAGS) $($*_cflags) -o $@ $<
+ 
+ # Several components of the distributable object code base are to
+ # be provided as free-standing object modules, (rather than being
+@@ -459,7 +459,7 @@ LIBMINGWEX_MEMALIGN += aligned-realloc memalign-realloc realloc free
+ LIBMINGWEX_MEMALIGN_OBJECTS = $(addsuffix .$(OBJEXT),$(LIBMINGWEX_MEMALIGN))
+ 
+ $(LIBMINGWEX_MEMALIGN_OBJECTS): %.$(OBJEXT): memalign.c
+-	$(CC) -c $(CFLAGS) -D__mingw_$(subst -,_,$*)_case $< -o $@
++	$(CC) -c $(ALL_CFLAGS) -D__mingw_$(subst -,_,$*)_case $< -o $@
+ 
+ libmingwex.a: $(LIBMINGWEX_MEMALIGN_OBJECTS)
+ 
+@@ -484,7 +484,7 @@ libmingwex.a: $(addsuffix .$(OBJEXT), wmemchr wmemcmp wmemcpy wmemmove wmemset)
+ # we need a specific rule to compile it, from shared source.
+ #
+ wcsnlen.$(OBJEXT): strnlen.sx
+-	$(COMPILE.sx) -D_UNICODE $^ -o $@
++	$(COMPILE.sx) $(ALL_CPPFLAGS) -D_UNICODE $^ -o $@
+ 
+ # Similarly, the wcstod(), wcstof(), and wcstold() functions are
+ # compiled from the common wcstofp.c source file.
+@@ -516,9 +516,9 @@ $(addsuffix .$(OBJEXT), llround llroundf llroundl): %.$(OBJEXT): lround_generic.
+ #
+ vpath %.sx ${mingwrt_srcdir}/mingwex/math
+ $(addsuffix .$(OBJEXT), % %f %l): %_generic.sx
+-	$(COMPILE.sx) -D_$*_source -o $*.$(OBJEXT) $<
+-	$(COMPILE.sx) -D_$*f_source -o $*f.$(OBJEXT) $<
+-	$(COMPILE.sx) -D_$*l_source -o $*l.$(OBJEXT) $<
++	$(COMPILE.sx) $(ALL_CPPFLAGS) -D_$*_source -o $*.$(OBJEXT) $<
++	$(COMPILE.sx) $(ALL_CPPFLAGS) -D_$*f_source -o $*f.$(OBJEXT) $<
++	$(COMPILE.sx) $(ALL_CPPFLAGS) -D_$*l_source -o $*l.$(OBJEXT) $<
+ 
+ # Assembly language sources for all fmod() and remainder() object
+ # code variants originate from one fmod_generic.sx.in template.
+@@ -537,7 +537,7 @@ remainder_generic_subst = s:%name%:$*:;s:%fprem%:fprem1:
+ # assembly of associated generic back-end support routines.
+ #
+ x87%.$(OBJEXT): %_generic.sx
+-	$(COMPILE.sx) -o $@ $<
++	$(COMPILE.sx) $(ALL_CPPFLAGS) -o $@ $<
+ 
+ # Historically, MinGW.org's libm.a has been a dummy, delivering
+ # nothing of value; FIXME: IMO, this sucks; it should deliver the
+@@ -571,7 +571,7 @@ Makefile.stub: Makefile $(jmpstub_prerequisites) $(libimpl_prerequisites)
+ jmpstub_awk_script = test -z "$1" || awk '\
+   BEGIN { \
+     symbol = "([A-Z_a-z][A-Z_a-z0-9]*)"; \
+-    fmt = "\nlib%s.a: %s\n%s: jmpstub.sx\n\t$$(COMPILE.sx) %s -o $$@ $$^\n"; \
++    fmt = "\nlib%s.a: %s\n%s: jmpstub.sx\n\t$$(COMPILE.sx) $(ALL_CPPFLAGS) %s -o $$@ $$^\n"; \
+   } \
+   /__JMPSTUB(__)? *[(].*FUNCTION/ { \
+     FUNCTION = gensub( ".*[ ,(:]FUNCTION *= *"symbol".*", "\\1", 1 ); \

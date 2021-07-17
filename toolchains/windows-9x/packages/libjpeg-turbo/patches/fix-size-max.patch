@@ -1,0 +1,43 @@
+From c743009717878cb22a5434c798dae5d3879d6ca2 Mon Sep 17 00:00:00 2001
+From: Cameron Cawley <ccawley2011@gmail.com>
+Date: Tue, 6 Mar 2018 22:10:14 +0000
+Subject: [PATCH] Fix build with older MinGW releases
+
+Some MinGW implementations need stdint.h in order to define SIZE_MAX.
+
+Regression caused by a09ba29a55b9a43d346421210d94370065eeaf53 and
+not fully fixed by a0047bdea4d11dfeefb9ea797865b1a2ea0a665e.
+
+Closes #220
+---
+ ChangeLog.md | 3 +++
+ jmemmgr.c    | 2 +-
+ 2 files changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/ChangeLog.md b/ChangeLog.md
+index 406c6db27..d6998d8cc 100644
+--- a/ChangeLog.md
++++ b/ChangeLog.md
+@@ -11,6 +11,9 @@ actual security issues, should they arise in the future.
+ algorithm that caused incorrect dithering in the output image.  This algorithm
+ now produces bitwise-identical results to the unmerged algorithms.
+ 
++3. Fixed a build error when building with older MinGW releases (regression
++caused by 1.5.1[7].)
++
+ 
+ 1.5.3
+ =====
+diff --git a/jmemmgr.c b/jmemmgr.c
+index 8dfb633da..40621cd2b 100644
+--- a/jmemmgr.c
++++ b/jmemmgr.c
+@@ -32,7 +32,7 @@
+ #include "jinclude.h"
+ #include "jpeglib.h"
+ #include "jmemsys.h"            /* import the system-dependent declarations */
+-#ifndef _WIN32
++#if !defined(_MSC_VER) || _MSC_VER > 1600
+ #include <stdint.h>
+ #endif
+ #include <limits.h>
