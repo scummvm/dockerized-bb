@@ -101,6 +101,7 @@ helpers_package(freetype)
 
 helpers_package(fribidi)
 
-local_package(libsdl1.2)
+COPY packages/libsdl1.2 lib-helpers/packages/libsdl1.2/
+helpers_package(libsdl1.2)
 
 helpers_package(sdl-net1.2)
