@@ -1,16 +1,40 @@
-From 454b9ab88efb6355fdab42e024c4250ba6200ca1 Mon Sep 17 00:00:00 2001
+From 636528188e56458a1eb90884c2b20183aef5d8d5 Mon Sep 17 00:00:00 2001
 From: Le Philousophe <lephilousophe@users.noreply.github.com>
-Date: Wed, 14 Jul 2021 23:56:24 +0200
+Date: Sun, 18 Jul 2021 18:36:15 +0200
 Subject: [PATCH 3/3] Upgrade binutils
 
 This avoids linker bug with stub not being produced although TOC address
 must be adjusted
+Linker script used by PSL1GHT must be updated because ld now expects
+.toc sections aligned on 256 bytes
 ---
- scripts/001-binutils-PPU.sh | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ patches/psl1ght-fix-new-ld.patch | 13 +++++++++++++
+ scripts/001-binutils-PPU.sh      |  6 +++---
+ scripts/008-psl1ght.sh           |  3 +++
+ 3 files changed, 19 insertions(+), 3 deletions(-)
+ create mode 100644 patches/psl1ght-fix-new-ld.patch
 
+diff --git a/patches/psl1ght-fix-new-ld.patch b/patches/psl1ght-fix-new-ld.patch
+new file mode 100644
+index 0000000..489ef09
+--- /dev/null
++++ b/patches/psl1ght-fix-new-ld.patch
+@@ -0,0 +1,13 @@
++diff --git a/ppu/crt/lv2.ld b/ppu/crt/lv2.ld
++index d40801a..23683f0 100644
++--- a/ppu/crt/lv2.ld
+++++ b/ppu/crt/lv2.ld
++@@ -179,7 +179,7 @@ SECTIONS
++ 	.toc1		  : ALIGN(8) { *(.toc1) }
++ 	.opd		  : ALIGN(8) { KEEP (*(.opd)) }
++ 	.branch_lt	  : ALIGN(8) { *(.branch_lt) }
++-	.got		  : ALIGN(8) { *(.got .toc) }
+++	.got		  : ALIGN(256) { *(.got .toc) }
++ 	.toc.sceStub  : { KEEP (*(.toc.sceStub)) KEEP (*(SORT(.toc.sceStub.*))) }
++ 	
++ 	/* Thread Local Storage sections  */
 diff --git a/scripts/001-binutils-PPU.sh b/scripts/001-binutils-PPU.sh
-index 14e295c..c1be760 100755
+index 14e295c..aa54270 100755
 --- a/scripts/001-binutils-PPU.sh
 +++ b/scripts/001-binutils-PPU.sh
 @@ -1,7 +1,7 @@
@@ -22,12 +46,34 @@ index 14e295c..c1be760 100755
  
  if [ ! -d ${BINUTILS} ]; then
  
+@@ -16,7 +16,7 @@ if [ ! -d ${BINUTILS} ]; then
+   tar xfvj ${BINUTILS}.tar.bz2
+ 
+   ## Patch the source code.
+-  cat ../patches/${BINUTILS}-PS3.patch | patch -p1 -d ${BINUTILS}
++  #cat ../patches/${BINUTILS}-PS3.patch | patch -p1 -d ${BINUTILS}
+ 
+   ## Replace config.guess and config.sub
+   cp config.guess config.sub ${BINUTILS}
 @@ -48,4 +48,4 @@ cd ${BINUTILS}/build-ppu
  ## Compile and install.
  PROCS="$(nproc --all 2>&1)" || ret=$?
  if [ ! -z $ret ]; then PROCS=4; fi
 -${MAKE:-make} -j $PROCS && ${MAKE:-make} libdir=host-libs/lib install
 +${MAKE:-make} -j $PROCS && ${MAKE:-make} libdir=$(pwd)/host-libs/lib install
+diff --git a/scripts/008-psl1ght.sh b/scripts/008-psl1ght.sh
+index 90d2848..48bb708 100755
+--- a/scripts/008-psl1ght.sh
++++ b/scripts/008-psl1ght.sh
+@@ -13,5 +13,8 @@ cd psl1ght
+ ## Patch geohot tool for big executables
+ cat ../../patches/psl1ght-fix-big-exe.patch | patch -p1
+ 
++## Patch linker script for new LD
++cat ../../patches/psl1ght-fix-new-ld.patch | patch -p1
++
+ ## Compile and install.
+ ${MAKE:-make} install-ctrl && ${MAKE:-make} && ${MAKE:-make} install
 -- 
 2.30.2
 
