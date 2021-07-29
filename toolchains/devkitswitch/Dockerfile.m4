@@ -84,6 +84,4 @@ helpers_package(a52dec)
 
 # sdl2_net is already installed in original toolchain
 
-# Copy specific Switch support
-COPY packages/fluidsynth-lite lib-helpers/packages/fluidsynth-lite
-helpers_package(fluidsynth-lite, -DCMAKE_TOOLCHAIN_FILE=${DEVKITPRO}/cmake/Switch.cmake)
+helpers_package(fluidlite, -DCMAKE_TOOLCHAIN_FILE=${DEVKITPRO}/cmake/Switch.cmake)

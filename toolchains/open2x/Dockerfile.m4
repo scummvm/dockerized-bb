@@ -62,5 +62,5 @@ helpers_package(fribidi)
 
 local_package(libsdl)
 
-# fluidsynth-lite is unlikely to be fast enough.
+# fluidsynth is unlikely to be fast enough.
 # The GP2X doesn't have network capabilities, so don't bother with sdl-net1.2 or curl
