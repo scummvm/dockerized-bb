@@ -181,9 +181,9 @@ VERSIONS = {
     ('./toolchains/caanoo/packages/toolchain/build.sh', 'CT_NG'): crosstool_ng_check,
 
     ('./toolchains/common/packages/discord-rpc/build.sh', 'DISCORD_RPC'): discord_rpc_check,
-    ('./toolchains/common/packages/fluidsynth-lite/build.sh', 'FLUIDSYNTH'): {
+    ('./toolchains/common/packages/fluidlite/build.sh', 'FLUIDLITE'): {
         'check': 'git commit',
-        'repository': 'https://github.com/Doom64/fluidsynth-lite.git',
+        'repository': 'https://github.com/divideconcept/FluidLite.git',
         'branch': 'master',
     },
     ('./toolchains/common/packages/fluidsynth/build.sh', 'FLUIDSYNTH'): {

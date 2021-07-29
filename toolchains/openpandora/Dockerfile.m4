@@ -107,4 +107,4 @@ local_package(gnutls)
 # Use same version as official toolchain
 local_package(curl)
 
-# fluidsynth-lite is unlikely to be fast enough.
+# fluidsynth is unlikely to be fast enough.

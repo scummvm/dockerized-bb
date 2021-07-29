@@ -74,7 +74,7 @@ helpers_package(a52dec)
 
 # TODO: curl
 
-# TODO: FluidLite
+helpers_package(fluidlite, -DCMAKE_SYSTEM_NAME=Windows)
 
 helpers_package(freetype)
 

@@ -67,4 +67,4 @@ helpers_package(a52dec)
 
 helpers_package(fribidi)
 
-# No fluidsynth
+helpers_package(fluidlite, -DCMAKE_TOOLCHAIN_FILE=${DEVKITPRO}/cmake/3DS.cmake)

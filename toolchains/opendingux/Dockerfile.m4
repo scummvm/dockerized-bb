@@ -101,4 +101,4 @@ local_package(sdl-net1.2)
 
 # TODO: openssl and curl
 
-# fluidsynth-lite is unlikely to be fast enough.
+# fluidsynth is unlikely to be fast enough.

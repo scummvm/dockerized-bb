@@ -47,7 +47,4 @@ android_package(libsdl2)
 COPY --from=android-helpers /lib-helpers/packages/libsdl2-net lib-helpers/packages/libsdl2-net
 helpers_package(libsdl2-net)
 
-# Platform patch provided in android-common
-# Fix destination directories
-COPY --from=android-helpers /lib-helpers/packages/fluidsynth-lite lib-helpers/packages/fluidsynth-lite
-helpers_package(fluidsynth-lite, -DBIN_INSTALL_DIR=bin/\$TARGET/\$API -DLIB_INSTALL_DIR=lib/\$TARGET/\$API)
+helpers_package(fluidlite, -DBIN_INSTALL_DIR=bin/\$TARGET/\$API -DLIB_INSTALL_DIR=lib/\$TARGET/\$API)

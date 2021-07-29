@@ -1,6 +1,6 @@
 #! /bin/sh
 
-FLUIDSYNTH_VERSION=c539a8d9270ba5a3f7d6e460606483fc2ab1eb61
+FLUIDLITE_VERSION=57a0e74e708f699b13d7c85b28a4e1ff5b71887c
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..
@@ -8,12 +8,12 @@ HELPERS_DIR=$PACKAGE_DIR/../..
 
 do_make_bdir
 
-do_http_fetch fluidsynth-lite \
-	"https://github.com/Doom64/fluidsynth-lite/archive/${FLUIDSYNTH_VERSION}.tar.gz" 'tar xzf'
+do_http_fetch FluidLite \
+	"https://github.com/divideconcept/FluidLite/archive/${FLUIDLITE_VERSION}.tar.gz" 'tar xzf'
 
 # -DCMAKE_SYSTEM_NAME=Windows for Windows
 
-do_cmake "$@"
+do_cmake -DFLUIDLITE_BUILD_SHARED=OFF "$@"
 do_make
 do_make install
 
