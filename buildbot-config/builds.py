@@ -240,7 +240,7 @@ class StandardBuild(Build):
         ret.append(util.BuilderConfig(
             name = self.names['bld-fetch'],
             workernames = workers.workers_by_type['fetcher'],
-            workerbuilddir = "/data/src/{0}".format(self.name),
+            workerbuilddir = "/data/src/scummvm",
             factory = f,
             tags = ["fetch", self.name],
             locks = [ lock_build.access('counting') ],
