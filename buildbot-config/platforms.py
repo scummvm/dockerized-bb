@@ -970,7 +970,7 @@ def windows_mxe(suffix, target, description=None):
     platform.env["STRINGS"] = "${{MXE_PREFIX_DIR}}/bin/{0}-strings".format(target)
     platform.env["PKG_CONFIG_LIBDIR"] = "${{MXE_PREFIX_DIR}}/{0}/lib/pkgconfig".format(target)
     # Altering PATH for curl-config, that lets us reuse environment variables instead of using configure args
-    platform.env["PATH"] = [ "${PATH}", "${{MXE_PREFIX_DIR}}/{0}/bin".format(target)]
+    platform.env["PATH"] = [ "${{MXE_PREFIX_DIR}}/{0}/bin".format(target), "${PATH}" ]
     # Add iphlpapi to librairies (should be done in configure script like in create_project)
     platform.env["SDL_NET_LIBS"] = "-lSDL2_net -lws2_32 -liphlpapi"
 
