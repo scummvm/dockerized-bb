@@ -1,7 +1,7 @@
-From 636528188e56458a1eb90884c2b20183aef5d8d5 Mon Sep 17 00:00:00 2001
+From e97ff4a876c33fd75d577eafbddfddf6c853f4ff Mon Sep 17 00:00:00 2001
 From: Le Philousophe <lephilousophe@users.noreply.github.com>
 Date: Sun, 18 Jul 2021 18:36:15 +0200
-Subject: [PATCH 3/3] Upgrade binutils
+Subject: [PATCH 2/2] Upgrade binutils
 
 This avoids linker bug with stub not being produced although TOC address
 must be adjusted
@@ -62,12 +62,12 @@ index 14e295c..aa54270 100755
 -${MAKE:-make} -j $PROCS && ${MAKE:-make} libdir=host-libs/lib install
 +${MAKE:-make} -j $PROCS && ${MAKE:-make} libdir=$(pwd)/host-libs/lib install
 diff --git a/scripts/008-psl1ght.sh b/scripts/008-psl1ght.sh
-index 90d2848..48bb708 100755
+index 3815aa4..ec8b758 100755
 --- a/scripts/008-psl1ght.sh
 +++ b/scripts/008-psl1ght.sh
-@@ -13,5 +13,8 @@ cd psl1ght
- ## Patch geohot tool for big executables
- cat ../../patches/psl1ght-fix-big-exe.patch | patch -p1
+@@ -10,5 +10,8 @@ rm -Rf psl1ght && mkdir psl1ght && tar --strip-components=1 --directory=psl1ght
+ ## Create the build directory.
+ cd psl1ght
  
 +## Patch linker script for new LD
 +cat ../../patches/psl1ght-fix-new-ld.patch | patch -p1
