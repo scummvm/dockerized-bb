@@ -45,6 +45,10 @@ for f in "$sysroot/usr/bin/"*-config; do
 	if ! echo -n "#!" | cmp -sn 2 "$f" -; then
 		continue
 	fi
+
+	# Patch prefix path
+	sed -i -e "s|^\\(prefix=.*\\)/usr|\\1$RPI_ROOT/usr|" "$f"
+
 	mv "$f" "$RPI_ROOT/usr/bin/"
 done
 mv "$sysroot/usr/include" "$RPI_ROOT/usr/"

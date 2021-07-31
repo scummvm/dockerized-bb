@@ -51,7 +51,9 @@ m4_dnl MULTISTRAP_PACKAGES will contain all packages above
 local_package(sysroot,MULTISTRAP_PACKAGES)
 
 # Following command is normally executed at postinst step which isn't run by multistrap because it would need a host
-RUN ln -s ${RPI_ROOT}/usr/lib/${HOST}/wx/config/gtk3-unicode-3.0 ${RPI_ROOT}/usr/bin/wx-config
+# Patch configure script for correct prefix
+RUN sed -i -e "s|^\\(prefix=.*\\)/usr|\\1${RPI_ROOT}/usr|" "${RPI_ROOT}/usr/lib/${HOST}/wx/config/gtk3-unicode-3.0" && \
+	ln -s "${RPI_ROOT}/usr/lib/${HOST}/wx/config/gtk3-unicode-3.0" "${RPI_ROOT}/usr/bin/wx-config"
 
 # We add PATH here for *-config and platform specific binaries
 ENV \
