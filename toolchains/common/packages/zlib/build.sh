@@ -8,7 +8,10 @@ do_make_bdir
 
 do_pkg_fetch zlib
 ./configure --prefix=$PREFIX --static
-do_make
+
+# Only build the library and not its samples
+do_make libz.a
+
 do_make install
 
 do_clean_bdir
