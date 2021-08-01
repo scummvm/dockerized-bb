@@ -317,6 +317,20 @@ VERSIONS = {
         'prefix': 'v',
     },
 
+    ('./toolchains/n64/packages/libvorbisidec/build.sh', 'LIBTREMOR'): {
+        'check': 'git commit',
+        'repository': 'https://gitlab.xiph.org/xiph/tremor.git',
+        'branch': 'lowmem',
+    },
+    ('./toolchains/n64/packages/toolchain-mips64/build.sh', 'BINUTILS'): 'ignore',
+    ('./toolchains/n64/packages/toolchain-mips64/build.sh', 'GCC'): 'ignore',
+    ('./toolchains/n64/packages/toolchain-mips64/build.sh', 'NEWLIB'): 'ignore',
+    ('./toolchains/n64/packages/ucon64/build.sh', 'UCON64'): {
+        'check': 'svn tag',
+        'repository': 'https://svn.code.sf.net/p/ucon64/svn/tags/',
+        'prefix': 'ucon64-',
+    },
+
     # Use same libsdl as Open2x toolchain
     ('./toolchains/open2x/packages/libsdl/build.sh', 'SDL'): 'ignore',
 

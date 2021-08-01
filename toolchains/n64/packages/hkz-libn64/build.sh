@@ -1,7 +1,5 @@
 #! /bin/sh
 
-HKZ_LIBN64_VERSION=09112010-1
-
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..
 . $HELPERS_DIR/functions.sh
