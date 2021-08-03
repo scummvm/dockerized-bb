@@ -1035,6 +1035,11 @@ def win9x():
     platform.env["CXX"] = "ccache ${CXX}"
 
     platform.configureargs.append("--host=mingw32")
+    platform.buildconfigureargs = {
+        builds.ScummVMBuild: [ "--disable-windows-unicode" ],
+        # Stable build doesn't have --disable-windows-unicode
+        builds.ScummVMStableBuild: [ ],
+    }
     platform.built_files = {
         builds.ScummVMBuild: [ "scummvm.exe" ],
         builds.ScummVMToolsBuild: [

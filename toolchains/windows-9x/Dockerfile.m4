@@ -86,6 +86,3 @@ RUN ln -s ${PREFIX}/bin/sdl-config ${PREFIX}/../bin/${HOST}-sdl-config
 helpers_package(sdl-net1.2)
 
 # TODO: glew
-
-# TODO: libiconv
-
