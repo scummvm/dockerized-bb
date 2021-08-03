@@ -45,6 +45,10 @@ local_package(toolchain)
 # That will install cmake configuration files as well
 mxe_package(cmake)
 
+# peldd will be used when creating package: only build native version
+# Use a local version to have target wrapper scripts
+local_mxe_package(pe-util)
+
 # Install everything through MXE to not mess with environment variables
 # This lets MXE build all platforms and avoids to mess with its settings
 

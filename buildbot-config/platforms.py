@@ -983,8 +983,14 @@ def windows_mxe(suffix, target, description=None):
         # As we use an environment variable, we need to use string to spawn a shell
         builds.ScummVMBuild: '"${STRIP}" scummvm.exe',
     }
+    platform.packaging_cmd = {
+        builds.ScummVMBuild: ["win32dist-mingw", "DESTDIR=win32dist-mingw"],
+        # Stable hasn't this target
+        builds.ScummVMStableBuild: None,
+    }
     platform.built_files = {
-        builds.ScummVMBuild: [ "scummvm.exe" ],
+        builds.ScummVMBuild: [ "win32dist-mingw" ],
+        builds.ScummVMStableBuild: [ "scummvm.exe" ],
         builds.ScummVMToolsBuild: [
             "construct_mohawk.exe",
             "create_sjisfnt.exe",
@@ -1002,7 +1008,9 @@ def windows_mxe(suffix, target, description=None):
     }
     # WinSparkle is built as a DLL (because we don't build it), so add it to the package
     platform.data_files = {
-        builds.ScummVMBuild: [
+        # Automatically done in target
+        builds.ScummVMBuild: None,
+        builds.ScummVMStableBuild: [
             "${{MXE_PREFIX_DIR}}/{0}/bin/WinSparkle.dll".format(target),
         ],
     }
