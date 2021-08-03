@@ -204,8 +204,14 @@ def get_package_steps(buildname, platformname, srcpath, dstpath, dsturl,
         commands = []
 
         if disttarget:
-            commands.append(util.ShellArg(["make", disttarget],
-                    logname="make {0}".format(disttarget), haltOnFailure=True))
+            if isinstance(disttarget, str):
+                disttarget_ = ["make", disttarget]
+            else:
+                disttarget_ = ["make"]
+                disttarget_.extend(disttarget)
+
+            commands.append(util.ShellArg(disttarget_,
+                logname="make {0}".format(disttarget[1]), haltOnFailure=True))
 
         commands.append(util.ShellArg(["mkdir", name],
             logname="archive", haltOnFailure=True))
