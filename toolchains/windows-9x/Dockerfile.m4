@@ -8,10 +8,12 @@ m4_include(`debian-toolchain-base.m4')m4_dnl
 RUN apt-get update && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 		bison \
+		dos2unix \
 		flex \
 		gawk \
 		gcc \
 		g++ \
+		libboost-filesystem1.67-dev \
 		libgmp-dev \
 		libisl-dev \
 		libmpc-dev \
@@ -24,6 +26,8 @@ RUN apt-get update && \
 ENV MINGW32=/opt/toolchains/mingw32 HOST=mingw32
 
 local_package(toolchain)
+
+local_package(pe-util, -DCMAKE_INSTALL_PREFIX=${MINGW32})
 
 ENV PREFIX=${MINGW32}/${HOST}
 
