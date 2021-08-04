@@ -1040,8 +1040,14 @@ def win9x():
         # Stable build doesn't have --disable-windows-unicode
         builds.ScummVMStableBuild: [ ],
     }
+    platform.packaging_cmd = {
+        builds.ScummVMBuild: ["win32dist-mingw", "DESTDIR=win32dist-mingw"],
+        # Stable hasn't this target
+        builds.ScummVMStableBuild: None,
+    }
     platform.built_files = {
-        builds.ScummVMBuild: [ "scummvm.exe" ],
+        builds.ScummVMBuild: [ "win32dist-mingw" ],
+        builds.ScummVMStableBuild: [ "scummvm.exe" ],
         builds.ScummVMToolsBuild: [
             "construct_mohawk.exe",
             "create_sjisfnt.exe",

@@ -11,6 +11,7 @@ ENV MINGW32=/opt/toolchains/mingw32 HOST=mingw32
 # That will be simpler when upgrading Debian and not having to adjust versions
 RUN apt-get update && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+		dos2unix \
 		libisl19 \
 		libmpc3 \
 		libmpfr6 \
