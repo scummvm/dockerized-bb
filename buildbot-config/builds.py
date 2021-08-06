@@ -490,11 +490,22 @@ class ScummVMBuild(StandardBuild):
         additional_args.extend(other_args)
         super().addConfigureSteps(*args, **kwargs, additional_args = additional_args)
 
-    def addBuildSteps(self, *args, **kwargs):
+    def addBuildSteps(self, f, platform, *, env, **kwargs):
         # ScummVM builds are longer
         timeout = kwargs.pop('timeout', 0)
         timeout = max(3600, timeout)
-        super().addBuildSteps(*args, **kwargs, timeout = timeout)
+        super().addBuildSteps(f, platform, **kwargs, env = env, timeout = timeout)
+        # Build devtools
+        if platform.build_devtools:
+            f.addStep(steps.Compile(command = [
+                    "make",
+                    "-j{0}".format(max_jobs),
+                    "devtools"
+                ],
+                name = "compile devtools",
+                env = env,
+                **kwargs))
+
 
 class ScummVMStableBuild(ScummVMBuild):
     PATCHES = [

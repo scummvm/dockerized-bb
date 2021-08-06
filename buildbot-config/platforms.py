@@ -37,7 +37,7 @@ class Platform:
             'configureargs', 'buildconfigureargs',
             'packageable', 'built_files', 'data_files',
             'packaging_cmd', 'strip_cmd', 'archiveext',
-            'testable', 'run_tests',
+            'testable', 'run_tests', 'build_devtools',
             'workerimage', 'lock_access',
             'icon', 'description_']
 
@@ -58,6 +58,8 @@ class Platform:
         self.testable = True
         # Can run tests
         self.run_tests = False
+
+        self.build_devtools = False
 
         self.workerimage = name
         # A callable taking the build object as argument and
@@ -267,7 +269,7 @@ caanoo()
 
 def debian(name_suffix, image_suffix, host,
         package=True,
-        build_tests=True, run_tests=True,
+        build_tests=True, run_tests=True, build_devtools=False,
         buildconfigureargs=None, env=None, tools=True,
         description=None):
     platform = Platform("debian-{0}".format(name_suffix))
@@ -308,6 +310,7 @@ def debian(name_suffix, image_suffix, host,
     }
     platform.testable = build_tests
     platform.run_tests = run_tests
+    platform.build_devtools = build_devtools
     platform.packageable = package
 
     platform.description = description
@@ -322,7 +325,7 @@ debian("x86-64-nullbackend", "x86_64", "x86_64-linux-gnu", package=False, tools=
         builds.ScummVMBuild: [ "--backend=null", "--enable-opl2lpt", "--enable-text-console" ],
     })
 debian("x86-64-testengine", "x86_64", "x86_64-linux-gnu", package=False, tools=False,
-    build_tests=False, run_tests=False,
+    build_tests=False, run_tests=False, build_devtools=True,
     buildconfigureargs = {
         builds.ScummVMBuild: [ "--disable-all-engines", "--enable-engine=testbed",],
     })
