@@ -509,6 +509,11 @@ VERSIONS = {
         'branch': 'fbo',
     },
 
+    ('./toolchains/windows-9x/packages/pe-util/build.sh', 'PE_UTIL'): {
+        'check': 'git commit',
+        'repository': 'https://github.com/gsauthof/pe-util.git',
+        'branch': 'master',
+    },
     ('./toolchains/windows-9x/packages/toolchain/build.sh', 'BINUTILS'): 'ignore',
     ('./toolchains/windows-9x/packages/toolchain/build.sh', 'GCC'): 'ignore',
     ('./toolchains/windows-9x/packages/toolchain/build.sh', 'MINGWRT'): 'ignore',
