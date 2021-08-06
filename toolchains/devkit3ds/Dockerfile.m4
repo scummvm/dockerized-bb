@@ -33,7 +33,7 @@ ENV \
 ENV \
 	CFLAGS="-march=armv6k -mtune=mpcore -mfloat-abi=hard -mtp=soft -O2 -mword-relocations -ffunction-sections -fdata-sections" \
 	CXXFLAGS="-march=armv6k -mtune=mpcore -mfloat-abi=hard -mtp=soft -O2 -mword-relocations -ffunction-sections -fdata-sections" \
-	CPPFLAGS="-D_3DS -I${PREFIX}/include -I${DEVKITPRO}/libctru/include" \
+	CPPFLAGS="-D_3DS -D__3DS__ -I${PREFIX}/include -I${DEVKITPRO}/libctru/include" \
 	LDFLAGS="-L${PREFIX}/lib -L${DEVKITPRO}/libctru/lib" \
 	LIBS="-lctru"
 

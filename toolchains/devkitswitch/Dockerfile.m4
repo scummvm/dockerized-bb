@@ -46,7 +46,7 @@ ENV \
 ENV \
 	CFLAGS="-march=armv8-a+crc+crypto -mtune=cortex-a57 -mtp=soft -fPIC -ftls-model=local-exec -O2 -ffunction-sections -fdata-sections" \
 	CXXFLAGS="-march=armv8-a+crc+crypto -mtune=cortex-a57 -mtp=soft -fPIC -ftls-model=local-exec -O2 -ffunction-sections -fdata-sections" \
-	CPPFLAGS="-D__SWITCH__ -I${PREFIX}/include -isystem${DEVKITPRO}/libnx/include" \
+	CPPFLAGS="-D__SWITCH__ -I${PREFIX}/include -isystem ${DEVKITPRO}/libnx/include" \
 	LDFLAGS="-march=armv8-a+crc+crypto -mtune=cortex-a57 -mtp=soft -fPIC -ftls-model=local-exec -L${PREFIX}/lib -L${DEVKITPRO}/libnx/lib" \
 	LIBS="-lnx"
 
