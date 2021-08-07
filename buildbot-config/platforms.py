@@ -318,19 +318,15 @@ def debian(name_suffix, image_suffix, host,
 
     register_platform(platform)
 debian("i686", "x86", "i686-linux-gnu", description="Debian (32\xa0bits)")
-debian("x86-64", "x86_64", "x86_64-linux-gnu", description="Debian (64\xa0bits)")
+debian("x86-64", "x86_64", "x86_64-linux-gnu", description="Debian (64\xa0bits)",
+    build_devtools=True)
 debian("x86-64-nullbackend", "x86_64", "x86_64-linux-gnu", package=False, tools=False,
     build_tests=False, run_tests=False,
     buildconfigureargs = {
         builds.ScummVMBuild: [ "--backend=null", "--enable-opl2lpt", "--enable-text-console" ],
     })
-debian("x86-64-testengine", "x86_64", "x86_64-linux-gnu", package=False, tools=False,
-    build_tests=False, run_tests=False, build_devtools=True,
-    buildconfigureargs = {
-        builds.ScummVMBuild: [ "--disable-all-engines", "--enable-engine=testbed",],
-    })
 debian("x86-64-clang", "x86_64-clang", "x86_64-linux-gnu", package=False, tools=False,
-    run_tests=False)
+    run_tests=False, build_devtools=True)
 debian("x86-64-plugins", "x86_64", "x86_64-linux-gnu", package=False, tools=False,
     build_tests=False, run_tests=False,
     buildconfigureargs = {
