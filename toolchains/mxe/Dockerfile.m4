@@ -89,7 +89,7 @@ mxe_package(libiconv)
 
 local_mxe_package(sdl2)
 
-mxe_package(sdl2_net)
+local_mxe_package(sdl2_net)
 
 local_mxe_package(fluidsynth-light)
 

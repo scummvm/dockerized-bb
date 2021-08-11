@@ -431,6 +431,7 @@ class ScummVMBuild(StandardBuild):
     __slots__ = [ 'verbose_build' ]
 
     PATCHES = [
+            "patches/fix-crc.patch",
     ]
 
     DATA_FILES = [
@@ -486,7 +487,7 @@ class ScummVMBuild(StandardBuild):
     def addConfigureSteps(self, *args, **kwargs):
         # Override to call parent with ScummVM specific configure arguments
         other_args = kwargs.pop('additional_args', [])
-        additional_args = ["--enable-all-engines"]
+        additional_args = ["--disable-all-engines", "--enable-engine=testbed"]
         additional_args.extend(other_args)
         super().addConfigureSteps(*args, **kwargs, additional_args = additional_args)
 
