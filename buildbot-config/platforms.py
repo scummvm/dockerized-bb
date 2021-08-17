@@ -889,6 +889,7 @@ def vita():
     # Myst 3 engine is unplayably slow on Vita.
     # Glk is not very usable on Vita without a keyboard.
     # Grim is unplayably slow on Vita.
+    # Titanic is not very usable on Vita without a keyboard.
     platform.buildconfigureargs = {
         builds.ScummVMBuild: [
             "--disable-all-unstable-engines",
@@ -897,6 +898,7 @@ def vita():
             "--disable-engines=myst3",
             "--disable-engines=glk",
             "--disable-engines=grim",
+            "--disable-engines=titanic",
             "--enable-engine=testbed",
         ],
         # Stable doesn't have myst3 nor stark
