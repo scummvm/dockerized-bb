@@ -1,6 +1,7 @@
-m4_define(`DEBIAN_VERSION',20210721)
+m4_ifdef(`DEBIAN_RELEASE',,`m4_define(`DEBIAN_RELEASE',buster)')
+m4_ifdef(`DEBIAN_VERSION',,`m4_define(`DEBIAN_VERSION',20210721)')
 m4_define(`BASE_DEBIAN',`')m4_dnl
-FROM debian:stable-DEBIAN_VERSION-slim
+FROM debian:DEBIAN_RELEASE-DEBIAN_VERSION-slim
 USER root
 
 m4_include(`install-buildbot.m4')m4_dnl

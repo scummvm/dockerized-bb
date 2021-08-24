@@ -1,7 +1,8 @@
-m4_define(`DEBIAN_VERSION',20210721)
+m4_ifdef(`DEBIAN_RELEASE',,`m4_define(`DEBIAN_RELEASE',buster)')
+m4_ifdef(`DEBIAN_VERSION',,`m4_define(`DEBIAN_VERSION',20210721)')
 FROM toolchains/common AS helpers
 
-FROM debian:stable-DEBIAN_VERSION-slim m4_ifdef(`STAGE_IMAGE_NAME',AS STAGE_IMAGE_NAME,)
+FROM debian:DEBIAN_RELEASE-DEBIAN_VERSION-slim m4_ifdef(`STAGE_IMAGE_NAME',AS STAGE_IMAGE_NAME,)
 USER root
 
 WORKDIR /usr/src

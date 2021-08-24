@@ -1,4 +1,5 @@
 #! /bin/sh
+RASPBIAN_VERSION=buster
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..
@@ -26,7 +27,7 @@ aptsources=
 packages=$@
 source=http://raspbian.raspberrypi.org/raspbian/
 keyring=
-suite=stable main firmware
+suite=$RASPBIAN_VERSION main firmware
 omitdebsrc=true
 EOF
 

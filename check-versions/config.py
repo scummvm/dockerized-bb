@@ -85,8 +85,8 @@ debian_check = {
     'registry': 'https://registry-1.docker.io',
     'image name': 'library/debian',
     'architecture': 'amd64',
-    'reference': 'stable-slim',
-    'tag_format': 'stable-{0}-slim',
+    'reference': 'buster-slim',
+    'tag_format': 'buster-{0}-slim',
 }
 alpine_check = {
     'check': 'docker tag',
@@ -469,6 +469,12 @@ VERSIONS = {
     },
 
     ('./toolchains/raspberrypi/packages/compilers/build.sh', 'DIST'): {
+        'check': 'scrape',
+        'url': 'http://archive.raspbian.org/raspbian/dists/stable/Release',
+        'filter pattern': r'(?m)^Codename: (?P<version>[a-z]+)$',
+        'case insensitive': True,
+    },
+    ('./toolchains/raspberrypi/packages/sysroot/build.sh', 'RASPBIAN'): {
         'check': 'scrape',
         'url': 'http://archive.raspbian.org/raspbian/dists/stable/Release',
         'filter pattern': r'(?m)^Codename: (?P<version>[a-z]+)$',
