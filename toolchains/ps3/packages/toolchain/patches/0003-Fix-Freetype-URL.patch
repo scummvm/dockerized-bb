@@ -1,0 +1,58 @@
+From 6c67d173b917489f9e02117edc89df7e16c89426 Mon Sep 17 00:00:00 2001
+From: Le Philousophe <lephilousophe@users.noreply.github.com>
+Date: Wed, 25 Aug 2021 16:45:07 +0200
+Subject: [PATCH 3/3] Fix Freetype URL
+
+---
+ patches/ps3libraries-fix-freetype-url.patch | 25 +++++++++++++++++++++
+ scripts/009-ps3libraries.sh                 |  3 +++
+ 2 files changed, 28 insertions(+)
+ create mode 100644 patches/ps3libraries-fix-freetype-url.patch
+
+diff --git a/patches/ps3libraries-fix-freetype-url.patch b/patches/ps3libraries-fix-freetype-url.patch
+new file mode 100644
+index 0000000..239b8a0
+--- /dev/null
++++ b/patches/ps3libraries-fix-freetype-url.patch
+@@ -0,0 +1,25 @@
++From 322292d52466ebd462b3d7d040bb9326415dee17 Mon Sep 17 00:00:00 2001
++From: Le Philousophe <lephilousophe@users.noreply.github.com>
++Date: Wed, 25 Aug 2021 16:41:16 +0200
++Subject: [PATCH] Fix Freetype URL
++
++---
++ scripts/004-freetype-2.4.3.sh | 2 +-
++ 1 file changed, 1 insertion(+), 1 deletion(-)
++
++diff --git a/scripts/004-freetype-2.4.3.sh b/scripts/004-freetype-2.4.3.sh
++index addafc4..fdd15a5 100755
++--- a/scripts/004-freetype-2.4.3.sh
+++++ b/scripts/004-freetype-2.4.3.sh
++@@ -2,7 +2,7 @@
++ # freetype-2.4.3.sh by Naomi Peori (naomi@peori.ca)
++ 
++ ## Download the source code.
++-wget --continue http://download.savannah.gnu.org/releases/freetype/freetype-2.4.3.tar.gz
+++wget --continue http://download.savannah.gnu.org/releases/freetype/freetype-old/freetype-2.4.3.tar.gz
++ 
++ ## Download an up-to-date config.guess and config.sub
++ if [ ! -f config.guess ]; then wget --continue http://git.savannah.gnu.org/cgit/config.git/plain/config.guess; fi
++-- 
++2.30.2
++
+diff --git a/scripts/009-ps3libraries.sh b/scripts/009-ps3libraries.sh
+index c732dc1..8db62bf 100755
+--- a/scripts/009-ps3libraries.sh
++++ b/scripts/009-ps3libraries.sh
+@@ -10,5 +10,8 @@ rm -Rf ps3libraries && mkdir ps3libraries && tar --strip-components=1 --director
+ ## Set versions of libraries
+ cat ../../patches/ps3libraries-set-versions.patch | patch -p1
+ 
++## Fix Freetype
++cat ../../patches/ps3libraries-fix-freetype-url.patch | patch -p1
++
+ ## Compile and install.
+ ./libraries.sh
+-- 
+2.30.2
+
