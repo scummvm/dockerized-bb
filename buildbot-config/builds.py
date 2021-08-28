@@ -511,42 +511,7 @@ class ScummVMStableBuild(ScummVMBuild):
     PATCHES = [
     ]
 
-    # These settings must be updated when release is done
-    DATA_FILES = [
-        "AUTHORS",
-        "COPYING",
-        "COPYING.LGPL",
-        "COPYING.BSD",
-        "COPYRIGHT",
-        "NEWS.md",
-        "README.md",
-        "gui/themes/translations.dat",
-        "gui/themes/scummclassic.zip",
-        "gui/themes/scummmodern.zip",
-        "gui/themes/scummremastered.zip",
-        "dists/engine-data/access.dat",
-        "dists/engine-data/cryomni3d.dat",
-        "dists/engine-data/drascula.dat",
-        "dists/engine-data/fonts.dat",
-        "dists/engine-data/hugo.dat",
-        "dists/engine-data/kyra.dat",
-        "dists/engine-data/lure.dat",
-        "dists/engine-data/mort.dat",
-        "dists/engine-data/neverhood.dat",
-        "dists/engine-data/queen.tbl",
-        "dists/engine-data/sky.cpt",
-        "dists/engine-data/supernova.dat",
-        "dists/engine-data/teenagent.dat",
-        "dists/engine-data/titanic.dat",
-        "dists/engine-data/tony.dat",
-        "dists/engine-data/toon.dat",
-        "dists/engine-data/ultima.dat",
-        "dists/engine-data/wintermute.zip",
-        "dists/engine-data/xeen.ccs",
-        "dists/networking/wwwroot.zip",
-        "dists/pred.dic"
-    ]
-    CONFIGURE_GENERATED_FILE = "config.mk"
+    # Settings below (if any) are for stable version and must be updated when release is done
 
 class ScummVMToolsBuild(StandardBuild):
     __slots__ = [ 'verbose_build' ]
@@ -577,6 +542,6 @@ class ScummVMToolsBuild(StandardBuild):
 builds = []
 
 builds.append(ScummVMBuild("master", "https://github.com/scummvm/scummvm", "master", verbose_build=True, nightly=(4, 1), description="ScummVM latest"))
-builds.append(ScummVMStableBuild("stable", "https://github.com/scummvm/scummvm", "branch-2-2", verbose_build=True, nightly=(4, 1), description="ScummVM stable"))
+builds.append(ScummVMStableBuild("stable", "https://github.com/scummvm/scummvm", "branch-2-5", verbose_build=True, nightly=(4, 1), description="ScummVM stable"))
 #builds.append(ScummVMBuild("gsoc2012", "https://github.com/digitall/scummvm", "gsoc2012-scalers-cont", verbose_build=True))
 builds.append(ScummVMToolsBuild("tools-master", "https://github.com/scummvm/scummvm-tools", "master", verbose_build=True, nightly=(4, 1), description="ScummVM tools"))

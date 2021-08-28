@@ -149,8 +149,6 @@ def amigaos4():
     platform.configureargs.append("--host=ppc-amigaos")
     platform.buildconfigureargs = {
         builds.ScummVMBuild: [ "--enable-plugins", "--default-dynamic", "--enable-detection-dynamic" ],
-        # Stable build doesn't have all necessary patches to make it work dynamic
-        builds.ScummVMStableBuild: [ "--enable-static" ],
     }
     platform.packaging_cmd = {
         builds.ScummVMBuild: "amigaosdist",
@@ -158,7 +156,6 @@ def amigaos4():
     }
     platform.built_files = {
         builds.ScummVMBuild: [ "install", "install.info" ],
-        builds.ScummVMStableBuild: [ "Games:ScummVM", "Games:ScummVM.info" ],
         builds.ScummVMToolsBuild: [
             "construct_mohawk",
             "create_sjisfnt",
@@ -284,15 +281,11 @@ def debian(name_suffix, image_suffix, host,
     if buildconfigureargs:
         platform.buildconfigureargs = buildconfigureargs
 
-    # stable build don't have this target yet
     platform.packaging_cmd = {
         builds.ScummVMBuild: "dist-generic",
-        builds.ScummVMStableBuild: None,
     }
     platform.built_files = {
         builds.ScummVMBuild: [ "dist-generic/*" ],
-        # stable build will use produced binary and additional files mentioned in builds.py
-        builds.ScummVMStableBuild: [ "scummvm" ],
         builds.ScummVMToolsBuild: [
             "construct_mohawk",
             "create_sjisfnt",
@@ -336,8 +329,6 @@ debian("x86-64-dynamic-detection", "x86_64", "x86_64-linux-gnu", package=False, 
     build_tests=False, run_tests=False,
     buildconfigureargs = {
         builds.ScummVMBuild: [ "--enable-plugins", "--default-dynamic", "--enable-detection-dynamic" ],
-        # In stable, detection code was in engines
-        builds.ScummVMStableBuild: [ "--enable-plugins", "--default-dynamic" ],
     })
 debian("x86-64-sdl1.2", "x86_64", "x86_64-linux-gnu", package=False, tools=False,
     build_tests=False, run_tests=False,
@@ -619,12 +610,9 @@ def nds():
     # stable build don't have this target yet
     platform.packaging_cmd = {
         builds.ScummVMBuild: "dsdist",
-        builds.ScummVMStableBuild: None,
     }
     platform.built_files = {
         builds.ScummVMBuild: [ "dsdist/*" ],
-        # stable build will use produced binary and additional files mentioned in builds.py
-        builds.ScummVMStableBuild: [ "scummvm.nds" "plugins" ],
     }
     platform.archiveext = "zip"
     platform.testable = False
@@ -762,15 +750,11 @@ def raspberrypi():
     platform.env["CXX"] = "ccache ${CXX}"
     platform.configureargs.append("--host=raspberrypi")
 
-    # stable build don't have this target yet
     platform.packaging_cmd = {
         builds.ScummVMBuild: "dist-generic",
-        builds.ScummVMStableBuild: None,
     }
     platform.built_files = {
         builds.ScummVMBuild: [ "dist-generic/*" ],
-        # stable build will use produced binary and additional files mentioned in builds.py
-        builds.ScummVMStableBuild: [ "scummvm" ],
         builds.ScummVMToolsBuild: [
             "construct_mohawk",
             "create_sjisfnt",
@@ -901,13 +885,6 @@ def vita():
             "--disable-engines=titanic",
             "--enable-engine=testbed",
         ],
-        # Stable doesn't have myst3 nor stark
-        builds.ScummVMStableBuild: [
-            "--disable-all-unstable-engines",
-            "--disable-engines=bladerunner",
-            "--disable-engines=glk",
-            "--enable-engine=testbed",
-        ],
     }
     platform.packaging_cmd = "psp2vpk"
     platform.built_files = {
@@ -984,12 +961,9 @@ def windows_mxe(suffix, target, description=None):
     }
     platform.packaging_cmd = {
         builds.ScummVMBuild: ["win32dist-mingw", "DESTDIR=win32dist-mingw"],
-        # Stable hasn't this target
-        builds.ScummVMStableBuild: None,
     }
     platform.built_files = {
         builds.ScummVMBuild: [ "win32dist-mingw" ],
-        builds.ScummVMStableBuild: [ "scummvm.exe" ],
         builds.ScummVMToolsBuild: [
             "construct_mohawk.exe",
             "create_sjisfnt.exe",
@@ -1004,14 +978,6 @@ def windows_mxe(suffix, target, description=None):
             #"scummvm-tools.exe", # GUI tools currently not built - WxWidgets library not present
             "scummvm-tools-cli.exe"
         ]
-    }
-    # WinSparkle is built as a DLL (because we don't build it), so add it to the package
-    platform.data_files = {
-        # Automatically done in target
-        builds.ScummVMBuild: None,
-        builds.ScummVMStableBuild: [
-            "${{MXE_PREFIX_DIR}}/{0}/bin/WinSparkle.dll".format(target),
-        ],
     }
     platform.archiveext = "zip"
 
@@ -1036,17 +1002,12 @@ def win9x():
     platform.configureargs.append("--host=mingw32")
     platform.buildconfigureargs = {
         builds.ScummVMBuild: [ "--disable-windows-unicode" ],
-        # Stable build doesn't have --disable-windows-unicode
-        builds.ScummVMStableBuild: [ ],
     }
     platform.packaging_cmd = {
         builds.ScummVMBuild: ["win32dist-mingw", "DESTDIR=win32dist-mingw"],
-        # Stable hasn't this target
-        builds.ScummVMStableBuild: None,
     }
     platform.built_files = {
         builds.ScummVMBuild: [ "win32dist-mingw" ],
-        builds.ScummVMStableBuild: [ "scummvm.exe" ],
         builds.ScummVMToolsBuild: [
             "construct_mohawk.exe",
             "create_sjisfnt.exe",
