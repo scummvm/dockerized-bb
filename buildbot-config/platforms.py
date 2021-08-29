@@ -874,6 +874,7 @@ def vita():
     # Glk is not very usable on Vita without a keyboard.
     # Grim is unplayably slow on Vita.
     # Titanic is not very usable on Vita without a keyboard.
+    # Wintermute is unplayably slow on Vita.
     platform.buildconfigureargs = {
         builds.ScummVMBuild: [
             "--disable-all-unstable-engines",
@@ -883,6 +884,7 @@ def vita():
             "--disable-engines=glk",
             "--disable-engines=grim",
             "--disable-engines=titanic",
+            "--disable-engines=wintermute",
             "--enable-engine=testbed",
         ],
     }
