@@ -21,6 +21,9 @@ export PATH=$PATH:$PS3DEV/bin:$PS3DEV/ppu/bin:$PS3DEV/spu/bin
 # Use -e to stop on error
 bash -e ./toolchain.sh
 
+# Toolchain portlibs install binaries that we don't need and can't run on host
+find $PS3DEV/portlibs/ppu/bin -type f '!' -name '*-config' -delete
+
 do_clean_bdir
 
 # Cleanup wget HSTS
