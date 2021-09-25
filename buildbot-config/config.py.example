@@ -5,7 +5,7 @@ configuration_dir = os.path.dirname(__file__)
 # data_dir is where all builds data is stored: intermediate files, ccache, ...
 data_dir = os.path.normpath(os.path.join(configuration_dir, "..", "buildbot-data"))
 # daily_builds_dir is where all packages are moved and get served
-daily_builds_dir = os.path.join(data_dir, 'packages', 'daily_builds')
+daily_builds_dir = os.path.join(data_dir, 'packages', 'dailybuilds')
 
 # If a relative path is used here, it will be relative to the buildbot base directory, not configuration one
 db = {
