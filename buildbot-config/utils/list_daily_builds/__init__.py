@@ -16,8 +16,8 @@ __all__ = [ 'get_application' ]
 
 # PackageInfo is generic and is built at startup
 PackageInfo = collections.namedtuple('PackageInfo', ['build', 'platform', 'path', 'base_url'])
-# SnapshotInfo is resolved in real time from a PackageInfo
-SnapshotInfo = collections.namedtuple('SnaphshotInfo', ['revision', 'url'])
+# DailyBuildInfo is resolved in real time from a PackageInfo
+DailyBuildInfo = collections.namedtuple('SnaphshotInfo', ['revision', 'url'])
 Helpers = collections.namedtuple('Helpers', ['get_names', 'parse_name'])
 
 # Subclass Bottle to have a pretty configuration
@@ -33,13 +33,13 @@ tmpl_path = [os.path.join(module_path, 'templates')]
 
 def get_application(
         helpers,
-        snapshots_dir, snapshots_url,
-        builds, platforms, serve_snapshots=False):
+        daily_builds_dir, daily_builds_url,
+        builds, platforms, serve_daily_builds=False):
 
     helpers = Helpers(*helpers)
 
     packaged_builds, packaged_platforms = get_packaged_data(
-        snapshots_dir, snapshots_url, helpers,
+        daily_builds_dir, daily_builds_url, helpers,
         builds, platforms)
 
     app = ConfiguredBottle(catchall=False, autojson=False)
@@ -49,16 +49,16 @@ def get_application(
     app.packaged_platforms = packaged_platforms
 
     # Register routes
-    app.route('/', callback=list_snapshots)
-    app.route('/index.html', callback=list_snapshots)
+    app.route('/', callback=list_daily_builds)
+    app.route('/index.html', callback=list_daily_builds)
     app.route('/static/<filepath:re:.*>', callback=static)
-    if serve_snapshots:
-        app.snapshots_dir = snapshots_dir
+    if serve_daily_builds:
+        app.daily_builds_dir = daily_builds_dir
         app.route('/packages/<filepath:re:.*>', callback=packages)
 
     return app
 
-def get_packaged_data(snapshots_dir, snapshots_url, helpers,
+def get_packaged_data(daily_builds_dir, daily_builds_url, helpers,
         builds, platforms):
     packaged_builds = set()
     packaged_platforms = collections.OrderedDict()
@@ -70,7 +70,7 @@ def get_packaged_data(snapshots_dir, snapshots_url, helpers,
         for build in builds:
             if platform.canBuild(build) and platform.canPackage(build):
                 packaged_platform_builds[build] = get_package_infos(
-                    snapshots_dir, snapshots_url, helpers,
+                    daily_builds_dir, daily_builds_url, helpers,
                     build, platform)
 
         if packaged_platform_builds:
@@ -81,7 +81,7 @@ def get_packaged_data(snapshots_dir, snapshots_url, helpers,
 
     return packaged_builds, packaged_platforms
 
-def get_package_infos(snapshots_dir, snapshots_url, helpers,
+def get_package_infos(daily_builds_dir, daily_builds_url, helpers,
         build, platform):
 
     _, _, symlink = helpers.get_names(
@@ -89,15 +89,15 @@ def get_package_infos(snapshots_dir, snapshots_url, helpers,
             platformname=platform.name,
             archive_format=platform.archiveext,
             revision=None)
-    path = os.path.join(snapshots_dir, build.name, symlink)
+    path = os.path.join(daily_builds_dir, build.name, symlink)
 
-    base_url = urlp.urljoin(snapshots_url + '/', build.name + '/')
+    base_url = urlp.urljoin(daily_builds_url + '/', build.name + '/')
 
     return PackageInfo(build.name, platform.name, path, base_url)
 
-# Filter for list_snapshots template
+# Filter for list_daily_builds template
 # Determine the revision pointed by symlink
-def to_snapshot(pkg_info):
+def to_daily_build(pkg_info):
     helpers = request.app.helpers
 
     path = os.path.realpath(pkg_info.path)
@@ -112,7 +112,7 @@ def to_snapshot(pkg_info):
     parsed = helpers.parse_name(basename, build = pkg_info.build, platform = pkg_info.platform)
     rev = parsed['revision'] if parsed else None
 
-    return SnapshotInfo(rev, url)
+    return DailyBuildInfo(rev, url)
 
 # Build an URL pointing to assets
 def static_url(item):
@@ -122,15 +122,15 @@ def static_url(item):
     return url
 
 # Route for index.html
-@view('list_snapshots.tmpl',
+@view('list_daily_builds.tmpl',
     template_lookup=tmpl_path,
     template_settings=dict(
         filters={
-            'to_snapshot': to_snapshot,
+            'to_daily_build': to_daily_build,
             'static_url': static_url,
         },
     ))
-def list_snapshots():
+def list_daily_builds():
     ret = dict()
     ret['builds'] = request.app.packaged_builds
     ret['platforms'] = request.app.packaged_platforms
@@ -140,6 +140,6 @@ def list_snapshots():
 # for assets (CSS) in /static/
 def static(filepath):
     return bottle.static_file(filepath, root=static_path)
-# for snapshots in /packages/
+# for daily builds in /packages/
 def packages(filepath):
-    return bottle.static_file(filepath, root=request.app.snapshots_dir)
+    return bottle.static_file(filepath, root=request.app.daily_builds_dir)

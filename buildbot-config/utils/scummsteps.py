@@ -112,7 +112,7 @@ class SetPropertyIfOlder(steps.BuildStep):
         self.descriptionDone = ["generated file is {0} than source file".format("older" if dateGenerated <= dateSrc else "newer")]
         return util.SUCCESS
 
-# buildstep class to strip binaries, only done on nightly builds.
+# buildstep class to strip binaries, only done on daily builds.
 def Strip(command, **kwargs):
     return steps.ShellCommand(
         name = "strip",
@@ -285,7 +285,7 @@ def get_package_steps(buildname, platformname, srcpath, dstpath, dsturl,
         mode = 0o0644,
         url = getArchiveURL if dsturl else None)
     link = steps.MasterShellCommand(
-        name = "link latest snapshot",
+        name = "link latest daily build",
         description = "linking",
         descriptionDone = "linked",
         doStepIf = doPackage,
@@ -304,8 +304,8 @@ def Clean(**kwargs):
         descriptionDone = "clean",
         **kwargs)
 
-class CleanupSnapshots(steps.BuildStep):
-    name = "cleanup old snapshots"
+class CleanupDailyBuilds(steps.BuildStep):
+    name = "cleanup old daily builds"
     renderables = [ 'dstpath', 'buildname', 'platformnames', 'keep_builds', 'obsolete', 'cleanup_unknown', 'dry_run' ]
     haltOnFailure = True
     flunkOnFailure = True

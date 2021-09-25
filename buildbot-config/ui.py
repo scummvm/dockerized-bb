@@ -122,7 +122,7 @@ if hasattr(config, 'discord_reporter') and config.discord_reporter:
         generators=[
             BuildSetStatusGenerator(
                 message_formatter=discord.DiscordFormatter(),
-                # Only report builder aggregated in a buildset and not fetch or nightly
+                # Only report builder aggregated in a buildset and not fetch or daily
                 tags=['build'],
                 mode=("change", "exception")),
             BuildStatusGenerator(
@@ -132,19 +132,19 @@ if hasattr(config, 'discord_reporter') and config.discord_reporter:
                 mode=("change", "exception"))
     ]))
 
-if hasattr(config, 'enable_list_snapshots') and config.enable_list_snapshots:
-    serve_snapshots = hasattr(config, 'serve_snapshots') and config.serve_snapshots
+if hasattr(config, 'enable_list_daily_builds') and config.enable_list_daily_builds:
+    serve_daily_builds = hasattr(config, 'serve_daily_builds') and config.serve_daily_builds
     import builds, platforms
-    from utils import list_snapshots
+    from utils import list_daily_builds
     from utils import scummsteps
     www['plugins']['wsgi_dashboards'] = [{
-        'name': 'snapshots',
-        'caption': 'Snapshots',
-        'app': list_snapshots.get_application(
+        'name': 'dailybuilds',
+        'caption': 'Daily builds',
+        'app': list_daily_builds.get_application(
             (scummsteps.create_names, scummsteps.parse_package_name),
-            config.snapshots_dir, config.snapshots_url,
+            config.daily_builds_dir, config.daily_builds_url,
             builds.builds, platforms.platforms,
-            serve_snapshots = serve_snapshots),
+            serve_daily_builds = serve_daily_builds),
         'order': -1,
         'icon': 'archive'
     }]

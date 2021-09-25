@@ -4,8 +4,8 @@ import os
 configuration_dir = os.path.dirname(__file__)
 # data_dir is where all builds data is stored: intermediate files, ccache, ...
 data_dir = os.path.normpath(os.path.join(configuration_dir, "..", "buildbot-data"))
-# snapshots_dir is where all packages are moved and get served
-snapshots_dir = os.path.join(data_dir, 'packages', 'snapshots')
+# daily_builds_dir is where all packages are moved and get served
+daily_builds_dir = os.path.join(data_dir, 'packages', 'daily_builds')
 
 # If a relative path is used here, it will be relative to the buildbot base directory, not configuration one
 db = {
@@ -39,14 +39,14 @@ max_parallel_builds = 1
 # Falsy value means to use cpu core count
 max_jobs = None
 
-# Snapshots retention settings
-# Number of snapshots to keep
-snapshots_keep_builds = 14
-# Number of days to keep a snapshot
+# Daily builds retention settings
+# Number of daily builds to keep
+daily_builds_keep_builds = 14
+# Number of days to keep a daily build
 # Latest one will always be spared from cleaning
-snapshots_obsolete_days = 30
+daily_builds_obsolete_days = 30
 # Whether to remove unknown files in directory
-snapshots_clean_unknown = True
+daily_builds_clean_unknown = True
 
 # List which builds won't receive notifications from Webhook
 # and must be polled
@@ -85,14 +85,14 @@ buildbot_url = "https://buildbot.scummvm.org/"
 # Retention time for data (in weeks)
 data_retention_weeks = 4
 
-# URL used to download snapshots
-# If serve_snapshots is True, it will be:
-# snapshots_url = buildbot_url + "wsgi_dashboards/snapshots/packages/"
-snapshots_url = "https://buildbot.scummvm.org/snapshots/"
+# URL used to download daily builds
+# If serve_daily_builds is True, it will be:
+# daily_builds_url = buildbot_url + "wsgi_dashboards/dailybuilds/packages/"
+daily_builds_url = "https://buildbot.scummvm.org/dailybuilds/"
 
-enable_list_snapshots = True
-# Serving snapshots is only available when listing snapshots too
-serve_snapshots = False
+enable_list_daily_builds = True
+# Serving daily builds is only available when listing daily builds too
+serve_daily_builds = False
 
 # IRC configuration
 #irc = {

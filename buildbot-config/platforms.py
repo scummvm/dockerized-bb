@@ -66,7 +66,7 @@ class Platform:
         # which returns a LockAccess to be used when building platform
         self.lock_access = None
 
-        # For snapshots list
+        # For daily builds list
         self.icon = None
         self.description_ = None
 

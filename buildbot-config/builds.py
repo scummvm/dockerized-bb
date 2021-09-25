@@ -56,7 +56,7 @@ class StandardBuild(Build):
     __slots__ = [
         'names',
         'baseurl', 'giturl', 'branch',
-        'nightly', 'enable_force',
+        'daily', 'enable_force',
         'verbose_build',
         'description_',
         'lock_src']
@@ -68,7 +68,7 @@ class StandardBuild(Build):
     CONFIGURE_GENERATED_FILE = None
 
     def __init__(self, name, baseurl, branch, *,
-            nightly = None, enable_force = True, giturl = None,
+            daily = None, enable_force = True, giturl = None,
             verbose_build = False, description = None):
         super().__init__(name)
         if giturl is None:
@@ -76,7 +76,7 @@ class StandardBuild(Build):
         self.baseurl = baseurl
         self.giturl = giturl
         self.branch = branch
-        self.nightly = nightly
+        self.daily = daily
         self.enable_force = enable_force
         self.verbose_build = verbose_build
         self.description_ = description
@@ -96,7 +96,7 @@ class StandardBuild(Build):
         self.names['poller'] = "poller-{0}".format(self.name)
         # Schedulers
         self.names['sch-sb'] = "branch-scheduler-{0}".format(self.name)
-        self.names['sch-nightly'] = "nightly-scheduler-{0}".format(self.name)
+        self.names['sch-daily'] = "daily-scheduler-{0}".format(self.name)
         self.names['sch-build'] = "build-scheduler-{0}".format(self.name)
         # Force schedulers
         # Force scheduler ID must begin with letter and not contain spaces
@@ -105,10 +105,10 @@ class StandardBuild(Build):
         self.names['sch-force-id-build'] = "force-build-{0}".format(self.name)
         self.names['sch-force-name-build'] = "Force build".format(self.name)
         self.names['sch-force-id-clean'] = "force-clean-{0}".format(self.name)
-        self.names['sch-force-name-clean'] = "Force clean {0} snapshots".format(self.name)
+        self.names['sch-force-name-clean'] = "Force clean {0} daily builds".format(self.name)
         # Builders
         self.names['bld-fetch'] = "fetch-{0}".format(self.name)
-        self.names['bld-nightly'] = "nightly-{0}".format(self.name)
+        self.names['bld-daily'] = "daily-{0}".format(self.name)
         # Put clean builders in last position
         self.names['bld-clean'] = "zzz_clean-{0}".format(self.name)
         # Platform builders
@@ -148,22 +148,22 @@ class StandardBuild(Build):
                 treeStableTimer = 300,
                 builderNames = [ self.names['bld-fetch'] ]))
 
-        # Nightly scheduler (started by time)
+        # Daily scheduler (started by time)
         # It's triggered after regular builds to take note of the last fetched source
         # Note that build is not started by trigger
         # We cleanup after it because we just generated a new package
-        if self.nightly is not None:
-            ret.append(schedulers.NightlyTriggerable(name = self.names['sch-nightly'],
+        if self.daily is not None:
+            ret.append(schedulers.NightlyTriggerable(name = self.names['sch-daily'],
                 branch = self.branch,
-                builderNames = [ self.names['bld-nightly'], self.names['bld-clean'] ],
-                hour = self.nightly[0],
-                minute = self.nightly[1],
+                builderNames = [ self.names['bld-daily'], self.names['bld-clean'] ],
+                hour = self.daily[0],
+                minute = self.daily[1],
                 onlyIfChanged = True))
 
         # All compiling builders
         comp_builders = list(self.names['bld-platform'](p for p in platforms if p.canBuild(self)))
 
-        # Global build scheduler (triggered by fetch build and nightly build)
+        # Global build scheduler (triggered by fetch build and daily build)
         ret.append(schedulers.Triggerable(name = self.names['sch-build'], builderNames = comp_builders))
 
         # Force schedulers
@@ -217,10 +217,10 @@ class StandardBuild(Build):
                 patches = self.PATCHES,
                 locks = [ self.lock_src.access("exclusive") ],
             ))
-        if self.nightly is not None:
-            # Trigger nightly scheduler to let it know the source stamp
+        if self.daily is not None:
+            # Trigger daily scheduler to let it know the source stamp
             f.addStep(steps.Trigger(name="Updating source stamp",
-                schedulerNames = [ "nightly-scheduler-{0}".format(self.name) ],
+                schedulerNames = [ "daily-scheduler-{0}".format(self.name) ],
                 set_properties = {
                     'got_revision': util.Property('got_revision', defaultWhenFalse=False),
                 },
@@ -246,7 +246,7 @@ class StandardBuild(Build):
             locks = [ lock_build.access('counting') ],
         ))
 
-        if self.nightly is not None:
+        if self.daily is not None:
             f = util.BuildFactory()
             f.addStep(steps.Trigger(name="Building all platforms",
                 schedulerNames = [ self.names['sch-build'] ],
@@ -257,32 +257,32 @@ class StandardBuild(Build):
                     'clean': True,
                     'package': True,
                     # Ensure our tag is put first and is split from the others
-                    'owner': '  Nightly build  ',
+                    'owner': '  Daily build  ',
                 }))
             ret.append(util.BuilderConfig(
-                name = self.names['bld-nightly'],
+                name = self.names['bld-daily'],
                 # We use fetcher worker here as it will prevent building of other stuff like if a change had happened
                 workernames = workers.workers_by_type['fetcher'],
-                workerbuilddir = "/data/triggers/nightly-{0}".format(self.name),
+                workerbuilddir = "/data/triggers/daily-{0}".format(self.name),
                 factory = f,
-                tags = ["nightly", self.name],
+                tags = ["daily", self.name],
                 locks = [ lock_build.access('counting') ]
             ))
 
-        snapshots_path = os.path.join(config.snapshots_dir, self.name)
+        daily_builds_path = os.path.join(config.daily_builds_dir, self.name)
 
         # Builder to clean packages
         f = util.BuildFactory()
-        f.addStep(scummsteps.CleanupSnapshots(
-            dstpath = snapshots_path,
+        f.addStep(scummsteps.CleanupDailyBuilds(
+            dstpath = daily_builds_path,
             buildname = self.name,
             platformnames = [ platform.name
                 for platform in platforms
                 if platform.canPackage(self) ],
             dry_run = util.Property("dry_run", False),
-            keep_builds = getattr(config, 'snapshots_keep_builds', 14),
-            obsolete = timedelta(days=getattr(config, 'snapshots_obsolete_days', 30)),
-            cleanup_unknown = getattr(config, 'snapshots_clean_unknown', True),
+            keep_builds = getattr(config, 'daily_builds_keep_builds', 14),
+            obsolete = timedelta(days=getattr(config, 'daily_builds_obsolete_days', 30)),
+            cleanup_unknown = getattr(config, 'daily_builds_clean_unknown', True),
         ))
         ret.append(util.BuilderConfig(
             name = self.names['bld-clean'],
@@ -304,10 +304,10 @@ class StandardBuild(Build):
         configure_path = src_path + "/configure"
         build_path = "{0}/builds/{1}/{2}".format("/data", platform.name, self.name)
 
-        # snapshots_path is used in Package step on master side
-        snapshots_path = os.path.join(config.snapshots_dir, self.name)
+        # daily_builds_path is used in Package step on master side
+        daily_builds_path = os.path.join(config.daily_builds_dir, self.name)
         # Ensure last path component doesn't get removed here and in packaging step
-        snapshots_url = urlp.urljoin(config.snapshots_url + '/', self.name + '/')
+        daily_builds_url = urlp.urljoin(config.daily_builds_url + '/', self.name + '/')
 
         env = platform.getEnv(self)
 
@@ -331,8 +331,8 @@ class StandardBuild(Build):
         self.addPackagingSteps(f, platform,
             env = env,
             src_path = src_path,
-            snapshots_path = snapshots_path,
-            snapshots_url = snapshots_url)
+            daily_builds_path = daily_builds_path,
+            daily_builds_url = daily_builds_url)
 
         locks = [ lock_build.access('counting'), self.lock_src.access("counting") ]
         if platform.lock_access:
@@ -402,7 +402,7 @@ class StandardBuild(Build):
                 env = env, **kwargs))
 
     def addPackagingSteps(self, f, platform, *, env,
-        src_path, snapshots_path, snapshots_url):
+        src_path, daily_builds_path, daily_builds_url):
 
         packaging_cmd = platform.getPackagingCmd(self)
         strip_cmd = platform.getStripCmd(self)
@@ -418,8 +418,8 @@ class StandardBuild(Build):
                 buildname = self.name,
                 platformname = platform.name,
                 srcpath = src_path,
-                dstpath = snapshots_path,
-                dsturl = snapshots_url,
+                dstpath = daily_builds_path,
+                dsturl = daily_builds_url,
                 archive_format = platform.archiveext,
                 disttarget = packaging_cmd,
                 build_data_files = self.DATA_FILES,
@@ -541,7 +541,7 @@ class ScummVMToolsBuild(StandardBuild):
 
 builds = []
 
-builds.append(ScummVMBuild("master", "https://github.com/scummvm/scummvm", "master", verbose_build=True, nightly=(4, 1), description="ScummVM latest"))
-builds.append(ScummVMStableBuild("stable", "https://github.com/scummvm/scummvm", "branch-2-3", verbose_build=True, nightly=(4, 1), description="ScummVM stable"))
+builds.append(ScummVMBuild("master", "https://github.com/scummvm/scummvm", "master", verbose_build=True, daily=(4, 1), description="ScummVM latest\nBranch master"))
+builds.append(ScummVMStableBuild("stable", "https://github.com/scummvm/scummvm", "branch-2-3", verbose_build=True, daily=(4, 1), description="ScummVM stable\nFuture 2.3.x"))
 #builds.append(ScummVMBuild("gsoc2012", "https://github.com/digitall/scummvm", "gsoc2012-scalers-cont", verbose_build=True))
-builds.append(ScummVMToolsBuild("tools-master", "https://github.com/scummvm/scummvm-tools", "master", verbose_build=True, nightly=(4, 1), description="ScummVM tools"))
+builds.append(ScummVMToolsBuild("tools-master", "https://github.com/scummvm/scummvm-tools", "master", verbose_build=True, daily=(4, 1), description="ScummVM tools"))
