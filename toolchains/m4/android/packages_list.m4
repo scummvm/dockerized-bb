@@ -38,12 +38,8 @@ helpers_package(freetype)
 
 helpers_package(fribidi)
 
-# Specific android patched version
-android_package(libsdl2)
-
 # Platform patch provided in android-common
-# Don't depend on SDL2 (paradoxical)
-# We have installed it but it depends on OpenGL so try to avoid these dependencies
+# Don't depend on SDL2
 COPY --from=android-helpers /lib-helpers/packages/libsdl2-net lib-helpers/packages/libsdl2-net
 helpers_package(libsdl2-net)
 
