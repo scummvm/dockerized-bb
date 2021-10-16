@@ -23,9 +23,9 @@ do_make_bdir
 
 do_http_fetch libgpg-error "http://gnupg.org/ftp/gcrypt/libgpg-error/libgpg-error-${LIBGPG_ERROR_VERSION}.tar.bz2" \
 	'tar xjf' "sha256:${LIBGPG_ERROR_SHA256}"
+do_patch libgpg-error
 
-# Fix GCC preprocessor without a patch to avoid hacks
-sed -ie 's/_\$@ | grep GPG_ERR_ |/-P \0/' src/Makefile.in
+autoreconf -fi -I m4
 
 # Enable shared objects to make binary lighter
 do_configure_shared
