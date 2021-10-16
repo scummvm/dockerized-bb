@@ -13,7 +13,7 @@ do_make_bdir
 do_http_fetch flac "http://downloads.xiph.org/releases/flac/flac-${FLAC_VERSION}.tar.gz" \
 	'tar xzf' "sha256:${FLAC_SHA256}"
 
-autoreconf -fi
+autoreconf -fi -I m4
 do_configure_shared --disable-doxygen-docs --disable-xmms-plugin --disable-cpplibs --enable-ogg "$@"
 do_make -C src/libFLAC
 do_make -C src/libFLAC install
