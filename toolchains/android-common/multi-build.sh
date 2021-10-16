@@ -77,8 +77,7 @@ for t in "$TOOLCHAIN/sysroot/usr/lib/"*/; do
 		export PREFIX=$TOOLCHAIN/sysroot/usr
 		export PATH=$original_path:$TOOLCHAIN/bin:$PREFIX/bin/$TARGET/$a
 		export ACLOCAL_PATH=$PREFIX/share/aclocal
-		export PKG_CONFIG_LIBDIR=$PREFIX/lib/$TARGET/$a
-		export PKG_CONFIG_PATH=$PREFIX/lib/$TARGET/$a/pkgconfig
+		export PKG_CONFIG_LIBDIR=$PREFIX/lib/$TARGET/$a/pkgconfig
 
 		echo "Building for $TARGET-$a"
 
