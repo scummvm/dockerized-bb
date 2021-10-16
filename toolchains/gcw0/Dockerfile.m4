@@ -20,12 +20,15 @@ RUN apt-get update && \
 		libffi-dev \
 		libncurses-dev \
 		libtool-bin \
-		python-libxml2 \
+		libxml2-dev \
+		python2-dev \
 		texinfo \
 		zlib1g-dev && \
 	ln -s /nonexistent /etc/alternatives/awk.1.gz && \
 	ln -s /nonexistent /etc/alternatives/nawk.1.gz && \
 	rm -rf /var/lib/apt/lists/*
+
+local_package(host-python2-libxml2)
 
 ENV GCW_TOOLCHAIN=/opt/gcw0-toolchain HOST=mipsel-gcw0-linux-uclibc
 

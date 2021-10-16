@@ -19,7 +19,6 @@ RUN apt-get update && \
 		help2man \
 		libncurses-dev \
 		libtool-bin \
-		python-libxml2 \
 		texinfo && \
 	ln -s /nonexistent /etc/alternatives/awk.1.gz && \
 	ln -s /nonexistent /etc/alternatives/nawk.1.gz && \
