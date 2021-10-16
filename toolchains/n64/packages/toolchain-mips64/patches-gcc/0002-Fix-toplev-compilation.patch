@@ -1,0 +1,25 @@
+From e084c64bd31dfee3be17209c68497f50dd4f49f7 Mon Sep 17 00:00:00 2001
+From: Le Philousophe <lephilousophe@users.noreply.github.com>
+Date: Mon, 11 Oct 2021 20:37:00 +0200
+Subject: [PATCH 2/3] Fix toplev compilation
+
+---
+ gcc/toplev.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/gcc/toplev.h b/gcc/toplev.h
+index 2324b068f77..7f0cf5eeaf0 100644
+--- a/gcc/toplev.h
++++ b/gcc/toplev.h
+@@ -174,7 +174,7 @@ extern int exact_log2                  (unsigned HOST_WIDE_INT);
+ extern int floor_log2                  (unsigned HOST_WIDE_INT);
+ 
+ /* Inline versions of the above for speed.  */
+-#if GCC_VERSION >= 3004
++#if GCC_VERSION >= 3004 && defined(__cplusplus)
+ # if HOST_BITS_PER_WIDE_INT == HOST_BITS_PER_LONG
+ #  define CLZ_HWI __builtin_clzl
+ #  define CTZ_HWI __builtin_ctzl
+-- 
+2.32.0
+
