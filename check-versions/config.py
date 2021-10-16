@@ -88,6 +88,12 @@ debian_check = {
     'reference': 'buster-slim',
     'tag_format': 'buster-{0}-slim',
 }
+raspios_check = {
+    'check': 'scrape',
+    'url': 'https://downloads.raspberrypi.org/raspios_armhf/os.json',
+    'filter pattern': r'(?m)^\s*"version": "(?P<version>[a-z]+)",?$',
+    'case insensitive': True,
+}
 alpine_check = {
     'check': 'docker tag',
     'registry': 'https://registry-1.docker.io',
@@ -471,18 +477,8 @@ VERSIONS = {
         'branch': 'master',
     },
 
-    ('./toolchains/raspberrypi/packages/compilers/build.sh', 'DIST'): {
-        'check': 'scrape',
-        'url': 'http://archive.raspbian.org/raspbian/dists/stable/Release',
-        'filter pattern': r'(?m)^Codename: (?P<version>[a-z]+)$',
-        'case insensitive': True,
-    },
-    ('./toolchains/raspberrypi/packages/sysroot/build.sh', 'RASPBIAN'): {
-        'check': 'scrape',
-        'url': 'http://archive.raspbian.org/raspbian/dists/stable/Release',
-        'filter pattern': r'(?m)^Codename: (?P<version>[a-z]+)$',
-        'case insensitive': True,
-    },
+    ('./toolchains/raspberrypi/packages/compilers/build.sh', 'DIST'): raspios_check,
+    ('./toolchains/raspberrypi/packages/sysroot/build.sh', 'RASPBIAN'): raspios_check,
     # It's quite hard to determine which GCC version Raspbian uses and it's tied to DIST
     ('./toolchains/raspberrypi/packages/compilers/build.sh', 'GCC'): 'ignore',
 
