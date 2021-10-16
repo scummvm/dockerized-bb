@@ -10,6 +10,7 @@ DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 	automake \
 	ca-certificates \
 	cmake \
+	curl \
 	debhelper \
 	dpkg-dev \
 	git \
