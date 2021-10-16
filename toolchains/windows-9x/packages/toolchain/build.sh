@@ -79,11 +79,7 @@ do_http_fetch w32api "https://osdn.net/dl/mingw/w32api-${W32API_VERSION}-mingw32
 cd ..
 
 do_http_fetch mingwrt "https://osdn.net/dl/mingw/mingwrt-${MINGWRT_VERSION}-mingw32-src.tar.xz" 'tar xJf'
-
-for p in "$PACKAGE_DIR/patches-mingwrt"/*.patch; do
-	echo "Applying $p"
-	patch -t -p1 < "$p"
-done
+do_patch mingwrt
 
 touch include/features.h
 

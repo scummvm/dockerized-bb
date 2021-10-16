@@ -60,8 +60,7 @@ cd ..
 
 do_http_fetch gnutls "http://ftp.gnu.org/gnu/gnutls/gnutls-${GNUTLS_VERSION}.tar.bz2" \
 	'tar xjf' "sha256:${GNUTLS_SHA256}"
-
-patch -t -p1 < $PACKAGE_DIR/gnutls-openssl.patch
+do_patch gnutls
 
 # Disable programs, doc and tests they don't even build...
 sed -ie 's/^\(SUBDIRS.*\) src doc tests/\1/' Makefile.in

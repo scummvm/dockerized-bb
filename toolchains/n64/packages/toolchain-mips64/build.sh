@@ -31,11 +31,7 @@ cd ..
 
 # GCC...
 do_http_fetch gcc "https://ftp.gnu.org/gnu/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.bz2" 'tar xjf'
-
-for p in "$PACKAGE_DIR/patches-gcc"/*.patch; do
-	echo "Applying $p"
-	patch -t -p1 < "$p"
-done
+do_patch gcc
 
 # Do off tree build
 GCC_DIR=$(pwd)
