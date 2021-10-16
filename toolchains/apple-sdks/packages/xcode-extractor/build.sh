@@ -15,8 +15,6 @@ do_git_fetch osxcross "https://github.com/tpoechtrager/osxcross.git" "${OSXCROSS
 # There is a bug in Debian Stretch docker package which prevents having too big files
 # Split the file and join back it there
 if [ "$(ls -1 "${PACKAGES_LOCATION}${PACKAGE}"* | wc -l)" -gt 1 ]; then
-	XCODE_FILE=$(mktemp -up $(pwd))
-	mkfifo -m 600 "$XCODE_FILE"
 	cat "${PACKAGES_LOCATION}${PACKAGE}"* | USESYSTEMCOMPILER=yes CC=gcc ./tools/gen_sdk_package_pbzx.sh /dev/stdin
 else
 	XCODE_FILE=$(echo "${PACKAGES_LOCATION}${PACKAGE}"*)
