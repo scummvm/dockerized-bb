@@ -23,6 +23,7 @@ export PATH="${PATH}:${prefix}/bin"
 # Binutils
 do_http_fetch binutils "https://ftp.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.bz2" 'tar xjf'
 
+CFLAGS="-fcommon" CXXFLAGS="-fcommon" \
 ./configure --target=${target} --prefix="${prefix}" --disable-werror
 do_make
 do_make install
@@ -41,6 +42,7 @@ cd ..
 mkdir gcc-build-stage1
 cd gcc-build-stage1
 
+CFLAGS="-fcommon" CXXFLAGS="-fcommon" \
 "${GCC_DIR}"/configure \
 	--target=${target} \
 	--prefix="${prefix}" \
@@ -73,6 +75,7 @@ cd ..
 mkdir gcc-build-stage2
 cd gcc-build-stage2
 
+CFLAGS="-fcommon" CXXFLAGS="-fcommon" \
 "${GCC_DIR}"/configure \
 	--target=${target} \
 	--prefix="${prefix}" \
