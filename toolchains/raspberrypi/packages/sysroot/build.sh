@@ -12,7 +12,7 @@ mkdir -p "$sysroot"
 
 # Download Raspbian key directly in sysroot
 mkdir -p "$sysroot/etc/apt/trusted.gpg.d"
-wget "https://archive.raspbian.org/raspbian.public.key" -O - | apt-key --keyring "$sysroot/etc/apt/trusted.gpg.d/raspbian.gpg" add -
+wget "http://raspbian.raspberrypi.org/raspbian.public.key" -O - | apt-key --keyring "$sysroot/etc/apt/trusted.gpg.d/raspbian.gpg" add -
 
 # Build a multistrap config file
 cat <<EOF >./multistrap.conf
