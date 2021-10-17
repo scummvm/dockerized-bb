@@ -111,6 +111,11 @@ __do_cmake () {
 		-DBUILD_SHARED_LIBS=no "$@" ..
 }
 
+__do_meson () {
+	meson --prefix=$PREFIX --cross-file cross.ini --buildtype release --default-library static "$@" _build
+	cd _build
+}
+
 __do_make () {
 	local num_cpus
 	num_cpus=$(nproc || grep -c ^processor /proc/cpuinfo || echo 1)
@@ -130,7 +135,7 @@ __error () {
 # but still use base function (Poor man's inheritance)
 # Aliases are expanded at definition time so that's not the good way
 for f in do_make_bdir do_clean_bdir do_patch do_pkg_fetch do_http_fetch \
-	do_git_fetch do_configure do_cmake do_make log error; do
+	do_git_fetch do_configure do_cmake do_meson do_make log error; do
 	eval "$f () { __$f \"\$@\"; }"
 done
 

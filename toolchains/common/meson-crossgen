@@ -1,0 +1,173 @@
+#!/usr/bin/env python3
+
+# Copyright 2017 Jussi Pakkanen
+# Copyright 2021 ScummVM team
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+#     http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import argparse
+import os
+import re
+import shlex
+import sys
+
+parser = argparse.ArgumentParser(description='''Generate cross compilation definition file for the Meson build system.
+
+This script must be run in an environment where CC, CXX, LD, CPPFLAGS, CFLAGS et al are set to the
+same values used in the actual compilation.
+'''
+)
+
+parser.add_argument('--system', required=True,
+                    help='The system to use.')
+parser.add_argument('--cpu', required=True,
+                    help='The cpu to generate.')
+parser.add_argument('--sysroot', default=None,
+                    help='The sysroot location.')
+parser.add_argument('-o', required=True, dest='outfile',
+                    help='The output file.')
+
+def locate_path(program):
+    if os.path.isabs(program):
+        return program
+    for d in os.get_exec_path():
+        f = os.path.join(d, program)
+        if os.access(f, os.X_OK):
+            return f
+    raise ValueError("{0} not found on $PATH".format(program))
+
+def get_value(v, context):
+    if callable(v):
+        return v(context)
+    return v
+
+def write_args_line(ofile, name, args):
+    if len(args) == 0:
+        return
+    ostr = '{0} = [{1}]\n'.format(name,
+            ', '.join("'{0}'".format(i) for i in args))
+    ofile.write(ostr)
+
+BINARIES = {
+    'AR': ('ar', None),
+    'C': ('c', None),
+    'CXX': ('cpp', None),
+    'OBJCOPY': ('objcopy', None),
+    'LD': ('ld', None),
+    'PKG_CONFIG': ('pkgconfig', 'pkg-config'),
+    'STRIP': ('strip', None),
+    'WINDRES': ('windres', None),
+}
+
+def write_binaries(ofile):
+    for envvar, (confvar, default) in BINARIES.items():
+        binary = os.environ.get(envvar, default)
+        if binary:
+            ofile.write("{0} = '{1}'\n".format(
+                confvar,
+                locate_path(binary)))
+
+def write_args_from_envvars(ofile):
+    cppflags = shlex.split(os.environ.get('CPPFLAGS', ''))
+    cflags = shlex.split(os.environ.get('CFLAGS', ''))
+    cxxflags = shlex.split(os.environ.get('CXXFLAGS', ''))
+    ldflags = shlex.split(os.environ.get('LDFLAGS', ''))
+
+    c_args = cppflags + cflags
+    cpp_args = cppflags + cxxflags
+    c_link_args = cflags + ldflags
+    cpp_link_args = cxxflags + ldflags
+
+    write_args_line(ofile, 'c_args', c_args)
+    write_args_line(ofile, 'cpp_args', cpp_args)
+    write_args_line(ofile, 'c_link_args', c_link_args)
+    write_args_line(ofile, 'cpp_link_args', cpp_link_args)
+
+def write_properties(ofile, sysroot):
+    if not sysroot:
+        sysroot = os.environ.get('PKG_CONFIG_SYSROOT_DIR', None)
+    if sysroot:
+        ofile.write("sys_root = '{0}'\n".format(sysroot))
+
+    pkg_config_libdir = os.environ.get('PKG_CONFIG_LIBDIR', None)
+    if pkg_config_libdir:
+        ofile.write("pkg_config_libdir = '{0}'\n".format(pkg_config_libdir))
+
+# Order in this list is important: most specific match first
+CPUS = [
+    {'key': r'(i[34567]86|pentium)',  'family': 'x86', 'bigendian': False },
+    {'key': r'(x86_64|amd64)',        'family': 'x86_64', 'bigendian': False },
+    {'key': r'alpha.*',               'family': 'alpha', 'bigendian': False },
+    {'key': r'(arm64|aarch64).*',     'family': 'aarch64', 'bigendian': False, 'cpu': 'aarch64' },
+    {'key': r'(arm.*)b',              'family': 'arm', 'bigendian': True, 'cpu': lambda m: m.group(1) },
+    {'key': r'arm.*',                 'family': 'arm', 'bigendian': False },
+    {'key': r'avr32',                 'family': 'avr', 'bigendian': True },
+    {'key': r'ia64',                  'family': 'ia64', 'bigendian': False },
+    {'key': r'm32r',                  'family': 'm32r', 'bigendian': True },
+    {'key': r'm68k',                  'family': 'm68k', 'bigendian': True },
+    {'key': r'mips(32)?(eb)?',        'family': 'mips', 'bigendian': True, 'cpu': 'mips' },
+    {'key': r'mips(32)?el',           'family': 'mips', 'bigendian': False, 'cpu': 'mips' },
+    {'key': r'mips64',                'family': 'mips64', 'bigendian': True },
+    {'key': r'mips64el',              'family': 'mips64', 'bigendian': False, 'cpu': 'mips64' },
+    {'key': r'hppa.*',                'family': 'parisc', 'bigendian': True },
+    {'key': r'(powerpc|ppc)',         'family': 'ppc', 'bigendian': True },
+    {'key': r'powerpcle',             'family': 'ppc', 'bigendian': False, 'cpu': 'powerpc' },
+    {'key': r'(powerpc|ppc)64',       'family': 'ppc64', 'bigendian': True },
+    {'key': r'powerpc64le',           'family': 'ppc64', 'bigendian': False, 'cpu': 'powerpc64' },
+    {'key': r'riscv64',               'family': 'riscv64', 'bigendian': False },
+    {'key': r's390',                  'family': 's390', 'bigendian': True },
+    {'key': r's390x',                 'family': 's390x', 'bigendian': True },
+    {'key': r'sh4',                   'family': 'sh4', 'bigendian': False },
+    {'key': r'sh4eb',                 'family': 'sh4', 'bigendian': True, 'cpu': 'sh4' },
+    {'key': r'sparc',                 'family': 'sparc', 'bigendian': True },
+    {'key': r'sparc64',               'family': 'sparc64', 'bigendian': True },
+]
+for cpu in CPUS:
+    cpu['key'] = re.compile(cpu['key'])
+
+def find_cpu(cpu_name):
+    for cpu in CPUS:
+        mtch = cpu['key'].match(cpu_name)
+        if mtch is None:
+            continue
+
+        family = get_value(cpu['family'], mtch)
+        endian = 'big' if get_value(cpu['bigendian'], mtch) else 'little'
+        cpu_name = get_value(cpu.get('cpu', cpu_name), mtch)
+
+        return {
+            'cpu_family': family,
+            'endian': endian,
+            'cpu': cpu_name,
+        }
+
+    raise LookupError("Can't find cpu {0}".format(cpu_name))
+
+def run(options):
+    cpu = find_cpu(options.cpu)
+    os.makedirs(os.path.dirname(options.outfile), exist_ok=True)
+    with open(options.outfile, "w") as ofile:
+        ofile.write('[host_machine]\n')
+        ofile.write("system = '{0}'\n".format(options.system))
+        for k, v in cpu.items():
+            ofile.write("{0} = '{1}'\n".format(k, v))
+        ofile.write('\n[binaries]\n')
+        write_binaries(ofile)
+        ofile.write('\n[built-in options]\n')
+        write_args_from_envvars(ofile)
+        ofile.write('\n[properties]\n')
+        write_properties(ofile, options.sysroot)
+
+if __name__ == '__main__':
+    options = parser.parse_args()
+    run(options)

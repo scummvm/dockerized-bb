@@ -17,6 +17,7 @@ DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 	gnupg \
 	libtool \
 	make \
+	meson \
 	pkg-config \
 	quilt \
 	unzip \
