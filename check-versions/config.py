@@ -291,11 +291,6 @@ VERSIONS = {
     ('./toolchains/gcw0/packages/zlib/build.sh', 'ZLIB'): 'ignore',
     ('./toolchains/gcw0/packages/toolchain/build.sh', 'CT_NG'): crosstool_ng_check,
 
-    ('./toolchains/iphone/packages/gas-preprocessor/build.sh', 'GAS_PREPROCESSOR'): {
-        'check': 'git commit',
-        'repository': 'https://github.com/libjpeg-turbo/gas-preprocessor.git',
-        'branch': 'main',
-    },
     ('./toolchains/iphone/packages/toolchain/build.sh', 'CCTOOLS_PORT'): cctools_port_check,
     ('./toolchains/iphone/packages/toolchain/build.sh', 'LDID'): {
         'check': 'git commit',

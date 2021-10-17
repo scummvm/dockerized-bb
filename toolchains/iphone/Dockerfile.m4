@@ -65,9 +65,6 @@ local_package(xar)
 
 local_package(toolchain)
 
-# GAS preprocessor to have ARM assembly in libjpeg-turbo
-local_package(gas-preprocessor)
-
 ENV HOST=aarch64-apple-darwin11 \
 	PREFIX=${TARGET_DIR}/SDK/iPhoneOS`'IPHONE_SDK_VERSION`'.sdk/usr
 
