@@ -1,6 +1,6 @@
 #! /bin/sh
 
-GCCSDK_VERSION=7565
+GCCSDK_VERSION=7592
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..

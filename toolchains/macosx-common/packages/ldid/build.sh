@@ -1,6 +1,6 @@
 #! /bin/sh
 
-LDID_VERSION=2.1.4
+LDID_VERSION=2.1.5
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..

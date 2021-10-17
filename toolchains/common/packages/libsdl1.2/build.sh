@@ -1,6 +1,6 @@
 #! /bin/sh
 
-SDL_VERSION=4d21de217ee6ee5d4f8fc02c2b5ff671ecfc853f
+SDL_VERSION=15f4b475f70cb71be5e8e96a032ce2874723d524
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..
