@@ -38,6 +38,7 @@ RUN apt-get update && \
 		clang`'DEBIAN_CLANG \
 		llvm`'DEBIAN_CLANG`'-dev \
 		&& \
+	for f in /usr/lib/llvm`'DEBIAN_CLANG/bin/*; do ln -sf $f /usr/bin/$(basename $f); done && \
 	rm -rf /var/lib/apt/lists/*
 , ```fatal_error(No clang version defined)''')))m4_dnl
 
