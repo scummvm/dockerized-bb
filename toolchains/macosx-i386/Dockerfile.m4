@@ -1,6 +1,6 @@
 # This worker is used for old i386 only Mac
 m4_dnl These settings must be kept in sync between toolchain and worker
-m4_define(`PPA_CLANG',-11)m4_dnl
+m4_define(`DEBIAN_CLANG',-11)m4_dnl
 m4_define(`MACOSX_SDK_VERSION',10.13)m4_dnl
 m4_define(`MACOSX_TARGET_ARCH',i386)m4_dnl
 m4_define(`MACOSX_TARGET_VERSION',17)m4_dnl
