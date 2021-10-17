@@ -1,4 +1,4 @@
-From 79fd045374b72faccc75b046e069adde7d5feccf Mon Sep 17 00:00:00 2001
+From 8e344dcf28d972c5fce1c1db9c214196329a00aa Mon Sep 17 00:00:00 2001
 From: Richard Levitte <levitte@openssl.org>
 Date: Sat, 29 Feb 2020 06:43:26 +0100
 Subject: [PATCH 1/3] Andoid cross compile: change ANDROID_NDK_HOME to
@@ -13,11 +13,11 @@ Reviewed-by: Matt Caswell <matt@openssl.org>
 (Merged from https://github.com/openssl/openssl/pull/11206)
 ---
  Configurations/15-android.conf |  6 +++---
- NOTES.ANDROID                  | 12 ++++++------
- 2 files changed, 9 insertions(+), 9 deletions(-)
+ NOTES.ANDROID                  | 16 ++++++++--------
+ 2 files changed, 11 insertions(+), 11 deletions(-)
 
 diff --git a/Configurations/15-android.conf b/Configurations/15-android.conf
-index 7b496a4529..d5021f68d0 100644
+index 4616394f8c..c569b5053b 100644
 --- a/Configurations/15-android.conf
 +++ b/Configurations/15-android.conf
 @@ -24,17 +24,17 @@
@@ -42,21 +42,31 @@ index 7b496a4529..d5021f68d0 100644
              $ndk = canonpath($ndk);
  
 diff --git a/NOTES.ANDROID b/NOTES.ANDROID
-index 86459778fa..b057ff2757 100644
+index 293ad4327c..8c406f8bba 100644
 --- a/NOTES.ANDROID
 +++ b/NOTES.ANDROID
-@@ -23,7 +23,7 @@
-  platform. Though you still need to know the prefix to extend your PATH,
-  in order to invoke $(CROSS_COMPILE)gcc and company. (Configure will fail
-  and give you a hint if you get it wrong.) Apart from PATH adjustment
-- you need to set ANDROID_NDK_HOME environment to point at NDK directory
-+ you need to set ANDROID_NDK_ROOT environment to point at NDK directory
-  as /some/where/android-ndk-<ver>. Both variables are significant at both
-  configuration and compilation times. NDK customarily supports multiple
-  Android API levels, e.g. android-14, android-21, etc. By default latest
-@@ -32,13 +32,13 @@
-  target platform version. For example, to compile for ICS on ARM with
-  NDK 10d:
+@@ -24,7 +24,7 @@
+  need to know the prefix to extend your PATH, in order to invoke
+  $(CROSS_COMPILE)clang [*gcc on NDK 19 and lower] and company. (Configure
+  will fail and give you a hint if you get it wrong.) Apart from PATH
+- adjustment you need to set ANDROID_NDK_HOME environment to point at the
++ adjustment you need to set ANDROID_NDK_ROOT environment to point at the
+  NDK directory. If you're using a side-by-side NDK the path will look
+  something like /some/where/android-sdk/ndk/<ver>, and for a standalone
+  NDK the path will be something like /some/where/android-ndk-<ver>.
+@@ -35,21 +35,21 @@
+  with N being the numerical value of the target platform version. For example,
+  to compile for Android 10 arm64 with a side-by-side NDK r20.0.5594570
+ 
+-	export ANDROID_NDK_HOME=/home/whoever/Android/android-sdk/ndk/20.0.5594570
+-	PATH=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin:$ANDROID_NDK_HOME/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/bin:$PATH
++	export ANDROID_NDK_ROOT=/home/whoever/Android/android-sdk/ndk/20.0.5594570
++	PATH=$ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64/bin:$ANDROID_NDK_ROOT/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/bin:$PATH
+ 	./Configure android-arm64 -D__ANDROID_API__=29
+ 	make
+ 
+  Older versions of the NDK have GCC under their common prebuilt tools directory, so the bin path
+  will be slightly different. EG: to compile for ICS on ARM with NDK 10d:
  
 -    export ANDROID_NDK_HOME=/some/where/android-ndk-10d
 -    PATH=$ANDROID_NDK_HOME/toolchains/arm-linux-androideabi-4.8/prebuilt/linux-x86_64/bin:$PATH
@@ -71,7 +81,7 @@ index 86459778fa..b057ff2757 100644
   appoint headers-n-libraries' location. It's still recognized in order
   to facilitate migration from older projects. However, since API level
   appears in CROSS_SYSROOT value, passing -D__ANDROID_API__=N can be in
-@@ -53,9 +53,9 @@
+@@ -64,9 +64,9 @@
  
   Another option is to create so called "standalone toolchain" tailored
   for single specific platform including Android API level, and assign its
@@ -84,10 +94,10 @@ index 86459778fa..b057ff2757 100644
   Running tests (on Linux)
   ------------------------
 -- 
-2.29.2
+2.32.0
 
 
-From 5420db1ac909a57c1bf451c27336abcb144d1ac5 Mon Sep 17 00:00:00 2001
+From 9f74317da0d8a301a6ba2a49a8d51fa0f621795c Mon Sep 17 00:00:00 2001
 From: Richard Levitte <levitte@openssl.org>
 Date: Tue, 3 Mar 2020 22:55:09 +0100
 Subject: [PATCH 2/3] Configurations: Fix "android" configuration target
@@ -104,7 +114,7 @@ Reviewed-by: Matt Caswell <matt@openssl.org>
  1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/Configurations/15-android.conf b/Configurations/15-android.conf
-index d5021f68d0..ea7785c663 100644
+index c569b5053b..8ad99cc16d 100644
 --- a/Configurations/15-android.conf
 +++ b/Configurations/15-android.conf
 @@ -168,7 +168,8 @@ my %targets = (
@@ -118,10 +128,10 @@ index d5021f68d0..ea7785c663 100644
      },
      "android-arm" => {
 -- 
-2.29.2
+2.32.0
 
 
-From c5051d5e0aa6019fb682fef8e3d237b20a2d562d Mon Sep 17 00:00:00 2001
+From 7cc6ee427fcee44566e0d76a926e0bb370ce464c Mon Sep 17 00:00:00 2001
 From: Fred Hornsey <fred@hornsey.us>
 Date: Tue, 17 Nov 2020 22:20:43 -0600
 Subject: [PATCH 3/3] Support for Android NDK r22-beta1
@@ -145,7 +155,7 @@ Reviewed-by: Richard Levitte <levitte@openssl.org>
  1 file changed, 51 insertions(+), 31 deletions(-)
 
 diff --git a/Configurations/15-android.conf b/Configurations/15-android.conf
-index ea7785c663..d96050a67e 100644
+index 8ad99cc16d..fb03522862 100644
 --- a/Configurations/15-android.conf
 +++ b/Configurations/15-android.conf
 @@ -30,17 +30,17 @@
@@ -282,5 +292,5 @@ index ea7785c663..d96050a67e 100644
                  bn_ops   => $arch =~ m/64$/ ? "SIXTY_FOUR_BIT_LONG"
                                              : "BN_LLONG",
 -- 
-2.29.2
+2.32.0
 

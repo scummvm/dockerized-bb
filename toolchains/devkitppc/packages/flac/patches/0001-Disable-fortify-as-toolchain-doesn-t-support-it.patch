@@ -1,0 +1,28 @@
+From 1859d5418ac5306c7ddcae21594eefa7a1f1d634 Mon Sep 17 00:00:00 2001
+From: Le Philousophe <lephilousophe@users.noreply.github.com>
+Date: Sun, 10 Oct 2021 20:44:55 +0200
+Subject: [PATCH 1/2] Disable fortify as toolchain doesn't support it
+
+---
+ configure.ac | 5 -----
+ 1 file changed, 5 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index 0228a124..c1d50b21 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -439,11 +439,6 @@ if test x$ac_cv_c_compiler_gnu = xyes ; then
+ 
+ 	XIPH_ADD_CFLAGS([-Wdeclaration-after-statement])
+ 
+-	dnl some distributions (such as Gentoo) have _FORTIFY_SOURCE always
+-	dnl enabled. We test for this situation in order to prevent polluting
+-	dnl the console with messages of macro redefinitions.
+-	AX_ADD_FORTIFY_SOURCE
+-
+ 	AC_LANG_PUSH([C++])
+ 	XIPH_ADD_CXXFLAGS([-Weffc++])
+ 	AC_LANG_POP([C++])
+-- 
+2.32.0
+

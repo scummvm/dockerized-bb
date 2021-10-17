@@ -1,0 +1,51 @@
+From 2730d8520ada759d1f92b5c1e1a7e2853644aca4 Mon Sep 17 00:00:00 2001
+From: Le Philousophe <lephilousophe@users.noreply.github.com>
+Date: Mon, 11 Oct 2021 20:47:00 +0200
+Subject: [PATCH 3/3] Fix gperf code for modern gcc
+
+---
+ gcc/cp/cfns.gperf | 3 ---
+ gcc/cp/cfns.h     | 6 ------
+ 2 files changed, 9 deletions(-)
+
+diff --git a/gcc/cp/cfns.gperf b/gcc/cp/cfns.gperf
+index c713eb0c2bd..30f7a39e1aa 100644
+--- a/gcc/cp/cfns.gperf
++++ b/gcc/cp/cfns.gperf
+@@ -3,9 +3,6 @@
+ __inline
+ #endif
+ static unsigned int hash (const char *, unsigned int);
+-#ifdef __GNUC__
+-__inline
+-#endif
+ const char * libc_name_p (const char *, unsigned int);
+ %}
+ %%
+diff --git a/gcc/cp/cfns.h b/gcc/cp/cfns.h
+index e6d43d8acfb..cf3f243263b 100644
+--- a/gcc/cp/cfns.h
++++ b/gcc/cp/cfns.h
+@@ -34,9 +34,6 @@
+ __inline
+ #endif
+ static unsigned int hash (const char *, unsigned int);
+-#ifdef __GNUC__
+-__inline
+-#endif
+ const char * libc_name_p (const char *, unsigned int);
+ /* maximum key range = 391, duplicates = 0 */
+ 
+@@ -105,9 +102,6 @@ hash (register const char *str, register unsigned int len)
+   return hval + asso_values[(unsigned char)str[len - 1]];
+ }
+ 
+-#ifdef __GNUC__
+-__inline
+-#endif
+ const char *
+ libc_name_p (register const char *str, register unsigned int len)
+ {
+-- 
+2.32.0
+

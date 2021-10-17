@@ -19,7 +19,8 @@ RUN apt-get update && \
 		liblzma-dev \
 		libxml2-dev \
 		libssl-dev \
-		python \
+		python3 \
+		python3-setuptools \
 		uuid-dev \
 		zlib1g-dev \
 		&& \
@@ -93,7 +94,8 @@ ENV \
 	PATH=$PATH:${TARGET_DIR}/bin:${TARGET_DIR}/SDK/MacOSX`'MACOSX_SDK_VERSION`'.sdk/usr/bin:${DESTDIR}/${PREFIX}/bin \
 	OSXCROSS_MP_INC=1
 
-# TODO: build won't be reproducible: we should stick to some version and compile it instead
+# Generate meson cross file for GLib
+crossgen(darwin, MACOSX_TARGET_ARCH)
 
 # zlib is provided in SDK but libpng uses ports one
 ports_package(zlib)
@@ -138,6 +140,8 @@ common_package(libsdl2)
 
 ports_package(libsdl2_net)
 
+# Lighten glib build by removing Objective C and Cocoa and fix intl detection
+COPY --from=macosx-common /lib-helpers/packages/fluidsynth lib-helpers/packages/fluidsynth
 helpers_package(fluidsynth, -DCMAKE_SYSTEM_NAME=Darwin -DLIB_SUFFIX=)
 
 # Toolchain specific packages will go in the dedicated file now

@@ -85,8 +85,8 @@ debian_check = {
     'registry': 'https://registry-1.docker.io',
     'image name': 'library/debian',
     'architecture': 'amd64',
-    'reference': 'buster-slim',
-    'tag_format': 'buster-{0}-slim',
+    'reference': 'bullseye-slim',
+    'tag_format': 'bullseye-{0}-slim',
 }
 raspios_check = {
     'check': 'scrape',

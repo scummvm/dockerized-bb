@@ -1,7 +1,7 @@
-Index: curl-7.64.0/curl-config.in
+Index: curl-7.74.0/curl-config.in
 ===================================================================
---- curl-7.64.0.orig/curl-config.in
-+++ curl-7.64.0/curl-config.in
+--- curl-7.74.0.orig/curl-config.in
++++ curl-7.74.0/curl-config.in
 @@ -163,7 +163,7 @@ while test $# -gt 0; do
  
      --static-libs)

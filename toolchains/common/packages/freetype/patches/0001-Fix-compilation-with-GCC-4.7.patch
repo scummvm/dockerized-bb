@@ -1,4 +1,4 @@
-From b87a179a24114108597b231bfd7304da86254c97 Mon Sep 17 00:00:00 2001
+From 32d61fc60be24c1cc3a43f04a322beec30c95920 Mon Sep 17 00:00:00 2001
 From: Cameron Cawley <ccawley2011@gmail.com>
 Date: Tue, 17 Sep 2019 20:47:39 +0100
 Subject: [PATCH] Fix compilation with GCC 4.7
@@ -8,17 +8,22 @@ Subject: [PATCH] Fix compilation with GCC 4.7
  1 file changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/src/sfnt/pngshim.c b/src/sfnt/pngshim.c
-index ca85d9751..e1e3d7141 100644
+index f55016122..410f0b65f 100644
 --- a/src/sfnt/pngshim.c
 +++ b/src/sfnt/pngshim.c
-@@ -60,10 +60,11 @@
+@@ -59,7 +59,8 @@
      /* The `vector_size' attribute was introduced in gcc 3.1, which */
      /* predates clang; the `__BYTE_ORDER__' preprocessor symbol was */
      /* introduced in gcc 4.6 and clang 3.2, respectively.           */
 -    /* `__builtin_shuffle' for gcc was introduced in gcc 4.7.0.     */
 +    /* `__builtin_shuffle' for gcc was introduced in gcc 4.7.0,     */
 +    /* however, this causes an internal compiler error on gcc 4.7.  */
- #if ( ( defined( __GNUC__ )                                &&             \
+     /*                                                              */
+     /* Intel compilers do not currently support __builtin_shuffle;  */
+ 
+@@ -67,7 +68,7 @@
+ #if !defined( __INTEL_COMPILER )                                       && \
+     ( ( defined( __GNUC__ )                                &&             \
          ( ( __GNUC__ >= 5 )                              ||               \
 -        ( ( __GNUC__ == 4 ) && ( __GNUC_MINOR__ >= 7 ) ) ) )         ||   \
 +        ( ( __GNUC__ == 4 ) && ( __GNUC_MINOR__ >= 8 ) ) ) )         ||   \
@@ -26,5 +31,5 @@ index ca85d9751..e1e3d7141 100644
          ( ( __clang_major__ >= 4 )                               ||       \
          ( ( __clang_major__ == 3 ) && ( __clang_minor__ >= 2 ) ) ) ) ) && \
 -- 
-2.11.0
+2.32.0
 

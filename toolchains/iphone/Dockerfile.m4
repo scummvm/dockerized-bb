@@ -19,7 +19,8 @@ RUN apt-get update && \
 		liblzma-dev \
 		libxml2-dev \
 		libssl-dev \
-		python \
+		python3 \
+		python3-setuptools \
 		uuid-dev \
 		zlib1g-dev \
 		&& \
@@ -80,6 +81,13 @@ ENV \
 	def_pkg_config(`${PREFIX}') \
 	PATH=$PATH:${TARGET_DIR}/bin:${PREFIX}/bin
 
+# Without a platform file CMake fails some tests because variables are not passed to child invocations
+# Using a toolchain file seems to fix it
+COPY iphone.platform ${TARGET_DIR}/
+
+# Generate meson cross file for GLib
+crossgen(darwin, aarch64)
+
 # To have LLVM builtins
 local_package(compiler-rt)
 
@@ -90,7 +98,7 @@ helpers_package(bzip2)
 
 helpers_package(libpng1.6)
 
-helpers_package(libjpeg-turbo, --with-simd)
+helpers_package(libjpeg-turbo, -DCMAKE_TOOLCHAIN_FILE=${TARGET_DIR}/iphone.platform)
 
 helpers_package(giflib)
 
@@ -113,11 +121,10 @@ helpers_package(mpeg2dec)
 helpers_package(a52dec)
 
 # Force -miphoneos-version-min as it gets added by curl if not already defined
-# In this case curl uses 10.8
-# Force DarwinSSL even if /System/Library/Frameworks/Security.framework doesn't exist
+# In this case curl uses 10.8, this behaviour has been removed in curl 7.76.1
 # Undo patch by Debian which makes use of specific linker flags
 COPY ./packages/curl lib-helpers/packages/curl
-helpers_package(curl, --without-ssl --with-darwinssl, CFLAGS="-miphoneos-version-min=IPHONEOS_DEPLOYMENT_TARGET")
+helpers_package(curl, --without-ssl --with-secure-transport, CFLAGS="-miphoneos-version-min=IPHONEOS_DEPLOYMENT_TARGET")
 
 helpers_package(freetype)
 
@@ -127,5 +134,6 @@ helpers_package(fribidi)
 COPY ./packages/libsdl2-net lib-helpers/packages/libsdl2-net
 helpers_package(libsdl2-net)
 
-# intl doesn't get linked with CoreFoundation in glib, force it here
-helpers_package(fluidsynth, -DCMAKE_SYSTEM_NAME=Darwin -DLIB_SUFFIX=, LDFLAGS="-framework CoreFoundation")
+# Lighten glib build by removing Objective C and Cocoa and fix intl detection
+COPY packages/fluidsynth lib-helpers/packages/fluidsynth
+helpers_package(fluidsynth, -DCMAKE_SYSTEM_NAME=Darwin -DLIB_SUFFIX=)

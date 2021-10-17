@@ -12,7 +12,7 @@ RUN apt-get update && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 		libc6-i386 \
 		lib32stdc++6 \
-		lib32gcc1 \
+		lib32gcc-s1 \
 		zip && \
 	rm -rf /var/lib/apt/lists/*
 

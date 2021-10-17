@@ -12,7 +12,7 @@ ENV MINGW32=/opt/toolchains/mingw32 HOST=mingw32
 RUN apt-get update && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 		dos2unix \
-		libisl19 \
+		libisl23 \
 		libmpc3 \
 		libmpfr6 \
 		nasm \

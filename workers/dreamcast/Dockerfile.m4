@@ -13,7 +13,7 @@ RUN apt-get update && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 		libmpc3 \
 		libmpfr6 \
-		libisl19 && \
+		libisl23 && \
 	rm -rf /var/lib/apt/lists/*
 
 # Don't copy arm-eabi as we don't need it

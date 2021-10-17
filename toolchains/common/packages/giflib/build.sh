@@ -8,11 +8,12 @@ do_make_bdir
 
 do_pkg_fetch giflib
 
-do_configure
+# -Wno-format-truncation is a recent addition to GCC remove it as we don't care about the warning
+sed -i -e 's/-Wno-format-truncation //' Makefile
 
-do_make -C lib
+do_make libgif.a OFLAGS="${CPPFLAGS} ${CFLAGS} ${LDFLAGS}"
 
-# Don't install binaries and doc
-do_make -C lib install
+do_make install-include PREFIX=${PREFIX}
+install -m 644 libgif.a "${LIBDIR:-${PKG_CONFIG_LIBDIR:-${PREFIX}/lib/pkgconfig}/..}/libgif.a"
 
 do_clean_bdir

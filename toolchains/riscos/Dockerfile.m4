@@ -69,7 +69,7 @@ helpers_package(zlib)
 
 helpers_package(libpng1.6)
 
-helpers_package(libjpeg-turbo)
+helpers_package(libjpeg-turbo, -DCMAKE_TOOLCHAIN_FILE="${GCCSDK_INSTALL_ENV}/toolchain-riscos.cmake" -DCMAKE_SYSTEM_PROCESSOR=arm)
 
 helpers_package(giflib)
 

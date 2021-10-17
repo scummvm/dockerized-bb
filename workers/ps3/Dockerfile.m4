@@ -12,6 +12,7 @@ ENV PSL1GHT=$PS3DEV PREFIX=$PS3DEV/portlibs/ppu
 # That will be simpler when upgrading Debian and not having to adjust versions
 RUN apt-get update && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+		python \
 		libelf1 && \
 	rm -rf /var/lib/apt/lists/*
 

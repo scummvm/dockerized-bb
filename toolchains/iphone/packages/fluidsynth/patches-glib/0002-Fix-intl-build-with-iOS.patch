@@ -1,0 +1,26 @@
+From 37d80b2670669424ba281f558f9ae2ad6a877ed5 Mon Sep 17 00:00:00 2001
+From: Le Philousophe <lephilousophe@users.noreply.github.com>
+Date: Sun, 17 Oct 2021 16:04:14 +0200
+Subject: [PATCH 2/2] Fix intl build with iOS
+
+---
+ meson.build | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/meson.build b/meson.build
+index 7022e85ca..429352318 100644
+--- a/meson.build
++++ b/meson.build
+@@ -766,6 +766,9 @@ if host_system == 'darwin'
+   # know which language flags it's going to use to link. Add to both languages
+   # for now. See https://github.com/mesonbuild/meson/issues/3585.
+   add_project_link_arguments(osx_ldflags, language : ['objc', 'c'])
++elif host_system == 'ios'
++  osx_ldflags += ['-Wl,-framework,CoreFoundation']
++  add_project_link_arguments(osx_ldflags, language : ['c'])
+ endif
+ 
+ # Check for futex(2)
+-- 
+2.30.2
+

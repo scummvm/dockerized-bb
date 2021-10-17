@@ -30,26 +30,17 @@ do_make -C gettext-runtime/intl install
 cd ..
 
 do_pkg_fetch glib2.0
+do_patch glib
 
-# Patch glib to not make use of Carbon as it's deprecated in latest MacOSX
-sed -i -e 's/glib_have_carbon=yes/glib_have_carbon=no/' configure.ac
+# Only keep glib and gthread
+sed -i -e "/subdir('/{/'glib'/n; /'gthread'/n; s/^/#/}" meson.build
 
-# For now glib2.0 has configure support
-NOCONFIGURE=1 ./autogen.sh
+do_meson
+ninja
+ninja install
 
-# We must export because sh keeps local to functions the variables assignments put in front of them
-export glib_cv_stack_grows=no glib_cv_uscore=no
-do_configure --with-pcre=internal
-unset glib_cv_stack_grows glib_cv_uscore
-
-# Build and install only the bare minimum for fluidsynth
-do_make -C glib
-do_make -C gthread
-do_make -C glib install
-do_make -C gthread install
-do_make install-pkgconfigDATA pkgconfig_DATA="glib-2.0.pc gthread-2.0.pc"
-
-cd ..
+# We are in build directory
+cd ../..
 
 # Debian version is quite old
 do_http_fetch fluidsynth \

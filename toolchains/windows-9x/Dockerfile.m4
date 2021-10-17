@@ -45,8 +45,8 @@ helpers_package(zlib)
 
 helpers_package(libpng1.6)
 
-COPY packages/libjpeg-turbo lib-helpers/packages/libjpeg-turbo
-helpers_package(libjpeg-turbo)
+# Use x86 as PROCESSOR_ARCHITECTURE would return on Windows
+helpers_package(libjpeg-turbo, -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_SYSTEM_PROCESSOR=x86)
 
 helpers_package(giflib)
 
