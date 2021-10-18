@@ -111,6 +111,12 @@ VERSIONS = {
         'repository': 'https://github.com/bottlepy/bottle.git',
         'exclude pattern': r'.*(b|rc).*'
     },
+    ('./Makefile', 'TREQ'): {
+        'check': 'git tag',
+        'repository': 'https://github.com/twisted/treq.git',
+        'prefix': 'release-',
+        'exclude pattern': r'.*(b|rc).*'
+    },
 
     ('./toolchains/m4/debian-toolchain-base.m4', 'DEBIAN'): debian_check,
 

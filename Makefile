@@ -2,6 +2,7 @@ BUILDBOT_VERSION   := 3.3.0
 BUILDBOT_BASEDIR   := buildbot-workdir
 
 BOTTLE_VERSION     := 0.12.19
+TREQ_VERSION       := 21.5.0
 
 # Without toolchains/ part, all is a placeholder for all detected toolchains
 TOOLCHAINS_ENABLED := all
@@ -142,6 +143,7 @@ master-check:
 $(BUILDDIR)/buildbot_installed: Makefile | $(BUILDDIR)
 	pip install 'buildbot[bundle]==$(BUILDBOT_VERSION)' \
 		'buildbot-wsgi-dashboards==$(BUILDBOT_VERSION)' \
+		'treq==$(TREQ_VERSION)' \
 		'bottle==$(BOTTLE_VERSION)'
 	touch $(BUILDDIR)/buildbot_installed
 
