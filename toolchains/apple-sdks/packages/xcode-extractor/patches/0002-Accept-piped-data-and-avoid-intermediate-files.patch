@@ -1,7 +1,7 @@
-From 6ef6ed47e00d0f75fe2530b562363cc24dd8c9b2 Mon Sep 17 00:00:00 2001
+From cc7d84facea6dd2c667369254352579c58370abc Mon Sep 17 00:00:00 2001
 From: Le Philousophe <lephilousophe@users.noreply.github.com>
 Date: Sun, 24 Jan 2021 19:18:24 +0100
-Subject: [PATCH 2/4] Accept piped data and avoid intermediate files
+Subject: [PATCH 2/3] Accept piped data and avoid intermediate files
 
 ---
  tools/gen_sdk_package_pbzx.sh | 193 +++++++++++++++++++++++++++++++++-
@@ -9,7 +9,7 @@ Subject: [PATCH 2/4] Accept piped data and avoid intermediate files
  2 files changed, 295 insertions(+), 3 deletions(-)
 
 diff --git a/tools/gen_sdk_package_pbzx.sh b/tools/gen_sdk_package_pbzx.sh
-index f2ae9de..60480a2 100755
+index 7cda817..c4e88d5 100755
 --- a/tools/gen_sdk_package_pbzx.sh
 +++ b/tools/gen_sdk_package_pbzx.sh
 @@ -23,6 +23,192 @@ pushd $BUILD_DIR &>/dev/null
@@ -205,7 +205,7 @@ index f2ae9de..60480a2 100755
  
  if [ $f_res -eq 1 ]; then
    pushd $CURRENT_BUILD_PROJECT_NAME &>/dev/null
-@@ -40,11 +226,12 @@ pushd $TMP_DIR &>/dev/null
+@@ -41,11 +227,12 @@ pushd $TMP_DIR &>/dev/null
  
  echo "Extracting $XCODE (this may take several minutes) ..."
  
@@ -338,5 +338,5 @@ index cf0d370..9d61a6a 100644
    if [ $f_res -eq 1 ]; then
      pushd $CURRENT_BUILD_PROJECT_NAME/xar &>/dev/null
 -- 
-2.25.1
+2.32.0
 

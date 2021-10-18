@@ -87,6 +87,12 @@ sed -i "s|COMMAND ld |COMMAND $LD |g" \
 	cmake/Modules/CompilerRTDarwinUtils.cmake
 sed -i "s|COMMAND codesign |COMMAND true |g" \
 	cmake/Modules/AddCompilerRT.cmake
+sed -i 's|${CMAKE_COMMAND} -E ${COMPILER_RT_LINK_OR_COPY}|ln -sf|g' \
+	lib/builtins/CMakeLists.txt
+if [ -f lib/orc/CMakeLists.txt ]; then
+	sed -i 's|list(APPEND ORC_CFLAGS -I${DIR})||g' \
+		lib/orc/CMakeLists.txt
+fi
 
 # Use raw clang/clang++ as the build system already adds parameters
 # Override MacOSX version as we don't have any SDK for it
@@ -103,7 +109,10 @@ do_cmake \
 	-DCOMPILER_RT_BUILD_SANITIZERS=OFF \
 	-DCOMPILER_RT_BUILD_XRAY=OFF \
 	-DCOMPILER_RT_BUILD_LIBFUZZER=OFF \
-	-DCOMPILER_RT_BUILD_PROFILE=OFF
+	-DCOMPILER_RT_BUILD_PROFILE=OFF \
+	-DCOMPILER_RT_BUILD_MEMPROF=OFF \
+	-DCOMPILER_RT_BUILD_ORC=OFF \
+	-DCOMPILER_RT_BUILD_GWP_ASAN=OFF
 
 do_make
 

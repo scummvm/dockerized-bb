@@ -1,8 +1,8 @@
 FROM toolchains/iphone AS toolchain
 
 m4_dnl These settings must be kept in sync between toolchain and worker
-m4_define(`PPA_CLANG',-11)m4_dnl
-m4_define(`IPHONE_SDK_VERSION',14.5)m4_dnl
+m4_define(`PPA_CLANG',-13)m4_dnl
+m4_define(`IPHONE_SDK_VERSION',15.0)m4_dnl
 m4_define(`IPHONEOS_DEPLOYMENT_TARGET',7.0)m4_dnl
 
 m4_include(`paths.m4')m4_dnl

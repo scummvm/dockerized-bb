@@ -1,8 +1,8 @@
 FROM toolchains/apple-sdks AS sdks
 
 m4_dnl These settings must be kept in sync between toolchain and worker
-m4_define(`PPA_CLANG',-11)m4_dnl
-m4_define(`IPHONE_SDK_VERSION',14.5)m4_dnl
+m4_define(`PPA_CLANG',-13)m4_dnl
+m4_define(`IPHONE_SDK_VERSION',15.0)m4_dnl
 m4_define(`IPHONEOS_DEPLOYMENT_TARGET',7.0)m4_dnl
 
 m4_include(`paths.m4')m4_dnl
@@ -35,6 +35,7 @@ RUN . /etc/os-release && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 		clang`'PPA_CLANG`' \
 		llvm`'PPA_CLANG`'-dev \
+		libomp`'PPA_CLANG`'-dev \
 		&& \
 	rm -rf /var/lib/apt/lists/* && \
 	rm /etc/apt/sources.list.d/clang.list /etc/apt/trusted.gpg

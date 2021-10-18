@@ -1,7 +1,7 @@
-From b43b9339fc84f75c0d5b448b5636e3d1fd4e9ea0 Mon Sep 17 00:00:00 2001
+From e3d40fa4d3e6af9f7ac344187d0ec339f9ac093f Mon Sep 17 00:00:00 2001
 From: Le Philousophe <lephilousophe@users.noreply.github.com>
 Date: Sun, 24 Jan 2021 19:19:14 +0100
-Subject: [PATCH 3/4] Generate all SDKs and not only MacOSX
+Subject: [PATCH 3/3] Generate all SDKs and not only MacOSX
 
 ---
  tools/gen_sdk_package.sh | 13 +++++++------
@@ -57,5 +57,5 @@ index 238a63f..a5ed371 100755
 -ls -lh | grep MacOSX
 +ls -lh *.*.sdk.*
 -- 
-2.25.1
+2.32.0
 
