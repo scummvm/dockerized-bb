@@ -410,50 +410,6 @@ def gcw0():
     register_platform(platform)
 gcw0()
 
-def gp2x():
-    def setup(p):
-        platform.workerimage = "open2x"
-        platform.compatibleBuilds = (builds.ScummVMBuild, )
-        platform.env["CXX"] = "ccache /opt/open2x/bin/arm-open2x-linux-g++"
-
-        # ScummVM configure adds -march
-        # Override CXXFLAGS to avoid warnings about redundant setting between -march and -mcpu
-        cxxflags = platform.env.get("CXXFLAGS", '').replace('${CXXFLAGS}', '')
-        cxxflags += " -O3 -ffast-math -fomit-frame-pointer"
-        platform.buildenv[builds.ScummVMBuild] = {
-            'CXXFLAGS': cxxflags,
-        }
-        platform.configureargs.append("--host=gp2x")
-        platform.packaging_cmd = "gp2x-bundle"
-        platform.built_files = {
-            builds.ScummVMBuild: [ "release/scummvm-gp2x.tar.bz2" ],
-        }
-        platform.archiveext = "tar.bz2"
-
-        platform.icon = 'gp2x'
-
-    platform = Platform("gp2x-1")
-    platform.buildconfigureargs = {
-        builds.ScummVMBuild: [ "--enable-vkeybd",
-            # Disable big engines
-            "--disable-engines=bladerunner,glk,kyra,lastexpress,titanic,tsage,ultima" ],
-    }
-    platform.description = "GamePark GP2X (all except Blade Runner, Glk, Kyra, The Last Express, Starship Titanic, TsAGE, Ultima)"
-    setup(platform)
-    register_platform(platform)
-
-    platform = Platform("gp2x-2")
-    platform.buildconfigureargs = {
-        builds.ScummVMBuild: [ "--enable-vkeybd",
-            # Only the other ones
-            "--disable-all-engines",
-            "--enable-engines=bladerunner,glk,kyra,lastexpress,titanic,tsage,ultima" ],
-    }
-    platform.description = "GamePark GP2X (Blade Runner, Glk, Kyra, The Last Express, Starship Titanic, TsAGE, Ultima)"
-    setup(platform)
-    register_platform(platform)
-gp2x()
-
 def ios7_arm64():
     platform = Platform("ios7-arm64")
     platform.workerimage = "iphone"
