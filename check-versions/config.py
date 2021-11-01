@@ -347,9 +347,6 @@ VERSIONS = {
         'prefix': 'ucon64-',
     },
 
-    # Use same libsdl as Open2x toolchain
-    ('./toolchains/open2x/packages/libsdl/build.sh', 'SDL'): 'ignore',
-
     # OpenDingux packages (except toolchain) are set by (old) firmware
     ('./toolchains/opendingux/packages/alsa-lib/build.sh', 'ALSA_LIB'): 'ignore',
     ('./toolchains/opendingux/packages/flac/build.sh', 'FLAC'): 'ignore',
