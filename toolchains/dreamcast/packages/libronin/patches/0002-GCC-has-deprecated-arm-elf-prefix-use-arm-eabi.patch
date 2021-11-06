@@ -1,4 +1,4 @@
-From 465c17edcc469bfb752356b6332b2eeddbe420a1 Mon Sep 17 00:00:00 2001
+From 6e23b7924ba9fcce0e6df7ba72c39d70b1bb28a8 Mon Sep 17 00:00:00 2001
 From: Le Philousophe <lephilousophe@users.noreply.github.com>
 Date: Sun, 28 Mar 2021 17:40:17 +0200
 Subject: [PATCH 2/3] GCC has deprecated arm-elf prefix, use arm-eabi
@@ -8,7 +8,7 @@ Subject: [PATCH 2/3] GCC has deprecated arm-elf prefix, use arm-eabi
  1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 5957f1b..2f3837e 100644
+index 7245c2a..c05e4ce 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -229,16 +229,16 @@ arm_sound_code.h: arm_sound_code.bin
@@ -19,8 +19,8 @@ index 5957f1b..2f3837e 100644
 +	arm-eabi-objcopy -O binary $< $@
  
  arm_sound_code.elf: arm_startup.o arm_sound_code.o
--	arm-elf-gcc $(ARMFLAGS) -Wl,-Ttext,0 -nostdlib -nostartfiles -o $@ $^ -lgcc -lgcc
-+	arm-eabi-gcc $(ARMFLAGS) -Wl,-Ttext,0 -nostdlib -nostartfiles -o $@ $^ -lgcc -lgcc
+-	arm-elf-gcc $(ARMFLAGS) -Wl,-Ttext,0,-z,max-page-size=1 -nostdlib -nostartfiles -o $@ $^ -lgcc -lgcc
++	arm-eabi-gcc $(ARMFLAGS) -Wl,-Ttext,0,-z,max-page-size=1 -nostdlib -nostartfiles -o $@ $^ -lgcc -lgcc
  
  arm_sound_code.o: arm_sound_code.c soundcommon.h
 -	arm-elf-gcc -c -Wall $(ARMFLAGS) -o $@ $<
@@ -33,5 +33,5 @@ index 5957f1b..2f3837e 100644
  #Automatic extension conversion.
  .SUFFIXES: .o .cpp .c .cc .h .m .i .S .asm .elf .srec .bin
 -- 
-2.25.1
+2.30.2
 

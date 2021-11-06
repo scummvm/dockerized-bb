@@ -253,7 +253,7 @@ VERSIONS = {
 
     ('./toolchains/dreamcast/packages/libronin/build.sh', 'LIBRONIN'): {
         'check': 'git tag',
-        'repository': 'https://github.com/sega-dreamcast/libronin.git',
+        'repository': 'https://bitbucket.org/ihi/libronin.git',
         'prefix': 'ronin_',
     },
     # Dreamcast toolchain is taken from KallistiOS dc-chain and we stick to their versions
@@ -483,9 +483,10 @@ VERSIONS = {
     },
     ('./toolchains/riscos/packages/iconv/build.sh', 'LIBICONV'): libiconv_check,
     ('./toolchains/riscos/packages/tokenize/build.sh', 'TOKENIZE'): {
-        'check': 'git commit',
+        'check': 'git tag',
         'repository': 'https://github.com/steve-fryatt/tokenize.git',
-        'branch': 'master',
+        # Use pattern as prefix would remove it
+        'pattern': '^v',
     },
     ('./toolchains/riscos/packages/toolchain/build.sh', 'GCCSDK'): {
         'check': 'svn commit',

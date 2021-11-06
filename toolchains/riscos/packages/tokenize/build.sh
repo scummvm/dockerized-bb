@@ -1,6 +1,6 @@
 #! /bin/sh
 
-TOKENIZE_VERSION=c7ed0290df0451724818267c9ceb7d8efde7f3ea
+TOKENIZE_VERSION=v1.00
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..

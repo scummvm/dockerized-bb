@@ -1,6 +1,6 @@
 #! /bin/sh
 
-LIBRONIN_VERSION=0_6
+LIBRONIN_VERSION=0_7
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..
