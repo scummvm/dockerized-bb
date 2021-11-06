@@ -23,6 +23,8 @@ def read_packet_line(reply):
         else:
             raise Exception("Invalid git length tag for {0}".format(reply.geturl()))
     data = reply.read(length - 4)
+    if data.endswith(b'\n'):
+        data = data[:-1]
     return data
 
 def parse_dumb_refs(reply):
@@ -47,7 +49,7 @@ def parse_dumb_refs(reply):
 
 def parse_smart_refs(reply):
     data = read_packet_line(reply)
-    if data != b"# service=git-upload-pack\n":
+    if data != b"# service=git-upload-pack":
         raise Exception("Invalid Git header line: {0!r} for {1}".format(data, reply.geturl()))
     data = read_packet_line(reply)
     if data is not FLUSH_PKT:
