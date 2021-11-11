@@ -32,7 +32,8 @@ def _buildInData(data, build):
     return False
 
 class Platform:
-    __slots__ = ['name', 'compatibleBuilds',
+    __slots__ = ['name',
+            'compatibleBuilds', 'incompatibleBuilds',
             'env', 'buildenv',
             'configureargs', 'buildconfigureargs',
             'packageable', 'built_files', 'data_files',
@@ -44,6 +45,8 @@ class Platform:
     def __init__(self, name):
         self.name = name
         self.compatibleBuilds = None
+        # To blacklist stable ScummVM for example
+        self.incompatibleBuilds = []
         self.env = copy.deepcopy(config.common_env)
         self.buildenv = {}
         self.configureargs = []
@@ -79,7 +82,8 @@ class Platform:
         self.description_ = value
 
     def canBuild(self, build):
-        return _buildInData(self.compatibleBuilds, build)
+        return (_buildInData(self.compatibleBuilds, build) and
+                not _buildInData(self.incompatibleBuilds, build))
     def getEnv(self, build):
         ret = dict(self.env)
         add = _getFromBuild(self.buildenv, build)
