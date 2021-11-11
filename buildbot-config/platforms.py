@@ -606,6 +606,59 @@ def opendingux():
     register_platform(platform)
 opendingux()
 
+# OpenDingux environment can't be specified in worker Dockerfile as it's multiple toolchains
+# So we must pollute tell it here
+def opendingux_beta(target, toolchain, libc, description=None):
+    platform = Platform("opendingux-beta-{0}".format(target))
+    platform.compatibleBuilds = (builds.ScummVMBuild, )
+    # Stable has no support for this platform
+    platform.incompatibleBuilds = (builds.ScummVMStableBuild, )
+
+    platform.workerimage = "opendingux-beta"
+    platform.buildenv = {
+        builds.ScummVMBuild: {
+            "CXX": "ccache ${{OPENDINGUX_ROOT}}/{0}-toolchain/bin/mipsel-linux-c++".format(
+                toolchain),
+            "PKG_CONFIG_LIBDIR": "${{OPENDINGUX_ROOT}}/{0}-toolchain/mipsel-{0}-linux-{1}/sysroot/usr/lib/pkgconfig".format(
+                toolchain, libc),
+            "PKG_CONFIG_SYSROOT_DIR": "${{OPENDINGUX_ROOT}}/{0}-toolchain/mipsel-{0}-linux-{1}/sysroot".format(
+                toolchain, libc),
+            # Alter PATH for all binaries and sdl2-config, that lets us avoid to define all tools we use
+            "PATH": [ "${PATH}",
+                "${{OPENDINGUX_ROOT}}/{0}-toolchain/mipsel-{0}-linux-{1}/sysroot/usr/bin".format(
+                    toolchain, libc),
+                "${{OPENDINGUX_ROOT}}/{0}-toolchain/bin".format(
+                    toolchain),
+            ],
+        },
+    }
+
+    platform.configureargs.append("--host=opendingux-{0}".format(target))
+    platform.configureargs.append("--enable-debug")
+    platform.packaging_cmd = "od-make-opk"
+    platform.built_files = {
+        builds.ScummVMBuild: [ "scummvm_{0}.opk".format(target) ],
+    }
+    platform.archiveext = "zip"
+    platform.testable = False
+
+    platform.description = "OpenDingux beta - {0}".format(description)
+    platform.icon = "dingux"
+
+    register_platform(platform)
+opendingux_beta(target="gcw0",
+        toolchain="gcw0",
+        libc="uclibc",
+        description="GCW0")
+opendingux_beta(target="lepus",
+        toolchain="lepus",
+        libc="musl",
+        description="Lepus based boards")
+opendingux_beta(target="rg99",
+        toolchain="rs90",
+        libc="musl",
+        description="RG99")
+
 def openpandora():
     platform = Platform("openpandora")
     platform.workerimage = "openpandora"

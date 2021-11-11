@@ -364,6 +364,22 @@ VERSIONS = {
     ('./toolchains/opendingux/packages/zlib/build.sh', 'ZLIB'): 'ignore',
     ('./toolchains/opendingux/packages/toolchain/build.sh', 'CT_NG'): crosstool_ng_check,
 
+    ('./toolchains/opendingux-beta/Dockerfile.m4', 'GCW0'): {
+        'check': 'scrape',
+        'url': 'http://od.abstraction.se/opendingux/toolchain/',
+        'filter pattern': r'<a href="opendingux-gcw0-toolchain\.(?P<version>[0-9-]+)\.tar\.xz">',
+    },
+    ('./toolchains/opendingux-beta/Dockerfile.m4', 'LEPUS'): {
+        'check': 'scrape',
+        'url': 'http://od.abstraction.se/opendingux/toolchain/',
+        'filter pattern': r'<a href="opendingux-lepus-toolchain\.(?P<version>[0-9-]+)\.tar\.xz">',
+    },
+    ('./toolchains/opendingux-beta/Dockerfile.m4', 'RS90'): {
+        'check': 'scrape',
+        'url': 'http://od.abstraction.se/opendingux/toolchain/',
+        'filter pattern': r'<a href="opendingux-rs90-toolchain\.(?P<version>[0-9-]+)\.tar\.xz">',
+    },
+
     # OpenPandora packages (except toolchain) are set by (old) firmware
     ('./toolchains/openpandora/packages/alsa-lib/build.sh', 'ALSA_LIB'): 'ignore',
     ('./toolchains/openpandora/packages/curl/build.sh', 'CURL'): 'ignore',
