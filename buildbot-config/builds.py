@@ -445,6 +445,7 @@ class ScummVMBuild(StandardBuild):
         "gui/themes/scummclassic.zip",
         "gui/themes/scummmodern.zip",
         "gui/themes/scummremastered.zip",
+	"gui/themes/gui-icons.dat",
         "dists/engine-data/access.dat",
         "dists/engine-data/cryomni3d.dat",
         "dists/engine-data/drascula.dat",
