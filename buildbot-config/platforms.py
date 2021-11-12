@@ -129,7 +129,6 @@ def _3ds():
     platform.compatibleBuilds = (builds.ScummVMBuild, )
     # Include CA certificates bundle to allow HTTPS
     platform.env["DIST_3DS_EXTRA_FILES"] = "${DEVKITPRO}/cacert.pem"
-    platform.env["CXX"] = "ccache /opt/devkitpro/devkitARM/bin/arm-none-eabi-c++"
     platform.configureargs.append("--host=3ds")
     platform.buildconfigureargs = {
         builds.ScummVMBuild: [ "--enable-plugins", "--default-dynamic" ],
@@ -149,7 +148,6 @@ _3ds()
 
 def amigaos4():
     platform = Platform("amigaos4")
-    platform.env["CXX"] = "ccache /usr/local/amigaos4/bin/ppc-amigaos-c++"
     platform.configureargs.append("--host=ppc-amigaos")
     platform.buildconfigureargs = {
         builds.ScummVMBuild: [ "--enable-plugins", "--default-dynamic", "--enable-detection-dynamic" ],
@@ -197,7 +195,7 @@ def android(suffix, scummvm_target, ndk_target, cxx_target, abi_version,
     }
     platform.buildenv = {
         builds.ScummVMBuild: {
-            "CXX": "ccache ${{ANDROID_TOOLCHAIN}}/bin/{0}{1}-clang++".format(
+            "CXX": "${{ANDROID_TOOLCHAIN}}/bin/{0}{1}-clang++".format(
                 cxx_target, abi_version),
             # Worker has all libraries installed in the NDK sysroot
             "PKG_CONFIG_LIBDIR": "${{ANDROID_TOOLCHAIN}}/sysroot/usr/lib/{0}/{1}/pkgconfig".format(
@@ -251,7 +249,6 @@ def caanoo():
     platform = Platform("caanoo")
     platform.workerimage = "caanoo"
     platform.compatibleBuilds = (builds.ScummVMBuild, )
-    platform.env["CXX"] = "ccache /opt/caanoo/bin/arm-gph-linux-gnueabi-c++"
     platform.configureargs.append("--host=caanoo")
     platform.buildconfigureargs = {
         builds.ScummVMBuild: [ "--enable-plugins", "--default-dynamic", "--enable-vkeybd" ],
@@ -278,9 +275,9 @@ def debian(name_suffix, image_suffix, host,
     if not tools:
         platform.compatibleBuilds = (builds.ScummVMBuild, )
 
-    platform.env["CXX"] = "ccache ${CXX}"
     if env:
         platform.env.update(env)
+
     platform.configureargs.append("--host={0}".format(host))
     if buildconfigureargs:
         platform.buildconfigureargs = buildconfigureargs
@@ -346,7 +343,6 @@ debian("x86-64-sdl1.2", "x86_64", "x86_64-linux-gnu", package=False, tools=False
 def dreamcast():
     platform = Platform("dreamcast")
     platform.compatibleBuilds = (builds.ScummVMBuild, )
-    platform.env["CXX"] = "ccache ${CXX}"
     platform.configureargs.append("--host=dreamcast")
     platform.buildconfigureargs = {
         builds.ScummVMBuild: [ "--enable-plugins", "--default-dynamic", "--enable-vkeybd" ],
@@ -377,7 +373,6 @@ def gamecube():
     platform = Platform("gamecube")
     platform.workerimage = "devkitppc"
     platform.compatibleBuilds = (builds.ScummVMBuild, )
-    platform.env["CXX"] = "ccache /opt/devkitpro/devkitPPC/bin/powerpc-eabi-c++"
     platform.configureargs.append("--host=gamecube")
     platform.buildconfigureargs = {
         builds.ScummVMBuild: [ "--enable-plugins", "--default-dynamic", "--enable-vkeybd" ],
@@ -397,7 +392,6 @@ gamecube()
 def gcw0():
     platform = Platform("gcw0")
     platform.compatibleBuilds = (builds.ScummVMBuild, )
-    platform.env["CXX"] = "ccache ${CXX}"
     platform.configureargs.append("--host=gcw0")
     platform.buildconfigureargs = {
         builds.ScummVMBuild: [ "--enable-plugins", "--default-dynamic", "--enable-vkeybd" ],
@@ -418,7 +412,6 @@ def ios7_arm64():
     platform = Platform("ios7-arm64")
     platform.workerimage = "iphone"
     platform.compatibleBuilds = (builds.ScummVMBuild, )
-    platform.env["CXX"] = "ccache ${CXX}"
     platform.configureargs.append("--host=ios7-arm64")
     platform.buildconfigureargs = {
         builds.ScummVMBuild: [ "--enable-static", "--with-staticlib-prefix=${PREFIX}"],
@@ -439,7 +432,6 @@ ios7_arm64()
 
 def macosx_arm64():
     platform = Platform("macosx-arm64")
-    platform.env["CXX"] = "ccache arm64-apple-darwin20.4-c++"
     # configure script doesn't compile discord check with proper flags
     platform.env["DISCORD_LIBS"] = "-framework AppKit"
 
@@ -481,7 +473,6 @@ macosx_arm64()
 
 def macosx_x86_64():
     platform = Platform("macosx-x86_64")
-    platform.env["CXX"] = "ccache x86_64-apple-darwin20.4-c++"
     # configure script doesn't compile discord check with proper flags
     platform.env["DISCORD_LIBS"] = "-framework AppKit"
 
@@ -523,7 +514,6 @@ macosx_x86_64()
 
 def macosx_i386():
     platform = Platform("macosx-i386")
-    platform.env["CXX"] = "ccache i386-apple-darwin17-c++"
     platform.configureargs.append("--host=i386-apple-darwin17")
     platform.buildconfigureargs = {
         builds.ScummVMBuild: [ "--enable-static", "--with-staticlib-prefix=${DESTDIR}/${PREFIX}",
@@ -562,7 +552,6 @@ def nds():
     platform = Platform("nds")
     platform.workerimage = "devkitnds"
     platform.compatibleBuilds = (builds.ScummVMBuild, )
-    platform.env["CXX"] = "ccache /opt/devkitpro/devkitARM/bin/arm-none-eabi-c++"
     platform.configureargs.append("--host=ds")
     platform.buildconfigureargs = {
         builds.ScummVMBuild: [ "--enable-plugins", "--default-dynamic" ],
@@ -586,7 +575,6 @@ nds()
 def opendingux():
     platform = Platform("opendingux")
     platform.compatibleBuilds = (builds.ScummVMBuild, )
-    platform.env["CXX"] = "ccache ${CXX}"
     platform.configureargs.append("--host=dingux")
     platform.buildconfigureargs = {
         builds.ScummVMBuild: [ "--enable-plugins", "--default-dynamic", "--enable-vkeybd",
@@ -617,7 +605,7 @@ def opendingux_beta(target, toolchain, libc, description=None):
     platform.workerimage = "opendingux-beta"
     platform.buildenv = {
         builds.ScummVMBuild: {
-            "CXX": "ccache ${{OPENDINGUX_ROOT}}/{0}-toolchain/bin/mipsel-linux-c++".format(
+            "CXX": "${{OPENDINGUX_ROOT}}/{0}-toolchain/bin/mipsel-linux-c++".format(
                 toolchain),
             "PKG_CONFIG_LIBDIR": "${{OPENDINGUX_ROOT}}/{0}-toolchain/mipsel-{0}-linux-{1}/sysroot/usr/lib/pkgconfig".format(
                 toolchain, libc),
@@ -663,7 +651,6 @@ def openpandora():
     platform = Platform("openpandora")
     platform.workerimage = "openpandora"
     platform.compatibleBuilds = (builds.ScummVMBuild, )
-    platform.env["CXX"] = "ccache /opt/openpandora/bin/arm-angstrom-linux-gnueabi-c++"
     platform.configureargs.append("--host=openpandora")
     platform.buildconfigureargs = {
         builds.ScummVMBuild: [ "--enable-plugins", "--default-dynamic", "--enable-vkeybd" ],
@@ -685,7 +672,6 @@ def ps3():
     platform.compatibleBuilds = (builds.ScummVMBuild, )
     # Include CA certificates bundle to allow HTTPS
     platform.env["DIST_PS3_EXTRA_FILES"] = "${PS3DEV}/cacert.pem"
-    platform.env["CXX"] = "ccache powerpc64-ps3-elf-g++"
     platform.configureargs.append("--host=ps3")
     platform.packaging_cmd = "ps3pkg"
     platform.built_files = {
@@ -701,7 +687,6 @@ ps3()
 def psp():
     platform = Platform("psp")
     platform.compatibleBuilds = (builds.ScummVMBuild, )
-    platform.env["CXX"] = "ccache psp-g++"
     platform.configureargs.extend(["--host=psp", "--disable-debug", "--enable-plugins", "--default-dynamic"])
 
     # HACK: The Ultima engine, when included, causes a crash in the add game dialog
@@ -760,7 +745,6 @@ psp()
 
 def raspberrypi():
     platform = Platform("raspberrypi")
-    platform.env["CXX"] = "ccache ${CXX}"
     platform.configureargs.append("--host=raspberrypi")
 
     platform.packaging_cmd = {
@@ -806,7 +790,6 @@ def riscos(suffix, prefix_subdir, variable_suffix, host, description = None):
             'LDFLAGS': lib_dir,
         }
 
-        platform.env["CXX"] = "ccache ${CXX}"
         platform.env["PKG_CONFIG_LIBDIR"] = "${{PREFIX}}/{0}lib/pkgconfig".format(prefix_subdir)
         for v, p in env_paths.items():
             platform.env[v] = ' '.join([
@@ -858,7 +841,6 @@ def switch():
     platform = Platform("switch")
     platform.workerimage = "devkitswitch"
     platform.compatibleBuilds = (builds.ScummVMBuild, )
-    platform.env["CXX"] = "ccache /opt/devkitpro/devkitA64/bin/aarch64-none-elf-c++"
     platform.configureargs.append("--host=switch")
     platform.packaging_cmd = "switch_release"
     platform.built_files = {
@@ -876,7 +858,6 @@ switch()
 def vita():
     platform = Platform("vita")
     platform.compatibleBuilds = (builds.ScummVMBuild, )
-    platform.env["CXX"] = "ccache /usr/local/vitasdk/bin/arm-vita-eabi-g++"
     platform.configureargs.append("--host=psp2")
 
     # HACK: To prevent memory-related crash on startup that seems related to the size of the executable
@@ -935,7 +916,6 @@ def wii():
     platform = Platform("wii")
     platform.workerimage = "devkitppc"
     platform.compatibleBuilds = (builds.ScummVMBuild, )
-    platform.env["CXX"] = "ccache /opt/devkitpro/devkitPPC/bin/powerpc-eabi-c++"
     platform.configureargs.append("--host=wii")
     platform.buildconfigureargs = {
         builds.ScummVMBuild: [ "--enable-plugins", "--default-dynamic", "--enable-vkeybd" ],
@@ -956,7 +936,7 @@ def windows_mxe(suffix, target, description=None):
     platform = Platform("windows-{0}".format(suffix))
     platform.workerimage = "mxe"
 
-    platform.env["CXX"] = "ccache ${{MXE_PREFIX_DIR}}/bin/{0}-c++".format(target)
+    platform.env["CXX"] = "${{MXE_PREFIX_DIR}}/bin/{0}-c++".format(target)
     # strip is specified below, just be coherent and define it with environment
     platform.env["STRIP"] = "${{MXE_PREFIX_DIR}}/bin/{0}-strip".format(target)
     # strings is detected using host alias and not host, override it here
@@ -1011,8 +991,6 @@ windows_mxe(suffix="x86-64",
 def win9x():
     platform = Platform("win9x")
     platform.workerimage = "windows-9x"
-
-    platform.env["CXX"] = "ccache ${CXX}"
 
     platform.configureargs.append("--host=mingw32")
     platform.buildconfigureargs = {

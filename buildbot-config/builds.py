@@ -310,6 +310,8 @@ class StandardBuild(Build):
         daily_builds_url = urlp.urljoin(config.daily_builds_url + '/', self.name + '/')
 
         env = platform.getEnv(self)
+        # Setup ccache as the compiler, use already set CXX as real compiler or environement CXX from docker image
+        env['CXX'] = 'ccache {0}'.format(env.get('CXX', '${CXX}'))
 
         f = util.BuildFactory()
         f.workdir = ""
