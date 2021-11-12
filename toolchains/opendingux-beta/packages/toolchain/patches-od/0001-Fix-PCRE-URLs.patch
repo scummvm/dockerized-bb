@@ -1,0 +1,39 @@
+From 2d96a35a47416108ea30ec05b9d0d094a0c94903 Mon Sep 17 00:00:00 2001
+From: Le Philousophe <lephilousophe@users.noreply.github.com>
+Date: Fri, 12 Nov 2021 13:28:07 +0100
+Subject: [PATCH] Fix PCRE URLs
+
+---
+ package/pcre/pcre.mk   | 2 +-
+ package/pcre2/pcre2.mk | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/package/pcre/pcre.mk b/package/pcre/pcre.mk
+index c8498b7acf..219ac59786 100644
+--- a/package/pcre/pcre.mk
++++ b/package/pcre/pcre.mk
+@@ -5,7 +5,7 @@
+ ################################################################################
+ 
+ PCRE_VERSION = 8.44
+-PCRE_SITE = https://ftp.pcre.org/pub/pcre
++PCRE_SITE = http://downloads.sourceforge.net/project/pcre/pcre/$(PCRE_VERSION)
+ PCRE_SOURCE = pcre-$(PCRE_VERSION).tar.bz2
+ PCRE_LICENSE = BSD-3-Clause
+ PCRE_LICENSE_FILES = LICENCE
+diff --git a/package/pcre2/pcre2.mk b/package/pcre2/pcre2.mk
+index d02772650f..d9254125d1 100644
+--- a/package/pcre2/pcre2.mk
++++ b/package/pcre2/pcre2.mk
+@@ -5,7 +5,7 @@
+ ################################################################################
+ 
+ PCRE2_VERSION = 10.36
+-PCRE2_SITE = https://ftp.pcre.org/pub/pcre
++PCRE2_SITE = http://downloads.sourceforge.net/project/pcre/pcre2/$(PCRE_VERSION)
+ PCRE2_SOURCE = pcre2-$(PCRE2_VERSION).tar.bz2
+ PCRE2_LICENSE = BSD-3-Clause
+ PCRE2_LICENSE_FILES = LICENCE
+-- 
+2.32.0
+

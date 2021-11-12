@@ -1,7 +1,3 @@
-m4_define(`GCW0_VERSION', 2021-03-10)
-m4_define(`LEPUS_VERSION', 2021-03-11)
-m4_define(`RS90_VERSION', 2021-03-10)
-
 m4_include(`paths.m4')m4_dnl
 m4_define(`local_sdk_package', COPY packages/$1 lib-helpers/packages/$1/
 RUN $3 lib-helpers/packages/$1/build.sh $2)m4_dnl
@@ -14,13 +10,22 @@ m4_dnl Include Debian base preparation steps
 m4_dnl This ensures all common steps are shared by all toolchains
 m4_include(`debian-toolchain-base.m4')m4_dnl
 
+COPY multi-build.sh lib-helpers/
+
+RUN apt-get update && \
+	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+		bc \
+		cpio \
+		g++ \
+		g++-multilib \
+		mercurial \
+		rsync \
+		u-boot-tools && \
+	rm -rf /var/lib/apt/lists/*
+
 ENV OPENDINGUX_ROOT=/opt/opendingux
 
-local_sdk_package(toolchain,gcw0 GCW0_VERSION)
-local_sdk_package(toolchain,lepus LEPUS_VERSION)
-local_sdk_package(toolchain,rs90 RS90_VERSION)
-
-COPY multi-build.sh lib-helpers/
+local_sdk_package(toolchain)
 
 # zlib is already installed in original toolchain
 
