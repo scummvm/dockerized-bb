@@ -25,7 +25,7 @@ RUN . /etc/os-release && \
 	apt-get update && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 		clang`'PPA_CLANG`' \
-		llvm`'PPA_CLANG`'-dev \
+		llvm`'PPA_CLANG`' \
 		&& \
 	rm -rf /var/lib/apt/lists/* && \
 	rm /etc/apt/sources.list.d/clang.list /etc/apt/trusted.gpg
@@ -36,7 +36,7 @@ ENV PATH=$PATH:/usr/lib/llvm`'PPA_CLANG`'/bin
 RUN apt-get update && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 		clang`'DEBIAN_CLANG \
-		llvm`'DEBIAN_CLANG`'-dev \
+		llvm`'DEBIAN_CLANG`' \
 		&& \
 	for f in /usr/lib/llvm`'DEBIAN_CLANG/bin/*; do ln -sf $f /usr/bin/$(basename $f); done && \
 	rm -rf /var/lib/apt/lists/*
