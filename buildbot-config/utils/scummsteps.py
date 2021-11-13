@@ -298,10 +298,14 @@ def get_package_steps(buildname, platformname, srcpath, dstpath, dsturl,
 
 # buildstep class to wipe all build folders (eg "trunk-*")
 def Clean(**kwargs):
-    return steps.RemoveDirectory(
+    dir = kwargs.pop('dir', '')
+    if dir == '':
+        dir = '.'
+    return steps.ShellCommand(
         name = "clean",
         description = "cleaning",
         descriptionDone = "clean",
+        command = 'find "{0}" -mindepth 1 -delete || ( chmod -Rf u+rwx "{0}" && find "{0}" -mindepth 1 -delete )'.format(dir),
         **kwargs)
 
 class CleanupDailyBuilds(steps.BuildStep):

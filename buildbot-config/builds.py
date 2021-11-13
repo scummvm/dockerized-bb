@@ -23,13 +23,11 @@ max_jobs = getattr(config, 'max_jobs', None) or (multiprocessing.cpu_count() + 1
 # thanks to fetcher being locked all the way through the build process
 lock_build = util.WorkerLock("worker", maxCount = 1)
 
-# builds contains all build trees
+# We only create here directories which are not worker related or for which we have customization to do
+# The worker ones get created at instantiation
 # ccache is the cache for compiled objects used by ccache
-# src contains the source trees
-# triggers is some working directory needed by triggers
-# bshomes is used for various build systems (like Gradle) to avoid downloading things at each run
 # pollers is used by poll modules to maintain their state
-for data_dir in ["builds", "ccache", "src", "triggers", "bshomes", "pollers" ]:
+for data_dir in ["ccache", "pollers"]:
     os.makedirs(os.path.join(config.data_dir, data_dir), exist_ok=True)
 shutil.copyfile(os.path.join(config.configuration_dir, "ccache.conf"),
     os.path.join(config.data_dir, "ccache", "ccache.conf"))
@@ -298,14 +296,15 @@ class StandardBuild(Build):
             return
 
         # Don't use os.path.join as builder is a linux image
-        src_path = "{0}/src/{1}".format("/data", self.name)
-        configure_path = src_path + "/configure"
-        build_path = "{0}/builds/{1}/{2}".format("/data", platform.name, self.name)
+        src_path = "{0}/src".format("/data")
+        build_path = "{0}/build".format("/data")
 
         # daily_builds_path is used in Package step on master side
         daily_builds_path = os.path.join(config.daily_builds_dir, self.name)
         # Ensure last path component doesn't get removed here and in packaging step
         daily_builds_url = urlp.urljoin(config.daily_builds_url + '/', self.name + '/')
+
+        configure_path = src_path + "/configure"
 
         env = platform.getEnv(self)
         # Setup ccache as the compiler, use already set CXX as real compiler or environement CXX from docker image
@@ -346,6 +345,7 @@ class StandardBuild(Build):
             locks = locks,
             tags = ["build", self.name, platform.name],
             properties = {
+                "buildname": self.name,
                 "platformname": platform.name,
                 "workerimage": platform.getWorkerImage(self),
             },

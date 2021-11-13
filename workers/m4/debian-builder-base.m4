@@ -22,9 +22,9 @@ RUN apt-get update && \
                 && \
         rm -rf /var/lib/apt/lists/*
 
-RUN mkdir -p /data/ccache /data/src /data/builds /data/bshomes && \
-	chown buildbot:buildbot /data/ccache /data/src /data/builds /data/bshomes
-VOLUME /data/ccache /data/src /data/builds /data/bshomes
+RUN mkdir -p /data/bshomes /data/build /data/ccache /data/src && \
+	chown buildbot:buildbot /data/bshomes /data/build /data/ccache /data/src
+VOLUME /data/bshomes /data/build /data/ccache /data/src
 
 ENV CCACHE_DIR=/data/ccache
 
