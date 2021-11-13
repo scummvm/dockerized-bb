@@ -1,7 +1,7 @@
-From fb989fdf4e051256cd7e4513746d9bc944bc8bdc Mon Sep 17 00:00:00 2001
+From ba704854d2e0e63d63e49c8ea796ac11d60b1d53 Mon Sep 17 00:00:00 2001
 From: Le Philousophe <lephilousophe@users.noreply.github.com>
 Date: Fri, 19 Mar 2021 12:18:07 +0100
-Subject: [PATCH 2/5] Make target directory and triple configurable
+Subject: [PATCH 2/6] Make target directory and triple configurable
 
 ---
  usage_examples/ios_toolchain/build.sh | 4 ++++
@@ -25,5 +25,5 @@ index 19b0479..e405466 100755
  
  if [ -d $TARGETDIR ]; then
 -- 
-2.30.2
+2.32.0
 

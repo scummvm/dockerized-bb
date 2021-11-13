@@ -1,7 +1,7 @@
-From c66d1988ab719d80bb560a3631dfe26de7689443 Mon Sep 17 00:00:00 2001
+From cf352e594610b74bb02677a1420495defa1146b6 Mon Sep 17 00:00:00 2001
 From: Le Philousophe <lephilousophe@users.noreply.github.com>
 Date: Fri, 19 Mar 2021 12:18:53 +0100
-Subject: [PATCH 4/5] Fix ARM assembler to not emit invalid opcodes
+Subject: [PATCH 4/6] Fix ARM assembler to not emit invalid opcodes
 
 ---
  cctools/as/arm.c | 5 ++++-
@@ -25,5 +25,5 @@ index ef856a5..80e7ba7 100644
        return a | (i << 7); /* 12-bit pack: [shift-cnt,const].  */
  
 -- 
-2.30.2
+2.32.0
 

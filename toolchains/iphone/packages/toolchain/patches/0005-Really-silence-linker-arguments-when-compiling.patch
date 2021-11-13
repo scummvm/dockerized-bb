@@ -1,7 +1,7 @@
-From 5a7e496eb85f3f4a03bdce194f96bfa5b781f96c Mon Sep 17 00:00:00 2001
+From 177ceea28d25016752371deb367a465dc839929e Mon Sep 17 00:00:00 2001
 From: Le Philousophe <lephilousophe@users.noreply.github.com>
 Date: Sun, 17 Oct 2021 15:38:47 +0200
-Subject: [PATCH 5/5] Really silence linker arguments when compiling
+Subject: [PATCH 5/6] Really silence linker arguments when compiling
 
 ---
  usage_examples/ios_toolchain/wrapper.c | 2 +-
@@ -21,5 +21,5 @@ index 57d9dca..e6e46e3 100644
      for (j = 1; j < argc; ++i, ++j)
          args[i] = argv[j];
 -- 
-2.30.2
+2.32.0
 

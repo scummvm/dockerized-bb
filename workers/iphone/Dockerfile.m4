@@ -29,6 +29,7 @@ RUN . /etc/os-release && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 		clang`'PPA_CLANG`' \
 		llvm`'PPA_CLANG`'-dev \
+		libomp`'PPA_CLANG`'-dev \
 		&& \
 	rm -rf /var/lib/apt/lists/* && \
 	rm /etc/apt/sources.list.d/clang.list /etc/apt/trusted.gpg
@@ -65,7 +66,7 @@ RUN CLANG_LIB_DIR=$(${TARGET_DIR}/bin/${HOST}-clang -print-search-dirs | grep "l
 
 # We add PATH here for *-config and platform specific binaries
 ENV \
-	def_binaries(`${TARGET_DIR}/bin/${HOST}-', `ar, as, ld, nm, ranlib, strings, strip') \
+	def_binaries(`${TARGET_DIR}/bin/${HOST}-', `ar, as, ld, lipo, nm, ranlib, strings, strip') \
 	CPP="${TARGET_DIR}/bin/${HOST}-clang -E" \
 	CC=${TARGET_DIR}/bin/${HOST}-clang \
 	CXX=${TARGET_DIR}/bin/${HOST}-clang++ \

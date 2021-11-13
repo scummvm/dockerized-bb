@@ -1,7 +1,7 @@
-From 5dc24a3373c84b77c1df6ddc01d241b723c8db4a Mon Sep 17 00:00:00 2001
+From 6572edd85dc1b0a15f992a3265e05cd639cd4850 Mon Sep 17 00:00:00 2001
 From: Le Philousophe <lephilousophe@users.noreply.github.com>
 Date: Fri, 19 Mar 2021 12:18:30 +0100
-Subject: [PATCH 3/5] Make minimum target version configurable
+Subject: [PATCH 3/6] Make minimum target version configurable
 
 ---
  usage_examples/ios_toolchain/build.sh | 6 +++++-
@@ -28,5 +28,5 @@ index e405466..7d58adf 100755
  
  pushd $TARGETDIR/bin &>/dev/null
 -- 
-2.30.2
+2.32.0
 

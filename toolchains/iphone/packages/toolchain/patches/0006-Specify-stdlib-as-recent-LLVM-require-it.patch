@@ -1,0 +1,60 @@
+From 32c5ec1d6a734c76267f24b6f1fea2d9d539a625 Mon Sep 17 00:00:00 2001
+From: Le Philousophe <lephilousophe@users.noreply.github.com>
+Date: Sat, 13 Nov 2021 17:36:24 +0100
+Subject: [PATCH 6/6] Specify stdlib as recent LLVM require it
+
+---
+ usage_examples/ios_toolchain/build.sh  |  4 ++++
+ usage_examples/ios_toolchain/wrapper.c | 14 ++++++++++++++
+ 2 files changed, 18 insertions(+)
+
+diff --git a/usage_examples/ios_toolchain/build.sh b/usage_examples/ios_toolchain/build.sh
+index 7d58adf..3266b32 100755
+--- a/usage_examples/ios_toolchain/build.sh
++++ b/usage_examples/ios_toolchain/build.sh
+@@ -221,6 +221,10 @@ echo "int main(){return 0;}" | $TRIPLE-clang -xc -O2 -o test - 1>/dev/null || ex
+ rm test
+ echo "OK"
+ 
++echo "int main(){return 0;}" | $TRIPLE-clang++ -xc++ -std=c++11 -O2 -o test - 1>/dev/null || exit 1
++rm test
++echo "OK"
++
+ echo ""
+ echo "*** all done ***"
+ echo ""
+diff --git a/usage_examples/ios_toolchain/wrapper.c b/usage_examples/ios_toolchain/wrapper.c
+index e6e46e3..6c30034 100644
+--- a/usage_examples/ios_toolchain/wrapper.c
++++ b/usage_examples/ios_toolchain/wrapper.c
+@@ -33,6 +33,15 @@
+ #include <sys/stat.h>
+ #endif
+ 
++int endswith(const char *str, const char *end) {
++    int slen = strlen(str);
++    int elen = strlen(end);
++    if (slen < elen) {
++        return 0;
++    }
++    return strcmp(str + slen - elen, end) == 0;
++}
++
+ char *get_executable_path(char *epath, size_t buflen)
+ {
+     char *p;
+@@ -184,6 +193,11 @@ int main(int argc, char *argv[])
+     args[i++] = "-Wl,-adhoc_codesign";
+     args[i++] = "-Qunused-arguments";
+ 
++    if  (endswith(compiler, "++"))
++    {
++        args[i++] = "-stdlib=libc++";
++    }
++
+     for (j = 1; j < argc; ++i, ++j)
+         args[i] = argv[j];
+ 
+-- 
+2.32.0
+
