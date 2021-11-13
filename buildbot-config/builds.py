@@ -41,16 +41,21 @@ class Build:
         self.name = name
 
     def getChangeSource(self, settings):
-        pass
+        raise NotImplementedError
 
-    def getGlobalSchedulers(self, platforms):
-        pass
+    def getSchedulers(self, platforms):
+        raise NotImplementedError
+
+    def getBuilders(self, platforms):
+        yield from self.getGlobalBuilders(platforms)
+        for platform in platforms:
+            yield from self.getPerPlatformBuilders(platform)
 
     def getGlobalBuilders(self, platforms):
-        pass
+        raise NotImplementedError
 
     def getPerPlatformBuilders(self, platform):
-        pass
+        raise NotImplementedError
 
 class StandardBuild(Build):
     __slots__ = [
@@ -137,38 +142,37 @@ class StandardBuild(Build):
             workdir=os.path.join(config.data_dir, 'pollers', self.name),
             **settings)
 
-    def getGlobalSchedulers(self, platforms):
-        ret = list()
+    def getSchedulers(self, platforms):
         change_filter = util.ChangeFilter(repository = [self.baseurl, self.giturl], branch = self.branch)
 
         # Fetch scheduler (triggered by event source)
-        ret.append(schedulers.SingleBranchScheduler(name = self.names['sch-sb'],
+        yield schedulers.SingleBranchScheduler(name = self.names['sch-sb'],
                 change_filter = change_filter,
                 # Wait for 5 minutes before starting build
                 treeStableTimer = 300,
-                builderNames = [ self.names['bld-fetch'] ]))
+                builderNames = [ self.names['bld-fetch'] ])
 
         # Daily scheduler (started by time)
         # It's triggered after regular builds to take note of the last fetched source
         # Note that build is not started by trigger
         # We cleanup after it because we just generated a new package
         if self.daily is not None:
-            ret.append(schedulers.NightlyTriggerable(name = self.names['sch-daily'],
+            yield schedulers.NightlyTriggerable(name = self.names['sch-daily'],
                 branch = self.branch,
                 builderNames = [ self.names['bld-daily'], self.names['bld-clean'] ],
                 hour = self.daily[0],
                 minute = self.daily[1],
-                onlyIfChanged = True))
+                onlyIfChanged = True)
 
         # All compiling builders
         comp_builders = list(self.names['bld-platform'](p for p in platforms if p.canBuild(self)))
 
         # Global build scheduler (triggered by fetch build and daily build)
-        ret.append(schedulers.Triggerable(name = self.names['sch-build'], builderNames = comp_builders))
+        yield schedulers.Triggerable(name = self.names['sch-build'], builderNames = comp_builders)
 
         # Force schedulers
         if self.enable_force:
-            ret.append(schedulers.ForceScheduler(name = self.names['sch-force-id-fetch'],
+            yield schedulers.ForceScheduler(name = self.names['sch-force-id-fetch'],
                 buttonName=self.names['sch-force-name-fetch'],
                 label=self.names['sch-force-name-fetch'],
                 reason=util.StringParameter(name="reason", label="Reason:", required=True, size=80),
@@ -177,8 +181,8 @@ class StandardBuild(Build):
                 properties = [
                     util.BooleanParameter(name="clean", label="Clean", default=False),
                     util.BooleanParameter(name="package", label="Package", default=False),
-                    ]))
-            ret.append(schedulers.ForceScheduler(name = self.names['sch-force-id-build'],
+                    ])
+            yield schedulers.ForceScheduler(name = self.names['sch-force-id-build'],
                 buttonName=self.names['sch-force-name-build'],
                 label=self.names['sch-force-name-build'],
                 reason=util.StringParameter(name="reason", label="Reason:", required=True, size=80),
@@ -187,8 +191,8 @@ class StandardBuild(Build):
                 properties = [
                     util.BooleanParameter(name="clean", label="Clean", default=False),
                     util.BooleanParameter(name="package", label="Package", default=False),
-                    ]))
-            ret.append(schedulers.ForceScheduler(name = self.names['sch-force-id-clean'],
+                    ])
+            yield schedulers.ForceScheduler(name = self.names['sch-force-id-clean'],
                 buttonName=self.names['sch-force-name-clean'],
                 label=self.names['sch-force-name-clean'],
                 reason=util.StringParameter(name="reason", hide=True),
@@ -196,13 +200,9 @@ class StandardBuild(Build):
                 codebases = [util.CodebaseParameter(codebase='', hide=True)],
                 properties = [
                     util.BooleanParameter(name="dry_run", label="Dry run", default=False),
-                    ]))
-
-        return ret
+                    ])
 
     def getGlobalBuilders(self, platforms):
-        ret = list()
-
         f = util.BuildFactory()
         f.workdir = ""
         f.useProgress = False
@@ -237,14 +237,14 @@ class StandardBuild(Build):
             updateSourceStamp = True,
             waitForFinish = True))
 
-        ret.append(util.BuilderConfig(
+        yield util.BuilderConfig(
             name = self.names['bld-fetch'],
             workernames = workers.workers_by_type['fetcher'],
             workerbuilddir = "/data/src/{0}".format(self.name),
             factory = f,
             tags = ["fetch", self.name],
             locks = [ lock_build.access('counting') ],
-        ))
+        )
 
         if self.daily is not None:
             f = util.BuildFactory()
@@ -259,7 +259,7 @@ class StandardBuild(Build):
                     # Ensure our tag is put first and is split from the others
                     'owner': '  Daily build  ',
                 }))
-            ret.append(util.BuilderConfig(
+            yield util.BuilderConfig(
                 name = self.names['bld-daily'],
                 # We use fetcher worker here as it will prevent building of other stuff like if a change had happened
                 workernames = workers.workers_by_type['fetcher'],
@@ -267,7 +267,7 @@ class StandardBuild(Build):
                 factory = f,
                 tags = ["daily", self.name],
                 locks = [ lock_build.access('counting') ]
-            ))
+            )
 
         daily_builds_path = os.path.join(config.daily_builds_dir, self.name)
 
@@ -284,20 +284,18 @@ class StandardBuild(Build):
             obsolete = timedelta(days=getattr(config, 'daily_builds_obsolete_days', 30)),
             cleanup_unknown = getattr(config, 'daily_builds_clean_unknown', True),
         ))
-        ret.append(util.BuilderConfig(
+        yield util.BuilderConfig(
             name = self.names['bld-clean'],
             workernames = workers.workers_by_type['fetcher'],
             workerbuilddir = "/data/triggers/cleanup-{0}".format(self.name),
             factory = f,
             tags = ["cleanup", self.name],
             locks = [ lock_build.access('counting') ]
-        ))
-
-        return ret
+        )
 
     def getPerPlatformBuilders(self, platform):
         if not platform.canBuild(self):
-            return []
+            return
 
         # Don't use os.path.join as builder is a linux image
         src_path = "{0}/src/{1}".format("/data", self.name)
@@ -340,7 +338,7 @@ class StandardBuild(Build):
         if platform.lock_access:
             locks.append(platform.lock_access(self))
 
-        return [util.BuilderConfig(
+        yield util.BuilderConfig(
             name = self.names['bld-platform'](platform),
             workernames = workers.workers_by_type['builder'],
             workerbuilddir = build_path,
@@ -351,7 +349,7 @@ class StandardBuild(Build):
                 "platformname": platform.name,
                 "workerimage": platform.getWorkerImage(self),
             },
-        )]
+        )
 
     def addCleanSteps(self, f, platform, *, env):
         # Standard way of cleaning build directory (current working one)
