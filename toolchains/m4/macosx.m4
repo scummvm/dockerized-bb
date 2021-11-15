@@ -26,9 +26,10 @@ RUN apt-get update && \
 		&& \
 	rm -rf /var/lib/apt/lists/*
 
+# Optimize iphone and macosx builds by defining TARGET_DIR at the moment we need it
+m4_ifdef(`OSXCROSS_CLANG',
 ENV TARGET_DIR=/opt/osxcross
 
-m4_ifdef(`OSXCROSS_CLANG',
 # Compile clang before anything else to reuse the result in all MacOSX toolchains
 common_package(osxcross-clang)
 , m4_ifdef(`PPA_CLANG',
@@ -39,12 +40,15 @@ RUN . /etc/os-release && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 		clang`'PPA_CLANG`' \
 		llvm`'PPA_CLANG`'-dev \
+		libomp`'PPA_CLANG`'-dev \
 		&& \
 	rm -rf /var/lib/apt/lists/* && \
 	rm /etc/apt/sources.list.d/clang.list /etc/apt/trusted.gpg
 
 # Add newly installed LLVM to path
 ENV PATH=$PATH:/usr/lib/llvm`'PPA_CLANG`'/bin
+
+ENV TARGET_DIR=/opt/osxcross
 , m4_ifdef(`DEBIAN_CLANG',
 RUN apt-get update && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
@@ -53,6 +57,8 @@ RUN apt-get update && \
 		&& \
 	for f in /usr/lib/llvm`'DEBIAN_CLANG/bin/*; do ln -sf $f /usr/bin/$(basename $f); done && \
 	rm -rf /var/lib/apt/lists/*
+
+ENV TARGET_DIR=/opt/osxcross
 , ```fatal_error(No clang version defined)''')))m4_dnl
 
 ENV SDK_DIR=/opt/sdk

@@ -26,8 +26,6 @@ RUN apt-get update && \
 		&& \
 	rm -rf /var/lib/apt/lists/*
 
-ENV TARGET_DIR=/opt/iphone
-
 m4_ifdef(`PPA_CLANG',
 RUN . /etc/os-release && \
 	echo "deb http://apt.llvm.org/$VERSION_CODENAME/ llvm-toolchain-$VERSION_CODENAME`'PPA_CLANG`' main" > /etc/apt/sources.list.d/clang.list && \
@@ -52,6 +50,8 @@ RUN apt-get update && \
 	for f in /usr/lib/llvm`'DEBIAN_CLANG/bin/*; do ln -sf $f /usr/bin/$(basename $f); done && \
 	rm -rf /var/lib/apt/lists/*
 , ``fatal_error(No clang version defined)''))m4_dnl
+
+ENV TARGET_DIR=/opt/iphone
 
 ENV SDK_DIR=/opt/sdk
 
