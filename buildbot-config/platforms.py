@@ -773,7 +773,7 @@ def riscos(suffix, prefix_subdir, variable_suffix, host, description = None):
     platform.buildconfigureargs = {
         builds.ScummVMBuild: [
             # Disable big engines
-            "--disable-engines=ags,bladerunner,glk,kyra,lastexpress,scumm,scumm_7_8,he,sci,sci32,titanic,tsage,ultima" ],
+            "--disable-engines=ags,bladerunner,glk,kyra,lol,eob,lastexpress,sci,sci32,scumm,scumm_7_8,he,titanic,tsage,ultima" ],
     }
     setup(platform)
 
@@ -787,7 +787,7 @@ def riscos(suffix, prefix_subdir, variable_suffix, host, description = None):
         builds.ScummVMBuild: [
             # Only the other ones
             "--disable-all-engines",
-            "--enable-engines=ags,bladerunner,glk,kyra,lastexpress,scumm,scumm_7_8,he,sci,sci32,titanic,tsage,ultima" ],
+            "--enable-engines=ags,bladerunner,glk,kyra,lol,eob,lastexpress,sci,sci32,scumm,scumm_7_8,he,titanic,tsage,ultima" ],
     }
     setup(platform)
 
