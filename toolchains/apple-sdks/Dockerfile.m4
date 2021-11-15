@@ -26,7 +26,7 @@ COPY Xcode_`'I386_XCODE_VERSION.xip* ${PACKAGES_LOCATION}
 local_package(xcode-extractor, , PACKAGE=Xcode_`'I386_XCODE_VERSION.xip SDK_PLATFORMS="MacOSX")
 
 # Extract latest MacOS X and iPhoneOS SDK
-m4_define(`XCODE_VERSION', 13.0)
+m4_define(`XCODE_VERSION', 13.1)
 COPY Xcode_`'XCODE_VERSION.xip* ${PACKAGES_LOCATION}
 local_package(xcode-extractor, , PACKAGE=Xcode_`'XCODE_VERSION.xip SDK_PLATFORMS="MacOSX iPhoneOS")
 
