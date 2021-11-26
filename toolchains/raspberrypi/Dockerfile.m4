@@ -44,9 +44,6 @@ multistrap_package(libvorbis-dev)
 multistrap_package(libwxgtk3.0-gtk3-dev)
 multistrap_package(zlib1g-dev)
 
-# For GLES2
-multistrap_package(libraspberrypi-dev)
-
 m4_dnl MULTISTRAP_PACKAGES will contain all packages above
 local_package(sysroot,MULTISTRAP_PACKAGES)
 

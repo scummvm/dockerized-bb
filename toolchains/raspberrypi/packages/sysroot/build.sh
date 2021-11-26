@@ -1,5 +1,5 @@
 #! /bin/sh
-RASPBIAN_VERSION=buster
+RASPBIAN_VERSION=bullseye
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..
@@ -13,6 +13,7 @@ mkdir -p "$sysroot"
 # Download Raspbian key directly in sysroot
 mkdir -p "$sysroot/etc/apt/trusted.gpg.d"
 wget "http://raspbian.raspberrypi.org/raspbian.public.key" -O - | apt-key --keyring "$sysroot/etc/apt/trusted.gpg.d/raspbian.gpg" add -
+wget "http://archive.raspberrypi.org/debian/raspberrypi.gpg.key" -O - | apt-key --keyring "$sysroot/etc/apt/trusted.gpg.d/raspberrypî.gpg" add -
 
 # Build a multistrap config file
 cat <<EOF >./multistrap.conf
@@ -20,14 +21,21 @@ cat <<EOF >./multistrap.conf
 arch=armhf
 unpack=true
 cleanup=true
-bootstrap=raspbian
+bootstrap=raspbian raspberrypi
 aptsources=
 
 [raspbian]
 packages=$@
 source=http://raspbian.raspberrypi.org/raspbian/
 keyring=
-suite=$RASPBIAN_VERSION main firmware
+suite=$RASPBIAN_VERSION main contrib non-free rpi
+omitdebsrc=true
+
+[raspberrypi]
+packages=$@
+source=http://archive.raspberrypi.org/debian/
+keyring=
+suite=$RASPBIAN_VERSION main
 omitdebsrc=true
 EOF
 
