@@ -1,0 +1,25 @@
+From 8c591ff4430b9ceffcdf5bd05981e066d71d6f54 Mon Sep 17 00:00:00 2001
+From: Cameron Cawley <ccawley2011@gmail.com>
+Date: Mon, 13 Dec 2021 00:18:13 +0000
+Subject: [PATCH] Replace use of SecureZeroMemory
+
+---
+ RetroWaveLib/Platform/Win32_SerialPort.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/RetroWaveLib/Platform/Win32_SerialPort.c b/RetroWaveLib/Platform/Win32_SerialPort.c
+index 4e923c4..4d29a50 100644
+--- a/RetroWaveLib/Platform/Win32_SerialPort.c
++++ b/RetroWaveLib/Platform/Win32_SerialPort.c
+@@ -106,7 +106,7 @@ int retrowave_init_win32_serialport(RetroWaveContext *ctx, const char *com_path)
+ 	BOOL fSuccess;
+ 
+ 	//  Initialize the DCB structure.
+-	SecureZeroMemory(&dcb, sizeof(DCB));
++	ZeroMemory(&dcb, sizeof(DCB));
+ 	dcb.DCBlength = sizeof(DCB);
+ 
+ 	//  Build on the current configuration by first retrieving all current
+-- 
+2.30.2
+

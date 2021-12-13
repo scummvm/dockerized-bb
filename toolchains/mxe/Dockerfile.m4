@@ -96,3 +96,5 @@ local_mxe_package(fluidsynth-light)
 local_mxe_package(winsparkle)
 
 local_mxe_package(discord-rpc)
+
+local_mxe_package(retrowave)
