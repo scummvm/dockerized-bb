@@ -72,6 +72,12 @@ libiconv_check = {
         'prefix': 'v',
 }
 
+retrowave_check = {
+        'check': 'git tag',
+        'repository': 'https://github.com/SudoMaker/RetroWave.git',
+        'prefix': 'v',
+}
+
 crosstool_ng_check = {
     'check': 'git tag',
     'repository': 'https://github.com/crosstool-ng/crosstool-ng.git',
@@ -210,6 +216,7 @@ VERSIONS = {
         'repository': 'https://github.com/libsdl-org/SDL-1.2.git',
         'branch': 'main',
     },
+    ('./toolchains/common/packages/retrowave/build.sh', 'RETROWAVE'): retrowave_check,
     ('./toolchains/common/packages/sdl-net1.2/build.sh', 'SDL_NET'): {
         'check': 'git commit',
         'repository': 'https://github.com/libsdl-org/SDL_net.git',
@@ -328,6 +335,7 @@ VERSIONS = {
         'prefix': 'v',
         'exclude pattern': r'.*-beta$',
     },
+    ('./toolchains/mxe/packages/retrowave/retrowave.mk', ''): retrowave_check,
     ('./toolchains/mxe/packages/winsparkle/winsparkle.mk', ''): {
         'check': 'git tag',
         'repository': 'https://github.com/vslavik/winsparkle.git',
