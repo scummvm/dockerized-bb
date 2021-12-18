@@ -773,11 +773,11 @@ def riscos(suffix, prefix_subdir, variable_suffix, host, description = None):
     platform.buildconfigureargs = {
         builds.ScummVMBuild: [
             # Disable big engines
-            "--disable-engines=ags,bladerunner,glk,kyra,lol,eob,lastexpress,sci,sci32,scumm,scumm_7_8,he,titanic,tsage,ultima" ],
+            "--disable-engines=ags,bladerunner,glk,kyra,lol,eob,lastexpress,mads,sci,sci32,scumm,scumm_7_8,he,titanic,tsage,ultima,wintermute" ],
     }
     setup(platform)
 
-    platform.description = description + ' (all except AGS, Blade Runner, Glk, Kyra, Scumm, SCI, The Last Express, Starship Titanic, TsAGE, Ultima)'
+    platform.description = description + ' (all except AGS, Blade Runner, Glk, Kyra, MADS, Scumm, SCI, The Last Express, Starship Titanic, TsAGE, Ultima, Wintermute)'
 
     register_platform(platform)
 
@@ -787,11 +787,11 @@ def riscos(suffix, prefix_subdir, variable_suffix, host, description = None):
         builds.ScummVMBuild: [
             # Only the other ones
             "--disable-all-engines",
-            "--enable-engines=ags,bladerunner,glk,kyra,lol,eob,lastexpress,sci,sci32,scumm,scumm_7_8,he,titanic,tsage,ultima" ],
+            "--enable-engines=ags,bladerunner,glk,kyra,lol,eob,lastexpress,mads,madsv2,sci,sci32,scumm,scumm_7_8,he,titanic,tsage,ultima,wintermute,wme3d,foxtail,herocraft" ],
     }
     setup(platform)
 
-    platform.description = description + ' (AGS, Blade Runner, Glk, Kyra, Scumm, SCI, The Last Express, Starship Titanic, TsAGE, Ultima)'
+    platform.description = description + ' (AGS, Blade Runner, Glk, Kyra, MADS, Scumm, SCI, The Last Express, Starship Titanic, TsAGE, Ultima, Wintermute)'
 
     register_platform(platform)
 riscos("", "", "STD", "arm-unknown-riscos", "RISC OS")
