@@ -14,6 +14,18 @@ sed -i -e 's/-Wno-format-truncation //' Makefile
 do_make libgif.a OFLAGS="${CPPFLAGS} ${CFLAGS} ${LDFLAGS}"
 
 do_make install-include PREFIX=${PREFIX}
-install -m 644 libgif.a "${LIBDIR:-${PKG_CONFIG_LIBDIR:-${PREFIX}/lib/pkgconfig}/..}/libgif.a"
+
+# Find the libc and install libgif next to it
+if [ -z "${LIBDIR}" ]; then
+	LIBDIR=$(dirname "$("$CC" -print-file-name="libc.a")")
+	if [ "$LIBDIR" = . ]; then
+		LIBDIR=
+	fi
+fi
+if [ -z "${LIBDIR}" ]; then
+	LIBDIR=${PREFIX}/lib
+fi
+
+install -m 644 libgif.a "${DESTDIR}${LIBDIR}/libgif.a"
 
 do_clean_bdir
