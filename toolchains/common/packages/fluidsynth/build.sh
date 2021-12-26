@@ -1,6 +1,6 @@
 #! /bin/sh
 
-FLUIDSYNTH_VERSION=2.2.3
+FLUIDSYNTH_VERSION=2.2.4
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..

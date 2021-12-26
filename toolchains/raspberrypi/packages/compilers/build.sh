@@ -1,8 +1,8 @@
 #! /bin/sh
 
-DIST_VERSION=Buster
-# Use same version as Buster one
-GCC_VERSION=8.3.0
+DIST_VERSION=Bullseye
+# Use same version as Raspbian one
+GCC_VERSION=10.2.0
 # Which RPI to target, RPI and SUFFIX must match
 RPI="1%2C%20Zero"
 SUFFIX="0-1"
