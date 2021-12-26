@@ -1,0 +1,88 @@
+diff --git a/scripts/001-binutils.sh b/scripts/001-binutils.sh
+index f9a21a0..042b722 100755
+--- a/scripts/001-binutils.sh
++++ b/scripts/001-binutils.sh
+@@ -4,12 +4,12 @@
+ ## Download the source code.
+ REPO_URL="https://github.com/pspdev/binutils-gdb.git"
+ REPO_FOLDER="binutils-gdb"
+-BRANCH_NAME="allegrex-v2.37.0"
+-if test ! -d "$REPO_FOLDER"; then
+-	git clone --depth 1 -b $BRANCH_NAME $REPO_URL $REPO_FOLDER && cd $REPO_FOLDER || { exit 1; }
+-else
+-	cd $REPO_FOLDER && git fetch origin && git reset --hard origin/${BRANCH_NAME} || { exit 1; }
+-fi
++
++mkdir "$REPO_FOLDER" && cd "$REPO_FOLDER"
++git init
++git remote add origin "$REPO_URL"
++git fetch --depth 1 origin "$BINUTILS_VERSION"
++git checkout FETCH_HEAD
+ 
+ TARGET="psp"
+ TARG_XTRA_OPTS=""
+diff --git a/scripts/002-gcc-stage1.sh b/scripts/002-gcc-stage1.sh
+index 9a11c50..d8e6eca 100755
+--- a/scripts/002-gcc-stage1.sh
++++ b/scripts/002-gcc-stage1.sh
+@@ -4,12 +4,12 @@
+ ## Download the source code.
+ REPO_URL="https://github.com/pspdev/gcc.git"
+ REPO_FOLDER="gcc"
+-BRANCH_NAME="allegrex-v9.3.0"
+-if test ! -d "$REPO_FOLDER"; then
+-	git clone --depth 1 -b $BRANCH_NAME $REPO_URL $REPO_FOLDER && cd $REPO_FOLDER || { exit 1; }
+-else
+-	cd $REPO_FOLDER && git fetch origin && git reset --hard origin/${BRANCH_NAME} || { exit 1; }
+-fi
++
++mkdir "$REPO_FOLDER" && cd "$REPO_FOLDER"
++git init
++git remote add origin "$REPO_URL"
++git fetch --depth 1 origin "$GCC_VERSION"
++git checkout FETCH_HEAD
+ 
+ TARGET="psp"
+ OSVER=$(uname)
+diff --git a/scripts/003-newlib.sh b/scripts/003-newlib.sh
+index e30a362..6e2b4f3 100755
+--- a/scripts/003-newlib.sh
++++ b/scripts/003-newlib.sh
+@@ -4,12 +4,12 @@
+ ## Download the source code.
+ REPO_URL="https://github.com/pspdev/newlib.git"
+ REPO_FOLDER="newlib"
+-BRANCH_NAME="allegrex-v4.1.0"
+-if test ! -d "$REPO_FOLDER"; then
+-	git clone --depth 1 -b $BRANCH_NAME $REPO_URL && cd $REPO_FOLDER || { exit 1; }
+-else
+-	cd $REPO_FOLDER && git fetch origin && git reset --hard origin/${BRANCH_NAME} && git checkout ${BRANCH_NAME} || { exit 1; }
+-fi
++
++mkdir "$REPO_FOLDER" && cd "$REPO_FOLDER"
++git init
++git remote add origin "$REPO_URL"
++git fetch --depth 1 origin "$NEWLIB_VERSION"
++git checkout FETCH_HEAD
+ 
+ TARGET="psp"
+ 
+diff --git a/scripts/004-gcc-stage2.sh b/scripts/004-gcc-stage2.sh
+index 3a5dca3..f9abe8e 100755
+--- a/scripts/004-gcc-stage2.sh
++++ b/scripts/004-gcc-stage2.sh
+@@ -4,12 +4,8 @@
+ ## Download the source code.
+ REPO_URL="https://github.com/pspdev/gcc.git"
+ REPO_FOLDER="gcc"
+-BRANCH_NAME="allegrex-v9.3.0"
+-if test ! -d "$REPO_FOLDER"; then
+-	git clone --depth 1 -b $BRANCH_NAME $REPO_URL && cd $REPO_FOLDER || { exit 1; }
+-else
+-	cd $REPO_FOLDER && git fetch origin && git reset --hard origin/${BRANCH_NAME} || { exit 1; }
+-fi
++
++cd $REPO_FOLDER
+ 
+ TARGET="psp"
+ OSVER=$(uname)

@@ -1,12 +1,16 @@
 #! /bin/sh
 
-TOOLCHAIN_VERSION=1f4b805ce47dfcc6d945d7eb2821b9cd127e709d
-export PSPSDK_VERSION=da65a39152da65fca9a65dded0b415b57d30a610
-export NEWLIB_VERSION=f8d6259c204fd0fa76e01926ec4e3e4fe04f6b22
-export PSPLINKUSB_VERSION=9a9512ed115c3415ac953b64613d53283a75ada9
+PSPDEV_VERSION=c8317c85be1433dfa286d0b0229fc301ad2f8776
+export PSPTOOLCHAIN_VERSION=b6c1547ee82eada94dcb07acdcfd7fd40a3f4421
+export PSPSDK_VERSION=8029a2a210f17210907820782b44122d48369c1c
+export PSPLINKUSB_VERSION=dbf5b94dd973dc49ee28d596a03c1362bcbce9e3
 export EBOOTSIGNER_VERSION=10cfbb51ea87adfe02d63dc3a262c8480fdf31e7
-export PSP_PKGCONF_VERSION=c50b45fd551c08eefebd9cb02edc55887fd68b28
-export PSPLIBRARIES_VERSION=5b19a6454ea6cbd0d3c76a5aac9e28ce610b4553
+export PSPTOOLCHAIN_ALLEGREX_VERSION=11942d2a69c9e96e9e1465b315488b0ffb4df819
+export PSPTOOLCHAIN_EXTRA_VERSION=39bc74ae8717aee143eead9065d1bcf48bc1f021
+export BINUTILS_VERSION=07399ead1c4827b81ff71673796887d59c9355bd
+export GCC_VERSION=0049612a76e8f44b9c21646cb90ca4bad8f4aff3
+export NEWLIB_VERSION=dd3c854d70d2a0b4293569433d262c9ade4d60a0
+export PSP_PACMAN_VERSION=23e6b9389626a32336063e90c486aa4db73a74d7
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..
@@ -14,18 +18,23 @@ HELPERS_DIR=$PACKAGE_DIR/../..
 
 do_make_bdir
 
-do_http_fetch psptoolchain "https://github.com/pspdev/psptoolchain/archive/${TOOLCHAIN_VERSION}.tar.gz" 'tar xzf'
+do_http_fetch pspdev "https://github.com/pspdev/pspdev/archive/${PSPDEV_VERSION}.tar.gz" 'tar xzf'
 
-# export PATH to please toolchain.sh
+# Don't install packages (yet)
+rm -f scripts/*-psp-packages.sh
+
+# export PATH to please the toolchain.sh
 export PATH=$PATH:$PSPDEV/bin
-# export ACLOCAL_PATH for SDL aclocal macros (avoids installation of libsdl on host)
-export ACLOCAL_PATH=$PREFIX/share/aclocal:$ACLOCAL_PATH
 
+# We use this variable in the patches
+export PACKAGE_DIR
 # Use -e to stop on error
-# Don't write environment variables to profile.d (like in toolchain-local.sh)
-bash -e ./toolchain.sh $(seq 1 12)
+bash -e ./build-all.sh
 
 do_clean_bdir
 
 # Cleanup wget HSTS
 rm -f $HOME/.wget-hsts
+
+# Remove pip cache
+rm -rf $HOME/.cache

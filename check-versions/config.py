@@ -442,7 +442,17 @@ VERSIONS = {
         'branch': 'master',
     },
 
-    ('./toolchains/psp/packages/toolchain/build.sh', 'TOOLCHAIN'): {
+    ('./toolchains/psp/packages/psp-packages/build.sh', 'PSP_PACKAGES'): {
+        'check': 'git commit',
+        'repository': 'https://github.com/pspdev/psp-packages.git',
+        'branch': 'master',
+    },
+    ('./toolchains/psp/packages/toolchain/build.sh', 'PSPDEV'): {
+        'check': 'git commit',
+        'repository': 'https://github.com/pspdev/pspdev.git',
+        'branch': 'master',
+    },
+    ('./toolchains/psp/packages/toolchain/build.sh', 'PSPTOOLCHAIN'): {
         'check': 'git commit',
         'repository': 'https://github.com/pspdev/psptoolchain.git',
         'branch': 'master',
@@ -451,11 +461,6 @@ VERSIONS = {
         'check': 'git commit',
         'repository': 'https://github.com/pspdev/pspsdk.git',
         'branch': 'master',
-    },
-    ('./toolchains/psp/packages/toolchain/build.sh', 'NEWLIB'): {
-        'check': 'git commit',
-        'repository': 'https://github.com/pspdev/newlib.git',
-        'branch': 'newlib-1_20_0-PSP',
     },
     ('./toolchains/psp/packages/toolchain/build.sh', 'PSPLINKUSB'): {
         'check': 'git commit',
@@ -467,14 +472,34 @@ VERSIONS = {
         'repository': 'https://github.com/pspdev/ebootsigner.git',
         'branch': 'master',
     },
-    ('./toolchains/psp/packages/toolchain/build.sh', 'PSP_PKGCONF'): {
+    ('./toolchains/psp/packages/toolchain/build.sh', 'PSPTOOLCHAIN_ALLEGREX'): {
         'check': 'git commit',
-        'repository': 'https://github.com/pspdev/psp-pkgconf.git',
-        'branch': 'master',
+        'repository': 'https://github.com/pspdev/psptoolchain-allegrex.git',
+        'branch': 'main',
     },
-    ('./toolchains/psp/packages/toolchain/build.sh', 'PSPLIBRARIES'): {
+    ('./toolchains/psp/packages/toolchain/build.sh', 'PSPTOOLCHAIN_EXTRA'): {
         'check': 'git commit',
-        'repository': 'https://github.com/pspdev/psplibraries.git',
+        'repository': 'https://github.com/pspdev/psptoolchain-extra.git',
+        'branch': 'main',
+    },
+    ('./toolchains/psp/packages/toolchain/build.sh', 'BINUTILS'): {
+        'check': 'git commit',
+        'repository': 'https://github.com/pspdev/binutils-gdb.git',
+        'branch': 'allegrex-v2.37.0',
+    },
+    ('./toolchains/psp/packages/toolchain/build.sh', 'GCC'): {
+        'check': 'git commit',
+        'repository': 'https://github.com/pspdev/gcc.git',
+        'branch': 'allegrex-v9.3.0',
+    },
+    ('./toolchains/psp/packages/toolchain/build.sh', 'NEWLIB'): {
+        'check': 'git commit',
+        'repository': 'https://github.com/pspdev/newlib.git',
+        'branch': 'allegrex-v4.1.0',
+    },
+    ('./toolchains/psp/packages/toolchain/build.sh', 'PSP_PACMAN'): {
+        'check': 'git commit',
+        'repository': 'https://github.com/pspdev/psp-pacman.git',
         'branch': 'master',
     },
 

@@ -1,104 +1,96 @@
-diff --git a/common.sh b/common.sh
-index a01f3a6..cc6c06e 100755
---- a/common.sh
-+++ b/common.sh
-@@ -74,5 +74,7 @@ function clone_git_repo
-     # or it was nuked due to being corrupted. Clone and track master, please.
-     # Attempt to clone over SSH if possible, use anonymous HTTP as fallback.
-     # Set SSH_ASKPASS and stdin(<) to prevent it from freezing to ask for auth.
--    [ -d $repo ] || SSH_ASKPASS=false git clone --recursive --depth 1 -b $branch git@$host:$user/$repo.git $repo < /dev/null || SSH_ASKPASS=false git clone --recursive --depth 1 -b $branch https://$host/$user/$repo.git $repo < /dev/null || return 1
-+    [ -d $repo ] || SSH_ASKPASS=false git clone --recursive git@$host:$user/$repo.git $repo < /dev/null || SSH_ASKPASS=false git clone --recursive https://$host/$user/$repo.git $repo < /dev/null || return 1
+diff --git a/scripts/001-psptoolchain.sh b/scripts/001-psptoolchain.sh
+index 732e96a..babb6f8 100755
+--- a/scripts/001-psptoolchain.sh
++++ b/scripts/001-psptoolchain.sh
+@@ -4,12 +4,16 @@
+ ## Download the source code.
+ REPO_URL="https://github.com/pspdev/psptoolchain"
+ REPO_FOLDER="psptoolchain"
+-BRANCH_NAME="master"
+-if test ! -d "$REPO_FOLDER"; then
+-	git clone --depth 1 -b $BRANCH_NAME $REPO_URL && cd $REPO_FOLDER || { exit 1; }
+-else
+-	cd $REPO_FOLDER && git fetch origin && git reset --hard origin/${BRANCH_NAME} || { exit 1; }
+-fi
 +
-+    git -C $repo checkout $branch
- }
-diff --git a/scripts/003-pspsdk-stage1.sh b/scripts/003-pspsdk-stage1.sh
-index a0a77e9..ed407ed 100755
---- a/scripts/003-pspsdk-stage1.sh
-+++ b/scripts/003-pspsdk-stage1.sh
-@@ -5,7 +5,7 @@
-  set -e
++mkdir "$REPO_FOLDER" && cd "$REPO_FOLDER"
++git init
++git remote add origin "$REPO_URL"
++git fetch --depth 1 origin "$PSPTOOLCHAIN_VERSION"
++git checkout FETCH_HEAD
++
++for p in "$PACKAGE_DIR/$REPO_FOLDER-patches"/*; do
++	patch -p1 < "$p"
++done
  
-  ## Download the source code if it does not already exist.
-- clone_git_repo github.com pspdev pspsdk
-+ clone_git_repo github.com pspdev pspsdk "$PSPSDK_VERSION"
+ ## Build and install.
+ ./toolchain.sh || { exit 1; }
+diff --git a/scripts/002-pspsdk.sh b/scripts/002-pspsdk.sh
+index 629f3ac..fe11891 100755
+--- a/scripts/002-pspsdk.sh
++++ b/scripts/002-pspsdk.sh
+@@ -4,12 +4,12 @@
+ ## Download the source code.
+ REPO_URL="https://github.com/pspdev/pspsdk"
+ REPO_FOLDER="pspsdk"
+-BRANCH_NAME="master"
+-if test ! -d "$REPO_FOLDER"; then
+-	git clone --depth 1 -b $BRANCH_NAME $REPO_URL && cd $REPO_FOLDER || { exit 1; }
+-else
+-	cd $REPO_FOLDER && git fetch origin && git reset --hard origin/${BRANCH_NAME} || { exit 1; }
+-fi
++
++mkdir "$REPO_FOLDER" && cd "$REPO_FOLDER"
++git init
++git remote add origin "$REPO_URL"
++git fetch --depth 1 origin "$PSPSDK_VERSION"
++git checkout FETCH_HEAD
  
-  ## Enter the source directory.
-  cd pspsdk
-diff --git a/scripts/004-newlib-1.20.0.sh b/scripts/004-newlib-1.20.0.sh
-index cb5e1c0..ee5f2ac 100755
---- a/scripts/004-newlib-1.20.0.sh
-+++ b/scripts/004-newlib-1.20.0.sh
-@@ -5,7 +5,7 @@
-  set -e
+ ## Determine the maximum number of processes that Make can work with.
+ PROC_NR=$(getconf _NPROCESSORS_ONLN)
+diff --git a/scripts/004-psplinkusb-extra.sh b/scripts/004-psplinkusb-extra.sh
+index df7bce4..2dc9058 100755
+--- a/scripts/004-psplinkusb-extra.sh
++++ b/scripts/004-psplinkusb-extra.sh
+@@ -4,12 +4,12 @@
+ ## Download the source code.
+ REPO_URL="https://github.com/pspdev/psplinkusb"
+ REPO_FOLDER="psplinkusb"
+-BRANCH_NAME="master"
+-if test ! -d "$REPO_FOLDER"; then
+-	git clone --depth 1 -b $BRANCH_NAME $REPO_URL && cd $REPO_FOLDER || { exit 1; }
+-else
+-	cd $REPO_FOLDER && git fetch origin && git reset --hard origin/${BRANCH_NAME} || { exit 1; }
+-fi
++
++mkdir "$REPO_FOLDER" && cd "$REPO_FOLDER"
++git init
++git remote add origin "$REPO_URL"
++git fetch --depth 1 origin "$PSPLINKUSB_VERSION"
++git checkout FETCH_HEAD
  
-  ## Download the source code if it does not already exist.
--clone_git_repo github.com pspdev newlib newlib-1_20_0-PSP
-+clone_git_repo github.com pspdev newlib "$NEWLIB_VERSION"
+ ## Determine the maximum number of processes that Make can work with.
+ PROC_NR=$(getconf _NPROCESSORS_ONLN)
+diff --git a/scripts/005-ebootsigner-extra.sh b/scripts/005-ebootsigner-extra.sh
+index c6aff68..c79f456 100755
+--- a/scripts/005-ebootsigner-extra.sh
++++ b/scripts/005-ebootsigner-extra.sh
+@@ -4,12 +4,12 @@
+ ## Download the source code.
+ REPO_URL="https://github.com/pspdev/ebootsigner"
+ REPO_FOLDER="ebootsigner"
+-BRANCH_NAME="master"
+-if test ! -d "$REPO_FOLDER"; then
+-	git clone --depth 1 -b $BRANCH_NAME $REPO_URL && cd $REPO_FOLDER || { exit 1; }
+-else
+-	cd $REPO_FOLDER && git fetch origin && git reset --hard origin/${BRANCH_NAME} || { exit 1; }
+-fi
++
++mkdir "$REPO_FOLDER" && cd "$REPO_FOLDER"
++git init
++git remote add origin "$REPO_URL"
++git fetch --depth 1 origin "$EBOOTSIGNER_VERSION"
++git checkout FETCH_HEAD
  
-  ## Enter the source directory
-  cd newlib
-diff --git a/scripts/006-pspsdk-stage2.sh b/scripts/006-pspsdk-stage2.sh
-index 1c5b589..de19769 100755
---- a/scripts/006-pspsdk-stage2.sh
-+++ b/scripts/006-pspsdk-stage2.sh
-@@ -5,7 +5,7 @@
-  set -e
- 
-  ## Download the source code if it does not already exist.
-- clone_git_repo github.com pspdev pspsdk
-+ clone_git_repo github.com pspdev pspsdk "$PSPSDK_VERSION"
- 
-  ## Enter the source directory.
-  cd pspsdk
-diff --git a/scripts/009-psplinkusb.sh b/scripts/009-psplinkusb.sh
-index dafe84e..c79d929 100755
---- a/scripts/009-psplinkusb.sh
-+++ b/scripts/009-psplinkusb.sh
-@@ -5,7 +5,7 @@
-  set -e
-  
-  ## Download the source code if it does not already exist
-- clone_git_repo github.com pspdev psplinkusb
-+ clone_git_repo github.com pspdev psplinkusb "$PSPLINKUSB_VERSION"
- 
-  ## Enter the source directory
-  cd psplinkusb
-diff --git a/scripts/010-ebootsigner.sh b/scripts/010-ebootsigner.sh
-index 76ce142..8063588 100755
---- a/scripts/010-ebootsigner.sh
-+++ b/scripts/010-ebootsigner.sh
-@@ -6,7 +6,7 @@
-  set -e
- 
-  ## Download the source code if it does not already exist.
-- clone_git_repo github.com pspdev ebootsigner
-+ clone_git_repo github.com pspdev ebootsigner "$EBOOTSIGNER_VERSION"
- 
-  ## Enter the source directory.
-  cd ebootsigner
-diff --git a/scripts/011-psp-pkg-config.sh b/scripts/011-psp-pkg-config.sh
-index 38702a6..463e9c4 100755
---- a/scripts/011-psp-pkg-config.sh
-+++ b/scripts/011-psp-pkg-config.sh
-@@ -5,7 +5,7 @@
- set -e
- 
- # Download the source code.
--clone_git_repo github.com pspdev psp-pkgconf
-+clone_git_repo github.com pspdev psp-pkgconf "$PSP_PKGCONF_VERSION"
- 
- # Enter the source directory.
- cd psp-pkgconf
-diff --git a/scripts/012-psplibraries.sh b/scripts/012-psplibraries.sh
-index be0f1f0..b9d4e94 100755
---- a/scripts/012-psplibraries.sh
-+++ b/scripts/012-psplibraries.sh
-@@ -9,7 +9,7 @@
-  set -e
- 
-  ## Download the source code.
-- clone_git_repo github.com pspdev psplibraries
-+ clone_git_repo github.com pspdev psplibraries "$PSPLIBRARIES_VERSION"
- 
-  ## Enter the source directory.
-  cd psplibraries
+ ## Determine the maximum number of processes that Make can work with.
+ PROC_NR=$(getconf _NPROCESSORS_ONLN)
