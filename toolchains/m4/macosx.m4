@@ -150,4 +150,6 @@ ports_package(libsdl2_net)
 COPY --from=macosx-common /lib-helpers/packages/fluidsynth lib-helpers/packages/fluidsynth
 helpers_package(fluidsynth, -DCMAKE_SYSTEM_NAME=Darwin -DLIB_SUFFIX=)
 
+helpers_package(retrowave, -DCMAKE_SYSTEM_NAME=Darwin)
+
 # Toolchain specific packages will go in the dedicated file now
