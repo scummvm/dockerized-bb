@@ -528,6 +528,8 @@ VERSIONS = {
         'check': 'git tag',
         'repository': 'https://github.com/vitasdk/autobuilds.git',
         'prefix': 'master-linux-v',
+        # Use pattern as prefix would remove 2.
+        'pattern': r'^master-linux-v2\.',
     },
 
     ('./toolchains/windows-9x/packages/pe-util/build.sh', 'PE_UTIL'): {
