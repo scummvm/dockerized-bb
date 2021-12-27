@@ -28,8 +28,6 @@ helpers_package(mpeg2dec)
 
 helpers_package(a52dec)
 
-helpers_package(libiconv)
-
 android_package(openssl)
 
 helpers_package(curl)

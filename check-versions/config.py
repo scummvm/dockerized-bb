@@ -504,17 +504,6 @@ VERSIONS = {
         'repository': 'https://github.com/vitasdk/autobuilds.git',
         'prefix': 'master-linux-v',
     },
-    ('./toolchains/vita/packages/vita-shader-collection/build.sh', 'VITA_SHDR_COLL'): {
-        'check': 'git tag',
-        'repository': 'https://github.com/frangarcj/vita-shader-collection.git',
-        # Use pattern as prefix would remove it
-        'pattern': '^gtu-',
-    },
-    ('./toolchains/vita/packages/vita2dlib_fbo/build.sh', 'VITA2DLIB'): {
-        'check': 'git commit',
-        'repository': 'https://github.com/frangarcj/vita2dlib.git',
-        'branch': 'fbo',
-    },
 
     ('./toolchains/windows-9x/packages/pe-util/build.sh', 'PE_UTIL'): {
         'check': 'git commit',

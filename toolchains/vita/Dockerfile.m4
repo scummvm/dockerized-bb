@@ -67,12 +67,3 @@ vdpm_package(FluidLite)
 vdpm_package(sdl2)
 
 vdpm_package(sdl2_net)
-
-# The following packages are not used in the current development version.
-
-# These functions aren't implemented on Vita but they are not needed either
-helpers_package(libiconv, , ac_cv_func_sigprocmask=yes ac_cv_func_getprogname=yes)
-
-local_package(vita2dlib_fbo)
-
-local_package(vita-shader-collection)
