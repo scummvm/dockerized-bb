@@ -436,9 +436,8 @@ class ScummVMBuild(StandardBuild):
     DATA_FILES = [
         "AUTHORS",
         "COPYING",
-        "COPYING.LGPL",
-        "COPYING.BSD",
         "COPYRIGHT",
+        "LICENSES",
         "NEWS.md",
         "README.md",
         "gui/themes/translations.dat",
