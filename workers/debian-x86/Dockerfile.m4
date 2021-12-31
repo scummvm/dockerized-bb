@@ -11,6 +11,7 @@ m4_include(`debian-libraries.m4')m4_dnl
 RUN apt-get update && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 		g++-i686-linux-gnu \
+		nasm \
                 && \
         rm -rf /var/lib/apt/lists/*
 
