@@ -18,7 +18,7 @@ RUN cp /etc/ssl/certs/ca-certificates.crt "${DEVKITPRO}/cacert.pem"
 
 # We add PATH here for *-config and platform specific binaries
 ENV \
-	def_binaries(`${DEVKITARM}/bin/${HOST}-', `ar, as, c++filt, ld, link, nm, objcopy, objdump, ranlib, readelf, strings, strip') \
+	def_binaries(`${DEVKITARM}/bin/${HOST}-', `ar, as, c++filt, ld, nm, objcopy, objdump, ranlib, readelf, strings, strip') \
 	def_binaries(`${DEVKITARM}/bin/${HOST}-', `gcc, cpp, c++') \
 	CC=${DEVKITARM}/bin/${HOST}-gcc \
 	def_aclocal(`${PREFIX}') \

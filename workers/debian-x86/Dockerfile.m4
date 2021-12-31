@@ -17,7 +17,7 @@ RUN apt-get update && \
 ENV HOST=i386-linux-gnu BINHOST=i686-linux-gnu
 
 ENV \
-	def_binaries(`/usr/bin/${BINHOST}-', `ar, as, c++filt, ld, link, nm, objcopy, objdump, ranlib, readelf, strings, strip') \
+	def_binaries(`/usr/bin/${BINHOST}-', `ar, as, c++filt, dwp, ld, nm, objcopy, objdump, ranlib, readelf, strings, strip') \
 	def_binaries(`/usr/bin/${BINHOST}-', `gcc, cpp') \
 	CC=/usr/bin/${BINHOST}-gcc \
 	CXX=/usr/bin/${BINHOST}-g++ \

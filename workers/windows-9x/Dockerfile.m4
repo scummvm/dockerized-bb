@@ -24,7 +24,6 @@ COPY --from=toolchain ${MINGW32} ${MINGW32}/
 ENV PREFIX=${MINGW32}/${HOST}
 
 # We add PATH here for *-config and platform specific binaries
-# ucon64 tries to write in home directory, use /tmp for this
 ENV \
 	def_binaries(`${MINGW32}/bin/${HOST}-', `ar, as, c++filt, ld, nm, objcopy, objdump, ranlib, readelf, strings, strip') \
 	def_binaries(`${MINGW32}/bin/${HOST}-', `gcc, cpp, c++') \

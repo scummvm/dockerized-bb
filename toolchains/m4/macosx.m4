@@ -87,7 +87,7 @@ ENV HOST=MACOSX_TARGET_ARCH-apple-darwin`'MACOSX_TARGET_VERSION \
 # We define PKG_CONFIG_SYSROOT_DIR to let pkg-config behave the same way when invoked without using wrapper
 # We define OSXCROSS_MP_INC to have clang automatically add macports path
 ENV \
-	def_binaries(`${TARGET_DIR}/bin/${HOST}-', `ar, as, c++filt, ld, nm, objcopy, objdump, ranlib, readelf, strings, strip') \
+	def_binaries(`${TARGET_DIR}/bin/${HOST}-', `ar, as, ld, lipo, nm, ranlib, strings, strip') \
 	CPP="${TARGET_DIR}/bin/${HOST}-cc -E" \
 	CC=${TARGET_DIR}/bin/${HOST}-cc \
 	CXX=${TARGET_DIR}/bin/${HOST}-c++ \

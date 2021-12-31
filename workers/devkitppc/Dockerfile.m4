@@ -18,7 +18,7 @@ RUN ln -s ${DEVKITPRO}/tools/bin/elf2dol ${DEVKITPPC}/bin/
 
 # We add PATH here for *-config and platform specific binaries
 ENV \
-	def_binaries(`${DEVKITPPC}/bin/${HOST}-', `ar, as, c++filt, ld, link, nm, objcopy, objdump, ranlib, readelf, strings, strip') \
+	def_binaries(`${DEVKITPPC}/bin/${HOST}-', `ar, as, c++filt, ld, nm, objcopy, objdump, ranlib, readelf, strings, strip') \
 	def_binaries(`${DEVKITPPC}/bin/${HOST}-', `gcc, cpp, c++') \
 	CC=${DEVKITPPC}/bin/${HOST}-gcc \
 	def_aclocal(`${PREFIX}') \

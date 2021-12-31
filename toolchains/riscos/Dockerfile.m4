@@ -53,8 +53,8 @@ ENV PREFIX=${GCCSDK_INSTALL_ENV} HOST=arm-unknown-riscos
 ENV \
 	def_binaries(`${GCCSDK_INSTALL_CROSSBIN}/${HOST}-', `ar, as, c++filt, ld, nm, objcopy, objdump, ranlib, readelf, strings, strip') \
 	def_binaries(`${GCCSDK_INSTALL_CROSSBIN}/${HOST}-', `gcc, cpp, c++') \
-	CC=$GCCSDK_INSTALL_CROSSBIN/$HOST-gcc \
-	PATH=$GCCSDK_INSTALL_CROSSBIN:$PATH \
+	CC="${GCCSDK_INSTALL_CROSSBIN}/${HOST}-gcc" \
+	PATH="${GCCSDK_INSTALL_CROSSBIN}:${PATH}" \
 	CFLAGS="-ffunction-sections -fdata-sections -mno-poke-function-name" \
 	CXXFLAGS="-ffunction-sections -fdata-sections -mno-poke-function-name" \
 	LDFLAGS="-Wl,--gc-sections" \

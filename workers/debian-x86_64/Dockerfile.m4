@@ -15,7 +15,7 @@ RUN apt-get update && \
 ENV HOST=x86_64-linux-gnu
 
 ENV \
-	def_binaries(`/usr/bin/${HOST}-', `ar, as, c++filt, ld, link, nm, objcopy, objdump, ranlib, readelf, strings, strip') \
+	def_binaries(`/usr/bin/${HOST}-', `ar, as, c++filt, dwp, ld, nm, objcopy, objdump, ranlib, readelf, strings, strip') \
 	def_binaries(`/usr/bin/${HOST}-', `gcc, cpp') \
 	CC=/usr/bin/${HOST}-gcc \
 	CXX=/usr/bin/${HOST}-g++ \

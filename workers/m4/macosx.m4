@@ -58,7 +58,7 @@ COPY --from=toolchain $TARGET_DIR $TARGET_DIR/
 # We define PKG_CONFIG_SYSROOT_DIR to let pkg-config behave the same way when invoked without using wrapper
 # We define OSXCROSS_MP_INC to have clang automatically add macports path
 ENV \
-	def_binaries(`${TARGET_DIR}/bin/${HOST}-', `ar, as, c++filt, ld, nm, objcopy, objdump, ranlib, readelf, strings, strip') \
+	def_binaries(`${TARGET_DIR}/bin/${HOST}-', `ar, as, ld, lipo, nm, ranlib, strings, strip') \
 	CPP="${TARGET_DIR}/bin/${HOST}-cc -E" \
 	CC=${TARGET_DIR}/bin/${HOST}-cc \
 	CXX=${TARGET_DIR}/bin/${HOST}-c++ \
@@ -68,7 +68,7 @@ ENV \
 	def_aclocal(`${TARGET_DIR}/macports/pkgs/${PREFIX}') \
 	PKG_CONFIG_SYSROOT_DIR=${DESTDIR} \
 	def_pkg_config(`${DESTDIR}/${PREFIX}') \
-        PATH=$PATH:${TARGET_DIR}/bin:${TARGET_DIR}/SDK/MacOSX`'MACOSX_SDK_VERSION`'.sdk/usr/bin:${DESTDIR}/${PREFIX}/bin \
+	PATH=$PATH:${TARGET_DIR}/bin:${TARGET_DIR}/SDK/MacOSX`'MACOSX_SDK_VERSION`'.sdk/usr/bin:${DESTDIR}/${PREFIX}/bin \
 	OSXCROSS_MP_INC=1
 
 m4_include(`run-buildbot.m4')m4_dnl
