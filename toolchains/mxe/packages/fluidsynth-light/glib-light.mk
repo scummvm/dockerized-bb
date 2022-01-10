@@ -20,7 +20,7 @@ endef
 
 define $(PKG)_BUILD
     # cross build
-    cd '$(SOURCE_DIR)' && NOCONFIGURE=true ./autogen.sh
+    cd '$(SOURCE_DIR)' && NOCONFIGURE=true GTKDOCIZE=false ./autogen.sh
     cd '$(BUILD_DIR)' && '$(SOURCE_DIR)/configure' \
         $(MXE_CONFIGURE_OPTS) \
         --with-threads=win32 \
