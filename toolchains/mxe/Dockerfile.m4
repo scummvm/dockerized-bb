@@ -56,6 +56,8 @@ mxe_package(zlib)
 
 mxe_package(libpng)
 
+local_mxe_package(yasm)
+
 # Patch libjpeg-turbo to not install it in its own subdirectory
 local_mxe_package(libjpeg-turbo)
 
