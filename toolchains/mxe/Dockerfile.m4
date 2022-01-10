@@ -27,7 +27,7 @@ RUN apt-get update && \
 		libtool-bin \
 		lzip \
 		p7zip-full \
-		python \
+		python-is-python3 \
 		ruby && \
 	rm -rf /var/lib/apt/lists/*
 

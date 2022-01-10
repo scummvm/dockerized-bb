@@ -15,7 +15,6 @@ RUN apt-get update && \
 		make \
 		pandoc \
 		pkg-config \
-		python3 \
 		python-is-python3 \
 		xz-utils \
 		zip \
