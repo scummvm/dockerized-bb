@@ -19,7 +19,7 @@ RUN apt-get update && \
 		liblzma-dev \
 		libxml2-dev \
 		libssl-dev \
-		python \
+		python-is-python3 \
 		uuid-dev \
 		zlib1g-dev \
 		&& \

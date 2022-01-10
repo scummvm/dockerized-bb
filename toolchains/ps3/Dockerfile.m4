@@ -17,7 +17,7 @@ RUN apt-get update && \
 		texinfo \
 		libncurses5-dev \
 		patch \
-		python \
+		python-is-python3 \
 		subversion \
 		wget \
 		zlib1g-dev \
