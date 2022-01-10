@@ -3,8 +3,8 @@ m4_define(`MXE_VERSION',build-2021-04-22)m4_dnl
 m4_include(`paths.m4')m4_dnl
 m4_include(`packages.m4')m4_dnl
 m4_define(`mxe_package', RUN cd "${MXE_DIR}" && \
-	$3 make $1 $2 PREFIX="${MXE_PREFIX_DIR}" && \
-	make PREFIX="${MXE_PREFIX_DIR}" clean-junk && \
+	$3 make $1 $2 -j$(nproc) PREFIX="${MXE_PREFIX_DIR}" && \
+	make PREFIX="${MXE_PREFIX_DIR}" -j$(nproc) clean-junk && \
 	rm -f $HOME/.wget-hsts && find /tmp -mindepth 1 -delete)m4_dnl
 m4_dnl FIXME: don't hardcode /usr/src here
 m4_define(`local_mxe_package', COPY packages/$1 lib-helpers/packages/$1/
