@@ -32,3 +32,6 @@ MXE_TARGETS := x86_64-w64-mingw32.static i686-w64-mingw32.static
 
 # Don't use ccache
 MXE_USE_CCACHE :=
+
+# Don't limit us to 6 jobs when we have plenty CPU
+DEFAULT_MAX_JOBS := 10000
