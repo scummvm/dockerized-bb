@@ -320,7 +320,7 @@ VERSIONS = {
         'check': 'git tag',
         'repository': 'https://github.com/sparkle-project/Sparkle.git',
         # Only keep vanilla releases
-        'pattern': r'^[0-9.]+$',
+        'pattern': r'^1\.[0-9.]+$',
     },
 
     ('./toolchains/mxe/Dockerfile.m4', 'MXE'): {
