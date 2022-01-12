@@ -17,6 +17,7 @@ m4_include(`debian-toolchain-base.m4')m4_dnl
 RUN apt-get update && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 		bison \
+		dos2unix \
 		flex \
 		g++ \
 		gperf \
