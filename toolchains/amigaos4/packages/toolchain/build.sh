@@ -1,10 +1,10 @@
 #! /bin/sh
 
-TOOLCHAIN_VERSION=ac9c5b35159b320ff0dcd6e0d15b1be92ed35450
+TOOLCHAIN_VERSION=e4d7ff76ad34ec69817d7b2f05c3a00a4c491e2b
 
 # Versions of components to use provided by toolchain
 BINUTILS_VER=2.23.2
-GCC_VER=9
+GCC_VER=11
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..
