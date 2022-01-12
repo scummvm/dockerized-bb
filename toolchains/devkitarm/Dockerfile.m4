@@ -1,6 +1,6 @@
 m4_define(`DEVKITARM_VERSION',20210726)
-# This version of devkitARM depends on a Debian Stretch
-# For now it works with stable-slim, we will have to ensure it stays like that
+# This version of devkitARM depends on a Debian Buster
+# For now it works with our version, we will have to ensure it stays like that
 FROM devkitpro/devkitarm:DEVKITARM_VERSION AS original-toolchain
 
 m4_include(`paths.m4')m4_dnl
