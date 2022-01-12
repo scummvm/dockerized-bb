@@ -25,6 +25,7 @@ RUN apt-get update && \
 		libgdk-pixbuf2.0-bin \
 		libssl-dev \
 		libtool-bin \
+		lld \
 		lzip \
 		p7zip-full \
 		python \
@@ -99,3 +100,5 @@ local_mxe_package(winsparkle)
 local_mxe_package(discord-rpc)
 
 local_mxe_package(retrowave)
+
+local_mxe_package(lld)
