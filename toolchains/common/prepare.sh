@@ -15,12 +15,14 @@ DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 	dpkg-dev \
 	git \
 	gnupg \
+	less \
 	libtool \
 	make \
 	meson \
 	pkg-config \
 	quilt \
 	unzip \
+	vim \
 	wget
 rm -rf /var/lib/apt/lists/*
 
