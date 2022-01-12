@@ -11,6 +11,7 @@ $(PKG)_DEPS     := cc
 define $(PKG)_BUILD
     cd '$(BUILD_DIR)' && '$(TARGET)-cmake' '$(SOURCE_DIR)' \
         -DCMAKE_INSTALL_PREFIX='$(PREFIX)/$(TARGET)' \
+	-DBUILD_SHARED_LIBS=FALSE \
 	-DRETROWAVE_BUILD_PLAYER=0
 
     '$(TARGET)-cmake' --build '$(BUILD_DIR)' --config Release --target install
