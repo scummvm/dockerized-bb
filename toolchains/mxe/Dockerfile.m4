@@ -51,6 +51,9 @@ mxe_package(cmake)
 # Use a local version to have target wrapper scripts
 local_mxe_package(pe-util)
 
+# LLD links ScummVM faster
+local_mxe_package(lld)
+
 # Install everything through MXE to not mess with environment variables
 # This lets MXE build all platforms and avoids to mess with its settings
 
@@ -100,5 +103,3 @@ local_mxe_package(winsparkle)
 local_mxe_package(discord-rpc)
 
 local_mxe_package(retrowave)
-
-local_mxe_package(lld)
