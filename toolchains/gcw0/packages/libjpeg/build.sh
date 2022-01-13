@@ -2,7 +2,7 @@
 
 # Stick with toolchain version
 JPEG_VERSION=8d
-JPEG_SHA256=d625ad6b3375a036bf30cd3b0b40e8dde08f0891bfd3a2960650654bdb50318c
+JPEG_SHA256=fdc4d4c11338ad028a7d23fb53f5bb9354671392a67fb1b52e0c32a7121891f8
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..
