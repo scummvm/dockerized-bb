@@ -28,7 +28,7 @@ RUN apt-get update && \
 		lld \
 		lzip \
 		p7zip-full \
-		python \
+		python-is-python3 \
 		ruby && \
 	rm -rf /var/lib/apt/lists/*
 
