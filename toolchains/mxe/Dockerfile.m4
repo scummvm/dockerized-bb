@@ -1,4 +1,4 @@
-m4_define(`MXE_VERSION',build-2021-04-22)m4_dnl
+m4_define(`MXE_VERSION',build-2022-01-13)m4_dnl
 
 m4_include(`paths.m4')m4_dnl
 m4_include(`packages.m4')m4_dnl

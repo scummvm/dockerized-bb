@@ -1,0 +1,20 @@
+From c9be0588a59caea1087d65830d5f4a8ce232bc21 Mon Sep 17 00:00:00 2001
+From: Cameron Cawley <ccawley2011@gmail.com>
+Date: Mon, 4 Oct 2021 16:50:20 +0100
+Subject: [PATCH] Add a plugin for targeting Windows XP
+
+---
+ plugins/windows-xp/gcc-overlay.mk | 4 ++++
+ 1 file changed, 4 insertions(+)
+ create mode 100644 plugins/windows-xp/gcc-overlay.mk
+
+diff --git a/plugins/windows-xp/gcc-overlay.mk b/plugins/windows-xp/gcc-overlay.mk
+new file mode 100644
+index 0000000000..111bc2e20d
+--- /dev/null
++++ b/plugins/windows-xp/gcc-overlay.mk
+@@ -0,0 +1,4 @@
++# This file is part of MXE. See LICENSE.md for licensing information.
++
++mingw-w64-headers_CONFIGURE_OPTS = --with-default-win32-winnt=0x0501
++mingw-w64-crt_CONFIGURE_OPTS = --with-default-win32-winnt=0x0501
