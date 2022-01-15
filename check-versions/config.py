@@ -335,6 +335,8 @@ VERSIONS = {
         'prefix': 'v',
         'exclude pattern': r'.*-beta$',
     },
+    # This is the system version so no need to check
+    ('./toolchains/mxe/packages/lld/lld.mk', ''): 'ignore',
     ('./toolchains/mxe/packages/retrowave/retrowave.mk', ''): retrowave_check,
     ('./toolchains/mxe/packages/winsparkle/winsparkle.mk', ''): {
         'check': 'git tag',
