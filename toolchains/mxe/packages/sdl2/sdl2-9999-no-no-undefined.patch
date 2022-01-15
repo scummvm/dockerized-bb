@@ -1,0 +1,31 @@
+diff -u a/configure.ac b/configure.ac
+--- a/configure.ac
++++ b/configure.ac
+@@ -230,27 +230,6 @@
+     fi
+ fi
+ 
+-AC_MSG_CHECKING(for linker option --no-undefined)
+-have_no_undefined=no
+-case "$host" in
+-    dnl Skip this on platforms where it is just simply busted.
+-    *-*-openbsd*)
+-        ;;
+-
+-    *)
+-        save_LDFLAGS="$LDFLAGS"
+-        LDFLAGS="$LDFLAGS -Wl,--no-undefined"
+-        AC_TRY_LINK([
+-        ],[
+-        ],[
+-        have_no_undefined=yes
+-        EXTRA_LDFLAGS="$EXTRA_LDFLAGS -Wl,--no-undefined"
+-        ])
+-        LDFLAGS="$save_LDFLAGS"
+-        ;;
+-esac
+-AC_MSG_RESULT($have_no_undefined)
+-
+ AC_MSG_CHECKING(for linker option --dynamicbase)
+ have_dynamicbase=no
+ case "$host" in
