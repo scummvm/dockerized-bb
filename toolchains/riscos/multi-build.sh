@@ -31,6 +31,7 @@ setup_env () {
 	export CFLAGS="-isystem ${PREFIX}/include ${CFLAGS}"
 	export CXXFLAGS="-isystem ${PREFIX}/include ${CXXFLAGS}"
 	export LDFLAGS="-L${PREFIX}/lib ${CFLAGS}"
+	export LIBDIR="${PREFIX}/lib"
 }
 
 echo "Building for standard ARM"
