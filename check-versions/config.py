@@ -324,6 +324,10 @@ VERSIONS = {
 
     # This version is set by toolchain configuration
     ('./toolchains/miyoo/packages/toolchain/build.sh', 'BUILDROOT'): 'ignore',
+    ('./toolchains/emscripten/packages/toolchain/build.sh', 'EMSDK'): {
+        'check': 'git tag',
+        'repository': 'https://github.com/emscripten-core/emsdk.git',
+    },
 
     ('./toolchains/mxe/Dockerfile.m4', 'MXE'): {
         'check': 'git commit',
