@@ -87,7 +87,9 @@ local_package(directx)
 helpers_package(libsdl1.2)
 RUN ln -s ${PREFIX}/bin/sdl-config ${PREFIX}/../bin/${HOST}-sdl-config
 
-helpers_package(sdl-net1.2)
+# SDL_net is not compatible with Win95 out of the box due to missing DLLs
+# WS2_32.DLL and IPHLPAPI.DLL
+# helpers_package(sdl-net1.2)
 
 # TODO: glew
 
