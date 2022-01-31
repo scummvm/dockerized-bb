@@ -500,7 +500,7 @@ VERSIONS = {
     ('./toolchains/psp/packages/toolchain/build.sh', 'GCC'): {
         'check': 'git commit',
         'repository': 'https://github.com/pspdev/gcc.git',
-        'branch': 'allegrex-v9.3.0',
+        'branch': 'allegrex-v11.2.0',
     },
     ('./toolchains/psp/packages/toolchain/build.sh', 'NEWLIB'): {
         'check': 'git commit',
