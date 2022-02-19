@@ -15,6 +15,7 @@ COPY multi-build.sh lib-helpers/
 RUN apt-get update && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 		bc \
+		ccache \
 		cpio \
 		g++ \
 		g++-multilib \

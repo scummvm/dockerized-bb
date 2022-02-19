@@ -375,9 +375,9 @@ VERSIONS = {
     ('./toolchains/opendingux/packages/toolchain/build.sh', 'CT_NG'): crosstool_ng_check,
 
     ('./toolchains/opendingux-beta/packages/toolchain/build.sh', 'TOOLCHAIN'): {
-        'check': 'scrape',
-        'url': 'http://od.abstraction.se/opendingux/toolchain/',
-        'filter pattern': r'<a href="opendingux-gcw0-toolchain\.(?P<version>[0-9-]+)\.tar\.xz">',
+        'check': 'git commit',
+        'repository': 'https://github.com/OpenDingux/buildroot.git',
+        'branch': 'opendingux',
     },
 
     # OpenPandora packages (except toolchain) are set by (old) firmware
