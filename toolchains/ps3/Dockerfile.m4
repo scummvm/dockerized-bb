@@ -17,12 +17,12 @@ RUN apt-get update && \
 		texinfo \
 		libncurses5-dev \
 		patch \
-		python \
 		subversion \
 		wget \
 		zlib1g-dev \
 		libtool-bin \
-		python-dev \
+		python-dev-is-python3 \
+		python-is-python3 \
 		bzip2 \
 		libgmp-dev \
 		pkg-config \
@@ -37,7 +37,7 @@ ENV PSL1GHT=$PS3DEV
 
 local_package(toolchain)
 
-local_package(sdl_psl1ght)
+local_package(libraries)
 
 # Define everything now because toolchain and sdl_psl1ght handle everything themselves already
 ENV HOST=powerpc64-ps3-elf PREFIX=$PS3DEV/portlibs/ppu
@@ -50,11 +50,3 @@ ENV \
 	def_aclocal(`${PREFIX}') \
 	def_pkg_config(`${PREFIX}') \
         PATH=$PATH:${PS3DEV}/bin:${PS3DEV}/ppu/bin:${PS3DEV}/spu/bin:${PS3DEV}/portlibs/ppu/bin
-
-helpers_package(giflib)
-
-helpers_package(mpeg2dec)
-
-helpers_package(a52dec)
-
-helpers_package(fribidi)

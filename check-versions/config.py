@@ -416,39 +416,14 @@ VERSIONS = {
     ('./toolchains/openpandora/packages/zlib/build.sh', 'ZLIB'): 'ignore',
     ('./toolchains/openpandora/packages/toolchain/build.sh', 'CT_NG'): crosstool_ng_check,
 
-    ('./toolchains/ps3/packages/sdl_psl1ght/build.sh', 'SDL_PSL1GHT'): {
-        'check': 'git commit',
-        'repository': 'https://github.com/bgK/sdl_psl1ght.git',
-        'branch': 'psl1ght-2.0.3',
-    },
     ('./toolchains/ps3/packages/toolchain/build.sh', 'TOOLCHAIN'): {
         'check': 'git commit',
-        'repository': 'https://github.com/ps3dev/ps3toolchain.git',
+        'repository': 'https://github.com/ps3aqua/ps3toolchain.git',
         'branch': 'master',
     },
-    ('./toolchains/ps3/packages/toolchain/build.sh', 'PSL1GHT'): {
+    ('./toolchains/ps3/packages/libraries/build.sh', 'LIBRARIES'): {
         'check': 'git commit',
-        'repository': 'https://github.com/ps3dev/PSL1GHT.git',
-        'branch': 'master',
-    },
-    ('./toolchains/ps3/packages/toolchain/build.sh', 'PS3LIBRARIES'): {
-        'check': 'git commit',
-        'repository': 'https://github.com/ps3dev/ps3libraries.git',
-        'branch': 'master',
-    },
-    ('./toolchains/ps3/packages/toolchain/build.sh', 'SDL_PSL1GHT'): {
-        'check': 'git commit',
-        'repository': 'https://github.com/zeldin/SDL_PSL1GHT.git',
-        'branch': 'master',
-    },
-    ('./toolchains/ps3/packages/toolchain/build.sh', 'SDL_PSL1GHT_LIBS'): {
-        'check': 'git commit',
-        'repository': 'https://github.com/zeldin/SDL_PSL1GHT_Libs.git',
-        'branch': 'master',
-    },
-    ('./toolchains/ps3/packages/toolchain/build.sh', 'NORSX'): {
-        'check': 'git commit',
-        'repository': 'https://github.com/wargio/NoRSX.git',
+        'repository': 'https://github.com/ps3aqua/ps3libraries.git',
         'branch': 'master',
     },
 
