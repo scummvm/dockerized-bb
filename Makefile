@@ -1,8 +1,8 @@
-BUILDBOT_VERSION   := 3.4.0
+BUILDBOT_VERSION   := 3.4.1
 BUILDBOT_BASEDIR   := buildbot-workdir
 
 BOTTLE_VERSION     := 0.12.19
-TREQ_VERSION       := 22.1.0
+TREQ_VERSION       := 22.2.0
 
 # Without toolchains/ part, all is a placeholder for all detected toolchains
 TOOLCHAINS_ENABLED := all
