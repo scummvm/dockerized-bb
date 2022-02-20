@@ -622,7 +622,6 @@ def opendingux_beta(target, toolchain, libc, description=None):
     }
 
     platform.configureargs.append("--host=opendingux-{0}".format(target))
-    platform.configureargs.append("--enable-debug")
     platform.packaging_cmd = "od-make-opk"
     platform.built_files = {
         builds.ScummVMBuild: [ "scummvm_{0}.opk".format(target) ],
@@ -946,7 +945,6 @@ def windows_mxe(suffix, target, description=None):
     platform.env["PATH"] = [ "${PATH}", "${{MXE_PREFIX_DIR}}/{0}/bin".format(target)]
 
     platform.configureargs.append("--host={0}".format(target))
-    platform.configureargs.append("--enable-debug")
     platform.buildconfigureargs = {
         builds.ScummVMBuild: [ "--enable-updates"],
     }
