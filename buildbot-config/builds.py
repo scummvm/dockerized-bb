@@ -485,7 +485,7 @@ class ScummVMBuild(StandardBuild):
     def addConfigureSteps(self, *args, **kwargs):
         # Override to call parent with ScummVM specific configure arguments
         other_args = kwargs.pop('additional_args', [])
-        additional_args = ["--enable-all-engines"]
+        additional_args = ["--enable-optimizations", "--enable-all-engines"]
         additional_args.extend(other_args)
         super().addConfigureSteps(*args, **kwargs, additional_args = additional_args)
 
