@@ -414,7 +414,7 @@ def ios7_arm64():
     platform.compatibleBuilds = (builds.ScummVMBuild, )
     platform.configureargs.append("--host=ios7-arm64")
     platform.buildconfigureargs = {
-        builds.ScummVMBuild: [ "--enable-static", "--with-staticlib-prefix=${PREFIX}"],
+        builds.ScummVMBuild: [ "--disable-optimizations", "--enable-static", "--with-staticlib-prefix=${PREFIX}"],
     }
     platform.packaging_cmd = {
         builds.ScummVMBuild: "ios7bundle",
@@ -437,7 +437,7 @@ def macosx_arm64():
 
     platform.configureargs.append("--host=aarch64-apple-darwin21.1")
     platform.buildconfigureargs = {
-        builds.ScummVMBuild: [ "--enable-static",
+        builds.ScummVMBuild: [ "--disable-optimizations", "--enable-static",
             "--with-staticlib-prefix=${DESTDIR}/${PREFIX}",
             "--with-sparkle-prefix=${DESTDIR}/${PREFIX}/Library/Frameworks",
             "--disable-osx-dock-plugin", "--enable-updates"],
