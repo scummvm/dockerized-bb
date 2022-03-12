@@ -96,8 +96,8 @@ class DiscordFormatter(MessageFormatterBase):
         return [embed]
 
     @defer.inlineCallbacks
-    def format_message_for_build(self, master, build, users=None, mode=None):
-        ctx = create_context_for_build(mode, build, master, users)
+    def format_message_for_build(self, master, build, is_buildset=False, users=None, mode=None):
+        ctx = create_context_for_build(mode, build, is_buildset, master, users)
         ctx['build']['results_emoji'] = EMOJIS.get(build['results'], UNKNOWN_EMOJI)
         ctx['buildbot_title'] = master.config.title
         ctx['master'] = master

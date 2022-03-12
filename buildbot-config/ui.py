@@ -97,6 +97,7 @@ if hasattr(config, 'irc') and config.irc:
         useSSL=config.irc.get('ssl', False),
         nick=config.irc['nick'],
         password=config.irc.get('password', None),
+        useSASL=config.irc.get('sasl', False),
         channels=config.irc.get('channels', []),
         pm_to_nicks=config.irc.get('nicks', []),
         useColors=True,

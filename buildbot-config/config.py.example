@@ -97,12 +97,14 @@ serve_daily_builds = False
 # IRC configuration
 #irc = {
 #    # IRC server configuration: hostname, port, ssl
-#    'server': 'chat.freenode.net',
-#    'port': 7000,
+#    'server': 'irc.libera.chat',
+#    'port': 6697,
 #    'ssl': True,
 #    # nickname and password to identify to NickServ
 #    'nick': 'Scummette',
 #    'password': 'password',
+#    # Use SASL to authenticate to the server
+#    'sasl': True,
 #    # channels the bot will join and talk to
 #    'channels': [
 #        '#scummvm',
