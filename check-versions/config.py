@@ -134,7 +134,7 @@ VERSIONS = {
 
     ('./toolchains/amigaos4/packages/libsdl2/build.sh', 'SDL2'): {
         'check': 'git tag',
-        'repository': 'https://github.com/AmigaPorts/SDL.git',
+        'repository': 'https://github.com/AmigaPorts/SDL-2.0.git',
         # Remove v and -amigaos4
         'prefix': 'v',
         'suffix': '-amigaos4',

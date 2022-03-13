@@ -1,6 +1,6 @@
 #! /bin/sh
 
-PE_UTIL_VERSION=5b07cb3586a1da687a2c5845f1207e054e74c5cd
+PE_UTIL_VERSION=2af684a0acf303bc23b1c970f0251291cdd69189
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..
