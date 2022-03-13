@@ -88,9 +88,6 @@ except TypeError:
     www['port'] = "tcp:{0}".format(config.www_port)
 
 if hasattr(config, 'irc') and config.irc:
-    # This module will patch IRC reporter to make use of SASL
-    # This is advised by Freenode oper to avoid bans which could trap our bot
-    from utils import irc_sasl
     services.append(reporters.IRC(
         host=config.irc['server'],
         port=config.irc.get('port', 6667),
