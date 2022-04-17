@@ -1,4 +1,4 @@
-From cc7d84facea6dd2c667369254352579c58370abc Mon Sep 17 00:00:00 2001
+From 1ff5e04e8529561aaaa6e96062fb056a4e9f3fc6 Mon Sep 17 00:00:00 2001
 From: Le Philousophe <lephilousophe@users.noreply.github.com>
 Date: Sun, 24 Jan 2021 19:18:24 +0100
 Subject: [PATCH 2/3] Accept piped data and avoid intermediate files

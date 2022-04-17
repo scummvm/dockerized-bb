@@ -1,4 +1,4 @@
-From e3d40fa4d3e6af9f7ac344187d0ec339f9ac093f Mon Sep 17 00:00:00 2001
+From f0d8919cead8f867b6b2ed0414c41ffa38ab028c Mon Sep 17 00:00:00 2001
 From: Le Philousophe <lephilousophe@users.noreply.github.com>
 Date: Sun, 24 Jan 2021 19:19:14 +0100
 Subject: [PATCH 3/3] Generate all SDKs and not only MacOSX
