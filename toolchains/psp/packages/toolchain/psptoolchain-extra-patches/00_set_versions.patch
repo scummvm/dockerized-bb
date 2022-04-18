@@ -1,7 +1,7 @@
-diff --git a/scripts/002-psp-pacman.sh b/scripts/002-psp-pacman.sh
+diff --git a/scripts/001-psp-pacman.sh b/scripts/001-psp-pacman.sh
 index 2bc237f..8616834 100755
---- a/scripts/002-psp-pacman.sh
-+++ b/scripts/002-psp-pacman.sh
+--- a/scripts/001-psp-pacman.sh
++++ b/scripts/001-psp-pacman.sh
 @@ -4,12 +4,12 @@
  ## Download the source code.
  REPO_URL="https://github.com/pspdev/psp-pacman"
@@ -14,10 +14,10 @@ index 2bc237f..8616834 100755
 -fi
 +
 +mkdir "$REPO_FOLDER" && cd "$REPO_FOLDER"
-+git init
-+git remote add origin "$REPO_URL"
-+git fetch --depth 1 origin "$PSP_PACMAN_VERSION"
-+git checkout FETCH_HEAD
++git init || { exit 1; }
++git remote add origin "$REPO_URL" || { exit 1; }
++git fetch --depth 1 origin "$PSP_PACMAN_VERSION" || { exit 1; }
++git checkout FETCH_HEAD || { exit 1; }
  
  ## Determine the maximum number of processes that Make can work with.
  PROC_NR=$(getconf _NPROCESSORS_ONLN)

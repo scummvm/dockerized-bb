@@ -482,6 +482,11 @@ VERSIONS = {
         'repository': 'https://github.com/pspdev/newlib.git',
         'branch': 'allegrex-v4.1.0',
     },
+    ('./toolchains/psp/packages/toolchain/build.sh', 'PTHREAD_EMBEDDED'): {
+        'check': 'git commit',
+        'repository': 'https://github.com/pspdev/pthread-embedded.git',
+        'branch': 'psp',
+    },
     ('./toolchains/psp/packages/toolchain/build.sh', 'PSP_PACMAN'): {
         'check': 'git commit',
         'repository': 'https://github.com/pspdev/psp-pacman.git',

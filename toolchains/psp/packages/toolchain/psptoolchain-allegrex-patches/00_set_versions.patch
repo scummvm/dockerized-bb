@@ -14,22 +14,22 @@ index f9a21a0..042b722 100755
 -fi
 +
 +mkdir "$REPO_FOLDER" && cd "$REPO_FOLDER"
-+git init
-+git remote add origin "$REPO_URL"
-+git fetch --depth 1 origin "$BINUTILS_VERSION"
-+git checkout FETCH_HEAD
++git init || { exit 1; }
++git remote add origin "$REPO_URL" || { exit 1; }
++git fetch --depth 1 origin "$BINUTILS_VERSION" || { exit 1; }
++git checkout FETCH_HEAD || { exit 1; }
  
  TARGET="psp"
  TARG_XTRA_OPTS=""
 diff --git a/scripts/002-gcc-stage1.sh b/scripts/002-gcc-stage1.sh
-index 9a11c50..d8e6eca 100755
+index 457512b..4203245 100755
 --- a/scripts/002-gcc-stage1.sh
 +++ b/scripts/002-gcc-stage1.sh
 @@ -4,12 +4,12 @@
  ## Download the source code.
  REPO_URL="https://github.com/pspdev/gcc.git"
  REPO_FOLDER="gcc"
--BRANCH_NAME="allegrex-v9.3.0"
+-BRANCH_NAME="allegrex-v11.2.0"
 -if test ! -d "$REPO_FOLDER"; then
 -	git clone --depth 1 -b $BRANCH_NAME $REPO_URL $REPO_FOLDER && cd $REPO_FOLDER || { exit 1; }
 -else
@@ -37,10 +37,10 @@ index 9a11c50..d8e6eca 100755
 -fi
 +
 +mkdir "$REPO_FOLDER" && cd "$REPO_FOLDER"
-+git init
-+git remote add origin "$REPO_URL"
-+git fetch --depth 1 origin "$GCC_VERSION"
-+git checkout FETCH_HEAD
++git init || { exit 1; }
++git remote add origin "$REPO_URL" || { exit 1; }
++git fetch --depth 1 origin "$GCC_VERSION" || { exit 1; }
++git checkout FETCH_HEAD || { exit 1; }
  
  TARGET="psp"
  OSVER=$(uname)
@@ -60,29 +60,51 @@ index e30a362..6e2b4f3 100755
 -fi
 +
 +mkdir "$REPO_FOLDER" && cd "$REPO_FOLDER"
-+git init
-+git remote add origin "$REPO_URL"
-+git fetch --depth 1 origin "$NEWLIB_VERSION"
-+git checkout FETCH_HEAD
++git init || { exit 1; }
++git remote add origin "$REPO_URL" || { exit 1; }
++git fetch --depth 1 origin "$NEWLIB_VERSION" || { exit 1; }
++git checkout FETCH_HEAD || { exit 1; }
  
  TARGET="psp"
  
-diff --git a/scripts/004-gcc-stage2.sh b/scripts/004-gcc-stage2.sh
-index 3a5dca3..f9abe8e 100755
---- a/scripts/004-gcc-stage2.sh
-+++ b/scripts/004-gcc-stage2.sh
+diff --git a/scripts/004-pthread-embedded.sh b/scripts/004-pthread-embedded.sh
+index adb8efe..0cbd349 100755
+--- a/scripts/004-pthread-embedded.sh
++++ b/scripts/004-pthread-embedded.sh
+@@ -5,11 +5,12 @@
+ REPO_URL="https://github.com/pspdev/pthread-embedded.git"
+ REPO_FOLDER="pthread-embedded"
+ BRANCH_NAME="psp"
+-if test ! -d "$REPO_FOLDER"; then
+-	git clone --depth 1 -b $BRANCH_NAME $REPO_URL && cd $REPO_FOLDER || { exit 1; }
+-else
+-	cd $REPO_FOLDER && git fetch origin && git reset --hard origin/${BRANCH_NAME} && git checkout ${BRANCH_NAME} || { exit 1; }
+-fi
++
++mkdir "$REPO_FOLDER" && cd "$REPO_FOLDER"
++git init || { exit 1; }
++git remote add origin "$REPO_URL" || { exit 1; }
++git fetch --depth 1 origin "$PTHREAD_EMBEDDED_VERSION" || { exit 1; }
++git checkout FETCH_HEAD || { exit 1; }
+ 
+ TARGET="psp"
+ 
+diff --git a/scripts/005-gcc-stage2.sh b/scripts/005-gcc-stage2.sh
+index 8c1fc82..5d5f836 100755
+--- a/scripts/005-gcc-stage2.sh
++++ b/scripts/005-gcc-stage2.sh
 @@ -4,12 +4,8 @@
  ## Download the source code.
  REPO_URL="https://github.com/pspdev/gcc.git"
  REPO_FOLDER="gcc"
--BRANCH_NAME="allegrex-v9.3.0"
+-BRANCH_NAME="allegrex-v11.2.0"
 -if test ! -d "$REPO_FOLDER"; then
 -	git clone --depth 1 -b $BRANCH_NAME $REPO_URL && cd $REPO_FOLDER || { exit 1; }
 -else
 -	cd $REPO_FOLDER && git fetch origin && git reset --hard origin/${BRANCH_NAME} || { exit 1; }
 -fi
 +
-+cd $REPO_FOLDER
++cd $REPO_FOLDER || { exit 1; }
  
  TARGET="psp"
  OSVER=$(uname)

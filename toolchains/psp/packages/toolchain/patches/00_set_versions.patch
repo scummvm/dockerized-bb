@@ -14,13 +14,13 @@ index 732e96a..babb6f8 100755
 -fi
 +
 +mkdir "$REPO_FOLDER" && cd "$REPO_FOLDER"
-+git init
-+git remote add origin "$REPO_URL"
-+git fetch --depth 1 origin "$PSPTOOLCHAIN_VERSION"
-+git checkout FETCH_HEAD
++git init || { exit 1; }
++git remote add origin "$REPO_URL" || { exit 1; }
++git fetch --depth 1 origin "$PSPTOOLCHAIN_VERSION" || { exit 1; }
++git checkout FETCH_HEAD || { exit 1; }
 +
 +for p in "$PACKAGE_DIR/$REPO_FOLDER-patches"/*; do
-+	patch -p1 < "$p"
++	patch -p1 < "$p" || { exit 1; }
 +done
  
  ## Build and install.
@@ -41,10 +41,10 @@ index 629f3ac..fe11891 100755
 -fi
 +
 +mkdir "$REPO_FOLDER" && cd "$REPO_FOLDER"
-+git init
-+git remote add origin "$REPO_URL"
-+git fetch --depth 1 origin "$PSPSDK_VERSION"
-+git checkout FETCH_HEAD
++git init || { exit 1; }
++git remote add origin "$REPO_URL" || { exit 1; }
++git fetch --depth 1 origin "$PSPSDK_VERSION" || { exit 1; }
++git checkout FETCH_HEAD || { exit 1; }
  
  ## Determine the maximum number of processes that Make can work with.
  PROC_NR=$(getconf _NPROCESSORS_ONLN)
@@ -64,10 +64,10 @@ index df7bce4..2dc9058 100755
 -fi
 +
 +mkdir "$REPO_FOLDER" && cd "$REPO_FOLDER"
-+git init
-+git remote add origin "$REPO_URL"
-+git fetch --depth 1 origin "$PSPLINKUSB_VERSION"
-+git checkout FETCH_HEAD
++git init || { exit 1; }
++git remote add origin "$REPO_URL" || { exit 1; }
++git fetch --depth 1 origin "$PSPLINKUSB_VERSION" || { exit 1; }
++git checkout FETCH_HEAD || { exit 1; }
  
  ## Determine the maximum number of processes that Make can work with.
  PROC_NR=$(getconf _NPROCESSORS_ONLN)
@@ -87,10 +87,10 @@ index c6aff68..c79f456 100755
 -fi
 +
 +mkdir "$REPO_FOLDER" && cd "$REPO_FOLDER"
-+git init
-+git remote add origin "$REPO_URL"
-+git fetch --depth 1 origin "$EBOOTSIGNER_VERSION"
-+git checkout FETCH_HEAD
++git init || { exit 1; }
++git remote add origin "$REPO_URL" || { exit 1; }
++git fetch --depth 1 origin "$EBOOTSIGNER_VERSION" || { exit 1; }
++git checkout FETCH_HEAD || { exit 1; }
  
  ## Determine the maximum number of processes that Make can work with.
  PROC_NR=$(getconf _NPROCESSORS_ONLN)
