@@ -1,6 +1,6 @@
 #! /bin/sh
 
-PROJECT_CTR_VERSION=makerom-v0.18
+PROJECT_CTR_VERSION=makerom-v0.18.2
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..
@@ -12,9 +12,12 @@ do_http_fetch Project_CTR "https://github.com/3DSGuy/Project_CTR/archive/${PROJE
 
 export
 
-do_make -C ctrtool
-do_make -C makerom
+do_make -C ctrtool deps
+do_make -C ctrtool all
 
-cp ctrtool/ctrtool makerom/makerom ${DEVKITPRO}/tools/bin
+do_make -C makerom deps
+do_make -C makerom all
+
+cp ctrtool/bin/ctrtool makerom/bin/makerom ${DEVKITPRO}/tools/bin
 
 do_clean_bdir
