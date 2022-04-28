@@ -712,7 +712,7 @@ def psp():
     }
     platform.data_files = {
         builds.ScummVMBuild: [
-            "backends/platform/psp/kbd",
+            "backends/platform/psp/kbd.zip",
         ],
     }
     platform.archiveext = "tar.xz"
