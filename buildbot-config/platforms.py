@@ -688,19 +688,8 @@ def psp():
     platform.compatibleBuilds = (builds.ScummVMBuild, )
     platform.configureargs.extend(["--host=psp", "--disable-debug", "--enable-plugins", "--default-dynamic"])
 
-    # HACK: The Ultima engine, when included, causes a crash in the add game dialog
-    # after selecting a game in the "Add Game" dialog and clicking on "Choose".
-    # This crash happens only on real hardware, but not on the PSP emulator PPSSPP.
-    # It was suggested that this is due to memory constraints on the platform.
-    # Due to this crash, we disable Ultima on PSP for now.
-
-    # Unstable engines are disabled because they cause a crash on real hardware when
-    # adding a game (see further comment in the pspfull buildbot target)
-
     platform.buildconfigureargs = {
         builds.ScummVMBuild: [
-            "--disable-engines=ultima",
-            "--disable-all-unstable-engines",
             "--enable-engine=testbed",
         ],
     }
@@ -719,25 +708,6 @@ def psp():
 
     platform.description = "PlayStation Portable"
     platform.icon = 'psp'
-
-    register_platform(platform)
-
-    # PSP full
-    platform = copy.deepcopy(platform)
-    platform.name = "pspfull"
-    # Don't package as it doesn't work
-    platform.packageable = False
-
-    # This psp build includes all unstable engines, but crashes when adding a game.
-    # The crash happens while it loads all the plugins to determine the engine
-    # that matches the game. It is a hard crash that requires removing and
-    # reinserting the battery. The crash does not happen on the PPSSPP emulator.
-
-    platform.buildconfigureargs = {
-        builds.ScummVMBuild: [ ],
-    }
-
-    platform.description = None
 
     register_platform(platform)
 psp()
