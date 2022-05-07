@@ -838,6 +838,7 @@ def vita():
     # Grim is unplayably slow on Vita.
     # Titanic is not very usable on Vita without a keyboard.
     # Wintermute is unplayably slow on Vita.
+    # Tsage has nothing wrong with it, but we need to keep exe size down
     platform.buildconfigureargs = {
         builds.ScummVMBuild: [
             "--disable-all-unstable-engines",
@@ -848,6 +849,7 @@ def vita():
             "--disable-engines=grim",
             "--disable-engines=titanic",
             "--disable-engines=wintermute",
+            "--disable-engines=tsage",
             "--enable-engine=testbed",
         ],
     }
