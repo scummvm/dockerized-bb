@@ -1,4 +1,4 @@
-From eef3ff455a161bd6f1e2681cb4b07889cabdf50e Mon Sep 17 00:00:00 2001
+From 7a9f83b0672bab8890a9de517052bf3a6905a477 Mon Sep 17 00:00:00 2001
 From: Le Philousophe <lephilousophe@users.noreply.github.com>
 Date: Sun, 17 Apr 2022 13:43:52 +0200
 Subject: [PATCH 2/2] Add 12.3 SDK support
@@ -8,13 +8,13 @@ Subject: [PATCH 2/2] Add 12.3 SDK support
  1 file changed, 1 insertion(+)
 
 diff --git a/build.sh b/build.sh
-index bbcff0c..c1ef2e6 100755
+index e8d21ec..b373200 100755
 --- a/build.sh
 +++ b/build.sh
-@@ -45,6 +45,7 @@ case $SDK_VERSION in
-   11.2*)  TARGET=darwin20.3; X86_64H_SUPPORTED=1; I386_SUPPORTED=0; ARM_SUPPORTED=1; NEED_TAPI_SUPPORT=1; OSX_VERSION_MIN_INT=10.9;  ;;
+@@ -46,6 +46,7 @@ case $SDK_VERSION in
    11.3*)  TARGET=darwin20.4; X86_64H_SUPPORTED=1; I386_SUPPORTED=0; ARM_SUPPORTED=1; NEED_TAPI_SUPPORT=1; OSX_VERSION_MIN_INT=10.9;  ;;
    12.0*)  TARGET=darwin21.1; X86_64H_SUPPORTED=1; I386_SUPPORTED=0; ARM_SUPPORTED=1; NEED_TAPI_SUPPORT=1; OSX_VERSION_MIN_INT=10.9;  ;;
+   12.1*)  TARGET=darwin21.2; X86_64H_SUPPORTED=1; I386_SUPPORTED=0; ARM_SUPPORTED=1; NEED_TAPI_SUPPORT=1; OSX_VERSION_MIN_INT=10.9;  ;;
 +  12.3*)  TARGET=darwin21.4; X86_64H_SUPPORTED=1; I386_SUPPORTED=0; ARM_SUPPORTED=1; NEED_TAPI_SUPPORT=1; OSX_VERSION_MIN_INT=10.9;  ;;
   *) echo "Unsupported SDK"; exit 1 ;;
  esac
