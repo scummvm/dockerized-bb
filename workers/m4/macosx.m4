@@ -54,6 +54,12 @@ ENV HOST=MACOSX_TARGET_ARCH-apple-darwin`'MACOSX_TARGET_VERSION \
 
 COPY --from=toolchain $TARGET_DIR $TARGET_DIR/
 
+RUN CLANG_LIB_DIR=$(clang -print-search-dirs | grep "libraries: =" | \
+	tr '=' ' ' | tr ':' ' ' | awk '{print $2}') && \
+	CLANG_INCLUDE_DIR="${CLANG_LIB_DIR}/include" && \
+	CLANG_DARWIN_LIB_DIR="${CLANG_LIB_DIR}/lib/darwin" && \
+	ln -s ${TARGET_DIR}/compiler_rt/lib/darwin ${CLANG_DARWIN_LIB_DIR}
+
 # We add PATH here for *-config and platform specific binaries
 # We define PKG_CONFIG_SYSROOT_DIR to let pkg-config behave the same way when invoked without using wrapper
 # We define OSXCROSS_MP_INC to have clang automatically add macports path

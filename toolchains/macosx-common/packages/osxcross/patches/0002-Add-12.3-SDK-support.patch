@@ -1,7 +1,7 @@
 From 7a9f83b0672bab8890a9de517052bf3a6905a477 Mon Sep 17 00:00:00 2001
 From: Le Philousophe <lephilousophe@users.noreply.github.com>
 Date: Sun, 17 Apr 2022 13:43:52 +0200
-Subject: [PATCH 2/2] Add 12.3 SDK support
+Subject: [PATCH 2/3] Add 12.3 SDK support
 
 ---
  build.sh | 1 +
