@@ -599,8 +599,6 @@ opendingux()
 def opendingux_beta(target, toolchain, libc, description=None):
     platform = Platform("opendingux-beta-{0}".format(target))
     platform.compatibleBuilds = (builds.ScummVMBuild, )
-    # Stable has no support for this platform
-    platform.incompatibleBuilds = (builds.ScummVMStableBuild, )
 
     platform.workerimage = "opendingux-beta"
     platform.buildenv = {

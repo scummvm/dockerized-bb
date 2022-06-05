@@ -511,47 +511,6 @@ class ScummVMStableBuild(ScummVMBuild):
     ]
 
     # Settings below (if any) are for stable version and must be updated when release is done
-    DATA_FILES = [
-        "AUTHORS",
-        "COPYING",
-        "COPYING.LGPL",
-        "COPYING.BSD",
-        "COPYRIGHT",
-        "NEWS.md",
-        "README.md",
-        "gui/themes/translations.dat",
-        "gui/themes/scummclassic.zip",
-        "gui/themes/scummmodern.zip",
-        "gui/themes/scummremastered.zip",
-        #"gui/themes/gui-icons.dat", # Not in stable
-        "dists/engine-data/access.dat",
-        "dists/engine-data/cryomni3d.dat",
-        "dists/engine-data/drascula.dat",
-        "dists/engine-data/fonts.dat",
-        "dists/engine-data/hugo.dat",
-        "dists/engine-data/kyra.dat",
-        "dists/engine-data/lure.dat",
-        "dists/engine-data/mort.dat",
-        "dists/engine-data/neverhood.dat",
-        "dists/engine-data/queen.tbl",
-        "dists/engine-data/sky.cpt",
-        "dists/engine-data/supernova.dat",
-        "dists/engine-data/teenagent.dat",
-        "dists/engine-data/titanic.dat",
-        "dists/engine-data/tony.dat",
-        "dists/engine-data/toon.dat",
-        "dists/engine-data/ultima.dat",
-        "dists/engine-data/wintermute.zip",
-        "dists/engine-data/xeen.ccs",
-        "dists/networking/wwwroot.zip",
-        "dists/pred.dic",
-        "dists/engine-data/cryo.dat",
-        "dists/engine-data/macgui.dat",
-        "dists/engine-data/macventure.dat",
-        "dists/engine-data/myst3.dat",
-        "dists/engine-data/grim-patch.lab",
-        "dists/engine-data/monkey4-patch.m4b"
-    ]
 
 class ScummVMToolsBuild(StandardBuild):
     __slots__ = [ 'verbose_build' ]
@@ -582,6 +541,6 @@ class ScummVMToolsBuild(StandardBuild):
 builds = []
 
 builds.append(ScummVMBuild("master", "https://github.com/scummvm/scummvm", "master", verbose_build=True, daily=(4, 1), description="ScummVM latest\nBranch master"))
-builds.append(ScummVMStableBuild("stable", "https://github.com/scummvm/scummvm", "branch-2-5", verbose_build=True, daily=(4, 1), description="ScummVM stable\nFuture 2.5.x"))
+builds.append(ScummVMStableBuild("stable", "https://github.com/scummvm/scummvm", "branch-2-6", verbose_build=True, daily=(4, 1), description="ScummVM stable\nFuture 2.6.x"))
 #builds.append(ScummVMBuild("gsoc2012", "https://github.com/digitall/scummvm", "gsoc2012-scalers-cont", verbose_build=True))
 builds.append(ScummVMToolsBuild("tools-master", "https://github.com/scummvm/scummvm-tools", "master", verbose_build=True, daily=(4, 1), description="ScummVM tools"))
