@@ -359,9 +359,12 @@ class StandardBuild(Build):
         ))
 
     def addConfigureSteps(self, f, platform, *,
-            env, configure_path, additional_args=None):
-        if additional_args is None:
-            additional_args = []
+            env, configure_path,
+            additional_args_before=None, additional_args_after=None):
+        if additional_args_before is None:
+            additional_args_before = []
+        if additional_args_after is None:
+            additional_args_after = []
 
         f.addStep(scummsteps.SetPropertyIfOlder(
             name = "check {0} freshness".format(self.CONFIGURE_GENERATED_FILE),
@@ -371,10 +374,11 @@ class StandardBuild(Build):
             ))
 
         command = [ configure_path ]
-        command.extend(additional_args)
+        command.extend(additional_args_before)
         if self.verbose_build and self.VERBOSE_BUILD_FLAG:
             command.append(self.VERBOSE_BUILD_FLAG)
         command.extend(platform.getConfigureArgs(self))
+        command.extend(additional_args_after)
 
         f.addStep(steps.Configure(command = command,
             doStepIf = util.Property("do_configure", default=True, defaultWhenFalse=False),
@@ -475,6 +479,8 @@ class ScummVMBuild(StandardBuild):
     ]
     VERBOSE_BUILD_FLAG = "--enable-verbose-build"
     CONFIGURE_GENERATED_FILE = "configure.stamp"
+    ENABLE_ENGINES_BUILD_FLAG = "--enable-all-engines"
+    DISABLE_ENGINES_BUILD_FLAG = None
 
     def __init__(self, *args, **kwargs):
         verbose_build = kwargs.pop('verbose_build', False)
@@ -485,9 +491,20 @@ class ScummVMBuild(StandardBuild):
     def addConfigureSteps(self, *args, **kwargs):
         # Override to call parent with ScummVM specific configure arguments
         other_args = kwargs.pop('additional_args', [])
-        additional_args = ["--enable-optimizations", "--enable-all-engines"]
-        additional_args.extend(other_args)
-        super().addConfigureSteps(*args, **kwargs, additional_args = additional_args)
+
+        additional_args_before = ["--enable-optimizations"]
+        additional_args_before.extend(other_args)
+        if self.ENABLE_ENGINES_BUILD_FLAG:
+            additional_args_before.append(self.ENABLE_ENGINES_BUILD_FLAG)
+
+        # Disabling engines must come last in the command line to override platforms choices
+        additional_args_after = []
+        if self.DISABLE_ENGINES_BUILD_FLAG:
+            additional_args_after.append(self.DISABLE_ENGINES_BUILD_FLAG)
+
+        super().addConfigureSteps(*args, **kwargs,
+            additional_args_before = additional_args_before,
+            additional_args_after = additional_args_after)
 
     def addBuildSteps(self, f, platform, *, env, **kwargs):
         # ScummVM builds are longer
@@ -509,6 +526,10 @@ class ScummVMBuild(StandardBuild):
 class ScummVMStableBuild(ScummVMBuild):
     PATCHES = [
     ]
+    # If we don't specify the engines enable flag, only enabled by default engines will be compiled in
+    # but we must override platform split build settings
+    ENABLE_ENGINES_BUILD_FLAG = None
+    DISABLE_ENGINES_BUILD_FLAG = "--disable-all-unstable-engines"
 
     # Settings below (if any) are for stable version and must be updated when release is done
 
