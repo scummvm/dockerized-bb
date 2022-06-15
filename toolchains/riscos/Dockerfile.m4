@@ -55,14 +55,11 @@ ENV \
 	def_binaries(`${GCCSDK_INSTALL_CROSSBIN}/${HOST}-', `gcc, cpp, c++') \
 	CC="${GCCSDK_INSTALL_CROSSBIN}/${HOST}-gcc" \
 	PATH="${GCCSDK_INSTALL_CROSSBIN}:${PATH}" \
-	CFLAGS="-ffunction-sections -fdata-sections -mno-poke-function-name" \
-	CXXFLAGS="-ffunction-sections -fdata-sections -mno-poke-function-name" \
-	LDFLAGS="-Wl,--gc-sections" \
-	CFLAGS_STD="-O2" \
-	CXXFLAGS_STD="-O2" \
+	CFLAGS_STD="-O3 -mno-poke-function-name" \
+	CXXFLAGS_STD="-O3 -mno-poke-function-name" \
 	ASFLAGS_VFP="-mfpu=vfp" \
-	CFLAGS_VFP="-mfpu=vfp" \
-	CXXFLAGS_VFP="-mfpu=vfp" \
+	CFLAGS_VFP="-mfpu=vfp -O3 -mno-poke-function-name" \
+	CXXFLAGS_VFP="-mfpu=vfp -O3 -mno-poke-function-name" \
 	LDFLAGS_VFP="-mfpu=vfp"
 
 helpers_package(zlib)
