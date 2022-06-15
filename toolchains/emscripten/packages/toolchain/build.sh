@@ -1,6 +1,6 @@
 #! /bin/sh
 
-EMSDK_VERSION=3.1.1
+EMSDK_VERSION=3.1.6
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..

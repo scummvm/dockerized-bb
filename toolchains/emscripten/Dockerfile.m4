@@ -43,9 +43,12 @@ helpers_package(libmad, --with-pic --enable-fpm=no)
 
 RUN emcc -s USE_OGG=1 -E - < /dev/null
 
-RUN emcc -s USE_VORBIS=1 -E - < /dev/null
+# Emscripten has an official port for vorbis, but it doesn't properly link vorbisfile https://github.com/emscripten-core/emscripten/pull/14005
+# RUN emcc -s USE_VORBIS=1 -E - < /dev/null
+helpers_package(libvorbis, , CFLAGS="-fPIC -s USE_OGG=1")
 
-helpers_package(libtheora, --disable-asm, CFLAGS="-fPIC -s USE_OGG=1 -s USE_VORBIS=1")
+# helpers_package(libtheora, --disable-asm, CFLAGS="-fPIC -s USE_OGG=1 -s USE_VORBIS=1")
+helpers_package(libtheora, --disable-asm, CFLAGS="-fPIC -s USE_OGG=1")
 
 # TODO: flac
 
