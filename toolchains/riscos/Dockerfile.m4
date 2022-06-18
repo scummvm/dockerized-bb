@@ -101,4 +101,4 @@ helpers_package(fribidi)
 COPY packages/libsdl1.2 lib-helpers/packages/libsdl1.2/
 helpers_package(libsdl1.2)
 
-helpers_package(sdl-net1.2)
+# helpers_package(sdl-net1.2)
