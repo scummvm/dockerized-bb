@@ -745,62 +745,43 @@ def riscos(suffix, prefix_subdir, variable_suffix, host, description = None):
     if len(prefix_subdir) and prefix_subdir[-1:] != '/':
         prefix_subdir += '/'
 
-    def setup(platform):
-        platform.workerimage = 'riscos'
+    platform = Platform("riscos{0}{1}".format('-' if suffix else '', suffix))
+    platform.workerimage = 'riscos'
 
-        include_dir = "-isysroot ${{PREFIX}}/{0}include".format(prefix_subdir)
-        lib_dir = "-L${{PREFIX}}/{0}lib".format(prefix_subdir)
-        env_paths = {
-            'CFLAGS': include_dir,
-            'CPPFLAGS': include_dir,
-            'CXXFLAGS': include_dir,
-            'LDFLAGS': lib_dir,
-        }
-
-        platform.env["PKG_CONFIG_LIBDIR"] = "${{PREFIX}}/{0}lib/pkgconfig".format(prefix_subdir)
-        for v, p in env_paths.items():
-            platform.env[v] = ' '.join([
-                p, # Path specified above
-                platform.env.get(v, "${{{0}}}".format(v)), # User provided flags or worker default ones
-                "${{{0}_{1}}}".format(v, variable_suffix) # Variant specific flags (vfp...)
-            ])
-
-        platform.configureargs.append("--host={0}".format(host))
-        platform.packaging_cmd = "riscosdist"
-        platform.built_files = {
-            builds.ScummVMBuild: [ "!ScummVM" ],
-            builds.ScummVMToolsBuild: [ "!ScummTool" ],
-        }
-        platform.archiveext = "zip"
-        platform.testable = False
-
-        platform.icon = 'riscos'
-
-    platform = Platform("riscos{0}{1}-1".format('-' if suffix else '', suffix))
-    platform.buildconfigureargs = {
-        builds.ScummVMBuild: [
-            # Disable big engines
-            "--disable-engines=ags,bladerunner,glk,kyra,lol,eob,lastexpress,mads,sci,sci32,scumm,scumm_7_8,he,titanic,tsage,ultima,wintermute" ],
+    include_dir = "-isysroot ${{PREFIX}}/{0}include".format(prefix_subdir)
+    lib_dir = "-L${{PREFIX}}/{0}lib".format(prefix_subdir)
+    env_paths = {
+        'CFLAGS': include_dir,
+        'CPPFLAGS': include_dir,
+        'CXXFLAGS': include_dir,
+        'LDFLAGS': lib_dir,
     }
-    setup(platform)
 
-    platform.description = description + ' (all except AGS, Blade Runner, Glk, Kyra, MADS, Scumm, SCI, The Last Express, Starship Titanic, TsAGE, Ultima, Wintermute)'
+    platform.env["PKG_CONFIG_LIBDIR"] = "${{PREFIX}}/{0}lib/pkgconfig".format(prefix_subdir)
+    for v, p in env_paths.items():
+        platform.env[v] = ' '.join([
+            p, # Path specified above
+            platform.env.get(v, "${{{0}}}".format(v)), # User provided flags or worker default ones
+            "${{{0}_{1}}}".format(v, variable_suffix) # Variant specific flags (vfp...)
+        ])
+
+    platform.configureargs.append("--host={0}".format(host))
+    platform.buildconfigureargs = {
+        builds.ScummVMBuild: [ "--enable-plugins", "--default-dynamic" ],
+    }
+    platform.packaging_cmd = "riscosdist"
+    platform.built_files = {
+        builds.ScummVMBuild: [ "!ScummVM" ],
+        builds.ScummVMToolsBuild: [ "!ScummTool" ],
+    }
+    platform.archiveext = "zip"
+    platform.testable = False
+
+    platform.icon = 'riscos'
+    platform.description = description
 
     register_platform(platform)
 
-    platform = Platform("riscos{0}{1}-2".format('-' if suffix else '', suffix))
-    platform.compatibleBuilds = (builds.ScummVMBuild, )
-    platform.buildconfigureargs = {
-        builds.ScummVMBuild: [
-            # Only the other ones
-            "--disable-all-engines",
-            "--enable-engines=ags,bladerunner,glk,kyra,lol,eob,lastexpress,mads,madsv2,sci,sci32,scumm,scumm_7_8,he,titanic,tsage,ultima,wintermute,wme3d,foxtail,herocraft" ],
-    }
-    setup(platform)
-
-    platform.description = description + ' (AGS, Blade Runner, Glk, Kyra, MADS, Scumm, SCI, The Last Express, Starship Titanic, TsAGE, Ultima, Wintermute)'
-
-    register_platform(platform)
 riscos("", "", "STD", "arm-unknown-riscos", "RISC OS")
 riscos("vfp", "vfp", "VFP", "arm-vfp-riscos", "RISC OS with VFP")
 
