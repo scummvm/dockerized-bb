@@ -20,6 +20,8 @@ DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 	make \
 	meson \
 	pkg-config \
+	python3 \
+	python-is-python3 \
 	quilt \
 	unzip \
 	vim \
