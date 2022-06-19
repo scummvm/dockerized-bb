@@ -844,6 +844,48 @@ def vita():
 
     register_platform(platform)
 
+    # Vita Other Engines
+    platform = copy.deepcopy(platform)
+    platform.name = "vitaother"
+    platform.buildconfigureargs = {
+        builds.ScummVMBuild: [
+            "--disable-all-engines",
+            "--enable-engines=bladerunner",
+            "--enable-engines=stark",
+            "--enable-engines=myst3",
+            "--enable-engines=glk",
+            "--enable-engines=grim",
+            "--enable-engines=titanic",
+            "--enable-engines=wintermute",
+            "--enable-engines=tsage",
+            "--enable-engines=testbed",
+        ],
+    }
+    platform.packaging_cmd = "psp2othervpk"
+    platform.built_files = {
+        builds.ScummVMBuild: [ "scummvm-other-engines.vpk" ],
+    }
+    platform.description = "PlayStation Vita (other engines)"
+
+    register_platform(platform)
+
+    # Vita Unstable Engines
+    platform = copy.deepcopy(platform)
+    platform.name = "vitaunstable"
+    platform.buildconfigureargs = {
+        builds.ScummVMBuild: [
+            "--disable-all-engines",
+            "--enable-all-unstable-engines",
+        ],
+    }
+    platform.packaging_cmd = "psp2unstablevpk"
+    platform.built_files = {
+        builds.ScummVMBuild: [ "scummvm-unstable-engines.vpk" ],
+    }
+    platform.description = "PlayStation Vita (unstable engines)"
+
+    register_platform(platform)
+
     # Vita full
     platform = copy.deepcopy(platform)
     platform.name = "vitafull"
@@ -856,7 +898,10 @@ def vita():
     platform.buildconfigureargs = {
         builds.ScummVMBuild: [ ],
     }
-
+    platform.packaging_cmd = "psp2vpk"
+    platform.built_files = {
+        builds.ScummVMBuild: [ "scummvm.vpk" ],
+    }
     platform.description = None
 
     register_platform(platform)
