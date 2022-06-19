@@ -829,6 +829,7 @@ def vita():
             "--disable-engines=titanic",
             "--disable-engines=wintermute",
             "--disable-engines=tsage",
+            "--disable-engines=ags",
             "--enable-engine=testbed",
         ],
     }
@@ -858,6 +859,7 @@ def vita():
             "--enable-engines=titanic",
             "--enable-engines=wintermute",
             "--enable-engines=tsage",
+            "--enable-engines=ags",
             "--enable-engines=testbed",
         ],
     }
