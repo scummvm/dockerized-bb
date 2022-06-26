@@ -857,7 +857,7 @@ def vita():
             "--enable-engines=glk",
             "--enable-engines=grim",
             "--enable-engines=titanic",
-            "--enable-engines=wintermute",
+            "--enable-engines=wintermute,foxtail,herocraft",
             "--enable-engines=tsage",
             "--enable-engines=ags",
             "--enable-engines=testbed",
@@ -885,26 +885,6 @@ def vita():
         builds.ScummVMBuild: [ "scummvm-unstable-engines.vpk" ],
     }
     platform.description = "PlayStation Vita (unstable engines)"
-
-    register_platform(platform)
-
-    # Vita full
-    platform = copy.deepcopy(platform)
-    platform.name = "vitafull"
-    # Don't package as it doesn't work
-    platform.packageable = False
-
-    # This Vita build includes all engines, but crashes on startup.
-    # The crash presumably happens due to the large executable size.
-
-    platform.buildconfigureargs = {
-        builds.ScummVMBuild: [ ],
-    }
-    platform.packaging_cmd = "psp2vpk"
-    platform.built_files = {
-        builds.ScummVMBuild: [ "scummvm.vpk" ],
-    }
-    platform.description = None
 
     register_platform(platform)
 vita()
