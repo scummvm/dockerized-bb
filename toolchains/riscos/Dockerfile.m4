@@ -47,6 +47,8 @@ local_sdk_package(tokenize)
 
 local_sdk_package(zip)
 
+local_sdk_package(makerun)
+
 ENV PREFIX=${GCCSDK_INSTALL_ENV} HOST=arm-unknown-riscos
 
 # Put GCCSDK_INSTALL_CROSSBIN before PATH because it overrides some binaries like zip
