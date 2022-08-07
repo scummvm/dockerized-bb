@@ -10,7 +10,6 @@ RUN apt-get update && \
 		libfreetype6-dev`'APT_ARCH \
 		libfribidi-dev`'APT_ARCH \
 		libgif-dev`'APT_ARCH \
-		libglew-dev`'APT_ARCH \
 		libgtk-3-dev`'APT_ARCH \
 		libieee1284-3-dev`'APT_ARCH \
 		libjpeg62-turbo-dev`'APT_ARCH \
