@@ -139,8 +139,6 @@ helpers_package(freetype)
 
 ports_package(fribidi)
 
-ports_package(glew)
-
 # This is a shim package which uses ports but fixes paths in sdl2-config
 common_package(libsdl2)
 

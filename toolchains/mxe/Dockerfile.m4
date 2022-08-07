@@ -89,8 +89,6 @@ mxe_package(freetype-bootstrap)
 
 mxe_package(fribidi)
 
-mxe_package(glew)
-
 mxe_package(libiconv)
 
 local_mxe_package(sdl2)
