@@ -820,6 +820,9 @@ def vita():
     # Tsage has nothing wrong with it, but we need to keep exe size down
     platform.buildconfigureargs = {
         builds.ScummVMBuild: [
+            "--enable-plugins"
+        ],
+        builds.ScummVMStableBuild: [
             "--disable-all-unstable-engines",
             "--disable-engines=bladerunner",
             "--disable-engines=stark",
@@ -848,8 +851,9 @@ def vita():
     # Vita Other Engines
     platform = copy.deepcopy(platform)
     platform.name = "vitaother"
+    platform.compatibleBuilds = (builds.ScummVMStableBuild, )
     platform.buildconfigureargs = {
-        builds.ScummVMBuild: [
+        builds.ScummVMStableBuild: [
             "--disable-all-engines",
             "--enable-engines=bladerunner",
             "--enable-engines=stark",
@@ -875,7 +879,7 @@ def vita():
     platform = copy.deepcopy(platform)
     platform.name = "vitaunstable"
     platform.buildconfigureargs = {
-        builds.ScummVMBuild: [
+        builds.ScummVMStableBuild: [
             "--disable-all-engines",
             "--enable-all-unstable-engines",
         ],
