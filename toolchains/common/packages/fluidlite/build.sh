@@ -1,6 +1,6 @@
 #! /bin/sh
 
-FLUIDLITE_VERSION=acc2183fdcb9af2aca233bcfdafd5f657dce33f8
+FLUIDLITE_VERSION=eaacb5f8d089a31084777de490d10c1c9b9c0c51
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..

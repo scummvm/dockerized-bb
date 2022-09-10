@@ -1,6 +1,6 @@
 #! /bin/sh
 
-REXX_VERSION=3.9.3
+REXX_VERSION=3.9.5
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..

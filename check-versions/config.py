@@ -296,7 +296,8 @@ VERSIONS = {
     ('./toolchains/gcw0/packages/sdl-net1.2/build.sh', 'SDL_NET'): 'ignore',
     ('./toolchains/gcw0/packages/sdl2-net/build.sh', 'SDL_NET'): 'ignore',
     ('./toolchains/gcw0/packages/zlib/build.sh', 'ZLIB'): 'ignore',
-    ('./toolchains/gcw0/packages/toolchain/build.sh', 'CT_NG'): crosstool_ng_check,
+    # Latest crosstool-ng doesn't support uClibc anymore
+    ('./toolchains/gcw0/packages/toolchain/build.sh', 'CT_NG'): 'ignore',
 
     ('./toolchains/iphone/packages/toolchain/build.sh', 'CCTOOLS_PORT'): cctools_port_check,
     ('./toolchains/iphone/packages/toolchain/build.sh', 'LDID'): {
@@ -372,7 +373,8 @@ VERSIONS = {
     ('./toolchains/opendingux/packages/libvorbisidec/build.sh', 'LIBTREMOR'): 'ignore',
     ('./toolchains/opendingux/packages/sdl-net1.2/build.sh', 'SDL_NET'): 'ignore',
     ('./toolchains/opendingux/packages/zlib/build.sh', 'ZLIB'): 'ignore',
-    ('./toolchains/opendingux/packages/toolchain/build.sh', 'CT_NG'): crosstool_ng_check,
+    # Latest crosstool-ng doesn't support uClibc anymore
+    ('./toolchains/opendingux/packages/toolchain/build.sh', 'CT_NG'): 'ignore',
 
     ('./toolchains/opendingux-beta/packages/toolchain/build.sh', 'TOOLCHAIN'): {
         'check': 'git commit',

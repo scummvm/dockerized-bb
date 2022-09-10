@@ -1,4 +1,4 @@
-From b214530e43110f88b17a6a821a87b581340f4aae Mon Sep 17 00:00:00 2001
+From e4dce5868f586ad9ce7b1ccc71f5d4f9bb862cda Mon Sep 17 00:00:00 2001
 From: Le Philousophe <lephilousophe@users.noreply.github.com>
 Date: Sun, 24 Jan 2021 19:18:24 +0100
 Subject: [PATCH 2/3] Accept piped data and avoid intermediate files
@@ -338,5 +338,5 @@ index cf0d370..9d61a6a 100644
    if [ $f_res -eq 1 ]; then
      pushd $CURRENT_BUILD_PROJECT_NAME/xar &>/dev/null
 -- 
-2.32.0
+2.34.1
 
