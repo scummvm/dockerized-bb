@@ -67,7 +67,7 @@ def hg_commit(version, *, repository, branch, context=None):
     if len(version) > 0 and len(version) < len(obj):
         shortobj = obj[:len(version)]
 
-    return shortobj == version, obj, "repository URL: {0}, branch {1}".format(repository, branch)
+    return shortobj == version, obj, "repository URL: {0} branch {1}".format(repository, branch)
 
 checkers.register('hg commit', hg_commit)
 

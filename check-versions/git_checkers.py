@@ -130,7 +130,7 @@ def git_commit(version, *, repository, branch, context=None):
     if obj is None:
         raise Exception("Invalid branch {1} specified for {0}".format(repository, branch))
 
-    return obj == version, obj, "repository URL: {0}, branch {1}".format(repository, branch)
+    return obj == version, obj, "repository URL: {0} branch {1}".format(repository, branch)
 
 checkers.register('git commit', git_commit)
 

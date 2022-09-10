@@ -194,7 +194,7 @@ def docker_tag(version, *, registry, image_name, reference='latest', tag_format=
     # Now fetch its digest
     file_digest = fetch_digest(registry, image_name, version, **kwargs)
 
-    return latest_digest == file_digest, reference, "Registry URL: {0}, image {1}".format(registry, image_name)
+    return latest_digest == file_digest, reference, "Registry URL: {0} image {1}".format(registry, image_name)
 
 checkers.register('docker tag', docker_tag)
 
