@@ -30,6 +30,8 @@ def read_packet_line(reply):
 def parse_dumb_refs(reply):
     refs = list()
     for line in reply.read().split(b'\n'):
+        if not line:
+            continue
         obj, ref = line.split(b'\t', 1)
         obj = obj.decode('ascii')
         ref = ref.decode('utf-8')
@@ -45,7 +47,7 @@ def parse_dumb_refs(reply):
     refsd = dict(refs)
     if len(refsd) != len(refs):
         raise Exception("Duplicate references in list for {0}".format(reply.geturl()))
-    return refs
+    return refsd
 
 def parse_smart_refs(reply):
     data = read_packet_line(reply)
