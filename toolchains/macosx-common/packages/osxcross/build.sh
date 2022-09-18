@@ -1,6 +1,6 @@
 #! /bin/sh
 
-OSXCROSS_VERSION=17bb5e2d0a46533c1dd525cf4e9a80d88bd9f00e
+OSXCROSS_VERSION=50e86ebca7d14372febd0af8cd098705049161b9
 export XAR_VERSION=c2111a9a9cabc50d2b9c604aff41a481ae3f1989
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)

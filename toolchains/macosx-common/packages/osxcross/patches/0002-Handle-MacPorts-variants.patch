@@ -1,0 +1,52 @@
+From 83056d61dc67f3679326d8bc0e9d4719dacb855f Mon Sep 17 00:00:00 2001
+From: Le Philousophe <lephilousophe@users.noreply.github.com>
+Date: Sat, 17 Sep 2022 11:36:50 +0200
+Subject: [PATCH 2/2] Handle MacPorts variants
+
+---
+ tools/osxcross-macports | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
+
+diff --git a/tools/osxcross-macports b/tools/osxcross-macports
+index f008a8d..58310bd 100755
+--- a/tools/osxcross-macports
++++ b/tools/osxcross-macports
+@@ -274,13 +274,20 @@ verifyFileIntegrity()
+ 
+ getPkgUrl()
+ {
+-  local pkgname="$1"
++  local pkgname="${1%+*}"
++  local pkgvariant="${1##*+}"
+   local pkgversion
+   local pkgs
+   local pkg
+ 
+   set +e
+ 
++  if [ "$pkgvariant" = "$1" ]; then
++	  pkgvariant='[^+]*\.'
++  else
++	  pkgvariant="+${pkgvariant}\\."
++  fi
++
+   local pkg_info_url="https://ports.macports.org"
+   pkg_info_url+="/api/v1/ports/$pkgname/?format=json"
+   pkgversion=$(getFileStdout "$pkg_info_url" | \
+@@ -307,11 +314,11 @@ getPkgUrl()
+   done
+ 
+   local pkg=$(echo "$pkgs" | \
+-              grep "$pkgname-$pkgversion" | grep $OSXVERSION | grep $ARCH | \
++              grep "${pkgname}-${pkgversion}_[0-9]\\+${pkgvariant}" | grep $OSXVERSION | grep $ARCH | \
+               uniq | tail -n1)
+   if [ -z "$pkg" ]; then
+     pkg=$(echo "$pkgs" | \
+-          grep "$pkgname-$pkgversion" | grep $OSXVERSION | grep "noarch" | \
++          grep "${pkgname}-${pkgversion}_[0-9]\\+${pkgvariant}" | grep $OSXVERSION | grep "noarch" | \
+           uniq | tail -n1)
+   fi
+   if [ -z "$pkg" ]; then
+-- 
+2.34.1
+
