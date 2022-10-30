@@ -1,6 +1,6 @@
 #! /bin/sh
 
-PSP_PACKAGES_VERSION=f6e720a7b8e8a09147ceb00f41acc383c0102626
+PSP_PACKAGES_VERSION=4135278ee8610747a8bf182ba9d5940ea1d2f515
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..
@@ -11,7 +11,7 @@ do_make_bdir
 do_http_fetch psp-packages "https://github.com/pspdev/psp-packages/archive/${PSP_PACKAGES_VERSION}.tar.gz" 'tar xzf'
 
 # Patch to drop privileges during the build
-sed -i -e 's|psp-makepkg|su nobody -s /bin/sh -c "env PATH=\"\$PATH:$PSPDEV/bin\" psp-makepkg"|' ./build.sh
+sed -i -e 's|psp-makepkg|su nobody -s /bin/sh -c psp-makepkg|' ./build.sh
 
 # Give rights to nobody
 chmod -R go+rwX .
