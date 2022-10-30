@@ -13,7 +13,6 @@ RUN apt-get update && \
 		flex \
 		gcc \
 		g++ \
-		lhasa \
 		libgmp-dev \
 		libmpc-dev \
 		libmpfr-dev \
@@ -23,6 +22,9 @@ RUN apt-get update && \
 
 ENV CROSS_PREFIX=/usr/local/amigaos4 HOST=ppc-amigaos
 ENV PREFIX=$CROSS_PREFIX/$HOST
+
+# Build a correct LHA extractor: https://forum.hyperion-entertainment.com/viewtopic.php?t=4767
+local_package(lha)
 
 local_package(toolchain)
 

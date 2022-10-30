@@ -1,6 +1,6 @@
 #! /bin/sh
 
-TOOLCHAIN_VERSION=58d6f763596974b8ba6d20953e6ef7a30a27d45f
+TOOLCHAIN_VERSION=5ec2e2d879f2cc0cb4fe2b63a1a0594a54be7bea
 
 # Versions of components to use provided by toolchain
 BINUTILS_VER=2.23.2
@@ -24,6 +24,9 @@ HOME="$(pwd)" git config --global user.name "Gild patch"
 
 HOME="$(pwd)" gild/bin/gild checkout binutils "${BINUTILS_VER}"
 HOME="$(pwd)" gild/bin/gild checkout gcc "${GCC_VER}"
+
+# We need lha which is already installed in CROSS_PREFIX
+export PATH="${CROSS_PREFIX}/bin:${PATH}"
 
 do_make -C native-build gcc-cross
 
