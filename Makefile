@@ -1,4 +1,4 @@
-BUILDBOT_VERSION   := 3.6.0
+BUILDBOT_VERSION   := 3.6.1
 BUILDBOT_BASEDIR   := buildbot-workdir
 
 BOTTLE_VERSION     := 0.12.23

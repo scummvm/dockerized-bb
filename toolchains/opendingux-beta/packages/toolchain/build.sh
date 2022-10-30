@@ -1,6 +1,6 @@
 #! /bin/sh
 
-TOOLCHAIN_VERSION=e11cbbc4e3aa626745a64458c72cc9efc93e6b41
+TOOLCHAIN_VERSION=397c3d36868a58551133b13e46dfd889f8af38fb
 TARGETS="gcw0 rs90 lepus"
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
@@ -111,7 +111,7 @@ for target in $TARGETS; do
 
 	export CCACHE_BASEDIR=$(readlink -m "output/${target}")
 
-	CONFIG=$target ./rebuild.sh
+	CONFIG=$target ./build.sh
 	tar -C "${OPENDINGUX_ROOT}/" -xJf output/$target/images/opendingux-$target-toolchain.*.tar.xz
 	"${OPENDINGUX_ROOT}/${target}-toolchain/relocate-sdk.sh"
 
