@@ -132,6 +132,11 @@ VERSIONS = {
 
     ('./toolchains/m4/debian-toolchain-base.m4', 'DEBIAN'): debian_check,
 
+    ('./toolchains/amigaos4/packages/lha/build.sh', 'LHA'): {
+        'check': 'git commit',
+        'repository': 'https://github.com/jca02266/lha.git',
+        'branch': 'master',
+    },
     ('./toolchains/amigaos4/packages/libsdl2/build.sh', 'SDL2'): {
         'check': 'git tag',
         'repository': 'https://github.com/AmigaPorts/SDL-2.0.git',
