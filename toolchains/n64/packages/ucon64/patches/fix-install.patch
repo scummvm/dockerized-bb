@@ -1,0 +1,17 @@
+diff -Naur ucon64-2.2.2-src-orig/src/install.sh ucon64-2.2.2-src/src/install.sh
+--- ucon64-2.2.2-src-orig/src/install.sh	2021-04-19 19:03:53.000000000 +0100
++++ ucon64-2.2.2-src/src/install.sh	2022-11-30 16:26:21.315533698 +0000
+@@ -19,11 +19,8 @@
+ if [ $OSTYPE == cygwin -o $OSTYPE == msys ]; then
+ cp -p ucon64 "$DESTDIR"
+ else
+-sudo bash -c "
+-chown root ucon64
+-chmod 4755 ucon64
+-cp -p ucon64 \"$DESTDIR\"
+-"
++install -d "$DESTDIR"
++install -c -m 755 "./ucon64" "$DESTDIR/ucon64"
+ fi
+ if [ ! -e "$HOME/.ucon64" ]; then
+ mkdir "$HOME/.ucon64"
