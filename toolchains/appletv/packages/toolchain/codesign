@@ -1,0 +1,50 @@
+#! /bin/sh
+
+cert=
+deep=
+force=
+
+while [ $# -gt 0 ]; do
+	arg=$1
+	case $arg in
+		-s*)
+			cert=${arg#-s}
+			shift
+			if [ -z $cert ]; then
+				cert=$1
+				shift
+			fi
+			;;
+		--force)
+			force=1
+			shift
+			;;
+		--deep)
+			deep=1
+			shift
+			;;
+		--)
+			shift
+			break
+			;;
+		-*)
+			echo "ERROR: Unknown argument $arg" >&2
+			exit 1
+			;;
+		*)
+			break
+			;;
+	esac
+done
+
+if [ "$cert" != "-" ]; then
+	echo "WARNING: Only ad-hoc signing is supported for now" >&2
+fi
+if [ "$deep" != 1 ]; then
+	echo "WARNING: Only deep signing is supported by ldid" >&2
+fi
+if [ "$force" != 1 ]; then
+	echo "WARNING: Only force signing is supported by ldid" >&2
+fi
+
+ldid -P -Cadhoc -S "$@"

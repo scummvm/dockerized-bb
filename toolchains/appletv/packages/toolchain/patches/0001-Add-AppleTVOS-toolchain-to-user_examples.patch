@@ -1,0 +1,539 @@
+From ae3bd0f13db6a42ea7ad0035590dba04fe01c694 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Lars=20Sundstr=C3=B6m?= <l.sundstrom@gmail.com>
+Date: Sun, 4 Dec 2022 17:47:46 +0100
+Subject: Add AppleTVOS toolchain to user_examples
+
+All patches made for iphone_toolchain have been merged as well.
+---
+ usage_examples/tvos_toolchain/README    |  57 ++++++
+ usage_examples/tvos_toolchain/build.sh  | 235 ++++++++++++++++++++++++
+ usage_examples/tvos_toolchain/wrapper.c | 211 +++++++++++++++++++++
+ 3 files changed, 503 insertions(+)
+ create mode 100644 usage_examples/tvos_toolchain/README
+ create mode 100755 usage_examples/tvos_toolchain/build.sh
+ create mode 100644 usage_examples/tvos_toolchain/wrapper.c
+
+diff --git a/usage_examples/tvos_toolchain/README b/usage_examples/tvos_toolchain/README
+new file mode 100644
+index 0000000..43d7436
+--- /dev/null
++++ b/usage_examples/tvos_toolchain/README
+@@ -0,0 +1,57 @@
++PREREQUISITES:
++
++See cctools/ld64 README + libssl-dev, git, bash, cmake
++
++--------------------------------------------------------------------------------
++
++USAGE:
++
++Please ensure you have read and understood the Xcode license terms before
++building this toolchain: https://www.apple.com/legal/sla/docs/xcode.pdf.
++
++[LLVM_DSYMUTIL=llvm-dsymutil] ./build.sh /path/to/sdk.tar.* <target cpu>
++
++Target CPU should be one of armv6, armv7, armv7s and arm64.
++
++This will build an tvOS toolchain prefixed with
++arm-apple-darwin11-*
++
++You can then use arm-apple-darwin11-clang / arm apple-darwin11-clang++
++to build your applications.
++
++---
++
++TVOS_DEPLOYMENT_TARGET can be used to target older tvOS versions.
++
++For example:
++
++export TVOS_DEPLOYMENT_TARGET=9.0
++
++will target tvOS 9.0
++
++--------------------------------------------------------------------------------
++
++ISSUES:
++
++
++--------------------------------------------------------------------------------
++
++PACKAGING THE SDK:
++
++Ensure you have read and understood the Xcode license terms before continuing.
++=> https://www.apple.com/legal/sla/docs/xcode.pdf
++
++Packaging recents SDKs requires Mac OS Sierra.
++
++Download Xcode 8.2.1 and extract its content. Then issue the following commands:
++
++SDK=$(ls -l Xcode.app/Contents/Developer/Platforms/AppleTVOS.platform/Developer/SDKs | grep " -> AppleTVOS.sdk" | head -n1 | awk '{print $9}')
++cp -r Xcode.app/Contents/Developer/Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS.sdk /tmp/$SDK 1>/dev/null
++cp -r Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1 /tmp/$SDK/usr/include/c++ 1>/dev/null
++pushd /tmp
++tar -cvzf $SDK.tar.gz $SDK
++rm -rf $SDK
++mv $SDK.tar.gz ~
++popd
++
++The SDK should be now in your home directory.
+diff --git a/usage_examples/tvos_toolchain/build.sh b/usage_examples/tvos_toolchain/build.sh
+new file mode 100755
+index 0000000..cf8902e
+--- /dev/null
++++ b/usage_examples/tvos_toolchain/build.sh
+@@ -0,0 +1,235 @@
++#!/usr/bin/env bash
++
++export LC_ALL=C
++pushd "${0%/*}" &>/dev/null
++
++PLATFORM=$(uname -s)
++OPERATING_SYSTEM=$(uname -o || echo "-")
++
++if [ $OPERATING_SYSTEM == "Android" ]; then
++  export CC="clang -D__ANDROID_API__=26"
++  export CXX="clang++ -D__ANDROID_API__=26"
++fi
++
++if [ -z "$LLVM_DSYMUTIL" ]; then
++    LLVM_DSYMUTIL=llvm-dsymutil
++fi
++
++if [ -z "$JOBS" ]; then
++    JOBS=$(nproc 2>/dev/null || ncpus 2>/dev/null || echo 1)
++fi
++
++set -e
++
++function verbose_cmd
++{
++    echo "$@"
++    eval "$@"
++}
++
++function extract()
++{
++    echo "extracting $(basename $1) ..."
++    local tarflags="xf"
++
++    case $1 in
++        *.tar.xz|*.txz)
++            xz -dc $1 | tar $tarflags -
++            ;;
++        *.tar.gz|*.tgz)
++            gunzip -dc $1 | tar $tarflags -
++            ;;
++        *.tar.bz2|*.tbz2)
++            bzip2 -dc $1 | tar $tarflags -
++            ;;
++        *.tar.lzma|*.tlzma)
++            lzma -dc $1 | tar $tarflags -
++            ;;
++        *)
++            echo "unhandled archive type" 1>&2
++            exit 1
++            ;;
++    esac
++}
++
++function git_clone_repository
++{
++    local url=$1
++    local branch=$2
++    local directory
++
++    directory=$(basename $url)
++    directory=${directory/\.git/}
++
++    if [ -n "$CCTOOLS_IOS_DEV" ]; then
++        rm -rf $directory
++        cp -r $CCTOOLS_IOS_DEV/$directory .
++        return
++    fi
++
++    if [ ! -d $directory ]; then
++        local args=""
++        test "$branch" = "master" && args="--depth 1"
++        git clone $url $args
++    fi
++
++    pushd $directory &>/dev/null
++
++    git reset --hard
++    git clean -fdx
++    git checkout $branch
++    git pull origin $branch
++
++    popd &>/dev/null
++}
++
++
++if [ $# -lt 2 ]; then
++    echo "usage: $0 AppleTVOS.sdk.tar* <target cpu>" 1>&2
++    echo "i.e. $0 /path/to/AppleTVOS.sdk.tar.xz armv7" 1>&2
++    exit 1
++fi
++
++if [ -z "$TRIPLE" ]; then
++TRIPLE="arm-apple-darwin11"
++fi
++if [ -z "$TARGETDIR" ]; then
++TARGETDIR="$PWD/target"
++fi
++SDKDIR="$TARGETDIR/SDK"
++
++if [ -d $TARGETDIR ]; then
++    echo "cleaning up ..."
++    rm -rf $TARGETDIR
++fi
++
++mkdir -p $TARGETDIR
++mkdir -p $TARGETDIR/bin
++mkdir -p $SDKDIR
++
++echo ""
++echo "*** extracting SDK ***"
++echo ""
++
++pushd $SDKDIR &>/dev/null
++SDK_VERSION=$(echo $1 | grep -P -o "[0-9][0-9].[0-9]+" | head -1)
++if [ -z "$SDK_VERSION" ]; then
++  SDK_VERSION=$(echo $1 | grep -P -o "[0-9].[0-9]+" | head -1)
++fi
++if [ -z "$SDK_VERSION" ]; then
++    echo "AppleTVOS Version must be in the SDK filename!" 1>&2
++    exit 1
++fi
++extract $1
++SYSLIB=$(find $SDKDIR -name libSystem.dylib -o -name libSystem.tbd | head -n1)
++if [ -z "$SYSLIB" ]; then
++    echo "SDK should contain libSystem{.dylib,.tbd}" 1>&2
++    exit 1
++fi
++WRAPPER_SDKDIR=$(echo AppleTVOS*sdk | head -n1)
++if [ -z "$WRAPPER_SDKDIR" ]; then
++    echo "broken SDK" 1>&2
++    exit 1
++fi
++popd &>/dev/null
++
++echo ""
++echo "*** building wrapper ***"
++echo ""
++
++OK=0
++
++set +e
++which $LLVM_DSYMUTIL &>/dev/null
++if [ $? -eq 0 ]; then
++    case $($LLVM_DSYMUTIL --version | \
++           grep "LLVM version" | head -1 | awk '{print $3}') in
++        3.8*|3.9*|4.0*|5.0*|6.0*|7.0*|8.0*|9.0*|10*|11*|12*|13*) OK=1 ;;
++    esac
++fi
++set -e
++
++if [ $OK -eq 1 ]; then
++    ln -sf $(which $LLVM_DSYMUTIL) $TARGETDIR/bin/dsymutil
++    pushd $TARGETDIR/bin &>/dev/null
++    ln -sf $TRIPLE-lipo lipo
++    popd &>/dev/null
++elif ! which dsymutil &>/dev/null; then
++    echo "int main(){return 0;}" | cc -xc -O2 -o $TARGETDIR/bin/dsymutil -
++fi
++
++if [ -z "${TVOS_DEPLOYMENT_TARGET}" ]; then
++	TVOS_DEPLOYMENT_TARGET=$SDK_VERSION
++fi
++
++verbose_cmd cc -O2 -Wall -Wextra -pedantic wrapper.c \
++    -DSDK_DIR=\"\\\"$WRAPPER_SDKDIR\\\"\" \
++    -DTARGET_CPU=\"\\\"$2\\\"\" \
++    -DOS_VER_MIN=\"\\\"$TVOS_DEPLOYMENT_TARGET\\\"\" \
++    -o $TARGETDIR/bin/$TRIPLE-clang
++
++pushd $TARGETDIR/bin &>/dev/null
++verbose_cmd ln -sf $TRIPLE-clang $TRIPLE-clang++
++popd &>/dev/null
++
++echo ""
++echo "*** building ldid ***"
++echo ""
++
++rm -rf tmp
++
++mkdir -p tmp
++pushd tmp &>/dev/null
++git_clone_repository https://github.com/tpoechtrager/ldid.git $LDID_VERSION
++pushd ldid &>/dev/null
++make INSTALLPREFIX=$TARGETDIR -j$JOBS install
++popd &>/dev/null
++popd &>/dev/null
++
++echo ""
++echo "*** building apple-libtapi ***"
++echo ""
++
++pushd tmp &>/dev/null
++git_clone_repository https://github.com/tpoechtrager/apple-libtapi.git 1100.0.11
++pushd apple-libtapi &>/dev/null
++INSTALLPREFIX=$TARGETDIR ./build.sh
++./install.sh
++popd &>/dev/null
++popd &>/dev/null
++
++echo ""
++echo "*** building cctools / ld64 ***"
++echo ""
++
++pushd ../../cctools &>/dev/null
++git clean -fdx &>/dev/null || true
++popd &>/dev/null
++
++pushd tmp &>/dev/null
++mkdir -p cctools
++pushd cctools &>/dev/null
++../../../../cctools/configure --target=$TRIPLE --prefix=$TARGETDIR --with-libtapi=$TARGETDIR
++make -j$JOBS && make install
++popd &>/dev/null
++popd &>/dev/null
++
++echo ""
++echo "*** checking toolchain ***"
++echo ""
++
++export PATH=$TARGETDIR/bin:$PATH
++
++echo "int main(){return 0;}" | $TRIPLE-clang -xc -O2 -o test - 1>/dev/null || exit 1
++rm test
++echo "OK"
++
++echo "int main(){return 0;}" | $TRIPLE-clang++ -xc++ -std=c++11 -O2 -o test - 1>/dev/null || exit 1
++rm test
++echo "OK"
++
++echo ""
++echo "*** all done ***"
++echo ""
++echo "do not forget to add $TARGETDIR/bin to your PATH variable"
++echo ""
+diff --git a/usage_examples/tvos_toolchain/wrapper.c b/usage_examples/tvos_toolchain/wrapper.c
+new file mode 100644
+index 0000000..542983e
+--- /dev/null
++++ b/usage_examples/tvos_toolchain/wrapper.c
+@@ -0,0 +1,211 @@
++#ifndef TARGET_CPU
++#define TARGET_CPU "armv7"
++#endif
++
++#ifndef OS_VER_MIN
++#define OS_VER_MIN "4.2"
++#endif
++
++#ifndef SDK_DIR
++#define SDK_DIR ""
++#endif
++
++#define _GNU_SOURCE
++
++#include <stdlib.h>
++#include <string.h>
++#include <stdio.h>
++#include <stddef.h>
++#include <unistd.h>
++#include <limits.h>
++
++#ifdef __APPLE__
++#include <mach-o/dyld.h>
++#endif
++
++#if defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__DragonFly__)
++#include <sys/sysctl.h>
++#endif
++
++#ifdef __OpenBSD__
++#include <sys/types.h>
++#include <sys/user.h>
++#include <sys/stat.h>
++#endif
++
++int endswith(const char *str, const char *end) {
++    int slen = strlen(str);
++    int elen = strlen(end);
++    if (slen < elen) {
++        return 0;
++    }
++    return strcmp(str + slen - elen, end) == 0;
++}
++
++char *get_executable_path(char *epath, size_t buflen)
++{
++    char *p;
++#ifdef __APPLE__
++    unsigned int l = buflen;
++    if (_NSGetExecutablePath(epath, &l) != 0) return NULL;
++#elif defined(__FreeBSD__) || defined(__DragonFly__)
++    int mib[4] = { CTL_KERN, KERN_PROC, KERN_PROC_PATHNAME, -1 };
++    size_t l = buflen;
++    if (sysctl(mib, 4, epath, &l, NULL, 0) != 0) return NULL;
++#elif defined(__OpenBSD__)
++    int mib[4];
++    char **argv;
++    size_t len;
++    size_t l;
++    const char *comm;
++    int ok = 0;
++    mib[0] = CTL_KERN;
++    mib[1] = KERN_PROC_ARGS;
++    mib[2] = getpid();
++    mib[3] = KERN_PROC_ARGV;
++    if (sysctl(mib, 4, NULL, &len, NULL, 0) < 0)
++        abort();
++    if (!(argv = malloc(len)))
++        abort();
++    if (sysctl(mib, 4, argv, &len, NULL, 0) < 0)
++        abort();
++    comm = argv[0];
++    if (*comm == '/' || *comm == '.')
++    {
++        char *rpath;
++        if ((rpath = realpath(comm, NULL)))
++        {
++            strlcpy(epath, rpath, buflen);
++            free(rpath);
++            ok = 1;
++        }
++    }
++    else
++    {
++        char *sp;
++        char *xpath = strdup(getenv("PATH"));
++        char *path = strtok_r(xpath, ":", &sp);
++        struct stat st;
++        if (!xpath)
++            abort();
++        while (path)
++        {
++            snprintf(epath, buflen, "%s/%s", path, comm);
++            if (!stat(epath, &st) && (st.st_mode & S_IXUSR))
++	    {
++                ok = 1;
++                break;
++            }
++            path = strtok_r(NULL, ":", &sp);
++        }
++        free(xpath);
++    }
++    free(argv);
++    if (!ok) return NULL;
++    l = strlen(epath);
++#else
++    ssize_t l = readlink("/proc/self/exe", epath, buflen - 1);
++    if (l > 0) epath[l] = '\0';
++#endif
++    if (l <= 0) return NULL;
++    epath[buflen - 1] = '\0';
++    p = strrchr(epath, '/');
++    if (p) *p = '\0';
++    return epath;
++}
++
++char *get_filename(char *str)
++{
++    char *p = strrchr(str, '/');
++    return p ? &p[1] : str;
++}
++
++void target_info(char *argv[], char **triple, char **compiler)
++{
++    char *p = get_filename(argv[0]);
++    char *x = strrchr(p, '-');
++    if (!x) abort();
++    *compiler = &x[1];
++    *x = '\0';
++    *triple = p;
++}
++
++void env(char **p, const char *name, char *fallback)
++{
++    char *ev = getenv(name);
++    if (ev) { *p = ev; return; }
++    *p = fallback;
++}
++
++int main(int argc, char *argv[])
++{
++    char **args = alloca(sizeof(char*) * (argc+50));
++    int i, j;
++
++    char execpath[PATH_MAX+1];
++    char sdkpath[PATH_MAX+1];
++    char osvermin[64];
++
++    char *compiler;
++    char *target;
++
++    char *sdk;
++    char *cpu;
++    char *osmin;
++
++    target_info(argv, &target, &compiler);
++    if (!get_executable_path(execpath, sizeof(execpath))) abort();
++    snprintf(sdkpath, sizeof(sdkpath) - 1, "%s/../SDK/" SDK_DIR, execpath);
++
++    env(&sdk, "TVOS_SDK_SYSROOT", sdkpath);
++    env(&cpu, "TVOS_TARGET_CPU", TARGET_CPU);
++
++    env(&osmin, "TVOS_DEPLOYMENT_TARGET", OS_VER_MIN);
++    unsetenv("TVOS_DEPLOYMENT_TARGET");
++
++    snprintf(osvermin, sizeof(osvermin), "-mtvos-version-min=%s", osmin);
++
++    for (i = 1; i < argc; ++i)
++    {
++        if (!strcmp(argv[i], "-arch"))
++        {
++            cpu = NULL;
++            break;
++        }
++    }
++
++    i = 0;
++
++    args[i++] = compiler;
++    args[i++] = "-target";
++    args[i++] = target;
++    args[i++] = "-isysroot";
++    args[i++] = sdk;
++
++    if (cpu)
++    {
++        args[i++] = "-arch";
++        args[i++] = cpu;
++    }
++
++    args[i++] = osvermin;
++    args[i++] = "-mlinker-version=609";
++    args[i++] = "-Wl,-adhoc_codesign";
++    args[i++] = "-Qunused-arguments";
++
++    if  (endswith(compiler, "++"))
++    {
++        args[i++] = "-stdlib=libc++";
++    }
++
++    for (j = 1; j < argc; ++i, ++j)
++        args[i] = argv[j];
++
++    args[i] = NULL;
++
++    setenv("COMPILER_PATH", execpath, 1);
++    execvp(compiler, args);
++
++    fprintf(stderr, "cannot invoke compiler!\n");
++    return 1;
++}
+-- 
+2.37.1 (Apple Git-137.1)
+

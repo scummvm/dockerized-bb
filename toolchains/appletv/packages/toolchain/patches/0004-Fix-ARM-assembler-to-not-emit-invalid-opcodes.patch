@@ -1,0 +1,29 @@
+From cf352e594610b74bb02677a1420495defa1146b6 Mon Sep 17 00:00:00 2001
+From: Le Philousophe <lephilousophe@users.noreply.github.com>
+Date: Fri, 19 Mar 2021 12:18:53 +0100
+Subject: [PATCH 4/6] Fix ARM assembler to not emit invalid opcodes
+
+---
+ cctools/as/arm.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/cctools/as/arm.c b/cctools/as/arm.c
+index ef856a5..80e7ba7 100644
+--- a/cctools/as/arm.c
++++ b/cctools/as/arm.c
+@@ -5085,8 +5085,11 @@ static unsigned int
+ encode_arm_immediate (unsigned int val)
+ {
+   unsigned int a, i;
++  // Avoid rotating by 0 as it triggers bug in LLVM
++  if (val <= 0xff)
++	return val;
+ 
+-  for (i = 0; i < 32; i += 2)
++  for (i = 2; i < 32; i += 2)
+     if ((a = rotate_left (val, i)) <= 0xff)
+       return a | (i << 7); /* 12-bit pack: [shift-cnt,const].  */
+ 
+-- 
+2.32.0
+

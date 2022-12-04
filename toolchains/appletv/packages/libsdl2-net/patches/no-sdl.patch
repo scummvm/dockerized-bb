@@ -1,0 +1,262 @@
+diff --git a/SDL2_net.pc.in b/SDL2_net.pc.in
+index e3ad892..e7731be 100644
+--- a/SDL2_net.pc.in
++++ b/SDL2_net.pc.in
+@@ -6,6 +6,6 @@ includedir=@includedir@
+ Name: SDL2_net
+ Description: net library for Simple DirectMedia Layer
+ Version: @VERSION@
+-Requires: sdl2 >= @SDL_VERSION@
++Requires:
+ Libs: -L${libdir} -lSDL2_net
+ Cflags: -I${includedir}/SDL2
+diff --git a/SDL_net.h b/SDL_net.h
+index bd5ec7f..c7293e9 100644
+--- a/SDL_net.h
++++ b/SDL_net.h
+@@ -25,7 +25,10 @@
+ #ifndef _SDL_NET_H
+ #define _SDL_NET_H
+ 
++#define WITHOUT_SDL
++
+ #ifdef WITHOUT_SDL
++#include <stdlib.h>
+ #include <stdint.h>
+ typedef uint8_t Uint8;
+ typedef uint16_t Uint16;
+@@ -37,6 +40,11 @@ typedef struct SDLNet_version {
+     Uint8 patch;
+ } SDLNet_version;
+ 
++#define SDL_memcpy memcpy
++#define SDL_memset memset
++#define SDL_malloc malloc
++#define SDL_free free
++
+ #else /* WITHOUT_SDL */
+ 
+ #include "SDL.h"
+@@ -47,7 +55,156 @@ typedef SDL_version SDLNet_version;
+ 
+ #endif /* WITHOUT_SDL */
+ 
+-#include "begin_code.h"
++//#include "begin_code.h"
++/**
++ *  \file begin_code.h
++ *
++ *  This file sets things up for C dynamic library function definitions,
++ *  static inlined functions, and structures aligned at 4-byte alignment.
++ *  If you don't like ugly C preprocessor code, don't look at this file. :)
++ */
++
++/* This shouldn't be nested -- included it around code only. */
++#ifdef _begin_code_h
++#error Nested inclusion of begin_code.h
++#endif
++#define _begin_code_h
++
++#ifndef SDL_DEPRECATED
++#  if (__GNUC__ >= 4)  /* technically, this arrived in gcc 3.1, but oh well. */
++#    define SDL_DEPRECATED __attribute__((deprecated))
++#  else
++#    define SDL_DEPRECATED
++#  endif
++#endif
++
++#ifndef SDL_UNUSED
++#  ifdef __GNUC__
++#    define SDL_UNUSED __attribute__((unused))
++#  else
++#    define SDL_UNUSED
++#  endif
++#endif
++
++/* Some compilers use a special export keyword */
++#ifndef DECLSPEC
++# if defined(__WIN32__) || defined(__WINRT__)
++#  ifdef __BORLANDC__
++#   ifdef BUILD_SDL
++#    define DECLSPEC
++#   else
++#    define DECLSPEC    __declspec(dllimport)
++#   endif
++#  else
++#   define DECLSPEC __declspec(dllexport)
++#  endif
++# elif defined(__OS2__)
++#   ifdef BUILD_SDL
++#    define DECLSPEC    __declspec(dllexport)
++#   else
++#    define DECLSPEC
++#   endif
++# else
++#  if defined(__GNUC__) && __GNUC__ >= 4
++#   define DECLSPEC __attribute__ ((visibility("default")))
++#  else
++#   define DECLSPEC
++#  endif
++# endif
++#endif
++
++/* By default SDL uses the C calling convention */
++#ifndef SDLCALL
++#if (defined(__WIN32__) || defined(__WINRT__)) && !defined(__GNUC__)
++#define SDLCALL __cdecl
++#elif defined(__OS2__) || defined(__EMX__)
++#define SDLCALL _System
++# if defined (__GNUC__) && !defined(_System)
++#  define _System /* for old EMX/GCC compat.  */
++# endif
++#else
++#define SDLCALL
++#endif
++#endif /* SDLCALL */
++
++/* Removed DECLSPEC on Symbian OS because SDL cannot be a DLL in EPOC */
++#ifdef __SYMBIAN32__
++#undef DECLSPEC
++#define DECLSPEC
++#endif /* __SYMBIAN32__ */
++
++/* Force structure packing at 4 byte alignment.
++   This is necessary if the header is included in code which has structure
++   packing set to an alternate value, say for loading structures from disk.
++   The packing is reset to the previous value in close_code.h
++ */
++#if defined(_MSC_VER) || defined(__MWERKS__) || defined(__BORLANDC__)
++#ifdef _MSC_VER
++#pragma warning(disable: 4103)
++#endif
++#ifdef __clang__
++#pragma clang diagnostic ignored "-Wpragma-pack"
++#endif
++#ifdef __BORLANDC__
++#pragma nopackwarning
++#endif
++#ifdef _M_X64
++/* Use 8-byte alignment on 64-bit architectures, so pointers are aligned */
++#pragma pack(push,8)
++#else
++#pragma pack(push,4)
++#endif
++#endif /* Compiler needs structure packing set */
++
++#ifndef SDL_INLINE
++#if defined(__GNUC__)
++#define SDL_INLINE __inline__
++#elif defined(_MSC_VER) || defined(__BORLANDC__) || \
++      defined(__DMC__) || defined(__SC__) || \
++      defined(__WATCOMC__) || defined(__LCC__) || \
++      defined(__DECC) || defined(__CC_ARM)
++#define SDL_INLINE __inline
++#ifndef __inline__
++#define __inline__ __inline
++#endif
++#else
++#define SDL_INLINE inline
++#ifndef __inline__
++#define __inline__ inline
++#endif
++#endif
++#endif /* SDL_INLINE not defined */
++
++#ifndef SDL_FORCE_INLINE
++#if defined(_MSC_VER)
++#define SDL_FORCE_INLINE __forceinline
++#elif ( (defined(__GNUC__) && (__GNUC__ >= 4)) || defined(__clang__) )
++#define SDL_FORCE_INLINE __attribute__((always_inline)) static __inline__
++#else
++#define SDL_FORCE_INLINE static SDL_INLINE
++#endif
++#endif /* SDL_FORCE_INLINE not defined */
++
++#ifndef SDL_NORETURN
++#if defined(__GNUC__)
++#define SDL_NORETURN __attribute__((noreturn))
++#elif defined(_MSC_VER)
++#define SDL_NORETURN __declspec(noreturn)
++#else
++#define SDL_NORETURN
++#endif
++#endif /* SDL_NORETURN not defined */
++
++/* Apparently this is needed by several Windows compilers */
++#if !defined(__MACH__)
++#ifndef NULL
++#ifdef __cplusplus
++#define NULL 0
++#else
++#define NULL ((void *)0)
++#endif
++#endif /* NULL */
++#endif /* ! Mac OS X - breaks precompiled headers */
+ 
+ /* Set up for C function definitions, even when using C++ */
+ #ifdef __cplusplus
+@@ -438,6 +595,25 @@ SDL_FORCE_INLINE Uint32 _SDLNet_Read32(const void *areap)
+ #ifdef __cplusplus
+ }
+ #endif
+-#include "close_code.h"
++//#include "close_code.h"
++/**
++ *  \file close_code.h
++ *
++ *  This file reverses the effects of begin_code.h and should be included
++ *  after you finish any function and structure declarations in your headers
++ */
++
++#ifndef _begin_code_h
++#error close_code.h included without matching begin_code.h
++#endif
++#undef _begin_code_h
++
++/* Reset structure packing at previous byte alignment */
++#if defined(_MSC_VER) || defined(__MWERKS__) || defined(__BORLANDC__)
++#ifdef __BORLANDC__
++#pragma nopackwarning
++#endif
++#pragma pack(pop)
++#endif /* Compiler needs structure packing set */
+ 
+ #endif /* _SDL_NET_H */
+diff --git a/SDLnet.c b/SDLnet.c
+index 53d125a..7e54e63 100644
+--- a/SDLnet.c
++++ b/SDLnet.c
+@@ -66,7 +66,12 @@ void SDLCALL SDLNet_SetError(const char *fmt, ...)
+ {
+     va_list argp;
+     va_start(argp, fmt);
++#ifdef WITHOUT_SDL
++	memset(errorbuf, 0, sizeof(errorbuf));
++#else
+     SDL_vsnprintf(errorbuf, sizeof(errorbuf), fmt, argp);
++#endif
++    vsnprintf(errorbuf, sizeof(errorbuf), fmt, argp);
+     va_end(argp);
+ #ifndef WITHOUT_SDL
+     SDL_SetError("%s", errorbuf);
+diff --git a/configure.in b/configure.in
+index 4228c6f..dca90a6 100644
+--- a/configure.in
++++ b/configure.in
+@@ -107,16 +107,6 @@ case "$host" in
+ esac
+ AC_SUBST(INETLIB)
+ 
+-dnl Check for SDL
+-SDL_VERSION=2.0.0
+-AC_SUBST(SDL_VERSION)
+-AM_PATH_SDL2($SDL_VERSION,
+-            :,
+-	    AC_MSG_ERROR([*** SDL version $SDL_VERSION not found!])
+-)
+-CFLAGS="$CFLAGS $SDL_CFLAGS"
+-LIBS="$LIBS $SDL_LIBS"
+-
+ dnl Check for GUI library for the chat client
+ have_GUI=no
+ AC_ARG_ENABLE(gui,

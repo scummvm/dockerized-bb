@@ -1,0 +1,77 @@
+From 0ff1754fb7af3288b9752422b7b076ef23b8c476 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Lars=20Sundstr=C3=B6m?= <l.sundstrom@gmail.com>
+Date: Wed, 20 Jul 2022 22:19:16 +0200
+Subject: Remove fork uses
+
+---
+ glib/gtestutils.c | 5 +++--
+ glib/meson.build  | 9 +--------
+ 2 files changed, 4 insertions(+), 10 deletions(-)
+
+diff --git a/glib/gtestutils.c b/glib/gtestutils.c
+index 58cd1b512..5d3cb8a25 100644
+--- a/glib/gtestutils.c
++++ b/glib/gtestutils.c
+@@ -3315,7 +3315,7 @@ gboolean
+ g_test_trap_fork (guint64        usec_timeout,
+                   GTestTrapFlags test_trap_flags)
+ {
+-#ifdef G_OS_UNIX
++#if defined(G_OS_UNIX) && !defined(__APPLE__)
+   int stdout_pipe[2] = { -1, -1 };
+   int stderr_pipe[2] = { -1, -1 };
+   int errsv;
+@@ -3508,7 +3508,7 @@ g_test_trap_subprocess (const char           *test_path,
+     flags |= G_SPAWN_LEAVE_DESCRIPTORS_OPEN;
+   if (test_flags & G_TEST_TRAP_INHERIT_STDIN)
+     flags |= G_SPAWN_CHILD_INHERITS_STDIN;
+-
++#ifndef __APPLE__
+   if (!g_spawn_async_with_pipes (test_initial_cwd,
+                                  (char **)argv->pdata,
+                                  NULL, flags,
+@@ -3519,6 +3519,7 @@ g_test_trap_subprocess (const char           *test_path,
+       g_error ("g_test_trap_subprocess() failed: %s",
+                error->message);
+     }
++#endif
+   g_ptr_array_free (argv, TRUE);
+ 
+   wait_for_child (pid,
+diff --git a/glib/meson.build b/glib/meson.build
+index 7a35b7d51..2a3c3d0c8 100644
+--- a/glib/meson.build
++++ b/glib/meson.build
+@@ -234,7 +234,6 @@ glib_sources = files(
+   'garray.c',
+   'gasyncqueue.c',
+   'gatomic.c',
+-  'gbacktrace.c',
+   'gbase64.c',
+   'gbitlock.c',
+   'gbookmarkfile.c',
+@@ -332,7 +331,7 @@ if host_system == 'windows'
+     glib_sources += files('dirent/wdirent.c')
+   endif
+ else
+-  glib_sources += files('glib-unix.c', 'gspawn.c', 'giounix.c')
++  glib_sources += files('glib-unix.c', 'giounix.c')
+   platform_deps = []
+ endif
+ 
+@@ -432,12 +431,6 @@ if host_system == 'windows'
+       include_directories : configinc,
+       dependencies : [libglib_dep])
+   endif
+-else
+-  gtester = executable('gtester', 'gtester.c',
+-    install : true,
+-    c_args : ['-UG_DISABLE_ASSERT'],
+-    include_directories : configinc,
+-    dependencies : [libglib_dep])
+ endif
+ 
+ report_conf = configuration_data()
+-- 
+2.32.1 (Apple Git-133)
+

@@ -1,0 +1,18 @@
+diff --git a/configure.ac b/configure.ac
+index 813c025..ece2c0f 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -101,13 +101,6 @@ elif test x"$GCC" = x"yes"; then
+ 	AC_TRY_CFLAGS([$TRY_CFLAGS $CFLAGS],[OPT_CFLAGS="$TRY_CFLAGS"]);;
+     alpha*)
+ 	AC_DEFINE([ARCH_ALPHA],,[alpha architecture]);;
+-    arm*)
+-	AC_LANG(C)
+-	AC_COMPILE_IFELSE(
+-		[AC_LANG_SOURCE([[
+-			void foo(void) { __asm__ volatile("pld [r1]"); }]])],
+-		build_arm_opt=true; AC_DEFINE([ARCH_ARM],,[ARM architecture]),
+-		build_arm_opt=false);;
+     esac
+ elif test x"$CC" = x"tendracc"; then
+     dnl TenDRA portability checking compiler
