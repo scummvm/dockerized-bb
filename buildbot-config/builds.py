@@ -453,6 +453,7 @@ class ScummVMBuild(StandardBuild):
         "dists/engine-data/cryomni3d.dat",
         "dists/engine-data/drascula.dat",
         "dists/engine-data/fonts.dat",
+        "dists/engine-data/freescape.dat",
         "dists/engine-data/hugo.dat",
         "dists/engine-data/kyra.dat",
         "dists/engine-data/lure.dat",
