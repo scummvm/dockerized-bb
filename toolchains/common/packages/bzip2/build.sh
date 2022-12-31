@@ -16,7 +16,7 @@ do_pkg_fetch bzip2
 # Manually build and install only the static library and header
 
 # bzip2 Makefile redefines these variables so override them here
-do_make libbz2.a CC=$CC AR=$AR RANLIB=$RANLIB
+do_make libbz2.a CC="$CC" AR="$AR" RANLIB="$RANLIB" CFLAGS="$CFLAGS -Wall -Winline -O2 -D_FILE_OFFSET_BITS=64"
 
 mkdir -p "$PREFIX/lib"
 cp -f libbz2.a "$PREFIX/lib"
