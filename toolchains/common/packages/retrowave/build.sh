@@ -1,6 +1,6 @@
 #! /bin/sh
 
-RETROWAVE_VERSION=0.0.9
+RETROWAVE_VERSION=0.1.0
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..
