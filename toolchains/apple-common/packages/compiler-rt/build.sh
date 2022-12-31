@@ -11,6 +11,7 @@ do_make_bdir
 
 SDK_DIR=$(readlink -e $PREFIX/..)
 SDK_VERSION=$(basename "${SDK_DIR}" | sed -e 's/^[A-Za-z]\+\([0-9.]\+\)\.sdk$/\1/')
+SDK_PLATFORM=$(basename "${SDK_DIR}" | sed -e 's/^\([A-Za-z]\+\)[0-9.]\+\.sdk$/\1/' | tr 'A-Z' 'a-z')
 
 CLANG_VERSION=$(echo "__clang_major__ __clang_minor__ __clang_patchlevel__" | \
 	 $CC -E - | tail -n1 | tr ' ' '.')
@@ -103,8 +104,9 @@ do_cmake \
 	-DCMAKE_LIPO=$LIPO \
 	-DCMAKE_OSX_SYSROOT="$SDK_DIR" \
 	-DDARWIN_macosx_OVERRIDE_SDK_VERSION=99.99 \
-	-DDARWIN_iphoneos_CACHED_SYSROOT="$SDK_DIR" \
-	-DDARWIN_iphoneos_OVERRIDE_SDK_VERSION="$SDK_VERSION" \
+	-DDARWIN_${SDK_PLATFORM}_CACHED_SYSROOT="$SDK_DIR" \
+	-DDARWIN_${SDK_PLATFORM}_OVERRIDE_SDK_VERSION="$SDK_VERSION" \
+	-DCOMPILER_RT_ENABLE_TVOS=ON \
 	-DCOMPILER_RT_BUILD_BUILTINS=ON \
 	-DCOMPILER_RT_BUILD_SANITIZERS=OFF \
 	-DCOMPILER_RT_BUILD_XRAY=OFF \

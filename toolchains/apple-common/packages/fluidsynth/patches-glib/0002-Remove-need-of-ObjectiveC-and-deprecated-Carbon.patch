@@ -1,7 +1,7 @@
-From ac479562962a3d155b2d080db53efe533274cb08 Mon Sep 17 00:00:00 2001
+From d4f6c101aa1f3cddb823b6bb697595626f84bd86 Mon Sep 17 00:00:00 2001
 From: Le Philousophe <lephilousophe@users.noreply.github.com>
 Date: Sat, 16 Oct 2021 12:39:23 +0200
-Subject: [PATCH 2/2] Remove need of ObjectiveC and deprecated Carbon
+Subject: [PATCH 2/4] Remove need of ObjectiveC and deprecated Carbon
 
 ---
  meson.build | 11 +++--------
@@ -47,5 +47,5 @@ index 7022e85ca..8d3bf08cc 100644
  
  # Check for futex(2)
 -- 
-2.30.2
+2.38.2
 

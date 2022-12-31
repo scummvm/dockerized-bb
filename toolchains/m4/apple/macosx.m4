@@ -1,12 +1,12 @@
 m4_include(`paths.m4')m4_dnl
 m4_include(`packages.m4')m4_dnl
 m4_define(`helpers_package', helpers_package($1,$2,$3) && osxcross-macports fake-install $1 && rm -Rf ${TARGET_DIR}/macports/cache)m4_dnl
-m4_define(`common_package', COPY --from=macosx-common /lib-helpers/packages/$1 lib-helpers/packages/$1/
+m4_define(`common_package', COPY --from=apple-common /lib-helpers/packages/$1 lib-helpers/packages/$1/
 RUN $3 lib-helpers/packages/$1/build.sh $2)m4_dnl
 m4_define(`ports_package', RUN $3 osxcross-macports ``${MACOSX_PORTS_ARCH_ARG}'' -s install $1 $2 && rm -Rf ${TARGET_DIR}/macports/cache)m4_dnl
 
 FROM toolchains/apple-sdks AS sdks
-FROM toolchains/macosx-common AS macosx-common
+FROM toolchains/apple-common AS apple-common
 
 m4_dnl Include Debian base preparation steps
 m4_dnl This ensures all common steps are shared by all toolchains
@@ -145,7 +145,7 @@ common_package(libsdl2)
 ports_package(libsdl2_net)
 
 # Lighten glib build by removing Objective C and Cocoa and fix intl detection
-COPY --from=macosx-common /lib-helpers/packages/fluidsynth lib-helpers/packages/fluidsynth
+COPY --from=apple-common /lib-helpers/packages/fluidsynth lib-helpers/packages/fluidsynth
 helpers_package(fluidsynth, -DCMAKE_SYSTEM_NAME=Darwin -DLIB_SUFFIX=)
 
 helpers_package(retrowave, -DCMAKE_SYSTEM_NAME=Darwin)

@@ -166,7 +166,7 @@ ALL_TOOLCHAINS_M4  := $(patsubst %/,%,$(dir $(wildcard toolchains/*/Dockerfile.m
 ALL_TOOLCHAINS_DOC := $(patsubst %/,%,$(dir $(wildcard toolchains/*/Dockerfile)))
 ALL_TOOLCHAINS     := $(ALL_TOOLCHAINS_M4) $(ALL_TOOLCHAINS_DOC)
 
-TOOLCHAINS_RESTRICTED := toolchains/apple-sdks toolchains/macosx-arm64 toolchains/macosx-x86_64 toolchains/macosx-i386 toolchains/iphone
+TOOLCHAINS_RESTRICTED := toolchains/apple-sdks toolchains/appletv toolchains/macosx-arm64 toolchains/macosx-x86_64 toolchains/macosx-i386 toolchains/iphone
 
 # Override because we use the provided value and calculate the real one
 override TOOLCHAINS_ENABLED := $(call filter_list,$(TOOLCHAINS_ENABLED),$(ALL_TOOLCHAINS),toolchains/)
@@ -256,6 +256,7 @@ $(eval $(call DEPEND_IMAGE,\
 	toolchains/android-old,\
 	toolchains/android-common,\
 	$(TOOLCHAINS_BUILT)))
+
 $(eval $(call DEPEND_IMAGE,\
 	toolchains/devkit3ds,\
 	toolchains/devkitarm,\
@@ -264,29 +265,46 @@ $(eval $(call DEPEND_IMAGE,\
 	toolchains/devkitnds,\
 	toolchains/devkitarm,\
 	$(TOOLCHAINS_BUILT)))
+
 $(eval $(call DEPEND_IMAGE,\
 	toolchains/macosx-arm64,\
-	toolchains/macosx-common,\
+	toolchains/apple-common,\
 	$(TOOLCHAINS_BUILT)))
 $(eval $(call DEPEND_IMAGE,\
 	toolchains/macosx-arm64,\
 	toolchains/apple-sdks,\
+	$(TOOLCHAINS_BUILT)))
+
+$(eval $(call DEPEND_IMAGE,\
+	toolchains/macosx-x86_64,\
+	toolchains/apple-common,\
 	$(TOOLCHAINS_BUILT)))
 $(eval $(call DEPEND_IMAGE,\
 	toolchains/macosx-x86_64,\
-	toolchains/macosx-common,\
-	$(TOOLCHAINS_BUILT)))
-$(eval $(call DEPEND_IMAGE,\
-	toolchains/macosx-x86_64,\
 	toolchains/apple-sdks,\
 	$(TOOLCHAINS_BUILT)))
+
 $(eval $(call DEPEND_IMAGE,\
 	toolchains/macosx-i386,\
-	toolchains/macosx-common,\
+	toolchains/apple-common,\
 	$(TOOLCHAINS_BUILT)))
 $(eval $(call DEPEND_IMAGE,\
 	toolchains/macosx-i386,\
 	toolchains/apple-sdks,\
+	$(TOOLCHAINS_BUILT)))
+
+$(eval $(call DEPEND_IMAGE,\
+	toolchains/appletv,\
+	toolchains/apple-common,\
+	$(TOOLCHAINS_BUILT)))
+$(eval $(call DEPEND_IMAGE,\
+	toolchains/appletv,\
+	toolchains/apple-sdks,\
+	$(TOOLCHAINS_BUILT)))
+
+$(eval $(call DEPEND_IMAGE,\
+	toolchains/iphone,\
+	toolchains/apple-common,\
 	$(TOOLCHAINS_BUILT)))
 $(eval $(call DEPEND_IMAGE,\
 	toolchains/iphone,\

@@ -164,6 +164,31 @@ VERSIONS = {
     # Android NDK must match ScummVM build system
     ('./toolchains/android/Dockerfile.m4', 'ANDROID_NDK'): 'ignore',
 
+    ('./toolchains/apple-common/packages/cctools-port/build.sh', 'CCTOOLS_PORT'): cctools_port_check,
+    ('./toolchains/apple-common/packages/cctools-port/build.sh', 'LDID'): {
+        'check': 'git commit',
+        'repository': 'https://github.com/tpoechtrager/ldid.git',
+        'branch': 'master',
+    },
+    ('./toolchains/apple-common/packages/osxcross-clang/build.sh', 'OSXCROSS'): osxcross_check,
+    ('./toolchains/apple-common/packages/osxcross/build.sh', 'OSXCROSS'): osxcross_check,
+    ('./toolchains/apple-common/packages/osxcross/build.sh', 'XAR'): xar_check,
+    ('./toolchains/apple-common/packages/ldid/build.sh', 'LDID'): {
+        # For MacOSX we need upstream ldid with latest MacOS support
+        'check': 'git tag',
+        'repository': 'https://git.saurik.com/ldid.git',
+        'context': TLSv1_CONTEXT,
+        'prefix': 'v',
+    },
+    ('./toolchains/apple-common/packages/sparkle/build.sh', 'SPARKLE'): {
+        'check': 'git tag',
+        'repository': 'https://github.com/sparkle-project/Sparkle.git',
+        # Only keep vanilla releases
+        'pattern': r'^1\.[0-9.]+$',
+    },
+    ('./toolchains/apple-common/packages/xar/build.sh', 'XAR'): xar_check,
+
+
     # Recent Xcode don't support i386 anymore
     ('./toolchains/apple-sdks/Dockerfile.m4', 'I386_XCODE'): 'ignore',
     ('./toolchains/apple-sdks/Dockerfile.m4', 'XCODE'): {
@@ -176,14 +201,16 @@ VERSIONS = {
 
     # Apple SDK and target versions depend on which Xcode is used
     # We already check for it
-    ('./toolchains/iphone/Dockerfile.m4', 'IPHONE_SDK'): 'ignore',
+    ('./toolchains/appletv/Dockerfile.m4', 'XOS_SDK'): 'ignore',
+    ('./toolchains/iphone/Dockerfile.m4', 'XOS_SDK'): 'ignore',
     ('./toolchains/macosx-i386/Dockerfile.m4', 'MACOSX_SDK'): 'ignore',
     ('./toolchains/macosx-i386/Dockerfile.m4', 'MACOSX_TARGET'): 'ignore',
     ('./toolchains/macosx-arm64/Dockerfile.m4', 'MACOSX_SDK'): 'ignore',
     ('./toolchains/macosx-arm64/Dockerfile.m4', 'MACOSX_TARGET'): 'ignore',
     ('./toolchains/macosx-x86_64/Dockerfile.m4', 'MACOSX_SDK'): 'ignore',
     ('./toolchains/macosx-x86_64/Dockerfile.m4', 'MACOSX_TARGET'): 'ignore',
-    ('./workers/iphone/Dockerfile.m4', 'IPHONE_SDK'): 'ignore',
+    ('./workers/appletv/Dockerfile.m4', 'XOS_SDK'): 'ignore',
+    ('./workers/iphone/Dockerfile.m4', 'XOS_SDK'): 'ignore',
     ('./workers/macosx-i386/Dockerfile.m4', 'MACOSX_SDK'): 'ignore',
     ('./workers/macosx-i386/Dockerfile.m4', 'MACOSX_TARGET'): 'ignore',
     ('./workers/macosx-arm64/Dockerfile.m4', 'MACOSX_SDK'): 'ignore',
@@ -303,31 +330,6 @@ VERSIONS = {
     ('./toolchains/gcw0/packages/zlib/build.sh', 'ZLIB'): 'ignore',
     # Latest crosstool-ng doesn't support uClibc anymore
     ('./toolchains/gcw0/packages/toolchain/build.sh', 'CT_NG'): 'ignore',
-
-    ('./toolchains/iphone/packages/toolchain/build.sh', 'CCTOOLS_PORT'): cctools_port_check,
-    ('./toolchains/iphone/packages/toolchain/build.sh', 'LDID'): {
-        'check': 'git commit',
-        'repository': 'https://github.com/tpoechtrager/ldid.git',
-        'branch': 'master',
-    },
-    ('./toolchains/iphone/packages/xar/build.sh', 'XAR'): xar_check,
-
-    ('./toolchains/macosx-common/packages/osxcross-clang/build.sh', 'OSXCROSS'): osxcross_check,
-    ('./toolchains/macosx-common/packages/osxcross/build.sh', 'OSXCROSS'): osxcross_check,
-    ('./toolchains/macosx-common/packages/osxcross/build.sh', 'XAR'): xar_check,
-    ('./toolchains/macosx-common/packages/ldid/build.sh', 'LDID'): {
-        # For MacOSX we need upstream ldid with latest MacOS support
-        'check': 'git tag',
-        'repository': 'https://git.saurik.com/ldid.git',
-        'context': TLSv1_CONTEXT,
-        'prefix': 'v',
-    },
-    ('./toolchains/macosx-common/packages/sparkle/build.sh', 'SPARKLE'): {
-        'check': 'git tag',
-        'repository': 'https://github.com/sparkle-project/Sparkle.git',
-        # Only keep vanilla releases
-        'pattern': r'^1\.[0-9.]+$',
-    },
 
     ('./toolchains/mxe/Dockerfile.m4', 'MXE'): {
         'check': 'git tag',

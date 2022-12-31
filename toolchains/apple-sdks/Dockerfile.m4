@@ -25,10 +25,10 @@ m4_define(`I386_XCODE_VERSION', 9.4.1)
 COPY Xcode_`'I386_XCODE_VERSION.xip* ${PACKAGES_LOCATION}
 local_package(xcode-extractor, , PACKAGE=Xcode_`'I386_XCODE_VERSION.xip SDK_PLATFORMS="MacOSX")
 
-# Extract latest MacOS X and iPhoneOS SDK
+# Extract latest MacOS X, AppleTVOS and iPhoneOS SDK
 m4_define(`XCODE_VERSION', 14.1)
 COPY Xcode_`'XCODE_VERSION.xip* ${PACKAGES_LOCATION}
-local_package(xcode-extractor, , PACKAGE=Xcode_`'XCODE_VERSION.xip SDK_PLATFORMS="MacOSX iPhoneOS")
+local_package(xcode-extractor, , PACKAGE=Xcode_`'XCODE_VERSION.xip SDK_PLATFORMS="MacOSX iPhoneOS AppleTVOS")
 
 FROM scratch
 

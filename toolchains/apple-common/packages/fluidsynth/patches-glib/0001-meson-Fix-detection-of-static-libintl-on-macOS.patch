@@ -1,7 +1,7 @@
-From ab3d89a74bcd29ef9d3a13bdb32dc5e1738434b3 Mon Sep 17 00:00:00 2001
+From 7a6b9ffab15872522b02a292a097859d305fd721 Mon Sep 17 00:00:00 2001
 From: Jonas Hahnfeld <hahnjo@hahnjo.de>
 Date: Sun, 16 May 2021 11:58:26 +0200
-Subject: [PATCH 1/2] meson: Fix detection of static libintl on macOS
+Subject: [PATCH 1/4] meson: Fix detection of static libintl on macOS
 
 If libintl is built statically on macOS, linking it requires passing
 "-framework CoreFoundation" to satisfy symbol dependencies. Use the
@@ -53,5 +53,5 @@ index 740e46b86..7022e85ca 100644
    endif
  endif
 -- 
-2.30.2
+2.38.2
 
