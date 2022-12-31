@@ -325,7 +325,7 @@ ALL_WORKERS_M4  := $(patsubst %/,%,$(dir $(wildcard workers/*/Dockerfile.m4)))
 ALL_WORKERS_DOC := $(patsubst %/,%,$(dir $(wildcard workers/*/Dockerfile)))
 ALL_WORKERS     := $(ALL_WORKERS_M4) $(ALL_WORKERS_DOC)
 
-WORKERS_RESTRICTED := workers/macosx-arm64 workers/macosx-x86_64 workers/macosx-i386 workers/iphone
+WORKERS_RESTRICTED := workers/appletv workers/macosx-arm64 workers/macosx-x86_64 workers/macosx-i386 workers/iphone
 
 # Override because we use the provided value and calculate the real one
 override WORKERS_ENABLED := $(call filter_list,$(WORKERS_ENABLED),$(ALL_WORKERS),workers/)
