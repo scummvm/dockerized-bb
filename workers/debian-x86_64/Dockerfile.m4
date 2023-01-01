@@ -20,6 +20,6 @@ ENV \
 	CC=/usr/bin/${HOST}-gcc \
 	CXX=/usr/bin/${HOST}-g++ \
 	def_aclocal(`/usr') \
-	PKG_CONFIG_LIBDIR=/usr/lib/$HOST/pkgconfig
+	PKG_CONFIG_LIBDIR=/usr/lib/$HOST/pkgconfig:/usr/share/pkgconfig
 
 m4_include(`run-buildbot.m4')m4_dnl

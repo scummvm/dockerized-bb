@@ -57,6 +57,6 @@ ENV \
 	def_binaries(`${RPI_HOME}/bin/${HOST}-', `gcc, cpp, c++') \
 	CC=${RPI_HOME}/bin/${HOST}-gcc \
 	def_aclocal(`${RPI_ROOT}/usr') \
-	PKG_CONFIG_LIBDIR=${RPI_ROOT}/usr/lib/$HOST/pkgconfig \
+	PKG_CONFIG_LIBDIR=${RPI_ROOT}/usr/lib/$HOST/pkgconfig:${RPI_ROOT}/usr/share/pkgconfig \
 	PKG_CONFIG_SYSROOT_DIR=${RPI_ROOT} \
         PATH=$PATH:${RPI_HOME}/bin:${RPI_ROOT}/usr/bin

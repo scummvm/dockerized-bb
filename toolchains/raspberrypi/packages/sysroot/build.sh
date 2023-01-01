@@ -42,8 +42,8 @@ EOF
 multistrap -f multistrap.conf -d "$sysroot"
 
 # Copy only sysroot bits we need
-mkdir -p "$RPI_ROOT" "$RPI_ROOT/usr" "$RPI_ROOT/usr/bin"\
-	"$RPI_ROOT/opt/vc"
+mkdir -p "$RPI_ROOT" "$RPI_ROOT/usr" "$RPI_ROOT/usr/bin" \
+	"$RPI_ROOT/usr/share" "$RPI_ROOT/opt/vc"
 mv "$sysroot/lib" "$RPI_ROOT/"
 for f in "$sysroot/usr/bin/"*-config; do
 	if ! [ -e "$f" ]; then
@@ -62,6 +62,7 @@ for f in "$sysroot/usr/bin/"*-config; do
 done
 mv "$sysroot/usr/include" "$RPI_ROOT/usr/"
 mv "$sysroot/usr/lib" "$RPI_ROOT/usr/"
+mv "$sysroot/usr/share/pkgconfig" "$RPI_ROOT/usr/share/"
 if [ -d "$sysroot/opt/vc/include" ]; then
 	mv "$sysroot/opt/vc/include" "$RPI_ROOT/opt/vc/"
 	mv "$sysroot/opt/vc/lib" "$RPI_ROOT/opt/vc/"
