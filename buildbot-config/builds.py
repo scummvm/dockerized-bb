@@ -497,7 +497,6 @@ class ScummVMBuild(StandardBuild):
         additional_args_before.extend(other_args)
         if self.ENABLE_ENGINES_BUILD_FLAG:
             additional_args_before.append(self.ENABLE_ENGINES_BUILD_FLAG)
-        additional_args_before.extend(["--disable-all-engines", "--enable-engines=testbed,playground3d"])
 
         # Disabling engines must come last in the command line to override platforms choices
         additional_args_after = []
@@ -604,8 +603,7 @@ class ScummVMToolsBuild(StandardBuild):
 
 builds = []
 
-#builds.append(ScummVMBuild("master", "https://github.com/scummvm/scummvm", "master", verbose_build=True, daily=(4, 1), description="ScummVM latest\nBranch master"))
-builds.append(ScummVMBuild("master", "https://github.com/lephilousophe/scummvm", "appletv", verbose_build=True, daily=(4, 1), description="ScummVM latest\nBranch master"))
+builds.append(ScummVMBuild("master", "https://github.com/scummvm/scummvm", "master", verbose_build=True, daily=(4, 1), description="ScummVM latest\nBranch master"))
 builds.append(ScummVMStableBuild("stable", "https://github.com/scummvm/scummvm", "branch-2-6", verbose_build=True, daily=(4, 1), description="ScummVM stable\nFuture 2.6.x"))
 #builds.append(ScummVMBuild("gsoc2012", "https://github.com/digitall/scummvm", "gsoc2012-scalers-cont", verbose_build=True))
 builds.append(ScummVMToolsBuild("tools-master", "https://github.com/scummvm/scummvm-tools", "master", verbose_build=True, daily=(4, 1), description="ScummVM tools"))
