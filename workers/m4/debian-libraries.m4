@@ -23,6 +23,7 @@ RUN apt-get update && \
 		libsndio-dev`'APT_ARCH \
 		libspeechd-dev`'APT_ARCH \
 		libtheora-dev`'APT_ARCH \
+		libunity-dev`'APT_ARCH \
 		libvorbis-dev`'APT_ARCH \
 		libwxgtk3.0-gtk3-dev`'APT_ARCH \
 		zlib1g-dev`'APT_ARCH \
