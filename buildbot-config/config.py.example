@@ -118,3 +118,8 @@ serve_daily_builds = False
 
 # Discord webhook URL to report build status to
 #discord_reporter = None
+# A map of states to list of users or roles to mention in the report
+#discord_mentions = {
+#    # Mention @devs in case of build failure
+#    'failure': ['&581796319677513729'],
+#}

@@ -116,7 +116,12 @@ if hasattr(config, 'discord_reporter') and config.discord_reporter:
     from utils import discord
     from buildbot.reporters.generators.buildset import BuildSetStatusGenerator
     from buildbot.reporters.generators.build import BuildStatusGenerator
+    if hasattr(config, 'discord_mentions'):
+        discord_mentions = config.discord_mentions
+    else:
+        discord_mentions = None
     services.append(discord.DiscordStatusPush(config.discord_reporter,
+        mentions=discord_mentions,
         generators=[
             BuildSetStatusGenerator(
                 message_formatter=discord.DiscordFormatter(),

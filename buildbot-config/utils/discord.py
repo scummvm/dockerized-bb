@@ -110,10 +110,10 @@ class DiscordStatusPush(ReporterBase):
     compare_attrs = ['message_template']
 
     # Use a bold space to have a blank line before embeds
-    DEFAULT_MESSAGE = "{{results_emoji}} Builds are now in state **{{results_text}}**\n** **"
+    DEFAULT_MESSAGE = "{{results_emoji}} Builds are now in state **{{results_text}}**{%if mentions %} ({{mentions}}){%endif%}\n** **"
 
     def checkConfig(self, webhook_url, token=None,
-            debug=None, verify=None,
+            mentions=None, debug=None, verify=None,
             generators=None, message=None,
             **kwargs):
 
@@ -124,12 +124,15 @@ class DiscordStatusPush(ReporterBase):
         if generators is None:
             generators = self._create_default_generators()
 
+        if mentions is None:
+            mentions = {}
+
         super().checkConfig(generators=generators, **kwargs)
         httpclientservice.HTTPClientService.checkAvailable(self.__class__.__name__)
 
     @defer.inlineCallbacks
     def reconfigService(self, webhook_url, token=None,
-            debug=None, verify=None,
+            mentions=None, debug=None, verify=None,
             generators=None, message=None,
             **kwargs):
 
@@ -142,6 +145,10 @@ class DiscordStatusPush(ReporterBase):
 
         if generators is None:
             generators = self._create_default_generators()
+
+        if mentions is None:
+            mentions = {}
+        self.mentions = mentions
 
         yield super().reconfigService(generators=generators, **kwargs)
 
@@ -168,6 +175,7 @@ class DiscordStatusPush(ReporterBase):
             report['results_text'] = statusToString(report['results'])
             # No color in markdown, so use emoji to be visual
             report['results_emoji'] = EMOJIS.get(report['results'], UNKNOWN_EMOJI)
+            report['mentions'] = ''.join('<@{}>'.format(m) for m in self.mentions.get(report['results_text'], []))
             json = {}
             json['content'] = self.message_template.render(report)
 
