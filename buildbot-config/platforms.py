@@ -639,10 +639,10 @@ opendingux_beta(target="lepus",
         toolchain="lepus",
         libc="musl",
         description="Lepus based boards")
-opendingux_beta(target="rg99",
+opendingux_beta(target="rs90",
         toolchain="rs90",
         libc="musl",
-        description="RG99")
+        description="RS90 & RG99 handhelds")
 
 def openpandora():
     platform = Platform("openpandora")
