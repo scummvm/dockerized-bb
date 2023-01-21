@@ -808,32 +808,9 @@ def vita():
     platform.compatibleBuilds = (builds.ScummVMBuild, )
     platform.configureargs.append("--host=psp2")
 
-    # HACK: To prevent memory-related crash on startup that seems related to the size of the executable
-    # file, which grows with number of engines, we need to disable some of the engines...
-    # Blade Runner is unplayably slow on the Vita.
-    # Stark engine doesn't have a supported renderer on Vita.
-    # Myst 3 engine is unplayably slow on Vita.
-    # Glk is not very usable on Vita without a keyboard.
-    # Grim is unplayably slow on Vita.
-    # Titanic is not very usable on Vita without a keyboard.
-    # Wintermute is unplayably slow on Vita.
-    # Tsage has nothing wrong with it, but we need to keep exe size down
     platform.buildconfigureargs = {
         builds.ScummVMBuild: [
             "--enable-plugins"
-        ],
-        builds.ScummVMStableBuild: [
-            "--disable-all-unstable-engines",
-            "--disable-engines=bladerunner",
-            "--disable-engines=stark",
-            "--disable-engines=myst3",
-            "--disable-engines=glk",
-            "--disable-engines=grim",
-            "--disable-engines=titanic",
-            "--disable-engines=wintermute",
-            "--disable-engines=tsage",
-            "--disable-engines=ags",
-            "--enable-engine=testbed",
         ],
     }
     platform.packaging_cmd = "psp2vpk"
@@ -845,50 +822,6 @@ def vita():
 
     platform.description = "PlayStation Vita"
     platform.icon = 'psp2'
-
-    register_platform(platform)
-
-    # Vita Other Engines
-    platform = copy.deepcopy(platform)
-    platform.name = "vitaother"
-    platform.compatibleBuilds = (builds.ScummVMStableBuild, )
-    platform.buildconfigureargs = {
-        builds.ScummVMStableBuild: [
-            "--disable-all-engines",
-            "--enable-engines=bladerunner",
-            "--enable-engines=stark",
-            "--enable-engines=myst3",
-            "--enable-engines=glk",
-            "--enable-engines=grim",
-            "--enable-engines=titanic",
-            "--enable-engines=wintermute,foxtail,herocraft",
-            "--enable-engines=tsage",
-            "--enable-engines=ags",
-            "--enable-engines=testbed",
-        ],
-    }
-    platform.packaging_cmd = "psp2othervpk"
-    platform.built_files = {
-        builds.ScummVMBuild: [ "scummvm-other-engines.vpk" ],
-    }
-    platform.description = "PlayStation Vita (other engines)"
-
-    register_platform(platform)
-
-    # Vita Unstable Engines
-    platform = copy.deepcopy(platform)
-    platform.name = "vitaunstable"
-    platform.buildconfigureargs = {
-        builds.ScummVMStableBuild: [
-            "--disable-all-engines",
-            "--enable-all-unstable-engines",
-        ],
-    }
-    platform.packaging_cmd = "psp2unstablevpk"
-    platform.built_files = {
-        builds.ScummVMBuild: [ "scummvm-unstable-engines.vpk" ],
-    }
-    platform.description = "PlayStation Vita (unstable engines)"
 
     register_platform(platform)
 vita()
