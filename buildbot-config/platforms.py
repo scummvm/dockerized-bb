@@ -245,6 +245,27 @@ android(suffix="x86-64",
         abi_version=21,
         description="Android (x86 64\xa0bits)")
 
+def appletv():
+    platform = Platform("appletv")
+    platform.compatibleBuilds = (builds.ScummVMBuild, )
+    platform.configureargs.append("--host=tvos")
+    platform.buildconfigureargs = {
+        builds.ScummVMBuild: [ "--enable-static", "--with-staticlib-prefix=${PREFIX}"],
+    }
+    platform.packaging_cmd = {
+        builds.ScummVMBuild: "tvosbundle",
+    }
+    platform.built_files = {
+        builds.ScummVMBuild: [ "ScummVM.app" ],
+    }
+    platform.archiveext = "tar.bz2"
+
+    platform.description = "Apple TV"
+    platform.icon = 'appletv'
+
+    register_platform(platform)
+appletv()
+
 def caanoo():
     platform = Platform("caanoo")
     platform.workerimage = "caanoo"
