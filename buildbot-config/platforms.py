@@ -266,26 +266,6 @@ def appletv():
     register_platform(platform)
 appletv()
 
-def caanoo():
-    platform = Platform("caanoo")
-    platform.workerimage = "caanoo"
-    platform.compatibleBuilds = (builds.ScummVMBuild, )
-    platform.configureargs.append("--host=caanoo")
-    platform.buildconfigureargs = {
-        builds.ScummVMBuild: [ "--enable-plugins", "--default-dynamic", "--enable-vkeybd" ],
-    }
-    platform.packaging_cmd = "caanoo-bundle"
-    platform.built_files = {
-        builds.ScummVMBuild: [ "release/scummvm-caanoo.tar.bz2" ],
-    }
-    platform.archiveext = "tar.bz2"
-
-    platform.description = "GamePark Caanoo"
-    platform.icon = "caanoo"
-
-    register_platform(platform)
-caanoo()
-
 def debian(name_suffix, image_suffix, host,
         package=True,
         build_tests=True, run_tests=True, build_devtools=False,
@@ -389,45 +369,6 @@ def dreamcast():
 
     register_platform(platform)
 dreamcast()
-
-def gamecube():
-    platform = Platform("gamecube")
-    platform.workerimage = "devkitppc"
-    platform.compatibleBuilds = (builds.ScummVMBuild, )
-    platform.configureargs.append("--host=gamecube")
-    platform.buildconfigureargs = {
-        builds.ScummVMBuild: [ "--enable-plugins", "--default-dynamic", "--enable-vkeybd" ],
-    }
-    platform.packaging_cmd = "wiidist"
-    platform.built_files = {
-        builds.ScummVMBuild: [ "wiidist/scummvm" ],
-    }
-    platform.archiveext = "tar.xz"
-
-    platform.description = "Nintendo Gamecube"
-    platform.icon = 'gc'
-
-    register_platform(platform)
-gamecube()
-
-def gcw0():
-    platform = Platform("gcw0")
-    platform.compatibleBuilds = (builds.ScummVMBuild, )
-    platform.configureargs.append("--host=gcw0")
-    platform.buildconfigureargs = {
-        builds.ScummVMBuild: [ "--enable-plugins", "--default-dynamic", "--enable-vkeybd" ],
-    }
-    platform.packaging_cmd = "gcw-opk"
-    platform.built_files = {
-        builds.ScummVMBuild: [ "scummvm.opk" ],
-    }
-    platform.archiveext = "tar.bz2"
-
-    platform.description = "GCW-Zero"
-    platform.icon = 'gcw0'
-
-    register_platform(platform)
-gcw0()
 
 def ios7_arm64():
     platform = Platform("ios7-arm64")
@@ -593,28 +534,6 @@ def nds():
     register_platform(platform)
 nds()
 
-def opendingux():
-    platform = Platform("opendingux")
-    platform.compatibleBuilds = (builds.ScummVMBuild, )
-    platform.configureargs.append("--host=dingux")
-    platform.buildconfigureargs = {
-        builds.ScummVMBuild: [ "--enable-plugins", "--default-dynamic", "--enable-vkeybd",
-            # Our Tremor decoder is too old for use with Theora, we could have a more recent version
-            # but Theora is quite CPU intensive anyway
-            "--disable-theoradec" ],
-    }
-    platform.packaging_cmd = "dingux-dist"
-    platform.built_files = {
-        builds.ScummVMBuild: [ "dingux-dist/scummvm" ],
-    }
-    platform.archiveext = "tar.xz"
-
-    platform.description = "OpenDingux"
-    platform.icon = 'dingux'
-
-    register_platform(platform)
-opendingux()
-
 # OpenDingux environment can't be specified in worker Dockerfile as it's multiple toolchains
 # So we must pollute tell it here
 def opendingux_beta(target, toolchain, libc, description=None):
@@ -664,26 +583,6 @@ opendingux_beta(target="rs90",
         toolchain="rs90",
         libc="musl",
         description="RS90 & RG99 handhelds")
-
-def openpandora():
-    platform = Platform("openpandora")
-    platform.workerimage = "openpandora"
-    platform.compatibleBuilds = (builds.ScummVMBuild, )
-    platform.configureargs.append("--host=openpandora")
-    platform.buildconfigureargs = {
-        builds.ScummVMBuild: [ "--enable-plugins", "--default-dynamic", "--enable-vkeybd" ],
-    }
-    platform.packaging_cmd = "op-pnd"
-    platform.built_files = {
-        builds.ScummVMBuild: [ "release/scummvm-op-pnd.tar.bz2" ],
-    }
-    platform.archiveext = "tar.bz2"
-
-    platform.description = "OpenPandora"
-    platform.icon = 'openpandora'
-
-    register_platform(platform)
-openpandora()
 
 def ps3():
     platform = Platform("ps3")

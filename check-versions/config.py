@@ -228,7 +228,8 @@ VERSIONS = {
     ('./toolchains/caanoo/packages/sdl-net1.2/build.sh', 'SDL_NET'): 'ignore',
     ('./toolchains/caanoo/packages/tslib/build.sh', 'TSLIB'): 'ignore',
     ('./toolchains/caanoo/packages/zlib/build.sh', 'ZLIB'): 'ignore',
-    ('./toolchains/caanoo/packages/toolchain/build.sh', 'CT_NG'): crosstool_ng_check,
+    # This toolchain is deprecated
+    ('./toolchains/caanoo/packages/toolchain/build.sh', 'CT_NG'): 'ignore',
 
     ('./toolchains/common/packages/discord-rpc/build.sh', 'DISCORD_RPC'): discord_rpc_check,
     ('./toolchains/common/packages/fluidlite/build.sh', 'FLUIDLITE'): {
@@ -423,7 +424,8 @@ VERSIONS = {
     ('./toolchains/openpandora/packages/x11/build.sh', 'LIBXRENDER'): 'ignore',
     ('./toolchains/openpandora/packages/x11/build.sh', 'LIBXRANDR'): 'ignore',
     ('./toolchains/openpandora/packages/zlib/build.sh', 'ZLIB'): 'ignore',
-    ('./toolchains/openpandora/packages/toolchain/build.sh', 'CT_NG'): crosstool_ng_check,
+    # This toolchain is deprecated
+    ('./toolchains/openpandora/packages/toolchain/build.sh', 'CT_NG'): 'ignore',
 
     ('./toolchains/ps3/packages/toolchain/build.sh', 'TOOLCHAIN'): {
         'check': 'git commit',
