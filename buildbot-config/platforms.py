@@ -510,6 +510,25 @@ def macosx_i386():
     register_platform(platform)
 macosx_i386()
 
+def miyoo():
+    platform = Platform("miyoo")
+    platform.compatibleBuilds = (builds.ScummVMBuild, )
+    platform.configureargs.append("--host=miyoo")
+    platform.buildconfigureargs = {
+        builds.ScummVMBuild: [ "--disable-detection-full", "--enable-plugins", "--default-dynamic" ],
+    }
+    platform.packaging_cmd = "sd-root"
+    platform.built_files = {
+        builds.ScummVMBuild: [ "sd-root/games", "sd-root/gmenu2x" ],
+    }
+    platform.archiveext = "tar.xz"
+
+    platform.description = "Miyoo"
+    platform.icon = 'miyoo'
+
+    register_platform(platform)
+miyoo()
+
 def nds():
     platform = Platform("nds")
     platform.workerimage = "devkitnds"
