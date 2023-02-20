@@ -302,6 +302,12 @@ VERSIONS = {
     ('./toolchains/dreamcast/packages/toolchain-sh4/build.sh', 'GCC'): 'ignore',
     ('./toolchains/dreamcast/packages/toolchain-sh4/build.sh', 'NEWLIB'): 'ignore',
 
+    ('./toolchains/freemint/packages/toolchain/build.sh', 'TOOLCHAIN'): {
+        'check': 'git commit',
+        'repository': 'https://github.com/mikrosk/m68k-atari-mint-build',
+        'branch': 'master',
+    },
+
     # GCW0 packages (except toolchain) are set by old firmware
     ('./toolchains/gcw0/packages/alsa-lib/build.sh', 'ALSA_LIB'): 'ignore',
     ('./toolchains/gcw0/packages/etna_viv/build.sh', 'ETNA_VIV'): 'ignore',
