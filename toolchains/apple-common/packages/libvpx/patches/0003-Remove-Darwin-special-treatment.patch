@@ -1,0 +1,209 @@
+From 63615b5abe9bc0c2e7a6700922f18648cc3a4800 Mon Sep 17 00:00:00 2001
+From: Le Philousophe <lephilousophe@users.noreply.github.com>
+Date: Sat, 11 Mar 2023 14:17:09 +0100
+Subject: [PATCH 3/3] Remove Darwin special treatment
+
+We don't use Xcode
+iOS and AppleTV don't support linking
+---
+ build/make/configure.sh | 155 ++--------------------------------------
+ 1 file changed, 4 insertions(+), 151 deletions(-)
+
+diff --git a/build/make/configure.sh b/build/make/configure.sh
+index 890be135b..ad1ffcf1c 100644
+--- a/build/make/configure.sh
++++ b/build/make/configure.sh
+@@ -739,7 +739,7 @@ process_common_toolchain() {
+     gcctarget="${CHOST:-$($CC -dumpmachine 2> /dev/null)}"
+     # detect tgt_isa
+     case "$gcctarget" in
+-      aarch64*)
++      aarch64*|arm64*)
+         tgt_isa=arm64
+         ;;
+       armv7*-hardfloat* | armv7*-gnueabihf | arm-*-gnueabihf)
+@@ -772,8 +772,10 @@ process_common_toolchain() {
+ 
+     # detect tgt_os
+     case "$gcctarget" in
++      *arm*-darwin*)
++        tgt_os=darwin
++        ;;
+       *darwin1[0-9]*)
+-        tgt_isa=x86_64
+         tgt_os=`echo $gcctarget | sed 's/.*\(darwin1[0-9]\).*/\1/'`
+         ;;
+       x86_64*mingw32*)
+@@ -837,96 +839,6 @@ process_common_toolchain() {
+   # PIC is probably what we want when building shared libs
+   enabled shared && soft_enable pic
+ 
+-  # Minimum iOS version for all target platforms (darwin and iphonesimulator).
+-  # Shared library framework builds are only possible on iOS 8 and later.
+-  if enabled shared; then
+-    IOS_VERSION_OPTIONS="--enable-shared"
+-    IOS_VERSION_MIN="8.0"
+-  else
+-    IOS_VERSION_OPTIONS=""
+-    IOS_VERSION_MIN="7.0"
+-  fi
+-
+-  # Handle darwin variants. Newer SDKs allow targeting older
+-  # platforms, so use the newest one available.
+-  case ${toolchain} in
+-    arm*-darwin*)
+-      add_cflags "-miphoneos-version-min=${IOS_VERSION_MIN}"
+-      iphoneos_sdk_dir="$(show_darwin_sdk_path iphoneos)"
+-      if [ -d "${iphoneos_sdk_dir}" ]; then
+-        add_cflags  "-isysroot ${iphoneos_sdk_dir}"
+-        add_ldflags "-isysroot ${iphoneos_sdk_dir}"
+-      fi
+-      ;;
+-    x86*-darwin*)
+-      osx_sdk_dir="$(show_darwin_sdk_path macosx)"
+-      if [ -d "${osx_sdk_dir}" ]; then
+-        add_cflags  "-isysroot ${osx_sdk_dir}"
+-        add_ldflags "-isysroot ${osx_sdk_dir}"
+-      fi
+-      ;;
+-  esac
+-
+-  case ${toolchain} in
+-    *-darwin8-*)
+-      add_cflags  "-mmacosx-version-min=10.4"
+-      add_ldflags "-mmacosx-version-min=10.4"
+-      ;;
+-    *-darwin9-*)
+-      add_cflags  "-mmacosx-version-min=10.5"
+-      add_ldflags "-mmacosx-version-min=10.5"
+-      ;;
+-    *-darwin10-*)
+-      add_cflags  "-mmacosx-version-min=10.6"
+-      add_ldflags "-mmacosx-version-min=10.6"
+-      ;;
+-    *-darwin11-*)
+-      add_cflags  "-mmacosx-version-min=10.7"
+-      add_ldflags "-mmacosx-version-min=10.7"
+-      ;;
+-    *-darwin12-*)
+-      add_cflags  "-mmacosx-version-min=10.8"
+-      add_ldflags "-mmacosx-version-min=10.8"
+-      ;;
+-    *-darwin13-*)
+-      add_cflags  "-mmacosx-version-min=10.9"
+-      add_ldflags "-mmacosx-version-min=10.9"
+-      ;;
+-    *-darwin14-*)
+-      add_cflags  "-mmacosx-version-min=10.10"
+-      add_ldflags "-mmacosx-version-min=10.10"
+-      ;;
+-    *-darwin15-*)
+-      add_cflags  "-mmacosx-version-min=10.11"
+-      add_ldflags "-mmacosx-version-min=10.11"
+-      ;;
+-    *-darwin16-*)
+-      add_cflags  "-mmacosx-version-min=10.12"
+-      add_ldflags "-mmacosx-version-min=10.12"
+-      ;;
+-    *-darwin17-*)
+-      add_cflags  "-mmacosx-version-min=10.13"
+-      add_ldflags "-mmacosx-version-min=10.13"
+-      ;;
+-    *-darwin18-*)
+-      add_cflags  "-mmacosx-version-min=10.14"
+-      add_ldflags "-mmacosx-version-min=10.14"
+-      ;;
+-    *-darwin19-*)
+-      add_cflags  "-mmacosx-version-min=10.15"
+-      add_ldflags "-mmacosx-version-min=10.15"
+-      ;;
+-    *-iphonesimulator-*)
+-      add_cflags  "-miphoneos-version-min=${IOS_VERSION_MIN}"
+-      add_ldflags "-miphoneos-version-min=${IOS_VERSION_MIN}"
+-      iossim_sdk_dir="$(show_darwin_sdk_path iphonesimulator)"
+-      if [ -d "${iossim_sdk_dir}" ]; then
+-        add_cflags  "-isysroot ${iossim_sdk_dir}"
+-        add_ldflags "-isysroot ${iossim_sdk_dir}"
+-      fi
+-      ;;
+-  esac
+-
+   # Handle Solaris variants. Solaris 10 needs -lposix4
+   case ${toolchain} in
+     sparc-solaris-*)
+@@ -1090,62 +1002,6 @@ EOF
+           ;;
+ 
+         darwin*)
+-          if ! enabled external_build; then
+-            XCRUN_FIND="xcrun --sdk iphoneos --find"
+-            CXX="$(${XCRUN_FIND} clang++)"
+-            CC="$(${XCRUN_FIND} clang)"
+-            AR="$(${XCRUN_FIND} ar)"
+-            AS="$(${XCRUN_FIND} as)"
+-            STRIP="$(${XCRUN_FIND} strip)"
+-            NM="$(${XCRUN_FIND} nm)"
+-            RANLIB="$(${XCRUN_FIND} ranlib)"
+-            AS_SFX=.S
+-            LD="${CXX:-$(${XCRUN_FIND} ld)}"
+-
+-            # ASFLAGS is written here instead of using check_add_asflags
+-            # because we need to overwrite all of ASFLAGS and purge the
+-            # options that were put in above
+-            ASFLAGS="-arch ${tgt_isa} -g"
+-
+-            add_cflags -arch ${tgt_isa}
+-            add_ldflags -arch ${tgt_isa}
+-
+-            alt_libc="$(show_darwin_sdk_path iphoneos)"
+-            if [ -d "${alt_libc}" ]; then
+-              add_cflags -isysroot ${alt_libc}
+-            fi
+-
+-            if [ "${LD}" = "${CXX}" ]; then
+-              add_ldflags -miphoneos-version-min="${IOS_VERSION_MIN}"
+-            else
+-              add_ldflags -ios_version_min "${IOS_VERSION_MIN}"
+-            fi
+-
+-            for d in lib usr/lib usr/lib/system; do
+-              try_dir="${alt_libc}/${d}"
+-              [ -d "${try_dir}" ] && add_ldflags -L"${try_dir}"
+-            done
+-
+-            case ${tgt_isa} in
+-              armv7|armv7s|armv8|arm64)
+-                if enabled neon && ! check_xcode_minimum_version; then
+-                  soft_disable neon
+-                  log_echo "  neon disabled: upgrade Xcode (need v6.3+)."
+-                  if enabled neon_asm; then
+-                    soft_disable neon_asm
+-                    log_echo "  neon_asm disabled: upgrade Xcode (need v6.3+)."
+-                  fi
+-                fi
+-                ;;
+-            esac
+-
+-            if [ "$(show_darwin_sdk_major_version iphoneos)" -gt 8 ]; then
+-              check_add_cflags -fembed-bitcode
+-              check_add_asflags -fembed-bitcode
+-              check_add_ldflags -fembed-bitcode
+-            fi
+-          fi
+-
+           asm_conversion_cmd="${source_path}/build/make/ads2gas_apple.pl"
+           ;;
+ 
+@@ -1382,9 +1238,6 @@ EOF
+           ;;
+         darwin*)
+           add_asflags -f macho${bits}
+-          enabled x86 && darwin_arch="-arch i386" || darwin_arch="-arch x86_64"
+-          add_cflags  ${darwin_arch}
+-          add_ldflags ${darwin_arch}
+           # -mdynamic-no-pic is still a bit of voodoo -- it was required at
+           # one time, but does not seem to be now, and it breaks some of the
+           # code that still relies on inline assembly.
+-- 
+2.39.2
+

@@ -73,6 +73,8 @@ helpers_package(mpeg2dec)
 
 helpers_package(a52dec)
 
+# libvpx is already installed in original toolchain
+
 # curl is already installed in original toolchain
 
 # freetype is already installed in original toolchain

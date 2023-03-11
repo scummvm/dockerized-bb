@@ -40,6 +40,7 @@ multistrap_package(libsndio-dev)
 multistrap_package(libspeechd-dev)
 multistrap_package(libtheora-dev)
 multistrap_package(libvorbis-dev)
+multistrap_package(libvpx-dev)
 multistrap_package(libwxgtk3.0-gtk3-dev)
 multistrap_package(zlib1g-dev)
 

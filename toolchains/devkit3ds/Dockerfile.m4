@@ -61,6 +61,9 @@ helpers_package(mpeg2dec)
 
 helpers_package(a52dec)
 
+# Multithreading is not functional (and it's only one core anyway)
+helpers_package(libvpx, --disable-multithread)
+
 # curl is already installed in original toolchain
 
 # freetype is already installed in original toolchain

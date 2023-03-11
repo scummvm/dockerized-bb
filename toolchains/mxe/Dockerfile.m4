@@ -83,6 +83,8 @@ local_mxe_package(libmpeg2)
 
 mxe_package(a52dec)
 
+mxe_package(libvpx)
+
 local_mxe_package(curl-light)
 
 mxe_package(freetype-bootstrap)

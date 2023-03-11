@@ -1,0 +1,25 @@
+From cebce96d91c2e04bc07025f04ef093438a0f99dd Mon Sep 17 00:00:00 2001
+From: Le Philousophe <lephilousophe@users.noreply.github.com>
+Date: Sun, 12 Mar 2023 16:36:43 +0100
+Subject: [PATCH 3/3] Fix Android build on x86
+
+---
+ build/make/configure.sh | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/build/make/configure.sh b/build/make/configure.sh
+index 890be135b..8dfda7da7 100644
+--- a/build/make/configure.sh
++++ b/build/make/configure.sh
+@@ -1378,6 +1378,8 @@ EOF
+           add_asflags -f elf${bits}
+           enabled debug && [ "${AS}" = yasm ] && add_asflags -g dwarf2
+           enabled debug && [ "${AS}" = nasm ] && add_asflags -g
++          # x86 uses nasm which hasn't __ANDROID__ defined
++          [ "${AS##*/}" = nasm ] && add_asflags "-D__ANDROID__"
+           [ "${AS##*/}" = nasm ] && check_asm_align
+           ;;
+         darwin*)
+-- 
+2.39.2
+

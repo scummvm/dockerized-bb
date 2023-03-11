@@ -78,6 +78,9 @@ helpers_package(mpeg2dec, , CFLAGS="$CFLAGS -mno-altivec")
 
 helpers_package(a52dec)
 
+# Multithreading is not functional (and it's only one core anyway)
+helpers_package(libvpx, --disable-multithread)
+
 # curl
 
 # freetype is already installed in original-toolchain

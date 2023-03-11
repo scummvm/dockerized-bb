@@ -28,6 +28,11 @@ helpers_package(mpeg2dec)
 
 helpers_package(a52dec)
 
+# --as is used for x86* and overrides AS environment variable: exactly what we want
+# Fix build with nasm
+COPY --from=android-helpers /lib-helpers/packages/libvpx lib-helpers/packages/libvpx
+helpers_package(libvpx, --as=nasm)
+
 android_package(openssl)
 
 helpers_package(curl)

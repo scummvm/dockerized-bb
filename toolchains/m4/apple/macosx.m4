@@ -131,6 +131,8 @@ helpers_package(mpeg2dec)
 
 ports_package(a52dec)
 
+ports_package(libvpx)
+
 # No curl as it's provided in SDK
 
 # Ports package is linked with brotli and fails to link statically because of

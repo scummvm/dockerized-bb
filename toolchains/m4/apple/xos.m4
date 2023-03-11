@@ -117,6 +117,11 @@ helpers_package(mpeg2dec)
 
 helpers_package(a52dec)
 
+# libvpx thinks that darwin means xcode and adds too many flags
+# disable this treatment
+COPY --from=apple-common /lib-helpers/packages/libvpx lib-helpers/packages/libvpx
+helpers_package(libvpx)
+
 # Force -miphoneos-version-min as it gets added by curl if not already defined
 # In this case curl uses 10.8, this behaviour has been removed in curl 7.76.1
 # Undo patch by Debian which makes use of specific linker flags

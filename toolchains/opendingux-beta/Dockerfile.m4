@@ -54,6 +54,8 @@ helpers_package(mpeg2dec)
 
 helpers_package(a52dec)
 
+helpers_package(libvpx)
+
 # No curl support in configure
 
 # freetype is already installed in original toolchain

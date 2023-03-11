@@ -70,6 +70,9 @@ helpers_package(mpeg2dec)
 COPY packages/a52dec lib-helpers/packages/a52dec/
 helpers_package(a52dec)
 
+# Windows 95 doesn't handle well SSE
+helpers_package(libvpx, --as=nasm --disable-sse)
+
 # TODO: mbedTLS
 
 # TODO: curl

@@ -90,6 +90,8 @@ helpers_package(mpeg2dec)
 
 helpers_package(a52dec)
 
+helpers_package(libvpx)
+
 # helpers_package(openssl)
 
 # helpers_package(curl)

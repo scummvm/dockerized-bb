@@ -73,6 +73,9 @@ helpers_package(mpeg2dec)
 # No a52dec in the original toolchain build ours statically
 helpers_package(a52dec)
 
+# No libvpx in the original toolchain build ours statically
+helpers_package(libvpx)
+
 # Use same version as official toolchain
 local_package(freetype)
 
