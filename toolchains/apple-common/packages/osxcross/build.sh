@@ -42,6 +42,7 @@ CLANG_INCLUDE_DIR="${CLANG_LIB_DIR}/include"
 CLANG_DARWIN_LIB_DIR="${CLANG_LIB_DIR}/lib/darwin"
 
 # Don't install includes, they are already here
+mkdir -p "$(dirname "${CLANG_DARWIN_LIB_DIR}")"
 ln -s ${TARGET_DIR}/compiler_rt/lib/darwin ${CLANG_DARWIN_LIB_DIR}
 
 do_clean_bdir

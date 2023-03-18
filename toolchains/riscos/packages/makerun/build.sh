@@ -1,6 +1,6 @@
 #! /bin/sh
 
-MAKERUN_VERSION=3fe86945effb26bc695ce60bb766bb1524df41d9
+MAKERUN_VERSION=fe55b6bfda74b0398eaa141faec44df4af8f8f16
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..

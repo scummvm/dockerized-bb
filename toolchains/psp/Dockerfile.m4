@@ -84,7 +84,6 @@ ENV \
 	LDFLAGS="-L${PSPDEV}/lib -L${PSPDEV}/psp/lib -L${PSPDEV}/psp/sdk/lib -Wl,-zmax-page-size=128" \
 	def_aclocal(`${PREFIX}') \
 	def_pkg_config(`${PREFIX}') \
-	PKG_CONFIG_SYSROOT_DIR=${PSPDEV} \
 	PATH=$PATH:${PSPDEV}/bin:${PREFIX}/bin
 
 # Keep additional packages to bare minimum because of memory constraints

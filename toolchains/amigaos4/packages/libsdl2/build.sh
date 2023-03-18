@@ -1,6 +1,6 @@
 #! /bin/sh
 
-SDL2_VERSION=2.24.0-release
+SDL2_VERSION=2.26.1-release
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..

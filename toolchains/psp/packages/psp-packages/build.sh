@@ -1,6 +1,6 @@
 #! /bin/sh
 
-PSP_PACKAGES_VERSION=4135278ee8610747a8bf182ba9d5940ea1d2f515
+PSP_PACKAGES_VERSION=004f406e3ebb1f8409238e80a84fb4c7afb72f6f
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..
@@ -29,15 +29,14 @@ MAKEFLAGS="-d -j16" ./build.sh --install "$*"
 chmod o-w "$PSPDEV"
 
 # Patch pc files to ensure they have proper paths
-badprefix="$(pwd)/[^/]\\+/pkg/[^/]\\+/psp"
-
+# As we don't use psp-pkg-config in stable we need to do this
 PKG_CONFIG_LIBDIR=${PKG_CONFIG_LIBDIR:-${PREFIX}/lib/pkgconfig:${PREFIX}/share/pkgconfig}
 echo "$PKG_CONFIG_LIBDIR" | tr ':' '\n' | while read p; do
 	for f in "$p"/*; do
 		if [ "$f" = "$p/*" -o ! -f "$f" ]; then
 			continue
 		fi
-		sed -i -e "s|${badprefix}|${PREFIX}|" "$f"
+		sed -i -e "s|\${PSPDEV}/psp|${PREFIX}|" "$f"
 	done
 done
 
