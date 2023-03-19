@@ -248,6 +248,8 @@ android(suffix="x86-64",
 def appletv():
     platform = Platform("appletv")
     platform.compatibleBuilds = (builds.ScummVMBuild, )
+    # Stable has no support for this platform
+    platform.incompatibleBuilds = (builds.ScummVMStableBuild, )
     platform.configureargs.append("--host=tvos")
     platform.buildconfigureargs = {
         builds.ScummVMBuild: [ "--enable-static", "--with-staticlib-prefix=${PREFIX}"],
