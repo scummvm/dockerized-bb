@@ -21,6 +21,9 @@ COPY --from=toolchain ${RO_ANDROID_ROOT} ${RO_ANDROID_ROOT}/
 # Copy the wrapper script in charge of copying the licenses at the right place
 COPY setup_wrapper.sh ${RO_ANDROID_ROOT}/
 
+# Copy Debian certificates for bundling by buildbot
+RUN cp /etc/ssl/certs/ca-certificates.crt "${RO_ANDROID_ROOT}/cacert.pem"
+
 ENV ANDROID_NDK_ROOT=${RO_ANDROID_ROOT}/ndk \
 	ANDROID_TOOLCHAIN=${RO_ANDROID_ROOT}/ndk/toolchains/llvm/prebuilt/linux-x86_64 \
 	ANDROID_SDK_ROOT=${ANDROID_EXTERNAL_ROOT}/sdk \

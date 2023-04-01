@@ -205,6 +205,8 @@ def android(suffix, scummvm_target, ndk_target, cxx_target, abi_version,
                 ndk_target, abi_version)],
         },
     }
+    # Include CA certificates bundle to allow HTTPS
+    platform.env["DIST_ANDROID_CACERT_PEM"] = "${RO_ANDROID_ROOT}/cacert.pem"
 
     platform.configureargs.append("--host=android-{0}".format(scummvm_target))
     platform.configureargs.append("--enable-debug")
