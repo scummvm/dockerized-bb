@@ -1,6 +1,5 @@
 #! /bin/sh
 
-MIYOO_VERSION=1.0
 # This version depends on Miyoo devel package
 BUILDROOT_VERSION=2018.02.9
 
@@ -9,9 +8,6 @@ HELPERS_DIR=$PACKAGE_DIR/../..
 . $HELPERS_DIR/functions.sh
 
 do_make_bdir
-
-do_http_fetch devel "https://github.com/steward-fu/miyoo/releases/download/v${MIYOO_VERSION}/devel.zip" 'unzip'
-cd ..
 
 do_http_fetch buildroot- "https://buildroot.org/downloads/buildroot-${BUILDROOT_VERSION}.tar.gz" 'tar xzf'
 do_patch buildroot
@@ -84,7 +80,7 @@ lighten() {
 	make olddefconfig
 }
 
-cp ../devel/config_buildroot-${BUILDROOT_VERSION} .config
+cp ${PACKAGE_DIR}/config_buildroot-${BUILDROOT_VERSION} .config
 
 # Lighten build process by removing useless packages for us
 lighten

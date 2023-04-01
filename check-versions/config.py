@@ -332,13 +332,6 @@ VERSIONS = {
     # Latest crosstool-ng doesn't support uClibc anymore
     ('./toolchains/gcw0/packages/toolchain/build.sh', 'CT_NG'): 'ignore',
 
-    ('./toolchains/miyoo/packages/toolchain/build.sh', 'MIYOO'): {
-        'check': 'git tag',
-        'repository': 'https://github.com/steward-fu/miyoo.git',
-        'prefix': 'v',
-        # There are 3 tags per version with .0 being the toolchain config
-        'pattern': r'.*0$',
-    },
     # This version is set by toolchain configuration
     ('./toolchains/miyoo/packages/toolchain/build.sh', 'BUILDROOT'): 'ignore',
 
