@@ -318,6 +318,7 @@ VERSIONS = {
     ('./toolchains/gcw0/packages/libglib2/build.sh', 'GLIB2'): 'ignore',
     ('./toolchains/gcw0/packages/libiconv/build.sh', 'LIBICONV'): 'ignore',
     ('./toolchains/gcw0/packages/libjpeg/build.sh', 'JPEG'): 'ignore',
+    ('./toolchains/gcw0/packages/libmikmod/build.sh', 'LIBMIKMOD'): 'ignore',
     ('./toolchains/gcw0/packages/libogg/build.sh', 'LIBOGG'): 'ignore',
     ('./toolchains/gcw0/packages/libpng/build.sh', 'LIBPNG'): 'ignore',
     ('./toolchains/gcw0/packages/libsdl/build.sh', 'SDL'): 'ignore',

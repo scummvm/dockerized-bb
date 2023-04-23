@@ -78,6 +78,9 @@ local_package(libvorbisidec)
 # Use same version as official toolchain
 local_package(flac)
 
+# Use same version as official toolchain
+local_package(libmikmod)
+
 # No mpeg2dec in the original toolchain build ours statically
 helpers_package(mpeg2dec)
 

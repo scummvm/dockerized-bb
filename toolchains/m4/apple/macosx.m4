@@ -123,6 +123,8 @@ ports_package(libtheora)
 
 ports_package(libvorbis)
 
+ports_package(libmikmod)
+
 helpers_package(flac)
 
 # mpeg2dec in ports comes with dependencies on X11 and SDL

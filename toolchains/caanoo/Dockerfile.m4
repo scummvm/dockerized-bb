@@ -66,6 +66,9 @@ helpers_package(libvorbisidec)
 # No FLAC in the original toolchain build ours statically
 helpers_package(flac)
 
+# No libmikmod in the original toolchain build ours statically
+helpers_package(libmikmod)
+
 # No mpeg2dec in the original toolchain build ours statically
 helpers_package(mpeg2dec)
 

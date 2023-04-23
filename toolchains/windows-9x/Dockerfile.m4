@@ -62,6 +62,8 @@ helpers_package(libtheora)
 # _fstat64, _stat64, _wstat64, _wutime64
 # helpers_package(flac)
 
+helpers_package(libmikmod)
+
 helpers_package(faad2)
 
 COPY packages/mpeg2dec lib-helpers/packages/mpeg2dec/

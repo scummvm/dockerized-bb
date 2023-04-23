@@ -84,6 +84,8 @@ helpers_package(libtheora)
 
 helpers_package(flac, --with-pic=no)
 
+helpers_package(libmikmod)
+
 helpers_package(faad2)
 
 helpers_package(mpeg2dec)

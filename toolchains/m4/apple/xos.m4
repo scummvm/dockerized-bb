@@ -111,6 +111,8 @@ helpers_package(libvorbis)
 
 helpers_package(flac)
 
+helpers_package(libmikmod)
+
 # Don't enable assembly part: it doesn't build
 COPY --from=apple-common /lib-helpers/packages/mpeg2dec lib-helpers/packages/mpeg2dec
 helpers_package(mpeg2dec)

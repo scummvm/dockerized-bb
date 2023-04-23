@@ -69,6 +69,8 @@ helpers_package(faad2)
 
 # flac is already installed in original toolchain
 
+# libmikmod is already installed in original toolchain
+
 helpers_package(mpeg2dec)
 
 helpers_package(a52dec)

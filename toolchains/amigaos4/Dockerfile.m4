@@ -68,6 +68,8 @@ local_package(libvorbis)
 
 local_package(libflac)
 
+local_package(libmikmod)
+
 local_package(libmpeg2)
 
 local_package(liba52)

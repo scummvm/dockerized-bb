@@ -48,6 +48,8 @@ vdpm_package(libtheora)
 
 vdpm_package(flac)
 
+vdpm_package(libmikmod)
+
 helpers_package(faad2)
 
 vdpm_package(libmpeg2)

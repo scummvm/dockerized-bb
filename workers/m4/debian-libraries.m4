@@ -14,6 +14,7 @@ RUN apt-get update && \
 		libieee1284-3-dev`'APT_ARCH \
 		libjpeg62-turbo-dev`'APT_ARCH \
 		libmad0-dev`'APT_ARCH \
+		libmikmod-dev`'APT_ARCH \
 		libmpeg2-4-dev`'APT_ARCH \
 		libogg-dev`'APT_ARCH \
 		libpng-dev`'APT_ARCH \

@@ -48,6 +48,8 @@ helpers_package(giflib)
 
 # flac is already installed in original toolchain
 
+# libmikmod is already installed in original toolchain
+
 helpers_package(faad2)
 
 helpers_package(mpeg2dec)

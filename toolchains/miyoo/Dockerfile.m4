@@ -52,6 +52,8 @@ ENV \
 
 # flac is already installed in original toolchain
 
+helpers_package(libmikmod)
+
 helpers_package(faad2)
 
 helpers_package(mpeg2dec)
