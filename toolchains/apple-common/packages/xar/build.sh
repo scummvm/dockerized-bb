@@ -1,6 +1,6 @@
 #! /bin/sh
 
-XAR_VERSION=c2111a9a9cabc50d2b9c604aff41a481ae3f1989
+XAR_VERSION=fb897139262d7ac5c9e187a9f9c219255f465983
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..

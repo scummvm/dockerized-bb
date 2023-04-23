@@ -1,4 +1,4 @@
-m4_define(`DEVKITPPC_VERSION',20230110)
+m4_define(`DEVKITPPC_VERSION',20230419)
 # This version of devkitPPC depends on a Debian Buster
 # For now it works with our version, we will have to ensure it stays like that
 FROM devkitpro/devkitppc:DEVKITPPC_VERSION AS original-toolchain
@@ -57,7 +57,7 @@ ENV \
 
 # libjpeg-turbo is already installed in original-toolchain
 
-helpers_package(giflib)
+# giflib is already installed in original-toolchain
 
 helpers_package(faad2)
 
@@ -65,14 +65,11 @@ helpers_package(faad2)
 
 # libogg is already installed in original-toolchain
 
-helpers_package(libtheora)
+# libtheora is already installed in original-toolchain
 
 # libvorbis is already installed in original-toolchain
 
-# Disable AltiVec as it's not supported by targets and SSE2 because configure script enables it
-# Copy specific patch to disable FORTIFY as toolchain doesn't seem to support it
-COPY packages/flac lib-helpers/packages/flac
-helpers_package(flac, --disable-altivec)
+# flac is already installed in original-toolchain
 
 helpers_package(mpeg2dec, , CFLAGS="$CFLAGS -mno-altivec")
 
@@ -85,6 +82,6 @@ helpers_package(libvpx, --disable-multithread)
 
 # freetype is already installed in original-toolchain
 
-helpers_package(fribidi)
+# fribidi is already installed in original-toolchain
 
 # No fluidsynth

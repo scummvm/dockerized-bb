@@ -1,6 +1,6 @@
 #! /bin/sh
 
-FLUIDSYNTH_VERSION=2.3.1
+FLUIDSYNTH_VERSION=2.3.2
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..
@@ -47,10 +47,14 @@ do_http_fetch fluidsynth \
 	"https://github.com/FluidSynth/fluidsynth/archive/v${FLUIDSYNTH_VERSION}.tar.gz" 'tar xzf'
 
 # Fluidsynth doesn't link correctly against static glib, fix this
-sed -i -e 's/\${GLIB_\([^}]\+\)}/${GLIB_STATIC_\1}/g' CMakeLists.txt src/CMakeLists.txt
 sed -i -e '/add_executable ( fluidsynth/,/)/{
-/)/a target_link_options ( fluidsynth PRIVATE ${GLIB_STATIC_LDFLAGS_OTHER} )
+/)/a target_link_options ( fluidsynth PRIVATE ${PC_GLIB2_STATIC_LDFLAGS_OTHER} )
 }' src/CMakeLists.txt
+# Fluidsynth adds frameworks manually and it fails to build on iOS/AppleTV
+sed -i -e '/-Wl,-framework/s/^/#/' cmake_admin/FindGLib2.cmake
+# Fluidsynth is completly bugguy at finding dependencies
+sed -i -e 's/"\${PC_G\([A-Z]\+\)2_INCLUDEDIR}"/${PC_G\12_INCLUDE_DIRS}/' cmake_admin/FindGLib2.cmake
+sed -i -e 's/"\${PC_G\([A-Z]\+\)2_LIBDIR}"/${PC_G\12_LIBRARY_DIRS}/' cmake_admin/FindGLib2.cmake
 # Don't install fluidsynth binary
 # Still build it to ensure we have a working setup with all static libraries
 sed -i -e 's/install\(.*\) fluidsynth /install\1 /g' src/CMakeLists.txt
@@ -70,7 +74,7 @@ do_cmake \
 	-Denable-readline=off -Denable-lash=off \
 	-Denable-alsa=off -Denable-systemd=off \
 	-Denable-coreaudio=off -Denable-coremidi=off \
-	-Denable-framework=off -Denable-dart=off "$@"
+	-Denable-framework=off "$@"
 do_make
 do_make install
 

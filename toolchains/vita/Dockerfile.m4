@@ -62,7 +62,7 @@ vdpm_package(curl)
 
 vdpm_package(freetype)
 
-helpers_package(fribidi)
+vdpm_package(libfribidi)
 
 vdpm_package(FluidLite)
 

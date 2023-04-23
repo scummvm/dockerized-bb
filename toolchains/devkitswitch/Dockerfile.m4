@@ -1,4 +1,4 @@
-m4_define(`DEVKITA64_VERSION',20221113)
+m4_define(`DEVKITA64_VERSION',20230419)
 # This version of devkitA64 depends on a Debian Buster
 # For now it works with our version, we will have to ensure it stays like that
 FROM devkitpro/devkita64:DEVKITA64_VERSION AS original-toolchain

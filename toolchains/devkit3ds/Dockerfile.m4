@@ -43,7 +43,7 @@ ENV \
 
 # libjpeg-turbo is already installed in original toolchain
 
-helpers_package(giflib)
+# giflib is already installed in original toolchain
 
 helpers_package(faad2)
 
@@ -68,6 +68,6 @@ helpers_package(libvpx, --disable-multithread)
 
 # freetype is already installed in original toolchain
 
-helpers_package(fribidi)
+# fribidi is already installed in original toolchain
 
 helpers_package(fluidlite, -DCMAKE_TOOLCHAIN_FILE=${DEVKITPRO}/cmake/3DS.cmake)

@@ -1,6 +1,6 @@
 #! /bin/sh
 
-TOOLCHAIN_VERSION=035527ac16b66dd3980627f94a64a78dc3fd0e1b
+TOOLCHAIN_VERSION=499006079dc3ea3acf6fcd27dd33fcd9169e0ccf
 TARGETS="gcw0 rs90 lepus"
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
