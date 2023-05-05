@@ -459,7 +459,7 @@ class ScummVMBuild(StandardBuild):
         "dists/engine-data/lure.dat",
         "dists/engine-data/mm.dat",
         "dists/engine-data/mort.dat",
-	"dists/engine-data/nancy.dat",
+        "dists/engine-data/nancy.dat",
         "dists/engine-data/neverhood.dat",
         "dists/engine-data/queen.tbl",
         "dists/engine-data/sky.cpt",
@@ -556,7 +556,7 @@ class ScummVMStableBuild(ScummVMBuild):
         "dists/engine-data/lure.dat",
         #"dists/engine-data/mm.dat", # Not in stable
         "dists/engine-data/mort.dat",
-	#"dists/engine-data/nancy.dat", # Not in stable
+        #"dists/engine-data/nancy.dat", # Not in stable
         "dists/engine-data/neverhood.dat",
         "dists/engine-data/queen.tbl",
         "dists/engine-data/sky.cpt",
