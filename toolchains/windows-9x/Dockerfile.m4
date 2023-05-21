@@ -13,7 +13,6 @@ RUN apt-get update && \
 		gawk \
 		gcc \
 		g++ \
-		libboost-filesystem-dev \
 		libgmp-dev \
 		libisl-dev \
 		libmpc-dev \
