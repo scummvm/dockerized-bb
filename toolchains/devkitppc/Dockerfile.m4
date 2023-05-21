@@ -16,6 +16,7 @@ RUN apt-get update && \
 		ca-certificates \
 		curl \
 		gnupg \
+		libtinfo5 \
 		libxml2 \
 		make \
 		pkg-config \
