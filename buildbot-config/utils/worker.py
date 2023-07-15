@@ -37,14 +37,21 @@ def setup_uid_gid(client, worker_uid, worker_gid):
 class DockerWorker(worker.DockerLatentWorker):
     @defer.inlineCallbacks
     def start_instance(self, build):
-        print("VOLUMES", self.volumes)
         volumes = yield build.render(self.volumes)
-        print("R VOLUMES", volumes)
         for volume_string in (volumes or []):
             try:
-                bind, _ = volume_string.split(":", 1)
+                bind, dst_mode = volume_string.split(":", 1)
             except ValueError:
                 continue
+            # Don't try to apply ACLs or create dirs on read-only mounts
+            # They must have been applied earlier
+            try:
+                dst, mode = dst_mode.split(":", 1)
+                if mode == "ro":
+                    continue
+            except ValueError:
+                # No : so no ro
+                pass
             os.makedirs(bind, exist_ok=True)
             self.apply_acls(bind)
         res = yield super().start_instance(build)
