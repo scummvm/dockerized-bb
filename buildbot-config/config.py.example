@@ -85,6 +85,8 @@ buildbot_url = "https://buildbot.scummvm.org/"
 # Retention time for data (in weeks)
 data_retention_weeks = 4
 
+change_horizon = 1000
+
 # URL used to download daily builds
 # If serve_daily_builds is True, it will be:
 # daily_builds_url = buildbot_url + "wsgi_dashboards/dailybuilds/packages/"
