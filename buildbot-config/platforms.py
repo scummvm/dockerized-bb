@@ -374,6 +374,26 @@ def dreamcast():
     register_platform(platform)
 dreamcast()
 
+def gamecube():
+    platform = Platform("gamecube")
+    platform.workerimage = "devkitppc"
+    platform.compatibleBuilds = (builds.ScummVMBuild, )
+    platform.configureargs.append("--host=gamecube")
+    platform.buildconfigureargs = {
+        builds.ScummVMBuild: [ "--enable-plugins", "--default-dynamic", "--enable-vkeybd" ],
+    }
+    platform.packaging_cmd = "wiidist"
+    platform.built_files = {
+        builds.ScummVMBuild: [ "wiidist/scummvm" ],
+    }
+    platform.archiveext = "tar.xz"
+
+    platform.description = "Nintendo Gamecube"
+    platform.icon = 'gc'
+
+    register_platform(platform)
+gamecube()
+
 def ios7_arm64():
     platform = Platform("ios7-arm64")
     platform.workerimage = "iphone"
