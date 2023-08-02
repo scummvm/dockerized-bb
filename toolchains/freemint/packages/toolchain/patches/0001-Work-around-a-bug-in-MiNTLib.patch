@@ -1,0 +1,45 @@
+From 20657c9ec506a369ed96c909cbb2979f405d11c8 Mon Sep 17 00:00:00 2001
+From: Cameron Cawley <ccawley2011@gmail.com>
+Date: Mon, 20 Feb 2023 14:44:54 +0000
+Subject: [PATCH] Work around a bug in MiNTLib
+
+---
+ Makefile      |  1 +
+ mintlib.patch | 13 +++++++++++++
+ 2 files changed, 14 insertions(+)
+ create mode 100644 mintlib.patch
+
+diff --git a/Makefile b/Makefile
+index 42a0461..be4a40c 100644
+--- a/Makefile
++++ b/Makefile
+@@ -174,6 +174,7 @@ gcc-${VERSION_GCC}.ok: gmp.patch download_prerequisites.patch
+ mintlib.ok:
+ 	rm -rf $@ ${FOLDER_MINTLIB}
+ 	$(URLGET) ${GITHUB_URL_MINTLIB} | $(UNTAR) > /dev/null
++	cd ${FOLDER_MINTLIB} && patch -p1 < ../mintlib.patch
+ 	touch $@
+ 
+ mintbin.ok:
+diff --git a/mintlib.patch b/mintlib.patch
+new file mode 100644
+index 0000000..21c75b1
+--- /dev/null
++++ b/mintlib.patch
+@@ -0,0 +1,13 @@
++diff --git a/syscall/Makefile b/syscall/Makefile
++index a7d0684..0202962 100644
++--- a/syscall/Makefile
+++++ b/syscall/Makefile
++@@ -49,7 +49,7 @@ gen-syscall: $(gen_objs)
++ 	$(CC) $(gen_objs) -o $@
++ 
++ pars.c pars.h: pars.y
++-	if bison --defines=pars.h.tmp$$$$ --output=pars.c $<; then mv pars.h.tmp$$$$ pars.h; else rm -f pars.h.tmp$$$$; exit 1; fi
+++	bison --defines=pars.h --output=pars.c $< || (rm -f pars.h; exit 1)
++ 
++ pars.o: pars.c pars.h
++ 
+-- 
+2.30.2
+

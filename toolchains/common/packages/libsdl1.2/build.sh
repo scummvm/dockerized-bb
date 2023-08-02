@@ -10,7 +10,7 @@ do_make_bdir
 
 do_http_fetch SDL "https://github.com/libsdl-org/SDL-1.2/archive/${SDL_VERSION}.tar.gz" 'tar xzf'
 
-do_configure
+do_configure "$@"
 do_make
 do_make install
 
