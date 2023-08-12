@@ -6,6 +6,23 @@ GCC_VERSION=9.2.0-3
 MINGWRT_VERSION=5.4.2
 W32API_VERSION=5.4.2
 
+# These values allows to not depend on flaky OSDN but only its mirrors
+# They must be kept in sync with the versions above
+BINUTILS_GROUP=70619
+GCC_GROUP=72218
+MINGWRT_GROUP=74925
+W32API_GROUP=74926
+
+# Using OSDN main website
+#make_url() {
+#	echo "https://osdn.net/dl/mingw/$2"
+#}
+
+# Using dotsrc mirror directly
+make_url() {
+	echo "https://mirrors.dotsrc.org/osdn/mingw/$1/$2"
+}
+
 # This package is inspired by dc-chain scripts for KallistiOS. Credits go to them.
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
@@ -21,7 +38,7 @@ do_make_bdir
 export PATH="${PATH}:${prefix}/bin"
 
 # Binutils
-do_http_fetch binutils "https://osdn.net/dl/mingw/binutils-${BINUTILS_VERSION}-mingw32-src.tar.xz" 'tar xJf'
+do_http_fetch binutils $(make_url ${BINUTILS_GROUP} "binutils-${BINUTILS_VERSION}-mingw32-src.tar.xz") 'tar xJf'
 
 for p in arch/mingw32/*.patch; do
 	echo "Applying $p"
@@ -35,7 +52,7 @@ do_make install
 cd ..
 
 # GCC...
-do_http_fetch gcc "https://osdn.net/dl/mingw/gcc-${GCC_VERSION}-mingw32-src.tar.xz" 'tar xJf'
+do_http_fetch gcc $(make_url ${GCC_GROUP} "gcc-${GCC_VERSION}-mingw32-src.tar.xz") 'tar xJf'
 
 for p in arch/mingw32/*.patch; do
 	echo "Applying $p"
@@ -75,10 +92,10 @@ do_make install-gcc
 cd ..
 
 # mingwrt and w32api
-do_http_fetch w32api "https://osdn.net/dl/mingw/w32api-${W32API_VERSION}-mingw32-src.tar.xz" 'tar xJf'
+do_http_fetch w32api $(make_url ${W32API_GROUP} "w32api-${W32API_VERSION}-mingw32-src.tar.xz") 'tar xJf'
 cd ..
 
-do_http_fetch mingwrt "https://osdn.net/dl/mingw/mingwrt-${MINGWRT_VERSION}-mingw32-src.tar.xz" 'tar xJf'
+do_http_fetch mingwrt $(make_url ${MINGWRT_GROUP} "mingwrt-${MINGWRT_VERSION}-mingw32-src.tar.xz") 'tar xJf'
 do_patch mingwrt
 
 touch include/features.h
