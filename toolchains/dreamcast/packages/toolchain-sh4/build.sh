@@ -42,7 +42,7 @@ cd ..
 mkdir gcc-build-stage1
 cd gcc-build-stage1
 
-CFLAGS="-fcommon" CXXFLAGS="-fcommon" \
+CFLAGS="-fcommon" CXXFLAGS="-fcommon --std=gnu++11" \
 "${GCC_DIR}"/configure \
 	--target=${target} \
 	--prefix="${prefix}" \
@@ -75,7 +75,7 @@ cd ..
 mkdir gcc-build-stage2
 cd gcc-build-stage2
 
-CFLAGS="-fcommon" CXXFLAGS="-fcommon" \
+CFLAGS="-fcommon" CXXFLAGS="-fcommon --std=gnu++11" \
 "${GCC_DIR}"/configure \
 	--target=${target} \
 	--prefix="${prefix}" \

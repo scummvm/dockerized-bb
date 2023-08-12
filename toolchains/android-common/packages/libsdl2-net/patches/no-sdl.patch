@@ -1,22 +1,23 @@
 diff --git a/SDL2_net.pc.in b/SDL2_net.pc.in
-index e3ad892..e7731be 100644
+index 28dd6c8..576d490 100644
 --- a/SDL2_net.pc.in
 +++ b/SDL2_net.pc.in
-@@ -6,6 +6,6 @@ includedir=@includedir@
+@@ -6,7 +6,7 @@ includedir=@includedir@
  Name: SDL2_net
  Description: net library for Simple DirectMedia Layer
  Version: @VERSION@
 -Requires: sdl2 >= @SDL_VERSION@
 +Requires:
- Libs: -L${libdir} -lSDL2_net
- Cflags: -I${includedir}/SDL2
+ @ENABLE_SHARED_TRUE@Libs: -L${libdir} -lSDL2_net
+ @ENABLE_SHARED_TRUE@@ENABLE_STATIC_TRUE@Libs.private: @INETLIB@
+ @ENABLE_SHARED_FALSE@Libs: -L${libdir} -lSDL2_net @INETLIB@
 diff --git a/SDL_net.h b/SDL_net.h
-index bd5ec7f..c7293e9 100644
+index 6a19af3..babafa3 100644
 --- a/SDL_net.h
 +++ b/SDL_net.h
-@@ -25,7 +25,10 @@
- #ifndef _SDL_NET_H
- #define _SDL_NET_H
+@@ -23,7 +23,10 @@
+ #ifndef SDL_NET_H_
+ #define SDL_NET_H_
  
 +#define WITHOUT_SDL
 +
@@ -25,7 +26,7 @@ index bd5ec7f..c7293e9 100644
  #include <stdint.h>
  typedef uint8_t Uint8;
  typedef uint16_t Uint16;
-@@ -37,6 +40,11 @@ typedef struct SDLNet_version {
+@@ -35,6 +38,11 @@ typedef struct SDLNet_version {
      Uint8 patch;
  } SDLNet_version;
  
@@ -37,7 +38,7 @@ index bd5ec7f..c7293e9 100644
  #else /* WITHOUT_SDL */
  
  #include "SDL.h"
-@@ -47,7 +55,156 @@ typedef SDL_version SDLNet_version;
+@@ -45,7 +53,156 @@ typedef SDL_version SDLNet_version;
  
  #endif /* WITHOUT_SDL */
  
@@ -195,7 +196,7 @@ index bd5ec7f..c7293e9 100644
  
  /* Set up for C function definitions, even when using C++ */
  #ifdef __cplusplus
-@@ -438,6 +595,25 @@ SDL_FORCE_INLINE Uint32 _SDLNet_Read32(const void *areap)
+@@ -1076,6 +1233,25 @@ SDL_FORCE_INLINE Uint32 _SDLNet_Read32(const void *areap)
  #ifdef __cplusplus
  }
  #endif
@@ -221,12 +222,12 @@ index bd5ec7f..c7293e9 100644
 +#pragma pack(pop)
 +#endif /* Compiler needs structure packing set */
  
- #endif /* _SDL_NET_H */
+ #endif /* SDL_NET_H_ */
 diff --git a/SDLnet.c b/SDLnet.c
-index 53d125a..7e54e63 100644
+index 7d0223e..2ba59c9 100644
 --- a/SDLnet.c
 +++ b/SDLnet.c
-@@ -66,7 +66,12 @@ void SDLCALL SDLNet_SetError(const char *fmt, ...)
+@@ -95,7 +95,12 @@ void SDLCALL SDLNet_SetError(const char *fmt, ...)
  {
      va_list argp;
      va_start(argp, fmt);
@@ -239,16 +240,16 @@ index 53d125a..7e54e63 100644
      va_end(argp);
  #ifndef WITHOUT_SDL
      SDL_SetError("%s", errorbuf);
-diff --git a/configure.in b/configure.in
-index 4228c6f..dca90a6 100644
---- a/configure.in
-+++ b/configure.in
-@@ -107,16 +107,6 @@ case "$host" in
- esac
- AC_SUBST(INETLIB)
+diff --git a/configure.ac b/configure.ac
+index b28a92d..f90ff2f 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -189,16 +189,6 @@ AC_ARG_ENABLE([examples],
+     enable_examples=yes)
+ AM_CONDITIONAL(ENABLE_EXAMPLES, [test x$enable_examples = xyes])
  
 -dnl Check for SDL
--SDL_VERSION=2.0.0
+-SDL_VERSION=2.0.4
 -AC_SUBST(SDL_VERSION)
 -AM_PATH_SDL2($SDL_VERSION,
 -            :,
@@ -257,6 +258,6 @@ index 4228c6f..dca90a6 100644
 -CFLAGS="$CFLAGS $SDL_CFLAGS"
 -LIBS="$LIBS $SDL_LIBS"
 -
- dnl Check for GUI library for the chat client
- have_GUI=no
- AC_ARG_ENABLE(gui,
+ dnl Calculate the location of the prefix, relative to the cmake folder
+ pkg_cmakedir='$libdir/cmake/SDL2_net'
+ AX_COMPUTE_RELATIVE_PATHS([pkg_cmakedir:prefix:cmake_prefix_relpath])

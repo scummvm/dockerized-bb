@@ -1,19 +1,19 @@
-From 63615b5abe9bc0c2e7a6700922f18648cc3a4800 Mon Sep 17 00:00:00 2001
+From 8f2eb1de4e431b96823b2367b6b6fc41700770ae Mon Sep 17 00:00:00 2001
 From: Le Philousophe <lephilousophe@users.noreply.github.com>
-Date: Sat, 11 Mar 2023 14:17:09 +0100
+Date: Sun, 6 Aug 2023 23:58:58 +0200
 Subject: [PATCH 3/3] Remove Darwin special treatment
 
 We don't use Xcode
 iOS and AppleTV don't support linking
 ---
- build/make/configure.sh | 155 ++--------------------------------------
- 1 file changed, 4 insertions(+), 151 deletions(-)
+ build/make/configure.sh | 159 +---------------------------------------
+ 1 file changed, 4 insertions(+), 155 deletions(-)
 
 diff --git a/build/make/configure.sh b/build/make/configure.sh
-index 890be135b..ad1ffcf1c 100644
+index 12255b27c..f0e187539 100644
 --- a/build/make/configure.sh
 +++ b/build/make/configure.sh
-@@ -739,7 +739,7 @@ process_common_toolchain() {
+@@ -753,7 +753,7 @@ process_common_toolchain() {
      gcctarget="${CHOST:-$($CC -dumpmachine 2> /dev/null)}"
      # detect tgt_isa
      case "$gcctarget" in
@@ -22,7 +22,7 @@ index 890be135b..ad1ffcf1c 100644
          tgt_isa=arm64
          ;;
        armv7*-hardfloat* | armv7*-gnueabihf | arm-*-gnueabihf)
-@@ -772,8 +772,10 @@ process_common_toolchain() {
+@@ -792,8 +792,10 @@ process_common_toolchain() {
  
      # detect tgt_os
      case "$gcctarget" in
@@ -33,8 +33,8 @@ index 890be135b..ad1ffcf1c 100644
 -        tgt_isa=x86_64
          tgt_os=`echo $gcctarget | sed 's/.*\(darwin1[0-9]\).*/\1/'`
          ;;
-       x86_64*mingw32*)
-@@ -837,96 +839,6 @@ process_common_toolchain() {
+       *darwin2[0-1]*)
+@@ -866,100 +868,6 @@ process_common_toolchain() {
    # PIC is probably what we want when building shared libs
    enabled shared && soft_enable pic
  
@@ -51,7 +51,7 @@ index 890be135b..ad1ffcf1c 100644
 -  # Handle darwin variants. Newer SDKs allow targeting older
 -  # platforms, so use the newest one available.
 -  case ${toolchain} in
--    arm*-darwin*)
+-    arm*-darwin-*)
 -      add_cflags "-miphoneos-version-min=${IOS_VERSION_MIN}"
 -      iphoneos_sdk_dir="$(show_darwin_sdk_path iphoneos)"
 -      if [ -d "${iphoneos_sdk_dir}" ]; then
@@ -59,7 +59,7 @@ index 890be135b..ad1ffcf1c 100644
 -        add_ldflags "-isysroot ${iphoneos_sdk_dir}"
 -      fi
 -      ;;
--    x86*-darwin*)
+-    *-darwin*)
 -      osx_sdk_dir="$(show_darwin_sdk_path macosx)"
 -      if [ -d "${osx_sdk_dir}" ]; then
 -        add_cflags  "-isysroot ${osx_sdk_dir}"
@@ -117,6 +117,10 @@ index 890be135b..ad1ffcf1c 100644
 -      add_cflags  "-mmacosx-version-min=10.15"
 -      add_ldflags "-mmacosx-version-min=10.15"
 -      ;;
+-    *-darwin2[0-1]-*)
+-      add_cflags  "-arch ${toolchain%%-*}"
+-      add_ldflags "-arch ${toolchain%%-*}"
+-      ;;
 -    *-iphonesimulator-*)
 -      add_cflags  "-miphoneos-version-min=${IOS_VERSION_MIN}"
 -      add_ldflags "-miphoneos-version-min=${IOS_VERSION_MIN}"
@@ -131,10 +135,10 @@ index 890be135b..ad1ffcf1c 100644
    # Handle Solaris variants. Solaris 10 needs -lposix4
    case ${toolchain} in
      sparc-solaris-*)
-@@ -1090,62 +1002,6 @@ EOF
+@@ -1123,62 +1031,6 @@ EOF
            ;;
  
-         darwin*)
+         darwin)
 -          if ! enabled external_build; then
 -            XCRUN_FIND="xcrun --sdk iphoneos --find"
 -            CXX="$(${XCRUN_FIND} clang++)"
@@ -191,10 +195,10 @@ index 890be135b..ad1ffcf1c 100644
 -            fi
 -          fi
 -
-           asm_conversion_cmd="${source_path}/build/make/ads2gas_apple.pl"
+           asm_conversion_cmd="${source_path_mk}/build/make/ads2gas_apple.pl"
            ;;
  
-@@ -1382,9 +1238,6 @@ EOF
+@@ -1413,9 +1265,6 @@ EOF
            ;;
          darwin*)
            add_asflags -f macho${bits}

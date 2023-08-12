@@ -13,15 +13,12 @@ RUN apt-get update && \
 		python3-twisted \
                 && \
         rm -rf /var/lib/apt/lists/*
-
-# Force upgrade of pyOpenSSL as autobhan will require a newer cryptography and both get incompatible
-RUN pip3 --no-cache-dir install -U pyOpenSSL
 , ``fatal_error(No base defined)''))m4_dnl
 
 ARG BUILDBOT_VERSION
 LABEL buildbot-version=${BUILDBOT_VERSION}
 
-RUN pip3 --no-cache-dir install \
+RUN pip3 --no-cache-dir install --break-system-packages \
 		buildbot-worker==${BUILDBOT_VERSION}
 
 ARG BUILDBOT_UID=1000

@@ -34,17 +34,14 @@ RUN apt-get update && \
 		libssl-dev \
 		libusb-dev \
 		zlib1g-dev \
-		python3 \
 		python3-pip \
 		python3-venv \
 		texinfo \
 		unzip \
 		wget && \
-	echo "dash dash/sh boolean false" | debconf-set-selections && \
-	mkdir -p /usr/share/man/man1 && \
-	dpkg-reconfigure --frontend=noninteractive dash && \
-	rm /usr/share/man/man1/sh.1.gz && \
-	rmdir /usr/share/man/man1 && \
+	dpkg-divert --package dash --no-rename --remove /bin/sh && \
+	dpkg-divert --no-rename --divert /bin/sh.dash --add /bin/sh && \
+	ln -sf /bin/bash /bin/sh && \
 	rm -rf /var/lib/apt/lists/*
 
 ENV PSPDEV=/usr/local/pspdev HOST=psp

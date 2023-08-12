@@ -18,7 +18,6 @@ RUN apt-get update && \
 		liblzma-dev \
 		libxml2-dev \
 		libssl-dev \
-		python3 \
 		python3-setuptools \
 		uuid-dev \
 		zlib1g-dev \
@@ -130,7 +129,7 @@ helpers_package(libvpx)
 # Disable NTLM since it requires fork which is not supported in tvOS
 # This is never used anyway
 COPY --from=apple-common /lib-helpers/packages/curl lib-helpers/packages/curl
-helpers_package(curl, --without-ssl --with-secure-transport --disable-ntlm-wb, CFLAGS="-m`'XOS_PLATFORM`'os-version-min=XOS_DEPLOYMENT_TARGET")
+helpers_package(curl, --without-openssl --with-secure-transport --disable-ntlm-wb, CFLAGS="-m`'XOS_PLATFORM`'os-version-min=XOS_DEPLOYMENT_TARGET")
 
 helpers_package(freetype)
 

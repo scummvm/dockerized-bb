@@ -16,7 +16,6 @@ RUN apt-get update && \
 		libgmp-dev \
 		libmpc-dev \
 		libmpfr-dev \
-		python \
 		texinfo && \
 	rm -rf /var/lib/apt/lists/*
 

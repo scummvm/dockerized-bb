@@ -28,8 +28,8 @@ DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 	wget
 rm -rf /var/lib/apt/lists/*
 
-sed 's/^deb \(.*\)/deb-src \1/' /etc/apt/sources.list \
-		> /etc/apt/sources.list.d/debsrc.list
+sed 's/^Types: deb$/Types: deb-src/' /etc/apt/sources.list.d/debian.sources \
+		> /etc/apt/sources.list.d/debian-src.sources
 
 if [ -f "$HELPERS_DIR"/prepare-platform.sh ]; then
 	. "$HELPERS_DIR"/prepare-platform.sh

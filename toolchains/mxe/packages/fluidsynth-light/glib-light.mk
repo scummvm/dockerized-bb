@@ -20,7 +20,9 @@ endef
 
 define $(PKG)_BUILD
     # cross build
-    cd '$(SOURCE_DIR)' && NOCONFIGURE=true GTKDOCIZE=false ./autogen.sh
+    # Prevent autogen to override GTKDOCIZE which is used by autoreconf
+    sed -i -e 's/GTKDOCIZE/GTKDOCIZE_/' $(SOURCE_DIR)/autogen.sh
+    cd '$(SOURCE_DIR)' && NOCONFIGURE=true GTKDOCIZE=true ./autogen.sh
     cd '$(BUILD_DIR)' && '$(SOURCE_DIR)/configure' \
         $(MXE_CONFIGURE_OPTS) \
         --with-threads=win32 \

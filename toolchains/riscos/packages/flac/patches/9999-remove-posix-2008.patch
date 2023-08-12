@@ -1,0 +1,71 @@
+diff --git a/include/share/compat.h b/include/share/compat.h
+index 6ce23a5c..d82732b1 100644
+--- a/include/share/compat.h
++++ b/include/share/compat.h
+@@ -119,13 +119,9 @@
+ #include <sys/utime.h> /* for utime() */
+ #endif
+ #else
+-#if defined(_POSIX_C_SOURCE) && (_POSIX_C_SOURCE >= 200809L)
+-#include <fcntl.h>
+-#else
+ #include <sys/types.h> /* some flavors of BSD (like OS X) require this to get time_t */
+ #include <utime.h> /* for utime() */
+ #endif
+-#endif
+ 
+ #if defined _MSC_VER
+ #  if _MSC_VER >= 1800
+@@ -196,12 +192,8 @@
+ #define flac_rename rename
+ #define flac_stat stat
+ 
+-#if defined(_POSIX_C_SOURCE) && (_POSIX_C_SOURCE >= 200809L)
+-#define flac_utime(a, b) utimensat (AT_FDCWD, a, *b, 0)
+-#else
+ #define flac_utime utime
+ #endif
+-#endif
+ 
+ #ifdef _WIN32
+ #define flac_stat_s __stat64 /* stat struct */
+diff --git a/src/libFLAC/metadata_iterators.c b/src/libFLAC/metadata_iterators.c
+index 20e926be..22f26aa1 100644
+--- a/src/libFLAC/metadata_iterators.c
++++ b/src/libFLAC/metadata_iterators.c
+@@ -3489,15 +3489,9 @@ FLAC__bool get_file_stats_(const char *filename, struct flac_stat_s *stats)
+ 
+ void set_file_stats_(const char *filename, struct flac_stat_s *stats)
+ {
+-#if defined(_POSIX_C_SOURCE) && (_POSIX_C_SOURCE >= 200809L) && !defined(_WIN32)
+-	struct timespec srctime[2] = {};
+-	srctime[0].tv_sec = stats->st_atime;
+-	srctime[1].tv_sec = stats->st_mtime;
+-#else
+ 	struct utimbuf srctime;
+ 	srctime.actime = stats->st_atime;
+ 	srctime.modtime = stats->st_mtime;
+-#endif
+ 
+ 	FLAC__ASSERT(0 != filename);
+ 	FLAC__ASSERT(0 != stats);
+diff --git a/src/test_libFLAC++/metadata_manip.cpp b/src/test_libFLAC++/metadata_manip.cpp
+index 5d395dbd..ed9b32e2 100644
+--- a/src/test_libFLAC++/metadata_manip.cpp
++++ b/src/test_libFLAC++/metadata_manip.cpp
+@@ -272,15 +272,9 @@ void set_file_stats_(const char *filename, struct flac_stat_s *stats)
+ 	FLAC__ASSERT(0 != filename);
+ 	FLAC__ASSERT(0 != stats);
+ 
+-#if defined(_POSIX_C_SOURCE) && (_POSIX_C_SOURCE >= 200809L) && !defined(_WIN32)
+-	struct timespec srctime[2] = {};
+-	srctime[0].tv_sec = stats->st_atime;
+-	srctime[1].tv_sec = stats->st_mtime;
+-#else
+ 	struct utimbuf srctime;
+ 	srctime.actime = stats->st_atime;
+ 	srctime.modtime = stats->st_mtime;
+-#endif
+ 	(void)flac_chmod(filename, stats->st_mode);
+ 	(void)flac_utime(filename, &srctime);
+ #if !defined _MSC_VER && !defined __MINGW32__ && !defined __EMX__

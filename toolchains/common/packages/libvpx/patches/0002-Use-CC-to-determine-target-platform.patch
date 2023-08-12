@@ -1,4 +1,4 @@
-From 33981cf102f3a9b48ee70b87b54df40e42e31dd5 Mon Sep 17 00:00:00 2001
+From 3f6277e9a11adf21a05f92b10b6caca522ba7c12 Mon Sep 17 00:00:00 2001
 From: Le Philousophe <lephilousophe@users.noreply.github.com>
 Date: Sat, 11 Mar 2023 14:16:49 +0100
 Subject: [PATCH 2/3] Use CC to determine target platform
@@ -9,10 +9,10 @@ In this case, don't check link as it may not work on some platforms
  1 file changed, 4 insertions(+), 1 deletion(-)
 
 diff --git a/build/make/configure.sh b/build/make/configure.sh
-index e3f86654b..890be135b 100644
+index 0b04c82d2..12255b27c 100644
 --- a/build/make/configure.sh
 +++ b/build/make/configure.sh
-@@ -733,7 +733,10 @@ check_xcode_minimum_version() {
+@@ -747,7 +747,10 @@ check_xcode_minimum_version() {
  
  process_common_toolchain() {
    if [ -z "$toolchain" ]; then

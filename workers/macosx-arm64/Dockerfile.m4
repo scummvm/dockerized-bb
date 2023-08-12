@@ -1,6 +1,6 @@
 m4_define(`TOOLCHAIN',macosx-arm64)m4_dnl
 m4_dnl These settings must be kept in sync between toolchain and worker
-m4_define(`PPA_CLANG',-14)m4_dnl
+m4_define(`DEBIAN_CLANG',-14)m4_dnl
 m4_define(`MACOSX_SDK_VERSION',13.1)m4_dnl
 m4_define(`MACOSX_TARGET_ARCH',aarch64)m4_dnl
 m4_define(`MACOSX_TARGET_VERSION',22.2)m4_dnl

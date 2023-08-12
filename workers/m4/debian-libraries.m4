@@ -27,7 +27,7 @@ RUN apt-get update && \
 		libunity-dev`'APT_ARCH \
 		libvorbis-dev`'APT_ARCH \
 		libvpx-dev`'APT_ARCH \
-		libwxgtk3.0-gtk3-dev`'APT_ARCH \
+		libwxgtk3.2-dev`'APT_ARCH \
 		zlib1g-dev`'APT_ARCH \
                 && \
         rm -rf /var/lib/apt/lists/*

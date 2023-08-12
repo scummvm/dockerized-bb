@@ -68,7 +68,7 @@ helpers_package(zlib)
 
 helpers_package(libpng1.6)
 
-helpers_package(libjpeg-turbo, -DCMAKE_TOOLCHAIN_FILE="${GCCSDK_INSTALL_ENV}/toolchain-riscos.cmake" -DCMAKE_SYSTEM_PROCESSOR=arm)
+helpers_package(libjpeg-turbo, -DCMAKE_TOOLCHAIN_FILE="${GCCSDK_INSTALL_ENV}/toolchain-riscos.cmake" -DCMAKE_SYSTEM_PROCESSOR=arm -DWITH_SIMD=0)
 
 helpers_package(giflib)
 
@@ -82,6 +82,8 @@ helpers_package(libvorbisidec)
 
 helpers_package(libtheora)
 
+# Remove POSIX.1-2008 code which is incomplete (no utimensat)
+COPY packages/flac lib-helpers/packages/flac
 helpers_package(flac, --with-pic=no)
 
 helpers_package(libmikmod)
