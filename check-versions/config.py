@@ -255,6 +255,12 @@ VERSIONS = {
         'repository': 'https://github.com/libsdl-org/SDL_net.git',
         'branch': 'SDL-1.2',
     },
+    ('./toolchains/common/packages/sonivox/build.sh', 'SONIVOX'): {
+        'check': 'git tag',
+        'repository': 'https://github.com/pedrolcl/sonivox.git',
+        'prefix': 'v',
+        'exclude pattern': r'.*\.(beta|rc)\d+$'
+    },
 
     ('./toolchains/devkit3ds/packages/Project_CTR/build.sh', 'PROJECT_CTR'): {
         'check': 'git tag',

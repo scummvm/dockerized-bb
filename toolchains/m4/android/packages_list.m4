@@ -49,3 +49,5 @@ COPY --from=android-helpers /lib-helpers/packages/libsdl2-net lib-helpers/packag
 helpers_package(libsdl2-net)
 
 helpers_package(fluidlite, -DBIN_INSTALL_DIR=bin/\$TARGET/\$API -DLIB_INSTALL_DIR=lib/\$TARGET/\$API)
+
+helpers_package(sonivox)
