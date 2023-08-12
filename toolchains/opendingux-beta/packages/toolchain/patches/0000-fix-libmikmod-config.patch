@@ -1,0 +1,12 @@
+diff --git a/board/opendingux/package/libmikmod/libmikmod.mk b/board/opendingux/package/libmikmod/libmikmod.mk
+index 6b9530e75a..fae2324131 100644
+--- a/board/opendingux/package/libmikmod/libmikmod.mk
++++ b/board/opendingux/package/libmikmod/libmikmod.mk
+@@ -6,6 +6,7 @@
+ LIBMIKMOD_VERSION := 3.3.11.1
+ LIBMIKMOD_SITE := https://sourceforge.net/projects/mikmod/files/libmikmod/${LIBMIKMOD_VERSION}
+ LIBMIKMOD_INSTALL_STAGING = YES
++LIBMIKMOD_CONFIG_SCRIPTS = libmikmod-config
+ 
+ LIBMIKMOD_CONF_OPTS = --localstatedir=/var --disable-esd
+ 

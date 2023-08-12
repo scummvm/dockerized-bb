@@ -6,7 +6,7 @@ HELPERS_DIR=$PACKAGE_DIR/../..
 
 do_make_bdir
 
-do_lha_fetch graphics/libpng
+do_lha_fetch graphics/libpng "SDK"
 
 do_lha_install
 

@@ -272,12 +272,16 @@ VERSIONS = {
         'check': 'docker tag',
         'registry': 'https://registry-1.docker.io',
         'image name': 'devkitpro/devkitarm',
+        'architecture': 'amd64',
+        'reference': 'latest',
     },
 
     ('./toolchains/devkitppc/Dockerfile.m4', 'DEVKITPPC'): {
         'check': 'docker tag',
         'registry': 'https://registry-1.docker.io',
         'image name': 'devkitpro/devkitppc',
+        'architecture': 'amd64',
+        'reference': 'latest',
     },
     ('./toolchains/devkitppc/packages/libgxflux/build.sh', 'GXFLUX'): {
         'check': 'git commit',
@@ -289,6 +293,8 @@ VERSIONS = {
         'check': 'docker tag',
         'registry': 'https://registry-1.docker.io',
         'image name': 'devkitpro/devkita64',
+        'architecture': 'amd64',
+        'reference': 'latest',
     },
 
     ('./toolchains/dreamcast/packages/libronin/build.sh', 'LIBRONIN'): {
@@ -465,7 +471,7 @@ VERSIONS = {
     ('./toolchains/psp/packages/toolchain/build.sh', 'NEWLIB'): {
         'check': 'git commit',
         'repository': 'https://github.com/pspdev/newlib.git',
-        'branch': 'allegrex-v4.1.0',
+        'branch': 'allegrex-v4.3.0',
     },
     ('./toolchains/psp/packages/toolchain/build.sh', 'PTHREAD_EMBEDDED'): {
         'check': 'git commit',
