@@ -3,6 +3,7 @@ BUILDBOT_BASEDIR   := buildbot-workdir
 
 BOTTLE_VERSION     := 0.12.25
 TREQ_VERSION       := 22.2.0
+DOCKER_PY_VERSION  := 6.1.3
 
 # Without toolchains/ part, all is a placeholder for all detected toolchains
 TOOLCHAINS_ENABLED := all
@@ -144,6 +145,7 @@ $(BUILDDIR)/buildbot_installed: Makefile | $(BUILDDIR)
 	pip install 'buildbot[bundle]==$(BUILDBOT_VERSION)' \
 		'buildbot-wsgi-dashboards==$(BUILDBOT_VERSION)' \
 		'treq==$(TREQ_VERSION)' \
+		'docker==$(DOCKER_PY_VERSION)' \
 		'bottle==$(BOTTLE_VERSION)'
 	touch $(BUILDDIR)/buildbot_installed
 

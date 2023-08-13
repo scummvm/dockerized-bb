@@ -129,6 +129,12 @@ VERSIONS = {
         'prefix': 'release-',
         'exclude pattern': r'.*(b|rc).*'
     },
+    ('./Makefile', 'DOCKER_PY'): {
+        'check': 'git tag',
+        'repository': 'https://github.com/docker/docker-py.git',
+        'pattern': r'[0-9]',
+        'exclude pattern': r'.*(b|rc).*'
+    },
 
     ('./toolchains/m4/debian-toolchain-base.m4', 'DEBIAN'): debian_check,
 
