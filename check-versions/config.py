@@ -4,7 +4,7 @@ import ssl
 TLSv1_CONTEXT = ssl.create_default_context()
 try:
     TLSv1_CONTEXT.minimum_version = ssl.TLSVersion.TLSv1
-    TLSv1_CONTEXT.set_ciphers("EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH:@SECLEVEL=1")
+    TLSv1_CONTEXT.set_ciphers("DEFAULT@SECLEVEL=0")
 except AttributeError:
     # Too old python won't have TLSVersion, let's hope it will allow TLSv1.0
     pass
