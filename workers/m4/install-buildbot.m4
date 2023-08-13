@@ -1,16 +1,13 @@
 m4_ifdef(`BASE_ALPINE',
 RUN apk add --no-cache \
 	dumb-init \
-	py3-future \
-	py3-pip \
-	py3-twisted
+	py3-wheel
 , m4_ifdef(`BASE_DEBIAN',
 RUN apt-get update && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 		dumb-init \
-		python3-future \
-		python3-pip \
-		python3-twisted \
+		python3-venv \
+		python3-wheel \
                 && \
         rm -rf /var/lib/apt/lists/*
 , ``fatal_error(No base defined)''))m4_dnl
@@ -18,7 +15,9 @@ RUN apt-get update && \
 ARG BUILDBOT_VERSION
 LABEL buildbot-version=${BUILDBOT_VERSION}
 
-RUN pip3 --no-cache-dir install --break-system-packages \
+# Setup a virtual env and install buildbot worker in it
+RUN python3 -m venv --system-site-packages /opt/buildbot && \
+	/opt/buildbot/bin/python3 -m pip --no-cache-dir install \
 		buildbot-worker==${BUILDBOT_VERSION}
 
 ARG BUILDBOT_UID=1000
