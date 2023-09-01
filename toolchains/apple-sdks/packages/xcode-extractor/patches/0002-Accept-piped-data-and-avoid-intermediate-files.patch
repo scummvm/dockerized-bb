@@ -1,22 +1,154 @@
-From f1e52d8e52d90a2545caaf51067197bbd2f0a2fb Mon Sep 17 00:00:00 2001
+From 4902378892b2e0039d9e06a3c9e485fc2c26c7ca Mon Sep 17 00:00:00 2001
 From: Le Philousophe <lephilousophe@users.noreply.github.com>
 Date: Sun, 24 Jan 2021 19:18:24 +0100
 Subject: [PATCH 2/3] Accept piped data and avoid intermediate files
 
 ---
- tools/gen_sdk_package_pbzx.sh | 193 +++++++++++++++++++++++++++++++++-
- tools/tools.sh                | 105 ++++++++++++++++++
+ tools/gen_sdk_package_pbzx.sh |   7 +-
+ tools/tools.sh                | 291 ++++++++++++++++++++++++++++++++++
  2 files changed, 295 insertions(+), 3 deletions(-)
 
 diff --git a/tools/gen_sdk_package_pbzx.sh b/tools/gen_sdk_package_pbzx.sh
-index 7cda817..c4e88d5 100755
+index cc6a742..e2bb3e3 100755
 --- a/tools/gen_sdk_package_pbzx.sh
 +++ b/tools/gen_sdk_package_pbzx.sh
-@@ -23,6 +23,192 @@ pushd $BUILD_DIR &>/dev/null
- build_xar
+@@ -29,11 +29,12 @@ pushd $TMP_DIR &>/dev/null
  
- get_sources https://github.com/tpoechtrager/pbzx.git $PBZX_VERSION
-+patch -d "$CURRENT_BUILD_PROJECT_NAME" -p1 <<-'EOF'
+ echo "Extracting $XCODE (this may take several minutes) ..."
+ 
+-LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$TARGET_DIR/lib \
+-  verbose_cmd "$TARGET_DIR/bin/xar -xf $XCODE -C $TMP_DIR"
++set -o pipefail
+ 
+ LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$TARGET_DIR/lib \
+-  verbose_cmd "$TARGET_DIR/SDK/tools/bin/pbzx -n Content | cpio -i"
++  verbose_cmd "$TARGET_DIR/SDK/tools/bin/pbzx -i $XCODE | cpio -i"
++
++set +o pipefail
+ 
+ popd &>/dev/null # TMP_DIR
+ popd &>/dev/null # BUILD_DIR
+diff --git a/tools/tools.sh b/tools/tools.sh
+index a75b5e9..3235381 100644
+--- a/tools/tools.sh
++++ b/tools/tools.sh
+@@ -513,6 +513,111 @@ function build_xar()
+   pushd $BUILD_DIR &>/dev/null
+ 
+   get_sources https://github.com/tpoechtrager/xar.git $XAR_VERSION
++  patch -d "$CURRENT_BUILD_PROJECT_NAME" -p1 <<-'EOF'
++commit 9047e5820c2a65829100f183dae342700d5cf604
++Author: Le Philousophe <lephilousophe@users.noreply.github.com>
++Date:   Sun Jan 24 17:22:23 2021 +0100
++
++    Allow stdin to be used
++
++diff --git a/xar/lib/archive.c b/xar/lib/archive.c
++index adbe79b..b274965 100644
++--- a/xar/lib/archive.c
+++++ b/xar/lib/archive.c
++@@ -39,6 +39,7 @@
++ #define _FILE_OFFSET_BITS 64
++ 
++ #include "config.h"
+++#include <assert.h>
++ #include <stdlib.h>
++ #include <stdio.h>
++ #include <string.h>
++@@ -193,11 +194,22 @@ static int32_t xar_parse_header(xar_t x) {
++ 	}
++ 
++ 	off = XAR(x)->header.size - sz2read;
++-	if( off > 0 )
+++	if( off > 0 ) {
++ 		r = (int)lseek(XAR(x)->fd, (off_t)off, SEEK_CUR);
++ 
++-	if ( (r == -1) && (errno != ESPIPE) ) {
++-		/* Some fatal error here perhaps? */
+++		if (r == -1) {
+++			if ( errno == ESPIPE ) {
+++				void *buf = malloc(off);
+++				assert(buf);
+++				r = xar_read_fd(XAR(x)->fd, buf, off);
+++				free(buf);
+++				if( r < (ssize_t)off ) {
+++					return -1;
+++				}
+++			} else {
+++				return -1; /* Failed to seek */
+++			}
+++		}
++ 	}
++ 
++ 	return 0;
++@@ -405,8 +417,32 @@ xar_t xar_open(const char *file, int32_t flags) {
++ 
++ 		XAR(ret)->heap_offset = (off_t)(xar_get_heap_offset(ret) + offset);
++ 		if( lseek(XAR(ret)->fd, XAR(ret)->heap_offset, SEEK_SET) == -1 ) {
++-			xar_close(ret);
++-			return NULL;
+++			if ( errno == ESPIPE ) {
+++				/* Calculate where we are */
+++				size_t current = XAR(ret)->header.size + XAR(ret)->toc_count;
+++				size_t toread = XAR(ret)->heap_offset - current;
+++				void *buf;
+++				ssize_t r;
+++				if ( XAR(ret)->heap_offset < current) {
+++					/* Can't seek backwards */
+++					fprintf(stderr, "Trying to seek backward\n");
+++					xar_close(ret);
+++					return NULL;
+++				}
+++				if (toread) {
+++					buf = malloc(toread);
+++					assert(buf);
+++					r = xar_read_fd(XAR(ret)->fd, buf, toread);
+++					free(buf);
+++					if( r < (ssize_t)toread ) {
+++						xar_close(ret);
+++						return NULL;
+++					}
+++				}
+++			} else {
+++				xar_close(ret);
+++				return NULL;
+++			}
++ 		}
++ 		if( xar_prop_get( XAR_FILE(ret) , "checksum/size", &value) == 0 ) {
++ 			errno = 0;
++diff --git a/xar/lib/io.c b/xar/lib/io.c
++index c1115f3..768f0fb 100644
++--- a/xar/lib/io.c
+++++ b/xar/lib/io.c
++@@ -191,16 +191,16 @@ static void xar_io_seek(xar_t x, xar_file_t f, off_t seekoff) {
++ 			if( errno == ESPIPE ) {
++ 				ssize_t rr;
++ 				char *buf;
++-				unsigned int len;
+++				size_t len;
++ 
++-				len = (unsigned)(seekoff - (off_t)xar_get_heap_offset(x));
+++				len = (size_t)seekoff;
++ 				if( XAR(x)->heap_offset > len ) {
++ 					xar_err_new(x);
++ 					xar_err_set_file(x, f);
++ 					xar_err_set_string(x, "Unable to seek");
++ 					xar_err_callback(x, XAR_SEVERITY_NONFATAL, XAR_ERR_ARCHIVE_EXTRACTION);
++ 				} else {
++-					len -= (unsigned)XAR(x)->heap_offset;
+++					len -= (size_t)XAR(x)->heap_offset;
++ 					buf = malloc(len);
++ 					assert(buf);
++ 					rr = xar_read_fd(XAR(x)->fd, buf, len);
++EOF
+ 
+   if [ $f_res -eq 1 ]; then
+     pushd $CURRENT_BUILD_PROJECT_NAME/xar &>/dev/null
+@@ -553,6 +658,192 @@ function build_p7zip()
+ function build_pbxz()
+ {
+   get_sources https://github.com/tpoechtrager/pbzx.git $PBZX_VERSION
++  patch -d "$CURRENT_BUILD_PROJECT_NAME" -p1 <<-'EOF'
 +commit 3fc6a63b1489c18150cd171f8901d15269a79ea2
 +Author: Le Philousophe <lephilousophe@users.noreply.github.com>
 +Date:   Sun Jan 24 19:06:57 2021 +0100
@@ -203,140 +335,8 @@ index 7cda817..c4e88d5 100755
 +         return 1;
 +EOF
  
- if [ $f_res -eq 1 ]; then
-   pushd $CURRENT_BUILD_PROJECT_NAME &>/dev/null
-@@ -41,11 +227,12 @@ pushd $TMP_DIR &>/dev/null
- 
- echo "Extracting $XCODE (this may take several minutes) ..."
- 
--LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$TARGET_DIR/lib \
--  verbose_cmd "$TARGET_DIR/bin/xar -xf $XCODE -C $TMP_DIR"
-+set -o pipefail
- 
- LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$TARGET_DIR/lib \
--  verbose_cmd "$TARGET_DIR/SDK/tools/bin/pbzx -n Content | cpio -i"
-+  verbose_cmd "$TARGET_DIR/SDK/tools/bin/pbzx -i $XCODE | cpio -i"
-+
-+set +o pipefail
- 
- popd &>/dev/null # TMP_DIR
- popd &>/dev/null # BUILD_DIR
-diff --git a/tools/tools.sh b/tools/tools.sh
-index cf0d370..9d61a6a 100644
---- a/tools/tools.sh
-+++ b/tools/tools.sh
-@@ -482,6 +482,111 @@ function build_xar()
-   pushd $BUILD_DIR &>/dev/null
- 
-   get_sources https://github.com/tpoechtrager/xar.git $XAR_VERSION
-+  patch -d "$CURRENT_BUILD_PROJECT_NAME" -p1 <<-'EOF'
-+commit 9047e5820c2a65829100f183dae342700d5cf604
-+Author: Le Philousophe <lephilousophe@users.noreply.github.com>
-+Date:   Sun Jan 24 17:22:23 2021 +0100
-+
-+    Allow stdin to be used
-+
-+diff --git a/xar/lib/archive.c b/xar/lib/archive.c
-+index adbe79b..b274965 100644
-+--- a/xar/lib/archive.c
-++++ b/xar/lib/archive.c
-+@@ -39,6 +39,7 @@
-+ #define _FILE_OFFSET_BITS 64
-+ 
-+ #include "config.h"
-++#include <assert.h>
-+ #include <stdlib.h>
-+ #include <stdio.h>
-+ #include <string.h>
-+@@ -193,11 +194,22 @@ static int32_t xar_parse_header(xar_t x) {
-+ 	}
-+ 
-+ 	off = XAR(x)->header.size - sz2read;
-+-	if( off > 0 )
-++	if( off > 0 ) {
-+ 		r = (int)lseek(XAR(x)->fd, (off_t)off, SEEK_CUR);
-+ 
-+-	if ( (r == -1) && (errno != ESPIPE) ) {
-+-		/* Some fatal error here perhaps? */
-++		if (r == -1) {
-++			if ( errno == ESPIPE ) {
-++				void *buf = malloc(off);
-++				assert(buf);
-++				r = xar_read_fd(XAR(x)->fd, buf, off);
-++				free(buf);
-++				if( r < (ssize_t)off ) {
-++					return -1;
-++				}
-++			} else {
-++				return -1; /* Failed to seek */
-++			}
-++		}
-+ 	}
-+ 
-+ 	return 0;
-+@@ -405,8 +417,32 @@ xar_t xar_open(const char *file, int32_t flags) {
-+ 
-+ 		XAR(ret)->heap_offset = (off_t)(xar_get_heap_offset(ret) + offset);
-+ 		if( lseek(XAR(ret)->fd, XAR(ret)->heap_offset, SEEK_SET) == -1 ) {
-+-			xar_close(ret);
-+-			return NULL;
-++			if ( errno == ESPIPE ) {
-++				/* Calculate where we are */
-++				size_t current = XAR(ret)->header.size + XAR(ret)->toc_count;
-++				size_t toread = XAR(ret)->heap_offset - current;
-++				void *buf;
-++				ssize_t r;
-++				if ( XAR(ret)->heap_offset < current) {
-++					/* Can't seek backwards */
-++					fprintf(stderr, "Trying to seek backward\n");
-++					xar_close(ret);
-++					return NULL;
-++				}
-++				if (toread) {
-++					buf = malloc(toread);
-++					assert(buf);
-++					r = xar_read_fd(XAR(ret)->fd, buf, toread);
-++					free(buf);
-++					if( r < (ssize_t)toread ) {
-++						xar_close(ret);
-++						return NULL;
-++					}
-++				}
-++			} else {
-++				xar_close(ret);
-++				return NULL;
-++			}
-+ 		}
-+ 		if( xar_prop_get( XAR_FILE(ret) , "checksum/size", &value) == 0 ) {
-+ 			errno = 0;
-+diff --git a/xar/lib/io.c b/xar/lib/io.c
-+index c1115f3..768f0fb 100644
-+--- a/xar/lib/io.c
-++++ b/xar/lib/io.c
-+@@ -191,16 +191,16 @@ static void xar_io_seek(xar_t x, xar_file_t f, off_t seekoff) {
-+ 			if( errno == ESPIPE ) {
-+ 				ssize_t rr;
-+ 				char *buf;
-+-				unsigned int len;
-++				size_t len;
-+ 
-+-				len = (unsigned)(seekoff - (off_t)xar_get_heap_offset(x));
-++				len = (size_t)seekoff;
-+ 				if( XAR(x)->heap_offset > len ) {
-+ 					xar_err_new(x);
-+ 					xar_err_set_file(x, f);
-+ 					xar_err_set_string(x, "Unable to seek");
-+ 					xar_err_callback(x, XAR_SEVERITY_NONFATAL, XAR_ERR_ARCHIVE_EXTRACTION);
-+ 				} else {
-+-					len -= (unsigned)XAR(x)->heap_offset;
-++					len -= (size_t)XAR(x)->heap_offset;
-+ 					buf = malloc(len);
-+ 					assert(buf);
-+ 					rr = xar_read_fd(XAR(x)->fd, buf, len);
-+EOF
- 
    if [ $f_res -eq 1 ]; then
-     pushd $CURRENT_BUILD_PROJECT_NAME/xar &>/dev/null
+     pushd $CURRENT_BUILD_PROJECT_NAME &>/dev/null
 -- 
-2.34.1
+2.39.2
 

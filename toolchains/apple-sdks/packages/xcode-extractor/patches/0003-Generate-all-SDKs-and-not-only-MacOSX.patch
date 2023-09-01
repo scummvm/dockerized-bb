@@ -1,4 +1,4 @@
-From 4cfc77163a7e330e95b793004e51c14890f8daf7 Mon Sep 17 00:00:00 2001
+From 8ed1c630ea783dc99be83eb0e7edc4d1cb45688d Mon Sep 17 00:00:00 2001
 From: Le Philousophe <lephilousophe@users.noreply.github.com>
 Date: Sun, 24 Jan 2021 19:19:14 +0100
 Subject: [PATCH 3/3] Generate all SDKs and not only MacOSX
@@ -8,30 +8,30 @@ Subject: [PATCH 3/3] Generate all SDKs and not only MacOSX
  1 file changed, 7 insertions(+), 6 deletions(-)
 
 diff --git a/tools/gen_sdk_package.sh b/tools/gen_sdk_package.sh
-index b41d08c..a5ed371 100755
+index f29faec..d554c9d 100755
 --- a/tools/gen_sdk_package.sh
 +++ b/tools/gen_sdk_package.sh
-@@ -124,8 +124,8 @@ set -e
+@@ -127,8 +127,8 @@ if [ -z "$XCODE_TOOLS" ]; then
  
- pushd "$XCODEDIR" &>/dev/null
+   pushd "$XCODEDIR" &>/dev/null
  
--if [ -d "Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs" ]; then
--  pushd "Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs" &>/dev/null
-+if [ -d "Contents/Developer/Platforms" ]; then
-+  pushd "Contents/Developer/Platforms" &>/dev/null
- else
-   if [ -d "../Packages" ]; then
-     pushd "../Packages" &>/dev/null
-@@ -148,7 +148,7 @@ else
-   fi
+-  if [ -d "Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs" ]; then
+-    pushd "Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs" &>/dev/null
++  if [ -d "Contents/Developer/Platforms" ]; then
++    pushd "Contents/Developer/Platforms" &>/dev/null
+   else
+     if [ -d "../Packages" ]; then
+       pushd "../Packages" &>/dev/null
+@@ -191,7 +191,7 @@ else
+ 
  fi
  
--SDKS=$(ls | grep -E "^MacOSX13.*|^MacOSX12.*|^MacOSX11.*|^MacOSX10.*" | grep -v "Patch")
+-SDKS=$(ls | grep -E "^MacOSX14.*|^MacOSX13.*|^MacOSX12.*|^MacOSX11.*|^MacOSX10.*" | grep -v "Patch")
 +SDKS=$(for platform in $SDK_PLATFORMS; do ls -1d ${platform}.platform/Developer/SDKs/*.*.sdk | grep -v 'Patch'; done)
  
  if [ -z "$SDKS" ]; then
-     echo "No SDK found" 1>&2
-@@ -164,7 +164,8 @@ LIBCXXDIR2="Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c
+   echo "No SDK found" 1>&2
+@@ -210,7 +210,8 @@ LIBCXXDIR3="usr/include/c++/v1"
  # Manual directory
  MANDIR="Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/share/man"
  
@@ -41,7 +41,7 @@ index b41d08c..a5ed371 100755
    echo -n "packaging $(echo "$SDK" | sed -E "s/(.sdk|.pkg)//g") SDK "
    echo "(this may take several minutes) ..."
  
-@@ -174,7 +175,7 @@ for SDK in $SDKS; do
+@@ -220,7 +221,7 @@ for SDK in $SDKS; do
    fi
  
    TMP=$(mktemp -d /tmp/XXXXXXXXXXX)
@@ -50,12 +50,12 @@ index b41d08c..a5ed371 100755
  
    pushd "$XCODEDIR" &>/dev/null
  
-@@ -205,4 +206,4 @@ popd &>/dev/null
+@@ -255,4 +256,4 @@ popd &>/dev/null
  popd &>/dev/null
  
  echo ""
 -ls -lh | grep MacOSX
 +ls -lh *.*.sdk.*
 -- 
-2.34.1
+2.39.2
 
