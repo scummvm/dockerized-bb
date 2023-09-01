@@ -76,8 +76,8 @@ github_avatars = True
 #ht_auth_admins = ['username']
 
 # UI settings
-project_name = "ScummVM"
-project_url = "https://scummvm.org/"
+title = "ScummVM"
+title_url = "https://scummvm.org/"
 # Where web server must listen
 www_port = ("127.0.0.1", 8010)
 # URL used to reach Buildbot instance
