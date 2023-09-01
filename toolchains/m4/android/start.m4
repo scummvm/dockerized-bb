@@ -19,11 +19,13 @@ COPY --from=android-helpers /lib-helpers/functions-platform.sh \
 # nasm is used for x86 ScummVM
 # Create man directories to please openjdk which expects them
 # cf. https://github.com/debuerreotype/debuerreotype/issues/10
+# python3-protobuf is needed to generate DLC packs
 RUN for i in $(seq 1 8); do mkdir -p "/usr/share/man/man${i}"; done && \
 	apt-get update && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 		default-jre-headless \
-		nasm && \
+		nasm \
+		python3-protobuf && \
 	rm -rf /var/lib/apt/lists/*
 
 # Copy functions-sdk.sh after because it contains version information
