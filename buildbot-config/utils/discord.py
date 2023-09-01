@@ -152,8 +152,6 @@ class DiscordStatusPush(ReporterBase):
 
         yield super().reconfigService(generators=generators, **kwargs)
 
-        print([r.filter for r in self._event_consumers])
-
         self._http = yield httpclientservice.HTTPClientService.getService(
             self.master, webhook_url,
             debug=debug, verify=verify)
