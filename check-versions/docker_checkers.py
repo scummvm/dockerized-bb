@@ -113,8 +113,10 @@ def parse_fat_manifest(reply, **kwargs):
     if manifest_l.get('schemaVersion', None) != 2:
         raise Exception("Invalid manifest version {1} for {0}".format(reply.url, manifest_l.get('schemaVersion', None)))
 
-    if manifest_l.get('mediaType', None) != 'application/vnd.docker.distribution.manifest.list.v2+json':
-        raise Exception("Invalid manifest mediaType {1} for {0}".format(reply.url, manifest_l.get('mediaType', None)))
+    mediaType = manifest_l.get('mediaType', None)
+    if (mediaType != 'application/vnd.docker.distribution.manifest.list.v2+json' and
+        mediaType != 'application/vnd.oci.image.index.v1+json'):
+        raise Exception("Invalid manifest mediaType {1} for {0}".format(reply.url, mediaType))
 
     platforms = ((i, manifest['platform']) for i, manifest in enumerate(manifest_l['manifests']))
     for name, value in kwargs.items():
@@ -153,7 +155,8 @@ def _fetch_digest(registry, image_name, reference, *, full=False, token=None, **
     try:
         with urlr.urlopen(req) as reply:
             content_type = reply.getheader('Content-Type')
-            if content_type == 'application/vnd.docker.distribution.manifest.list.v2+json':
+            if (content_type == 'application/vnd.docker.distribution.manifest.list.v2+json' or
+                content_type == 'application/vnd.oci.image.index.v1+json'):
                 # For manifest list we really need the content
                 if full:
                     digest = parse_fat_manifest(reply, **kwargs)
