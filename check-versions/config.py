@@ -1,14 +1,5 @@
 import ssl
 
-# saurik's ldid uses outdated TLSv1.0...
-TLSv1_CONTEXT = ssl.create_default_context()
-try:
-    TLSv1_CONTEXT.minimum_version = ssl.TLSVersion.TLSv1
-    TLSv1_CONTEXT.set_ciphers("DEFAULT@SECLEVEL=0")
-except AttributeError:
-    # Too old python won't have TLSVersion, let's hope it will allow TLSv1.0
-    pass
-
 __all__ = ["PATHS", "FILE_PATTERNS", "VERSIONS_REGEXPS", "VERSIONS"]
 
 # This is the root of all paths in this configuration file
@@ -182,8 +173,9 @@ VERSIONS = {
     ('./toolchains/apple-common/packages/ldid/build.sh', 'LDID'): {
         # For MacOSX we need upstream ldid with latest MacOS support
         'check': 'git tag',
-        'repository': 'https://git.saurik.com/ldid.git',
-        'context': TLSv1_CONTEXT,
+        'repository': 'https://github.com/ProcursusTeam/ldid.git',
+        # Only keep unpatched releases
+        'exclude pattern': r'.*-procursus\d*$',
         'prefix': 'v',
     },
     ('./toolchains/apple-common/packages/sparkle/build.sh', 'SPARKLE'): {

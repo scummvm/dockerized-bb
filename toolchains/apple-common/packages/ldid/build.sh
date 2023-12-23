@@ -8,7 +8,7 @@ HELPERS_DIR=$PACKAGE_DIR/../..
 
 do_make_bdir
 
-do_git_fetch osxcross "https://git.saurik.com/ldid.git" "v${LDID_VERSION}"
+do_git_fetch osxcross "https://github.com/ProcursusTeam/ldid.git" "v${LDID_VERSION}"
 
 # Build libplist
 cd libplist
