@@ -35,6 +35,7 @@ ENV \
 	def_binaries(`${MINGW32}/bin/${HOST}-', `ar, as, c++filt, ld, nm, objcopy, objdump, ranlib, readelf, strings, strip') \
 	def_binaries(`${MINGW32}/bin/${HOST}-', `gcc, cpp, c++') \
 	CC=${MINGW32}/bin/${HOST}-gcc \
+	CPPFLAGS="-D_WIN32_WINNT=0x400" \
 	def_aclocal(`${PREFIX}') \
 	def_pkg_config(`${PREFIX}') \
 	PATH=$PATH:${MINGW32}/bin:${MINGW32}/${HOST}/bin
