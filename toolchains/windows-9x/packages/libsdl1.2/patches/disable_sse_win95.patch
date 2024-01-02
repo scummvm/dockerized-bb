@@ -1,0 +1,51 @@
+commit 79c3b0dc5e594e2e128ac96fd041a1e172d1888a
+Author: Le Philousophe <lephilousophe@users.noreply.github.com>
+Date:   Mon Jan 1 12:50:49 2024 +0100
+
+    cpuinfo: disable SSE(2) on Windows 95
+    
+    This is not supported by the OS
+
+diff --git a/src/cpuinfo/SDL_cpuinfo.c b/src/cpuinfo/SDL_cpuinfo.c
+index b902704f..3e895545 100644
+--- a/src/cpuinfo/SDL_cpuinfo.c
++++ b/src/cpuinfo/SDL_cpuinfo.c
+@@ -26,6 +26,11 @@
+ #include "SDL.h"
+ #include "SDL_cpuinfo.h"
+ 
++#if defined(__WIN32__) && !defined(_WIN32_WCE) && !defined(__SYMBIAN32__)
++#define WIN32_LEAN_AND_MEAN
++#include <windows.h> /* For Win95 check */
++#endif
++
+ #if defined(__MACOSX__) && (defined(__ppc__) || defined(__ppc64__))
+ #include <sys/sysctl.h> /* For AltiVec check */
+ #elif defined(__OpenBSD__) && defined(__powerpc__)
+@@ -591,10 +596,24 @@ static Uint32 SDL_GetCPUFeatures(void)
+ 		if ( CPU_have3DNowExt() ) {
+ 			SDL_CPUFeatures |= CPU_HAS_3DNOWEXT;
+ 		}
+-		if ( CPU_haveSSE() ) {
++#if defined(__WIN32__) && !defined(_WIN32_WCE) && !defined(__SYMBIAN32__)
++		OSVERSIONINFO versionInfo;
++		memset(&versionInfo, 0, sizeof(versionInfo));
++		versionInfo.dwOSVersionInfoSize = sizeof(versionInfo);
++		GetVersionEx(&versionInfo);
++
++		int osSupportsSSE = 1;
++		// Is Win95?
++		if (versionInfo.dwMajorVersion == 4 && versionInfo.dwMinorVersion == 0) {
++			osSupportsSSE = 0;
++		}
++#else
++		const int osSupportsSSE = 1;
++#endif
++		if ( osSupportsSSE && CPU_haveSSE() ) {
+ 			SDL_CPUFeatures |= CPU_HAS_SSE;
+ 		}
+-		if ( CPU_haveSSE2() ) {
++		if ( osSupportsSSE && CPU_haveSSE2() ) {
+ 			SDL_CPUFeatures |= CPU_HAS_SSE2;
+ 		}
+ 		if ( CPU_haveAltiVec() ) {

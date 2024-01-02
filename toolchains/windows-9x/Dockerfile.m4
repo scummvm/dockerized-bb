@@ -90,6 +90,7 @@ helpers_package(libiconv)
 
 local_package(directx)
 
+COPY packages/libsdl1.2 lib-helpers/packages/libsdl1.2/
 helpers_package(libsdl1.2)
 RUN ln -s ${PREFIX}/bin/sdl-config ${PREFIX}/../bin/${HOST}-sdl-config
 
