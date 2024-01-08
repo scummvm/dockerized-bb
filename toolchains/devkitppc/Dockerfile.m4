@@ -1,5 +1,5 @@
-m4_define(`DEVKITPPC_VERSION',20230929)
-# This version of devkitPPC depends on a Debian Buster
+m4_define(`DEVKITPPC_VERSION',20231110)
+# This version of devkitPPC depends on a Debian Bullseye
 # For now it works with our version, we will have to ensure it stays like that
 FROM devkitpro/devkitppc:DEVKITPPC_VERSION AS original-toolchain
 

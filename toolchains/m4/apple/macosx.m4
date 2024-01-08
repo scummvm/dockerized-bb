@@ -114,7 +114,8 @@ ports_package(libjpeg-turbo)
 # giflib5 in ports is installed in subdirectory not standard
 helpers_package(giflib)
 
-ports_package(faad2)
+# Ports package is not static anymore (since faad 2.11) due to build system change in upstream
+helpers_package(faad2)
 
 ports_package(libmad)
 

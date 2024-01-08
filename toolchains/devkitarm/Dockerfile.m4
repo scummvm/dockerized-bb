@@ -1,5 +1,5 @@
 m4_define(`DEVKITARM_VERSION',20230928)
-# This version of devkitARM depends on a Debian Buster
+# This version of devkitARM depends on a Debian Bullseye
 # For now it works with our version, we will have to ensure it stays like that
 FROM devkitpro/devkitarm:DEVKITARM_VERSION AS original-toolchain
 

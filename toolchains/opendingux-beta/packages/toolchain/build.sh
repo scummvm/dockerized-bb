@@ -1,6 +1,6 @@
 #! /bin/sh
 
-TOOLCHAIN_VERSION=5f2f74a354d15fc25642a4eaaf07f2d5c6400810
+TOOLCHAIN_VERSION=35b8988ec1032eadf32edb45ac3d396c4dd8b159
 TARGETS="gcw0 rs90 lepus"
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
@@ -20,6 +20,7 @@ NICEOPTS="-n0"
 
 # We will cleanup defconfig to have a small build just enough for us
 WHITELIST=$(cat <<-"EOF"
+	HOST_LINUX_HEADERS_CUSTOM.*
 	BUSYBOX.*
 	FLAC
 	FLUIDSYNTH
