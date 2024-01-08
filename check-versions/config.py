@@ -182,7 +182,8 @@ VERSIONS = {
         'check': 'git tag',
         'repository': 'https://github.com/sparkle-project/Sparkle.git',
         # Only keep vanilla releases
-        'pattern': r'^1\.[0-9.]+$',
+        'pattern': r'^[1-9]\.',
+        'exclude pattern': r'.*-(beta|rc)\.\d+$',
     },
     ('./toolchains/apple-common/packages/xar/build.sh', 'XAR'): xar_check,
 
