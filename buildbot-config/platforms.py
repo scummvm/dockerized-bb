@@ -868,7 +868,8 @@ def win9x():
 
     platform.configureargs.append("--host=mingw32")
     platform.buildconfigureargs = {
-        builds.ScummVMBuild: [ "--disable-windows-unicode" ],
+        # Disable ENet to not depend on ws2_32.dll which isn't here on vanilla Win95
+        builds.ScummVMBuild: [ "--disable-windows-unicode", "--disable-enet" ],
     }
     platform.packaging_cmd = {
         builds.ScummVMBuild: ["win32dist-mingw", "DESTDIR=win32dist-mingw"],
