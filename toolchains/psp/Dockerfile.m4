@@ -37,6 +37,7 @@ RUN apt-get update && \
 		python3-pip \
 		python3-venv \
 		texinfo \
+		zip \
 		unzip \
 		wget && \
 	dpkg-divert --package dash --no-rename --remove /bin/sh && \
