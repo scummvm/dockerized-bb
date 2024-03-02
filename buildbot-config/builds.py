@@ -33,10 +33,26 @@ shutil.copyfile(os.path.join(config.configuration_dir, "ccache.conf"),
     os.path.join(config.data_dir, "ccache", "ccache.conf"))
 
 class Build:
-    __slots__ = ['name']
+    __slots__ = ['name', 'description_']
 
-    def __init__(self, name):
+    def __init__(self, name, *, description = None):
         self.name = name
+        self.description_ = description
+
+    @property
+    def description(self):
+        return self.description_ or self.name
+
+    @description.setter
+    def description(self, value):
+        self.description_ = value
+
+    def getProject(self):
+        return util.Project(
+                name = self.name,
+                description = self.description_,
+                description_format = None,
+                slug = self.name)
 
     def getChangeSource(self, settings):
         raise NotImplementedError
@@ -61,7 +77,6 @@ class StandardBuild(Build):
         'baseurl', 'giturl', 'branch',
         'daily', 'enable_force',
         'verbose_build',
-        'description_',
         'lock_src']
 
     PATCHES = []
@@ -73,7 +88,7 @@ class StandardBuild(Build):
     def __init__(self, name, baseurl, branch, *,
             daily = None, enable_force = True, giturl = None,
             verbose_build = False, description = None):
-        super().__init__(name)
+        super().__init__(name, description = description)
         if giturl is None:
             giturl = baseurl + ".git"
         self.baseurl = baseurl
@@ -82,7 +97,6 @@ class StandardBuild(Build):
         self.daily = daily
         self.enable_force = enable_force
         self.verbose_build = verbose_build
-        self.description_ = description
 
         if self.CONFIGURE_GENERATED_FILE is None:
             raise Exception("Invalid CONFIGURE_GENERATED_FILE setting")
@@ -123,14 +137,6 @@ class StandardBuild(Build):
                 return builder_platform.format(platforms.name)
 
         self.names['bld-platform'] = get_platform_name
-
-    @property
-    def description(self):
-        return self.description_ or self.name
-
-    @description.setter
-    def description(self, value):
-        self.description_ = value
 
     def getChangeSource(self, settings):
         return changes.GitPoller(
@@ -241,6 +247,7 @@ class StandardBuild(Build):
             workerbuilddir = "/data/src/{0}".format(self.name),
             factory = f,
             tags = ["fetch", self.name],
+            project = self.name,
             locks = [ lock_build.access('counting') ],
         )
 
@@ -264,6 +271,7 @@ class StandardBuild(Build):
                 workerbuilddir = "/data/triggers/daily-{0}".format(self.name),
                 factory = f,
                 tags = ["daily", self.name],
+                project = self.name,
                 locks = [ lock_build.access('counting') ]
             )
 
@@ -288,6 +296,7 @@ class StandardBuild(Build):
             workerbuilddir = "/data/triggers/cleanup-{0}".format(self.name),
             factory = f,
             tags = ["cleanup", self.name],
+            project = self.name,
             locks = [ lock_build.access('counting') ]
         )
 
@@ -344,6 +353,7 @@ class StandardBuild(Build):
             factory = f,
             locks = locks,
             tags = ["build", self.name, platform.name],
+            project = self.name,
             properties = {
                 "buildname": self.name,
                 "platformname": platform.name,

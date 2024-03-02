@@ -142,8 +142,12 @@ master-check:
 
 # buildbot depend on Makefile as we modify version here
 $(BUILDDIR)/buildbot_installed: Makefile | $(BUILDDIR)
-	pip install 'buildbot[bundle]==$(BUILDBOT_VERSION)' \
-		'buildbot-wsgi-dashboards==$(BUILDBOT_VERSION)' \
+	pip install 'buildbot==$(BUILDBOT_VERSION)' \
+		'buildbot-www-react==$(BUILDBOT_VERSION)' \
+		'buildbot-react-grid-view==$(BUILDBOT_VERSION)' \
+		'buildbot-react-waterfall-view==$(BUILDBOT_VERSION)' \
+		'buildbot-react-console-view==$(BUILDBOT_VERSION)' \
+		'buildbot-react-wsgi-dashboards==$(BUILDBOT_VERSION)' \
 		'treq==$(TREQ_VERSION)' \
 		'docker==$(DOCKER_PY_VERSION)' \
 		'bottle==$(BOTTLE_VERSION)'

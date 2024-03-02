@@ -13,9 +13,10 @@ import config
 
 www = {
     'plugins': {
-        'waterfall_view': True,
-        'console_view': True,
-        'grid_view': True,
+        'base_react': {},
+        'react_waterfall_view': {},
+        'react_console_view': {},
+        'react_grid_view': {},
     },
     'avatar_methods': [],
     # Prepare change hooks if any
@@ -140,7 +141,7 @@ if hasattr(config, 'enable_list_daily_builds') and config.enable_list_daily_buil
     import builds, platforms
     from utils import list_daily_builds
     from utils import scummsteps
-    www['plugins']['wsgi_dashboards'] = [{
+    www['plugins']['react_wsgi_dashboards'] = [{
         'name': 'dailybuilds',
         'caption': 'Daily builds',
         'app': list_daily_builds.get_application(
