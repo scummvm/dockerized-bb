@@ -471,17 +471,17 @@ VERSIONS = {
     ('./toolchains/psp/packages/toolchain/build.sh', 'GCC'): {
         'check': 'git commit',
         'repository': 'https://github.com/pspdev/gcc.git',
-        'branch': 'allegrex-v11.2.0',
+        'branch': 'allegrex-v13.2.0',
     },
     ('./toolchains/psp/packages/toolchain/build.sh', 'NEWLIB'): {
         'check': 'git commit',
         'repository': 'https://github.com/pspdev/newlib.git',
-        'branch': 'allegrex-v4.3.0',
+        'branch': 'allegrex-v4.4.0',
     },
     ('./toolchains/psp/packages/toolchain/build.sh', 'PTHREAD_EMBEDDED'): {
         'check': 'git commit',
         'repository': 'https://github.com/pspdev/pthread-embedded.git',
-        'branch': 'psp',
+        'branch': 'platform_agnostic',
     },
     ('./toolchains/psp/packages/toolchain/build.sh', 'PSP_PACMAN'): {
         'check': 'git commit',

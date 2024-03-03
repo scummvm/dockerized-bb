@@ -1,110 +1,134 @@
+diff --git a/config/psptoolchain-allegrex-config.sh b/config/psptoolchain-allegrex-config.sh
+index e71842a..29d5c80 100644
+--- a/config/psptoolchain-allegrex-config.sh
++++ b/config/psptoolchain-allegrex-config.sh
+@@ -1,13 +1,14 @@
+ #!/bin/bash
+ 
++# Don't use the override file as conflicts in this file will allow us to track branch changes
+ PSPTOOLCHAIN_ALLEGREX_BINUTILS_REPO_URL="https://github.com/pspdev/binutils-gdb.git"
+-PSPTOOLCHAIN_ALLEGREX_BINUTILS_DEFAULT_REPO_REF="allegrex-v2.37.0"
++PSPTOOLCHAIN_ALLEGREX_BINUTILS_DEFAULT_REPO_REF="$BINUTILS_VERSION"
+ PSPTOOLCHAIN_ALLEGREX_GCC_REPO_URL="https://github.com/pspdev/gcc.git"
+-PSPTOOLCHAIN_ALLEGREX_GCC_DEFAULT_REPO_REF="allegrex-v13.2.0"
++PSPTOOLCHAIN_ALLEGREX_GCC_DEFAULT_REPO_REF="$GCC_VERSION"
+ PSPTOOLCHAIN_ALLEGREX_NEWLIB_REPO_URL="https://github.com/pspdev/newlib.git"
+-PSPTOOLCHAIN_ALLEGREX_NEWLIB_DEFAULT_REPO_REF="allegrex-v4.4.0"
++PSPTOOLCHAIN_ALLEGREX_NEWLIB_DEFAULT_REPO_REF="$NEWLIB_VERSION"
+ PSPTOOLCHAIN_ALLEGREX_PTHREAD_EMBEDDED_REPO_URL="https://github.com/pspdev/pthread-embedded.git"
+-PSPTOOLCHAIN_ALLEGREX_PTHREAD_EMBEDDED_DEFAULT_REPO_REF="platform_agnostic"
++PSPTOOLCHAIN_ALLEGREX_PTHREAD_EMBEDDED_DEFAULT_REPO_REF="$PTHREAD_EMBEDDED_VERSION"
+ 
+ if test -f "$PSPDEV_CONFIG_OVERRIDE"; then
+   source "$PSPDEV_CONFIG_OVERRIDE"
 diff --git a/scripts/001-binutils.sh b/scripts/001-binutils.sh
-index f9a21a0..042b722 100755
+index af20a3d..58bb8ce 100755
 --- a/scripts/001-binutils.sh
 +++ b/scripts/001-binutils.sh
-@@ -4,12 +4,12 @@
- ## Download the source code.
- REPO_URL="https://github.com/pspdev/binutils-gdb.git"
- REPO_FOLDER="binutils-gdb"
--BRANCH_NAME="allegrex-v2.37.0"
--if test ! -d "$REPO_FOLDER"; then
--	git clone --depth 1 -b $BRANCH_NAME $REPO_URL $REPO_FOLDER && cd $REPO_FOLDER || { exit 1; }
--else
--	cd $REPO_FOLDER && git fetch origin && git reset --hard origin/${BRANCH_NAME} || { exit 1; }
--fi
-+
-+mkdir "$REPO_FOLDER" && cd "$REPO_FOLDER"
-+git init || { exit 1; }
-+git remote add origin "$REPO_URL" || { exit 1; }
-+git fetch --depth 1 origin "$BINUTILS_VERSION" || { exit 1; }
-+git checkout FETCH_HEAD || { exit 1; }
+@@ -22,13 +22,11 @@ if test -n "$1"; then
+   printf 'Using specified repo reference %s\n' "$REPO_REF"
+ fi
  
- TARGET="psp"
- TARG_XTRA_OPTS=""
+-if test ! -d "$REPO_FOLDER"; then
+-  git clone --depth 1 -b "$REPO_REF" "$REPO_URL" "$REPO_FOLDER"
+-else
+-  git -C "$REPO_FOLDER" fetch origin
+-  git -C "$REPO_FOLDER" reset --hard "origin/$REPO_REF"
+-  git -C "$REPO_FOLDER" checkout "$REPO_REF"
+-fi
++mkdir "$REPO_FOLDER"
++git -C "$REPO_FOLDER" init
++git -C "$REPO_FOLDER" remote add origin "$REPO_URL"
++git -C "$REPO_FOLDER" fetch --depth 1 origin "$REPO_REF"
++git -C "$REPO_FOLDER" checkout FETCH_HEAD
+ 
+ cd "$REPO_FOLDER"
+ 
 diff --git a/scripts/002-gcc-stage1.sh b/scripts/002-gcc-stage1.sh
-index 457512b..4203245 100755
+index d8f537d..adf0759 100755
 --- a/scripts/002-gcc-stage1.sh
 +++ b/scripts/002-gcc-stage1.sh
-@@ -4,12 +4,12 @@
- ## Download the source code.
- REPO_URL="https://github.com/pspdev/gcc.git"
- REPO_FOLDER="gcc"
--BRANCH_NAME="allegrex-v11.2.0"
--if test ! -d "$REPO_FOLDER"; then
--	git clone --depth 1 -b $BRANCH_NAME $REPO_URL $REPO_FOLDER && cd $REPO_FOLDER || { exit 1; }
--else
--	cd $REPO_FOLDER && git fetch origin && git reset --hard origin/${BRANCH_NAME} || { exit 1; }
--fi
-+
-+mkdir "$REPO_FOLDER" && cd "$REPO_FOLDER"
-+git init || { exit 1; }
-+git remote add origin "$REPO_URL" || { exit 1; }
-+git fetch --depth 1 origin "$GCC_VERSION" || { exit 1; }
-+git checkout FETCH_HEAD || { exit 1; }
+@@ -22,13 +22,11 @@ if test -n "$1"; then
+   printf 'Using specified repo reference %s\n' "$REPO_REF"
+ fi
  
- TARGET="psp"
- OSVER=$(uname)
+-if test ! -d "$REPO_FOLDER"; then
+-  git clone --depth 1 -b "$REPO_REF" "$REPO_URL" "$REPO_FOLDER"
+-else
+-  git -C "$REPO_FOLDER" fetch origin
+-  git -C "$REPO_FOLDER" reset --hard "origin/$REPO_REF"
+-  git -C "$REPO_FOLDER" checkout "$REPO_REF"
+-fi
++mkdir "$REPO_FOLDER"
++git -C "$REPO_FOLDER" init
++git -C "$REPO_FOLDER" remote add origin "$REPO_URL"
++git -C "$REPO_FOLDER" fetch --depth 1 origin "$REPO_REF"
++git -C "$REPO_FOLDER" checkout FETCH_HEAD
+ 
+ cd "$REPO_FOLDER"
+ 
 diff --git a/scripts/003-newlib.sh b/scripts/003-newlib.sh
-index e30a362..6e2b4f3 100755
+index 25e8e43..51bb7af 100755
 --- a/scripts/003-newlib.sh
 +++ b/scripts/003-newlib.sh
-@@ -4,12 +4,12 @@
- ## Download the source code.
- REPO_URL="https://github.com/pspdev/newlib.git"
- REPO_FOLDER="newlib"
--BRANCH_NAME="allegrex-v4.3.0"
--if test ! -d "$REPO_FOLDER"; then
--	git clone --depth 1 -b $BRANCH_NAME $REPO_URL && cd $REPO_FOLDER || { exit 1; }
--else
--	cd $REPO_FOLDER && git fetch origin && git reset --hard origin/${BRANCH_NAME} && git checkout ${BRANCH_NAME} || { exit 1; }
--fi
-+
-+mkdir "$REPO_FOLDER" && cd "$REPO_FOLDER"
-+git init || { exit 1; }
-+git remote add origin "$REPO_URL" || { exit 1; }
-+git fetch --depth 1 origin "$NEWLIB_VERSION" || { exit 1; }
-+git checkout FETCH_HEAD || { exit 1; }
+@@ -22,13 +22,11 @@ if test -n "$1"; then
+   printf 'Using specified repo reference %s\n' "$REPO_REF"
+ fi
  
- TARGET="psp"
+-if test ! -d "$REPO_FOLDER"; then
+-  git clone --depth 1 -b "$REPO_REF" "$REPO_URL" "$REPO_FOLDER"
+-else
+-  git -C "$REPO_FOLDER" fetch origin
+-  git -C "$REPO_FOLDER" reset --hard "origin/$REPO_REF"
+-  git -C "$REPO_FOLDER" checkout "$REPO_REF"
+-fi
++mkdir "$REPO_FOLDER"
++git -C "$REPO_FOLDER" init
++git -C "$REPO_FOLDER" remote add origin "$REPO_URL"
++git -C "$REPO_FOLDER" fetch --depth 1 origin "$REPO_REF"
++git -C "$REPO_FOLDER" checkout FETCH_HEAD
+ 
+ cd "$REPO_FOLDER"
  
 diff --git a/scripts/004-pthread-embedded.sh b/scripts/004-pthread-embedded.sh
-index adb8efe..0cbd349 100755
+index 04a70fa..da197e8 100755
 --- a/scripts/004-pthread-embedded.sh
 +++ b/scripts/004-pthread-embedded.sh
-@@ -5,11 +5,12 @@
- REPO_URL="https://github.com/pspdev/pthread-embedded.git"
- REPO_FOLDER="pthread-embedded"
- BRANCH_NAME="psp"
--if test ! -d "$REPO_FOLDER"; then
--	git clone --depth 1 -b $BRANCH_NAME $REPO_URL && cd $REPO_FOLDER || { exit 1; }
--else
--	cd $REPO_FOLDER && git fetch origin && git reset --hard origin/${BRANCH_NAME} && git checkout ${BRANCH_NAME} || { exit 1; }
--fi
-+
-+mkdir "$REPO_FOLDER" && cd "$REPO_FOLDER"
-+git init || { exit 1; }
-+git remote add origin "$REPO_URL" || { exit 1; }
-+git fetch --depth 1 origin "$PTHREAD_EMBEDDED_VERSION" || { exit 1; }
-+git checkout FETCH_HEAD || { exit 1; }
+@@ -22,13 +22,11 @@ if test -n "$1"; then
+   printf 'Using specified repo reference %s\n' "$REPO_REF"
+ fi
  
- TARGET="psp"
+-if test ! -d "$REPO_FOLDER"; then
+-  git clone --depth 1 -b "$REPO_REF" "$REPO_URL" "$REPO_FOLDER"
+-else
+-  git -C "$REPO_FOLDER" fetch origin
+-  git -C "$REPO_FOLDER" reset --hard "origin/$REPO_REF"
+-  git -C "$REPO_FOLDER" checkout "$REPO_REF"
+-fi
++mkdir "$REPO_FOLDER"
++git -C "$REPO_FOLDER" init
++git -C "$REPO_FOLDER" remote add origin "$REPO_URL"
++git -C "$REPO_FOLDER" fetch --depth 1 origin "$REPO_REF"
++git -C "$REPO_FOLDER" checkout FETCH_HEAD
+ 
+ cd "$REPO_FOLDER"
  
 diff --git a/scripts/005-gcc-stage2.sh b/scripts/005-gcc-stage2.sh
-index 8c1fc82..5d5f836 100755
+index 9246fca..301717a 100755
 --- a/scripts/005-gcc-stage2.sh
 +++ b/scripts/005-gcc-stage2.sh
-@@ -4,12 +4,8 @@
- ## Download the source code.
- REPO_URL="https://github.com/pspdev/gcc.git"
- REPO_FOLDER="gcc"
--BRANCH_NAME="allegrex-v11.2.0"
+@@ -22,14 +22,6 @@ if test -n "$1"; then
+   printf 'Using specified repo reference %s\n' "$REPO_REF"
+ fi
+ 
 -if test ! -d "$REPO_FOLDER"; then
--	git clone --depth 1 -b $BRANCH_NAME $REPO_URL && cd $REPO_FOLDER || { exit 1; }
+-  git clone --depth 1 -b "$REPO_REF" "$REPO_URL" "$REPO_FOLDER"
 -else
--	cd $REPO_FOLDER && git fetch origin && git reset --hard origin/${BRANCH_NAME} || { exit 1; }
+-  git -C "$REPO_FOLDER" fetch origin
+-  git -C "$REPO_FOLDER" reset --hard "origin/$REPO_REF"
+-  git -C "$REPO_FOLDER" checkout "$REPO_REF"
 -fi
-+
-+cd $REPO_FOLDER || { exit 1; }
+-
+ cd "$REPO_FOLDER"
  
  TARGET="psp"
- OSVER=$(uname)

@@ -1,6 +1,6 @@
 #! /bin/sh
 
-TOOLCHAIN_VERSION=882a81c82504deb90b760de0a0ba19d9e3128fd2
+TOOLCHAIN_VERSION=1c02337633738751bf127f6854c279ddda833e8e
 
 # Versions of components to use provided by toolchain
 BINUTILS_VER=2.23.2
