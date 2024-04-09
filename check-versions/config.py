@@ -272,6 +272,7 @@ VERSIONS = {
         'repository': 'https://github.com/marius851000/bannertool.git',
         'branch': 'master',
     },
+    ('./toolchains/devkit3ds/packages/freetype/build.sh', 'FREETYPE'): 'ignore',
 
     ('./toolchains/devkitarm/Dockerfile.m4', 'DEVKITARM'): {
         'check': 'docker tag',

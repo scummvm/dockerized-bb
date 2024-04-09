@@ -68,7 +68,8 @@ helpers_package(libvpx, --disable-multithread)
 
 # curl is already installed in original toolchain
 
-# freetype is already installed in original toolchain
+# freetype is already installed in original toolchain, but we need an older version
+local_package(freetype)
 
 # fribidi is already installed in original toolchain
 
