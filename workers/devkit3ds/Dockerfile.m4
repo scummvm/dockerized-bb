@@ -13,9 +13,6 @@ COPY --from=toolchain ${DEVKITPRO}/libctru ${DEVKITPRO}/libctru/
 COPY --from=toolchain ${DEVKITPRO}/portlibs/3ds ${DEVKITPRO}/portlibs/3ds/
 COPY --from=toolchain ${DEVKITPRO}/tools ${DEVKITPRO}/tools/
 
-# Copy Debian certificates for bundling by buildbot
-RUN cp /etc/ssl/certs/ca-certificates.crt "${DEVKITPRO}/cacert.pem"
-
 # We add PATH here for *-config and platform specific binaries
 ENV \
 	def_binaries(`${DEVKITARM}/bin/${HOST}-', `ar, as, c++filt, ld, nm, objcopy, objdump, ranlib, readelf, strings, strip') \
