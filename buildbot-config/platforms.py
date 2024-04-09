@@ -127,8 +127,6 @@ def _3ds():
     platform = Platform("3ds")
     platform.workerimage = "devkit3ds"
     platform.compatibleBuilds = (builds.ScummVMBuild, )
-    # Include CA certificates bundle to allow HTTPS
-    platform.env["DIST_3DS_EXTRA_FILES"] = "${DEVKITPRO}/cacert.pem"
     platform.configureargs.append("--host=3ds")
     platform.buildconfigureargs = {
         builds.ScummVMBuild: [ "--enable-plugins", "--default-dynamic" ],
