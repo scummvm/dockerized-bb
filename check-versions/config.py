@@ -269,8 +269,8 @@ VERSIONS = {
     },
     ('./toolchains/devkit3ds/packages/bannertool/build.sh', 'BANNERTOOL'): {
         'check': 'git commit',
-        'repository': 'https://github.com/marius851000/bannertool.git',
-        'branch': 'master',
+        'repository': 'https://github.com/carstene1ns/3ds-bannertool.git',
+        'branch': 'main',
     },
     ('./toolchains/devkit3ds/packages/freetype/build.sh', 'FREETYPE'): 'ignore',
 
