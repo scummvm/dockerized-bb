@@ -5,7 +5,7 @@ m4_define(`PPA_CLANG',-21)m4_dnl
 m4_define(`MACOSX_SDK_VERSION',26.2)m4_dnl
 m4_define(`MACOSX_TARGET_ARCH',aarch64)m4_dnl
 m4_define(`MACOSX_TARGET_VERSION',25.2)m4_dnl
-m4_define(`MACOSX_DEPLOYMENT_TARGET',13.0)m4_dnl
+m4_define(`MACOSX_DEPLOYMENT_TARGET',14.0)m4_dnl
 m4_define(`MACOSX_ARCHITECTURES',`arm64')m4_dnl
 m4_define(`MACOSX_PORTS_ARCH_ARG',`--arm64')m4_dnl
 m4_dnl m4_define(`PATCH_OSXCROSS',`')m4_dnl
