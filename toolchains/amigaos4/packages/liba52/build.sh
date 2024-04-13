@@ -6,7 +6,7 @@ HELPERS_DIR=$PACKAGE_DIR/../..
 
 do_make_bdir
 
-do_lha_fetch audio/liba52 "liba52/SDK"
+do_lha_fetch audio/liba52 "sdk"
 
 do_lha_install
 
