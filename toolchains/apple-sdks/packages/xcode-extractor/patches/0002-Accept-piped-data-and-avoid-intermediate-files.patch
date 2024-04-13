@@ -1,4 +1,4 @@
-From 4902378892b2e0039d9e06a3c9e485fc2c26c7ca Mon Sep 17 00:00:00 2001
+From b814e78cd74505299bac15d502786b23ae7c781c Mon Sep 17 00:00:00 2001
 From: Le Philousophe <lephilousophe@users.noreply.github.com>
 Date: Sun, 24 Jan 2021 19:18:24 +0100
 Subject: [PATCH 2/3] Accept piped data and avoid intermediate files
@@ -29,7 +29,7 @@ index cc6a742..e2bb3e3 100755
  popd &>/dev/null # TMP_DIR
  popd &>/dev/null # BUILD_DIR
 diff --git a/tools/tools.sh b/tools/tools.sh
-index a75b5e9..3235381 100644
+index 7705916..5fc2c9f 100644
 --- a/tools/tools.sh
 +++ b/tools/tools.sh
 @@ -513,6 +513,111 @@ function build_xar()
@@ -338,5 +338,5 @@ index a75b5e9..3235381 100644
    if [ $f_res -eq 1 ]; then
      pushd $CURRENT_BUILD_PROJECT_NAME &>/dev/null
 -- 
-2.39.2
+2.49.0
 

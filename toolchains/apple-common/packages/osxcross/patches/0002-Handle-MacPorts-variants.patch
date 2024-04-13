@@ -1,7 +1,7 @@
-From 73cc616854518cc9d5fc7bbb8485bd3fc4416dc2 Mon Sep 17 00:00:00 2001
+From 9efb78861ac50675cb56da1e8e05125229088919 Mon Sep 17 00:00:00 2001
 From: Le Philousophe <lephilousophe@users.noreply.github.com>
 Date: Sat, 17 Sep 2022 11:36:50 +0200
-Subject: [PATCH 2/2] Handle MacPorts variants
+Subject: [PATCH 2/4] Handle MacPorts variants
 
 ---
  tools/osxcross-macports | 13 ++++++++++---
@@ -48,5 +48,5 @@ index cd8e7eb..f52e805 100755
    fi
    if [ -z "$pkg" ]; then
 -- 
-2.43.0
+2.49.0
 

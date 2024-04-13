@@ -1,19 +1,19 @@
-From d39fff999d80b93ff4b809c94cb258b927148c1a Mon Sep 17 00:00:00 2001
+From c81a59cebbf996a8d1bf9af109dc240e5853eaca Mon Sep 17 00:00:00 2001
 From: Le Philousophe <lephilousophe@users.noreply.github.com>
 Date: Sun, 17 Oct 2021 15:38:47 +0200
-Subject: [PATCH 5/6] Really silence linker arguments when compiling
+Subject: [PATCH 4/5] Really silence linker arguments when compiling
 
 ---
  usage_examples/ios_toolchain/wrapper.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/usage_examples/ios_toolchain/wrapper.c b/usage_examples/ios_toolchain/wrapper.c
-index 9442319..bc34b26 100644
+index 1d6dc22..b6b0159 100644
 --- a/usage_examples/ios_toolchain/wrapper.c
 +++ b/usage_examples/ios_toolchain/wrapper.c
 @@ -182,7 +182,7 @@ int main(int argc, char *argv[])
      args[i++] = osvermin;
-     args[i++] = "-mlinker-version=907";
+     args[i++] = "-mlinker-version=951.9";
      args[i++] = "-Wl,-adhoc_codesign";
 -    args[i++] = "-Wno-unused-command-line-argument";
 +    args[i++] = "-Qunused-arguments";
@@ -21,5 +21,5 @@ index 9442319..bc34b26 100644
      for (j = 1; j < argc; ++i, ++j)
          args[i] = argv[j];
 -- 
-2.44.2
+2.49.0
 

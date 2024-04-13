@@ -30,20 +30,15 @@ VERSIONS_REGEXPS = [
 # All of these variables aren't used directly by check-versions
 
 # Apple stuff is used for apple-sdks, macosx and iphone
-cctools_port_check = {
-    'check': 'git commit',
-    'repository': 'https://github.com/tpoechtrager/cctools-port.git',
-    'branch': '1010.6-ld64-951.9',
-}
 osxcross_check = {
     'check': 'git commit',
     'repository': 'https://github.com/tpoechtrager/osxcross.git',
     'branch': 'master',
 }
-pbzx_check = {
+libdispatch_check = {
     'check': 'git commit',
-    'repository': 'https://github.com/tpoechtrager/pbzx.git',
-    'branch': 'master',
+    'repository': 'https://github.com/tpoechtrager/apple-libdispatch.git',
+    'branch': 'main',
 }
 xar_check = {
     'check': 'git commit',
@@ -161,12 +156,17 @@ VERSIONS = {
     # Android NDK must match ScummVM build system
     ('./toolchains/android/Dockerfile.m4', 'ANDROID_NDK'): 'ignore',
 
-    ('./toolchains/apple-common/packages/cctools-port/build.sh', 'CCTOOLS_PORT'): cctools_port_check,
+    ('./toolchains/apple-common/packages/cctools-port/build.sh', 'CCTOOLS_PORT'): {
+        'check': 'git commit',
+        'repository': 'https://github.com/tpoechtrager/cctools-port.git',
+        'branch': '1021.4-ld64-954.16',
+    },
     ('./toolchains/apple-common/packages/cctools-port/build.sh', 'LDID'): {
         'check': 'git commit',
         'repository': 'https://github.com/tpoechtrager/ldid.git',
         'branch': 'master',
     },
+    ('./toolchains/apple-common/packages/cctools-port/build.sh', 'LIBDISPATCH'): libdispatch_check,
     ('./toolchains/apple-common/packages/osxcross-clang/build.sh', 'OSXCROSS'): osxcross_check,
     ('./toolchains/apple-common/packages/osxcross/build.sh', 'OSXCROSS'): osxcross_check,
     ('./toolchains/apple-common/packages/osxcross/build.sh', 'XAR'): xar_check,
@@ -193,7 +193,11 @@ VERSIONS = {
         'productid': 497799835,
     },
     ('./toolchains/apple-sdks/packages/xcode-extractor/build.sh', 'OSXCROSS'): osxcross_check,
-    ('./toolchains/apple-sdks/packages/xcode-extractor/build.sh', 'PBZX'): pbzx_check,
+    ('./toolchains/apple-sdks/packages/xcode-extractor/build.sh', 'PBZX'): {
+        'check': 'git commit',
+        'repository': 'https://github.com/tpoechtrager/pbzx.git',
+        'branch': 'master',
+    },
     ('./toolchains/apple-sdks/packages/xcode-extractor/build.sh', 'XAR'): xar_check,
 
     # Apple SDK and target versions depend on which Xcode is used

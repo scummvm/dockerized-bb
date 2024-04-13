@@ -1,14 +1,14 @@
-From 70ce92a72b025e73ad493698659236c92c9bfa91 Mon Sep 17 00:00:00 2001
+From 8b24601ff6c1d7a98e05678cd2cf5916a4469114 Mon Sep 17 00:00:00 2001
 From: Le Philousophe <lephilousophe@users.noreply.github.com>
 Date: Fri, 19 Mar 2021 12:17:45 +0100
-Subject: [PATCH 1/6] Set versions with environment variables
+Subject: [PATCH 1/5] Set versions with environment variables
 
 ---
- usage_examples/ios_toolchain/build.sh | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ usage_examples/ios_toolchain/build.sh | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/usage_examples/ios_toolchain/build.sh b/usage_examples/ios_toolchain/build.sh
-index 4c42021..9a772cb 100755
+index 4c42021..5bcd1a8 100755
 --- a/usage_examples/ios_toolchain/build.sh
 +++ b/usage_examples/ios_toolchain/build.sh
 @@ -184,7 +184,7 @@ echo "*** building ldid ***"
@@ -20,6 +20,15 @@ index 4c42021..9a772cb 100755
  pushd ldid &>/dev/null
  make INSTALLPREFIX=$TARGETDIR -j$JOBS install
  popd &>/dev/null
+@@ -195,7 +195,7 @@ echo "*** building apple-libdispatch ***"
+ echo ""
+ 
+ pushd tmp &>/dev/null
+-git_clone_repository https://github.com/tpoechtrager/apple-libdispatch.git main
++git_clone_repository https://github.com/tpoechtrager/apple-libdispatch.git $LIBDISPATCH_VERSION
+ pushd apple-libdispatch &>/dev/null
+ mkdir -p build
+ pushd build &>/dev/null
 -- 
-2.44.2
+2.49.0
 

@@ -1,7 +1,7 @@
-From c06d48d0bc70d54bfa9d535a2a601714bfd4882f Mon Sep 17 00:00:00 2001
+From de08fb4da64c3413e1cbfe54f8cd506700442f19 Mon Sep 17 00:00:00 2001
 From: Le Philousophe <lephilousophe@users.noreply.github.com>
 Date: Sat, 13 Nov 2021 17:36:24 +0100
-Subject: [PATCH 6/6] Specify stdlib as recent LLVM require it
+Subject: [PATCH 5/5] Specify stdlib as recent LLVM require it
 
 ---
  usage_examples/ios_toolchain/build.sh  |  4 ++++
@@ -9,7 +9,7 @@ Subject: [PATCH 6/6] Specify stdlib as recent LLVM require it
  2 files changed, 18 insertions(+)
 
 diff --git a/usage_examples/ios_toolchain/build.sh b/usage_examples/ios_toolchain/build.sh
-index 0a32a8a..1919e96 100755
+index c9ac05b..16e53a1 100755
 --- a/usage_examples/ios_toolchain/build.sh
 +++ b/usage_examples/ios_toolchain/build.sh
 @@ -257,6 +257,10 @@ echo "int main(){return 0;}" | $TRIPLE-clang -xc -O2 -o test - 1>/dev/null || ex
@@ -24,7 +24,7 @@ index 0a32a8a..1919e96 100755
  echo "*** all done ***"
  echo ""
 diff --git a/usage_examples/ios_toolchain/wrapper.c b/usage_examples/ios_toolchain/wrapper.c
-index bc34b26..8145c48 100644
+index b6b0159..38faa5f 100644
 --- a/usage_examples/ios_toolchain/wrapper.c
 +++ b/usage_examples/ios_toolchain/wrapper.c
 @@ -33,6 +33,15 @@
@@ -56,5 +56,5 @@ index bc34b26..8145c48 100644
          args[i] = argv[j];
  
 -- 
-2.44.2
+2.49.0
 

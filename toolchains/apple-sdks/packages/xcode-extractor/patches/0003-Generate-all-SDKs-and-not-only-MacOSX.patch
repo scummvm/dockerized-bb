@@ -1,4 +1,4 @@
-From 8ed1c630ea783dc99be83eb0e7edc4d1cb45688d Mon Sep 17 00:00:00 2001
+From 108cffa6525633559085897898bdd2ec431622da Mon Sep 17 00:00:00 2001
 From: Le Philousophe <lephilousophe@users.noreply.github.com>
 Date: Sun, 24 Jan 2021 19:19:14 +0100
 Subject: [PATCH 3/3] Generate all SDKs and not only MacOSX
@@ -8,10 +8,10 @@ Subject: [PATCH 3/3] Generate all SDKs and not only MacOSX
  1 file changed, 7 insertions(+), 6 deletions(-)
 
 diff --git a/tools/gen_sdk_package.sh b/tools/gen_sdk_package.sh
-index f29faec..d554c9d 100755
+index 0aa39f2..8f5607f 100755
 --- a/tools/gen_sdk_package.sh
 +++ b/tools/gen_sdk_package.sh
-@@ -127,8 +127,8 @@ if [ -z "$XCODE_TOOLS" ]; then
+@@ -126,8 +126,8 @@ if [ -z "$XCODE_TOOLS" ]; then
  
    pushd "$XCODEDIR" &>/dev/null
  
@@ -22,7 +22,7 @@ index f29faec..d554c9d 100755
    else
      if [ -d "../Packages" ]; then
        pushd "../Packages" &>/dev/null
-@@ -191,7 +191,7 @@ else
+@@ -190,7 +190,7 @@ else
  
  fi
  
@@ -31,7 +31,7 @@ index f29faec..d554c9d 100755
  
  if [ -z "$SDKS" ]; then
    echo "No SDK found" 1>&2
-@@ -210,7 +210,8 @@ LIBCXXDIR3="usr/include/c++/v1"
+@@ -209,7 +209,8 @@ LIBCXXDIR3="usr/include/c++/v1"
  # Manual directory
  MANDIR="Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/share/man"
  
@@ -41,7 +41,7 @@ index f29faec..d554c9d 100755
    echo -n "packaging $(echo "$SDK" | sed -E "s/(.sdk|.pkg)//g") SDK "
    echo "(this may take several minutes) ..."
  
-@@ -220,7 +221,7 @@ for SDK in $SDKS; do
+@@ -219,7 +220,7 @@ for SDK in $SDKS; do
    fi
  
    TMP=$(mktemp -d /tmp/XXXXXXXXXXX)
@@ -50,12 +50,12 @@ index f29faec..d554c9d 100755
  
    pushd "$XCODEDIR" &>/dev/null
  
-@@ -255,4 +256,4 @@ popd &>/dev/null
+@@ -254,4 +255,4 @@ popd &>/dev/null
  popd &>/dev/null
  
  echo ""
 -ls -lh | grep MacOSX
 +ls -lh *.*.sdk.*
 -- 
-2.39.2
+2.49.0
 

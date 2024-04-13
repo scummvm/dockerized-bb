@@ -1,14 +1,14 @@
-From 4a93e0223760bce9adaf082472970b38a271acb9 Mon Sep 17 00:00:00 2001
+From bd39fbedcc39f64ff08e4ffab92ce288c0353eff Mon Sep 17 00:00:00 2001
 From: Le Philousophe <lephilousophe@users.noreply.github.com>
 Date: Fri, 19 Mar 2021 12:18:07 +0100
-Subject: [PATCH 2/6] Make target directory and triple configurable
+Subject: [PATCH 2/5] Make target directory and triple configurable
 
 ---
  usage_examples/ios_toolchain/build.sh | 4 ++++
  1 file changed, 4 insertions(+)
 
 diff --git a/usage_examples/ios_toolchain/build.sh b/usage_examples/ios_toolchain/build.sh
-index 9a772cb..f81c114 100755
+index 5bcd1a8..4610a28 100755
 --- a/usage_examples/ios_toolchain/build.sh
 +++ b/usage_examples/ios_toolchain/build.sh
 @@ -97,8 +97,12 @@ if [ $# -lt 2 ]; then
@@ -25,5 +25,5 @@ index 9a772cb..f81c114 100755
  
  if [ -d $TARGETDIR ]; then
 -- 
-2.44.2
+2.49.0
 
