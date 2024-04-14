@@ -819,9 +819,10 @@ def windows_mxe(suffix, target, description=None):
     platform.env["PATH"] = [ "${PATH}", "${{MXE_PREFIX_DIR}}/{0}/bin".format(target)]
 
     platform.configureargs.append("--host={0}".format(target))
-    platform.buildconfigureargs = {
-        builds.ScummVMBuild: [ "--enable-updates"],
-    }
+    if suffix != 'x86':
+        platform.buildconfigureargs = {
+            builds.ScummVMBuild: [ "--enable-updates"],
+        }
     platform.strip_cmd = {
         # As we use an environment variable, we need to use string to spawn a shell
         builds.ScummVMBuild: '"${STRIP}" scummvm.exe',
