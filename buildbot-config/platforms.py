@@ -447,7 +447,7 @@ def macosx_arm64():
     }
     platform.archiveext = "tar.xz"
 
-    platform.description = "Mac OS X (M1)"
+    platform.description = "Mac OS (Apple Silicon)"
     platform.icon = 'macos'
 
     register_platform(platform)
@@ -488,7 +488,7 @@ def macosx_x86_64():
     }
     platform.archiveext = "tar.xz"
 
-    platform.description = "Mac OS X (Intel x64)"
+    platform.description = "Mac OS (Intel x64)"
     platform.icon = 'macos'
 
     register_platform(platform)
@@ -524,7 +524,7 @@ def macosx_i386():
     }
     platform.archiveext = "tar.xz"
 
-    platform.description = "Mac OS X (Intel x86)"
+    platform.description = "Mac OS (Intel x86)"
     platform.icon = 'macos'
 
     register_platform(platform)
