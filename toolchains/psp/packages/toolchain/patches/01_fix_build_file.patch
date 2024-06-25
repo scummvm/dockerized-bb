@@ -1,0 +1,10 @@
+diff --git a/build-all.sh b/build-all.sh
+index fadf131..7b6b8ac 100755
+--- a/build-all.sh
++++ b/build-all.sh
+@@ -52,4 +52,4 @@ BUILD_FILE="${PSPDEV}/build.txt"
+ if [[ -f "${BUILD_FILE}" ]]; then
+   sed -i'' '/^pspdev /d' "${BUILD_FILE}"
+ fi
+-git log -1 --format="pspdev %H %cs %s" >> "${BUILD_FILE}"
++echo "pspdev $PSPDEV_VERSION" >> "${BUILD_FILE}"

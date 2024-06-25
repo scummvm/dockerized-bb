@@ -107,6 +107,7 @@ VERSIONS = {
         'check': 'git tag',
         'repository': 'https://github.com/buildbot/buildbot.git',
         'prefix': 'v',
+        'pattern': r'v3\.',
         'exclude pattern': r'.*(b|rc)\d+'
     },
     ('./Makefile', 'BOTTLE'): {
@@ -467,12 +468,12 @@ VERSIONS = {
     ('./toolchains/psp/packages/toolchain/build.sh', 'BINUTILS'): {
         'check': 'git commit',
         'repository': 'https://github.com/pspdev/binutils-gdb.git',
-        'branch': 'allegrex-v2.37.0',
+        'branch': 'allegrex-v2.40.0',
     },
     ('./toolchains/psp/packages/toolchain/build.sh', 'GCC'): {
         'check': 'git commit',
         'repository': 'https://github.com/pspdev/gcc.git',
-        'branch': 'allegrex-v13.2.0',
+        'branch': 'allegrex-v14.1.0',
     },
     ('./toolchains/psp/packages/toolchain/build.sh', 'NEWLIB'): {
         'check': 'git commit',
