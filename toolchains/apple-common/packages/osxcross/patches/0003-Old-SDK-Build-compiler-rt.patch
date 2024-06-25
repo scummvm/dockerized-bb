@@ -1,0 +1,17 @@
+diff --git a/build_compiler_rt.sh b/build_compiler_rt.sh
+index e0b6b91..6c07cf8 100755
+--- a/build_compiler_rt.sh
++++ b/build_compiler_rt.sh
+@@ -172,6 +172,12 @@ if [ $f_res -eq 1 ]; then
+         echo ""
+       fi
+ 
++      # Disable ORC runtime on older SDK as it requires C++17
++      if [ $(osxcross-cmp $SDK_VERSION "<=" 10.13) -eq 1 ] && \
++	 [ $(osxcross-cmp $CLANG_VERSION ">=" 16.0) -eq 1 ]; then
++         extra_cmake_flags+="-DCOMPILER_RT_BUILD_ORC=OFF "
++      fi
++
+       mkdir $build_dir
+       pushd $build_dir &>/dev/null
+ 

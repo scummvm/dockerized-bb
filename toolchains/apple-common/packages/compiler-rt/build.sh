@@ -46,6 +46,11 @@ while ! wget --header='Range: bytes=0-0' -O /dev/null \
 	CLANG_VERSION=${CLANG_MAJOR}.${CLANG_MINOR}.${CLANG_PATCH}
 done
 
+# Fetch common CMake modules
+do_http_fetch cmake "https://github.com/llvm/llvm-project/releases/download/llvmorg-${CLANG_VERSION}/cmake-${CLANG_VERSION}.src.tar.xz" 'tar xJf'
+mv "$(pwd)" ../cmake
+cd ..
+
 do_http_fetch compiler-rt "https://github.com/llvm/llvm-project/releases/download/llvmorg-${CLANG_VERSION}/compiler-rt-${CLANG_VERSION}.src.tar.xz" 'tar xJf'
 
 # We try to support as much versions as we can so fallback on a common ground and fix it
@@ -104,6 +109,8 @@ do_cmake \
 	-DCMAKE_LIPO=$LIPO \
 	-DCMAKE_OSX_SYSROOT="$SDK_DIR" \
 	-DDARWIN_macosx_OVERRIDE_SDK_VERSION=99.99 \
+	-DDARWIN_iphonesimulator_OVERRIDE_SDK_VERSION=99.99 \
+	-DDARWIN_appletvsimulator_OVERRIDE_SDK_VERSION=99.99 \
 	-DDARWIN_${SDK_PLATFORM}_CACHED_SYSROOT="$SDK_DIR" \
 	-DDARWIN_${SDK_PLATFORM}_OVERRIDE_SDK_VERSION="$SDK_VERSION" \
 	-DCOMPILER_RT_ENABLE_TVOS=ON \

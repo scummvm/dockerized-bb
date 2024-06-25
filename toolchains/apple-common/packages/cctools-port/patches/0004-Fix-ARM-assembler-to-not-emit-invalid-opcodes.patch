@@ -1,4 +1,4 @@
-From cf352e594610b74bb02677a1420495defa1146b6 Mon Sep 17 00:00:00 2001
+From 9b0028cc7d688801a4b8fb2fdcbe25ab31b57d6d Mon Sep 17 00:00:00 2001
 From: Le Philousophe <lephilousophe@users.noreply.github.com>
 Date: Fri, 19 Mar 2021 12:18:53 +0100
 Subject: [PATCH 4/6] Fix ARM assembler to not emit invalid opcodes
@@ -8,7 +8,7 @@ Subject: [PATCH 4/6] Fix ARM assembler to not emit invalid opcodes
  1 file changed, 4 insertions(+), 1 deletion(-)
 
 diff --git a/cctools/as/arm.c b/cctools/as/arm.c
-index ef856a5..80e7ba7 100644
+index 2f56453..f7dde2b 100644
 --- a/cctools/as/arm.c
 +++ b/cctools/as/arm.c
 @@ -5085,8 +5085,11 @@ static unsigned int
@@ -25,5 +25,5 @@ index ef856a5..80e7ba7 100644
        return a | (i << 7); /* 12-bit pack: [shift-cnt,const].  */
  
 -- 
-2.32.0
+2.44.2
 

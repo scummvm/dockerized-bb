@@ -1,4 +1,4 @@
-From 6572edd85dc1b0a15f992a3265e05cd639cd4850 Mon Sep 17 00:00:00 2001
+From 04230f34b5d30c2eb59d53bbdb80560a89725242 Mon Sep 17 00:00:00 2001
 From: Le Philousophe <lephilousophe@users.noreply.github.com>
 Date: Fri, 19 Mar 2021 12:18:30 +0100
 Subject: [PATCH 3/6] Make minimum target version configurable
@@ -8,12 +8,12 @@ Subject: [PATCH 3/6] Make minimum target version configurable
  1 file changed, 5 insertions(+), 1 deletion(-)
 
 diff --git a/usage_examples/ios_toolchain/build.sh b/usage_examples/ios_toolchain/build.sh
-index e405466..7d58adf 100755
+index f81c114..0a32a8a 100755
 --- a/usage_examples/ios_toolchain/build.sh
 +++ b/usage_examples/ios_toolchain/build.sh
-@@ -155,10 +155,14 @@ elif ! which dsymutil &>/dev/null; then
-     echo "int main(){return 0;}" | cc -xc -O2 -o $TARGETDIR/bin/dsymutil -
- fi
+@@ -170,10 +170,14 @@ pushd $TARGETDIR/bin &>/dev/null
+ ln -sf $TRIPLE-lipo lipo
+ popd &>/dev/null
  
 +if [ -z "${IPHONEOS_DEPLOYMENT_TARGET}" ]; then
 +	IPHONEOS_DEPLOYMENT_TARGET=$SDK_VERSION
@@ -28,5 +28,5 @@ index e405466..7d58adf 100755
  
  pushd $TARGETDIR/bin &>/dev/null
 -- 
-2.32.0
+2.44.2
 
