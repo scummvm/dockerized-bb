@@ -47,6 +47,13 @@ class Build:
     def description(self, value):
         self.description_ = value
 
+    def getProject(self):
+        return util.Project(
+                name = self.name,
+                description = self.description_,
+                description_format = None,
+                slug = self.name)
+
     def getChangeSource(self, settings):
         raise NotImplementedError
 
@@ -240,6 +247,7 @@ class StandardBuild(Build):
             workerbuilddir = "/data/src/{0}".format(self.name),
             factory = f,
             tags = ["fetch", self.name],
+            project = self.name,
             locks = [ lock_build.access('counting') ],
         )
 
@@ -263,6 +271,7 @@ class StandardBuild(Build):
                 workerbuilddir = "/data/triggers/daily-{0}".format(self.name),
                 factory = f,
                 tags = ["daily", self.name],
+                project = self.name,
                 locks = [ lock_build.access('counting') ]
             )
 
@@ -287,6 +296,7 @@ class StandardBuild(Build):
             workerbuilddir = "/data/triggers/cleanup-{0}".format(self.name),
             factory = f,
             tags = ["cleanup", self.name],
+            project = self.name,
             locks = [ lock_build.access('counting') ]
         )
 
@@ -343,6 +353,7 @@ class StandardBuild(Build):
             factory = f,
             locks = locks,
             tags = ["build", self.name, platform.name],
+            project = self.name,
             properties = {
                 "buildname": self.name,
                 "platformname": platform.name,
