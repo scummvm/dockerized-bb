@@ -108,7 +108,6 @@ VERSIONS = {
         'check': 'git tag',
         'repository': 'https://github.com/buildbot/buildbot.git',
         'prefix': 'v',
-        'pattern': r'v3\.',
         'exclude pattern': r'.*(b|rc)\d+'
     },
     ('./Makefile', 'BOTTLE'): {
