@@ -123,7 +123,7 @@ def fetch_refs(repository, context=None):
             refs = parse_dumb_refs(reply)
     return refs
 
-def git_commit(version, *, repository, branch, context=None):
+def git_commit(version, *, repository, branch, context=None, short=False):
     refs = fetch_refs(repository, context)
 
     ref_name = 'refs/heads/{0}'.format(branch)
@@ -131,6 +131,9 @@ def git_commit(version, *, repository, branch, context=None):
 
     if obj is None:
         raise Exception("Invalid branch {1} specified for {0}".format(repository, branch))
+
+    if short and len(version) >= 7:
+        obj = obj[:len(version)]
 
     return obj == version, obj, "repository URL: {0} branch {1}".format(repository, branch)
 
