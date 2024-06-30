@@ -52,22 +52,22 @@ xar_check = {
 }
 
 discord_rpc_check = {
-        'check': 'git tag',
-        'repository': 'https://github.com/discord/discord-rpc.git',
-        'prefix': 'v',
+    'check': 'git tag',
+    'repository': 'https://github.com/discord/discord-rpc.git',
+    'prefix': 'v',
 }
 
 
 libiconv_check = {
-        'check': 'git tag',
-        'repository': 'https://git.savannah.gnu.org/git/libiconv.git',
-        'prefix': 'v',
+    'check': 'git tag',
+    'repository': 'https://git.savannah.gnu.org/git/libiconv.git',
+    'prefix': 'v',
 }
 
 retrowave_check = {
-        'check': 'git tag',
-        'repository': 'https://github.com/SudoMaker/RetroWave.git',
-        'prefix': 'v',
+    'check': 'git tag',
+    'repository': 'https://github.com/SudoMaker/RetroWave.git',
+    'prefix': 'v',
 }
 
 crosstool_ng_check = {
