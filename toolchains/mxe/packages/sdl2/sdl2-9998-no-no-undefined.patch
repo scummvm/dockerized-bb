@@ -1,26 +1,24 @@
-diff -u a/configure.ac b/configure.ac
+diff --git a/configure.ac b/configure.ac
+index 071f4e0f3..646dd9554 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -230,27 +230,6 @@
+@@ -250,24 +250,6 @@ if test x$enable_dependency_tracking = xyes; then
      fi
  fi
  
 -AC_MSG_CHECKING(for linker option --no-undefined)
 -have_no_undefined=no
 -case "$host" in
--    dnl Skip this on platforms where it is just simply busted.
+-dnl Skip this on platforms where it is just simply busted.
 -    *-*-openbsd*)
 -        ;;
--
 -    *)
 -        save_LDFLAGS="$LDFLAGS"
 -        LDFLAGS="$LDFLAGS -Wl,--no-undefined"
--        AC_TRY_LINK([
--        ],[
--        ],[
+-        AC_LINK_IFELSE([AC_LANG_PROGRAM([],[])], [
 -        have_no_undefined=yes
--        EXTRA_LDFLAGS="$EXTRA_LDFLAGS -Wl,--no-undefined"
--        ])
+-        BUILD_LDFLAGS="$BUILD_LDFLAGS -Wl,--no-undefined"
+-        ],[])
 -        LDFLAGS="$save_LDFLAGS"
 -        ;;
 -esac

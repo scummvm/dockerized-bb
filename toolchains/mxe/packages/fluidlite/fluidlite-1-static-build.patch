@@ -1,0 +1,51 @@
+From 849751658e68ae734dcf493153d012da63c2652a Mon Sep 17 00:00:00 2001
+From: Le Philousophe <lephilousophe@users.noreply.github.com>
+Date: Fri, 5 May 2023 22:58:29 +0200
+Subject: [PATCH] Fix static build
+
+---
+ CMakeLists.txt                          | 3 ++-
+ include/{fluidlite.h => fluidlite.h.in} | 6 ++++++
+ 2 files changed, 8 insertions(+), 1 deletion(-)
+ rename include/{fluidlite.h => fluidlite.h.in} (95%)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 4aead6c..530651f 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -33,10 +33,11 @@ include(CheckIncludeFile)
+ check_include_file(fcntl.h HAVE_FCNTL_H)
+ 
+ list(APPEND HEADERS
+-    include/fluidlite.h
++    ${PROJECT_BINARY_DIR}/fluidlite.h
+ )
+ 
+ configure_file(src/version.cmake ${PROJECT_BINARY_DIR}/fluidlite/version.h @ONLY)
++configure_file(include/fluidlite.h.in ${PROJECT_BINARY_DIR}/fluidlite.h)
+ 
+ list(APPEND SCOPED_HEADERS
+     include/fluidlite/types.h
+diff --git a/include/fluidlite.h b/include/fluidlite.h.in
+similarity index 95%
+rename from include/fluidlite.h
+rename to include/fluidlite.h.in
+index a159ddd..5e6ea4b 100644
+--- a/include/fluidlite.h
++++ b/include/fluidlite.h.in
+@@ -27,6 +27,12 @@
+ extern "C" {
+ #endif
+ 
++#cmakedefine01 FLUIDLITE_BUILD_SHARED
++
++#if (FLUIDLITE_BUILD_SHARED == 0) && !defined(FLUIDLITE_STATIC)
++#define FLUIDLITE_STATIC
++#endif
++
+ #if defined(_WIN32)
+ #if defined(FLUIDLITE_STATIC)
+ #define FLUIDSYNTH_API
+-- 
+2.34.1
+

@@ -1,4 +1,4 @@
-m4_define(`MXE_VERSION',build-2022-01-13)m4_dnl
+m4_define(`MXE_VERSION',ae6c66957d6a5bb124358ef93ffc57976876a599)m4_dnl
 
 m4_include(`paths.m4')m4_dnl
 m4_include(`packages.m4')m4_dnl
@@ -30,6 +30,8 @@ RUN apt-get update && \
 		lzip \
 		p7zip-full \
 		python-is-python3 \
+		python3-mako \
+		python3-packaging \
 		ruby && \
 	rm -rf /var/lib/apt/lists/*
 
@@ -48,12 +50,11 @@ local_package(toolchain)
 # That will install cmake configuration files as well
 mxe_package(cmake)
 
-# peldd will be used when creating package: only build native version
-# Use a local version to have target wrapper scripts
-local_mxe_package(pe-util)
+# peldd will be used when creating package
+mxe_package(pe-util)
 
 # LLD links ScummVM faster
-local_mxe_package(lld)
+mxe_package(lld)
 
 # Install everything through MXE to not mess with environment variables
 # This lets MXE build all platforms and avoids to mess with its settings
@@ -97,9 +98,9 @@ mxe_package(libiconv)
 
 local_mxe_package(sdl2)
 
-local_mxe_package(sdl2_net)
+mxe_package(sdl2_net)
 
-local_mxe_package(fluidsynth-light)
+local_mxe_package(fluidlite)
 
 local_mxe_package(winsparkle)
 

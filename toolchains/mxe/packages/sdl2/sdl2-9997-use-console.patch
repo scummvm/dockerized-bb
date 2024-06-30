@@ -1,8 +1,8 @@
 diff --git a/configure.ac b/configure.ac
-index b6783a08..28234207 100644
+index 3dadf542c..071f4e0f3 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -3889,7 +3889,7 @@ case "$host" in
+@@ -4169,7 +4169,7 @@ case "$host" in
          VERSION_SOURCES="$srcdir/src/main/windows/*.rc"
          SDLMAIN_SOURCES="$srcdir/src/main/windows/*.c"
          SDL_CFLAGS="$SDL_CFLAGS -Dmain=SDL_main"

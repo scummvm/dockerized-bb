@@ -57,6 +57,7 @@ discord_rpc_check = {
         'prefix': 'v',
 }
 
+
 libiconv_check = {
         'check': 'git tag',
         'repository': 'https://git.savannah.gnu.org/git/libiconv.git',
@@ -320,9 +321,9 @@ VERSIONS = {
     ('./toolchains/miyoo/packages/toolchain/build.sh', 'BUILDROOT'): 'ignore',
 
     ('./toolchains/mxe/Dockerfile.m4', 'MXE'): {
-        'check': 'git tag',
+        'check': 'git commit',
         'repository': 'https://github.com/mxe/mxe.git',
-        'pattern': '^build-',
+        'branch': 'master',
     },
     ('./toolchains/mxe/packages/discord-rpc/discord-rpc.mk', ''): discord_rpc_check,
     ('./toolchains/mxe/packages/discord-rpc/rapidjson.mk', ''): {
@@ -332,7 +333,12 @@ VERSIONS = {
         'exclude pattern': r'.*-beta$',
     },
     # This is the system version so no need to check
-    ('./toolchains/mxe/packages/lld/lld.mk', ''): 'ignore',
+    ('./toolchains/mxe/packages/fluidlite/fluidlite.mk', ''): {
+        'check': 'git commit',
+        'repository': 'https://github.com/divideconcept/FluidLite.git',
+        'branch': 'master',
+        'short': True,
+    },
     ('./toolchains/mxe/packages/retrowave/retrowave.mk', ''): retrowave_check,
     ('./toolchains/mxe/packages/winsparkle/winsparkle.mk', ''): {
         'check': 'git tag',

@@ -1,0 +1,20 @@
+diff --git a/src/pe-util.mk b/src/pe-util.mk
+index ad96670d..19580a65 100644
+--- a/src/pe-util.mk
++++ b/src/pe-util.mk
+@@ -20,7 +20,6 @@ endef
+ 
+ define $(PKG)_BUILD
+     # install prefixed wrapper with default paths
+-    $(if $(BUILD_SHARED),
+         (echo '#!/bin/sh'; \
+          echo 'exec "$(PREFIX)/$(BUILD)/bin/peldd" \
+                     --clear-path \
+@@ -32,7 +31,6 @@ define $(PKG)_BUILD
+                     "$$@"') \
+                  > '$(PREFIX)/bin/$(TARGET)-peldd'
+         chmod 0755 '$(PREFIX)/bin/$(TARGET)-peldd'
+-    )
+ endef
+ 
+ define $(PKG)_BUILD_$(BUILD)

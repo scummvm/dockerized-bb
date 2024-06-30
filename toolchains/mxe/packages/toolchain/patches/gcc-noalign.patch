@@ -1,29 +1,16 @@
-commit 4eeec9367a85d390f49ebb109350ba4b90a1796c
+commit ec4643254420bedfc38e85eb05273ab5dde878fc
 Author: Le Philousophe <lephilousophe@users.noreply.github.com>
-Date:   Sun Oct 22 15:08:30 2023 +0200
+Date:   Sat Jun 29 13:06:03 2024 +0200
 
     Fix GCC bug #54412
     
     This patch comes from https://github.com/msys2/MINGW-packages/pull/10314
 
-diff --git a/plugins/gcc11/gcc11-overlay.mk b/plugins/gcc11/gcc11-overlay.mk
-index 1d0937f2..4dc7f3f8 100644
---- a/plugins/gcc11/gcc11-overlay.mk
-+++ b/plugins/gcc11/gcc11-overlay.mk
-@@ -32,7 +32,7 @@ $(PKG)_SUBDIR   := gcc-$($(PKG)_VERSION)
- $(PKG)_FILE     := gcc-$($(PKG)_VERSION).tar.xz
- $(PKG)_URL      := https://ftp.gnu.org/gnu/gcc/gcc-$($(PKG)_VERSION)/$($(PKG)_FILE)
- $(PKG)_URL_2    := https://www.mirrorservice.org/sites/sourceware.org/pub/gcc/releases/gcc-$($(PKG)_VERSION)/$($(PKG)_FILE)
--$(PKG)_PATCHES  := $(dir $(lastword $(MAKEFILE_LIST)))/gcc11.patch
-+$(PKG)_PATCHES  := $(dir $(lastword $(MAKEFILE_LIST)))/gcc11.patch $(dir $(lastword $(MAKEFILE_LIST)))/noalign.patch
- $(PKG)_DEPS     := binutils mingw-w64 $(addprefix $(BUILD)~,gmp isl mpc mpfr zstd)
- 
- _$(PKG)_CONFIGURE_OPTS = --with-zstd='$(PREFIX)/$(BUILD)'
-diff --git a/plugins/gcc11/noalign.patch b/plugins/gcc11/noalign.patch
+diff --git a/src/gcc-9999-noalign.patch b/src/gcc-9999-noalign.patch
 new file mode 100644
 index 00000000..94e550d7
 --- /dev/null
-+++ b/plugins/gcc11/noalign.patch
++++ b/src/gcc-9999-noalign.patch
 @@ -0,0 +1,191 @@
 +From e3aa1d42ac5bd582fd57f40c224f3c55fc20fd69 Mon Sep 17 00:00:00 2001
 +From: Kai Tietz <ktietz@anaconda.com>

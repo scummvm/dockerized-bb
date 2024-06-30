@@ -1,0 +1,22 @@
+From ab671b54d34363297f449053b53a035fec960879 Mon Sep 17 00:00:00 2001
+From: Le Philousophe <lephilousophe@users.noreply.github.com>
+Date: Sun, 30 Jun 2024 16:15:18 +0200
+Subject: [PATCH 3/3] PATCH4
+
+
+diff --git a/sdl2-config.in b/sdl2-config.in
+index f6eca7668..1fe584a39 100644
+--- a/sdl2-config.in
++++ b/sdl2-config.in
+@@ -1,7 +1,7 @@
+ #!/bin/sh
+ 
+ # Get the canonical path of the folder containing this script
+-bindir=$(cd -P -- "$(dirname -- "$0")" && printf '%s\n' "$(pwd -P)")
++bindir=$(cd -P -- "$(dirname -- "$(readlink -e "$0")")" && printf '%s\n' "$(pwd -P)")
+ 
+ # Calculate the canonical path of the prefix, relative to the folder of this script
+ prefix=$(cd -P -- "$bindir/@bin_prefix_relpath@" && printf '%s\n' "$(pwd -P)")
+-- 
+2.44.2
+
