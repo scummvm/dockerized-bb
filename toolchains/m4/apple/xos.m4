@@ -91,6 +91,8 @@ common_package(compiler-rt)
 # Needed for freetype (at least that's what ScummVM thinks)
 helpers_package(bzip2)
 
+# Patch for modern clang
+COPY --from=apple-common /lib-helpers/packages/libpng1.6 lib-helpers/packages/libpng1.6
 helpers_package(libpng1.6)
 
 helpers_package(libjpeg-turbo, -DCMAKE_TOOLCHAIN_FILE=${TARGET_DIR}/XOS_PLATFORM`'.platform)
