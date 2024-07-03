@@ -52,7 +52,7 @@ mxe_package(cmake)
 
 # peldd will be used when creating package
 # Use local patch to avoid referencing Qt5 non-existent path and for ce build of wrapper
-local_package(pe-util)
+local_mxe_package(pe-util)
 
 # LLD links ScummVM faster
 mxe_package(lld)
