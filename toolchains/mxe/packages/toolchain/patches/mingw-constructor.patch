@@ -1,0 +1,25 @@
+diff --git a/src/mingw-w64-2-constructor-fix.patch b/src/mingw-w64-2-constructor-fix.patch
+new file mode 100644
+index 00000000..e855ad36
+--- /dev/null
++++ b/src/mingw-w64-2-constructor-fix.patch
+@@ -0,0 +1,19 @@
++commit 63cbf94f23694db7cfc4aef424370873dc897fa0
++Author: Le Philousophe <lephilousophe@users.noreply.github.com>
++Date:   Wed Jul 3 20:53:15 2024 +0200
++
++    Fix constructor priority to make it run (almost) first
++
++diff --git a/mingw-w64-libraries/winpthreads/src/misc.c b/mingw-w64-libraries/winpthreads/src/misc.c
++index 457bc86f6..b56e8a1b8 100644
++--- a/mingw-w64-libraries/winpthreads/src/misc.c
+++++ b/mingw-w64-libraries/winpthreads/src/misc.c
++@@ -28,7 +28,7 @@ void (WINAPI *_pthread_get_system_time_best_as_file_time) (LPFILETIME) = NULL;
++ static ULONGLONG (WINAPI *_pthread_get_tick_count_64) (VOID);
++ 
++ #if defined(__GNUC__) || defined(__clang__)
++-__attribute__((constructor))
+++__attribute__((constructor(0)))
++ #endif
++ static void winpthreads_init(void)
++ {
