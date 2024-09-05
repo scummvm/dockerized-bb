@@ -2,7 +2,7 @@ diff --git a/build_compiler_rt.sh b/build_compiler_rt.sh
 index e0b6b91..6c07cf8 100755
 --- a/build_compiler_rt.sh
 +++ b/build_compiler_rt.sh
-@@ -172,6 +172,12 @@ if [ $f_res -eq 1 ]; then
+@@ -179,6 +179,12 @@ if [ $f_res -eq 1 ]; then
          echo ""
        fi
  

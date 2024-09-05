@@ -33,7 +33,7 @@ VERSIONS_REGEXPS = [
 cctools_port_check = {
     'check': 'git commit',
     'repository': 'https://github.com/tpoechtrager/cctools-port.git',
-    'branch': '1009.2-ld64-907',
+    'branch': '1010.6-ld64-951.9',
 }
 osxcross_check = {
     'check': 'git commit',

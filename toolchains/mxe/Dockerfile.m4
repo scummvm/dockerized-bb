@@ -1,4 +1,4 @@
-m4_define(`MXE_VERSION',e56eebec2a9f578c12a495851a76256d93b71ac0)m4_dnl
+m4_define(`MXE_VERSION',9f349e0de62a4a68bfc0f13d835a6c685dae9daa)m4_dnl
 
 m4_include(`paths.m4')m4_dnl
 m4_include(`packages.m4')m4_dnl

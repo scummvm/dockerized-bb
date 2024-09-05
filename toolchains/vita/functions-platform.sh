@@ -5,7 +5,7 @@ do_vdpm_fetch () {
 	mkdir "$1"
 	cd "$1"
 
-	wget --progress=dot "http://dl.vitasdk.org/$1.tar.xz" -O - | tar --no-same-owner --no-same-permissions -xJ
+	wget --progress=dot "https://github.com/vitasdk/packages/releases/download/master/$1.tar.xz" -O - | tar --no-same-owner --no-same-permissions -xJ
 	do_patch
 }
 
