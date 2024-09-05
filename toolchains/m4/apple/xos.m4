@@ -120,6 +120,8 @@ helpers_package(mpeg2dec)
 
 helpers_package(a52dec)
 
+helpers_package(libmpcdec)
+
 # libvpx thinks that darwin means xcode and adds too many flags
 # disable this treatment
 COPY --from=apple-common /lib-helpers/packages/libvpx lib-helpers/packages/libvpx

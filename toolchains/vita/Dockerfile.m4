@@ -56,6 +56,8 @@ vdpm_package(libmpeg2)
 
 helpers_package(a52dec)
 
+helpers_package(libmpcdec)
+
 vdpm_package(libvpx)
 
 vdpm_package(openssl)

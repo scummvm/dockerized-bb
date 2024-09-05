@@ -80,6 +80,9 @@ helpers_package(mpeg2dec)
 # No a52dec in the original toolchain build ours statically
 helpers_package(a52dec)
 
+# No libmpcdec in the original toolchain build ours statically
+helpers_package(libmpcdec)
+
 # No libvpx in the original toolchain build ours statically
 helpers_package(libvpx)
 

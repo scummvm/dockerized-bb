@@ -87,6 +87,9 @@ local_mxe_package(libmpeg2)
 
 mxe_package(a52dec)
 
+# Patch libmpcdec to install the static library without a _static suffix
+local_mxe_package(libmpcdec)
+
 mxe_package(libvpx)
 
 local_mxe_package(curl-light)

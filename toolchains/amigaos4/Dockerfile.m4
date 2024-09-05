@@ -73,6 +73,8 @@ local_package(libmpeg2)
 
 local_package(liba52)
 
+local_package(libmpcdec)
+
 local_package(libvpx)
 
 local_package(libopenssl)

@@ -75,6 +75,8 @@ helpers_package(mpeg2dec)
 
 helpers_package(a52dec)
 
+helpers_package(libmpcdec)
+
 # libvpx is already installed in original toolchain
 
 # curl is already installed in original toolchain

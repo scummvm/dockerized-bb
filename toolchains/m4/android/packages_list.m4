@@ -30,6 +30,8 @@ helpers_package(a52dec)
 
 helpers_package(libmikmod)
 
+helpers_package(libmpcdec)
+
 # --as is used for x86* and overrides AS environment variable: exactly what we want
 # Fix build with nasm
 COPY --from=android-helpers /lib-helpers/packages/libvpx lib-helpers/packages/libvpx

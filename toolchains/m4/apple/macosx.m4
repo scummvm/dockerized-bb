@@ -133,6 +133,8 @@ helpers_package(mpeg2dec)
 
 ports_package(a52dec)
 
+ports_package(libmpcdec)
+
 ports_package(libvpx)
 
 # No curl as it's provided in SDK

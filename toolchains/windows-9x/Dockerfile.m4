@@ -72,6 +72,8 @@ helpers_package(mpeg2dec)
 COPY packages/a52dec lib-helpers/packages/a52dec/
 helpers_package(a52dec)
 
+helpers_package(libmpcdec)
+
 # Windows 95 doesn't handle well SSE.
 # Multithreading uses InterlockedCompareExchange, not present in Windows 95.
 helpers_package(libvpx, --as=nasm --disable-sse --disable-multithread)
