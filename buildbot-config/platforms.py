@@ -694,7 +694,7 @@ def raspberrypi():
         ]
     }
 
-    platform.description = "Raspberry Pi OS (Bullseye)"
+    platform.description = "Raspberry Pi OS (Bookworm)"
     platform.icon = 'raspberry'
 
     register_platform(platform)

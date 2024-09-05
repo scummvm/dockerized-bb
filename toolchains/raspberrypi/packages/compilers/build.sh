@@ -1,8 +1,8 @@
 #! /bin/sh
 
-DIST_VERSION=Bullseye
-# Use same version as Raspbian one
-GCC_VERSION=10.2.0
+DIST_VERSION=Bookworm
+# Use same version as Raspberry Pi OS one
+GCC_VERSION=12.2.0
 # Which RPI to target, RPI and SUFFIX must match
 RPI="1%2C%20Zero"
 SUFFIX="0-1"

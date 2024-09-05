@@ -1,5 +1,5 @@
 #! /bin/sh
-RASPBIAN_VERSION=bullseye
+RASPBIAN_VERSION=bookworm
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..
