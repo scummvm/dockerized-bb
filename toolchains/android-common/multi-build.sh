@@ -12,12 +12,13 @@ if [ -z "$API" ]; then
 	API=all
 fi
 
-# Old toolchains don't have this architecure so let it be configurable
-if [ -z "$TOOLCHAIN" ]; then
-	TOOLCHAIN="${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/${HOST_TAG}"
-fi
+TOOLCHAIN="${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/${HOST_TAG}"
 
-targets=$(cd "$TOOLCHAIN/sysroot/usr/lib" && ls -d */)
+for c in ar c++filt nm objcopy objdump ranlib readelf strings strip; do
+	v=$(echo $c | tr 'a-z+-' 'A-ZX_')
+	export $v="$TOOLCHAIN/bin/llvm-$c"
+done
+export LD="$TOOLCHAIN/bin/lld"
 
 for t in "$TOOLCHAIN/sysroot/usr/lib/"*/; do
 	t=$(basename $t)
@@ -56,23 +57,15 @@ for t in "$TOOLCHAIN/sysroot/usr/lib/"*/; do
 		# Define all environment variables now that we have the target platform and API
 		export HOST=$t TARGET=$t
 
-		# Don't know why but tools and compiler don't have the same target prefix for ARM
+		# Don't know why but libs and compiler don't have the same target prefix for ARM
 		comp_target=$TARGET
 		if [ $comp_target = "arm-linux-androideabi" ]; then
 			comp_target=armv7a-linux-androideabi
 		fi
-		for c in ar as c++filt ld nm objcopy objdump ranlib readelf strings strip; do
-			v=$(echo $c | tr 'a-z+-' 'A-ZX_')
-			export $v="$TOOLCHAIN/bin/$TARGET-$c"
-		done
-		# Frankenstein unified toolchains don't have the API version and use same name as TARGET
-		if [ -f "$TOOLCHAIN/bin/$comp_target$a-clang" ]; then
-			export CC=$TOOLCHAIN/bin/$comp_target$a-clang
-			export CXX=$TOOLCHAIN/bin/$comp_target$a-clang++
-		else
-			export CC=$TOOLCHAIN/bin/$TARGET-clang
-			export CXX=$TOOLCHAIN/bin/$TARGET-clang
-		fi
+		# Libvpx detects if AS ends with clang
+		export AS=$TOOLCHAIN/bin/$comp_target$a-clang
+		export CC=$TOOLCHAIN/bin/$comp_target$a-clang
+		export CXX=$TOOLCHAIN/bin/$comp_target$a-clang++
 
 		export PREFIX=$TOOLCHAIN/sysroot/usr
 		export PATH=$original_path:$TOOLCHAIN/bin:$PREFIX/bin/$TARGET/$a

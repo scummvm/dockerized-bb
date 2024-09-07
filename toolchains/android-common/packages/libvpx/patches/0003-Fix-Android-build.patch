@@ -1,17 +1,27 @@
-From cebce96d91c2e04bc07025f04ef093438a0f99dd Mon Sep 17 00:00:00 2001
+From e6955c6ac0adb5b23532dd737188744f05b0260b Mon Sep 17 00:00:00 2001
 From: Le Philousophe <lephilousophe@users.noreply.github.com>
 Date: Sun, 12 Mar 2023 16:36:43 +0100
-Subject: [PATCH 3/3] Fix Android build on x86
+Subject: [PATCH 3/4] Fix Android build
 
 ---
- build/make/configure.sh | 2 ++
- 1 file changed, 2 insertions(+)
+ build/make/configure.sh | 5 +++++
+ 1 file changed, 5 insertions(+)
 
 diff --git a/build/make/configure.sh b/build/make/configure.sh
-index 890be135b..8dfda7da7 100644
+index 12255b27c..629d79f53 100644
 --- a/build/make/configure.sh
 +++ b/build/make/configure.sh
-@@ -1378,6 +1378,8 @@ EOF
+@@ -792,6 +792,9 @@ process_common_toolchain() {
+ 
+     # detect tgt_os
+     case "$gcctarget" in
++      *android*)
++        tgt_os=android
++        ;;
+       *darwin1[0-9]*)
+         tgt_isa=x86_64
+         tgt_os=`echo $gcctarget | sed 's/.*\(darwin1[0-9]\).*/\1/'`
+@@ -1409,6 +1412,8 @@ EOF
            add_asflags -f elf${bits}
            enabled debug && [ "${AS}" = yasm ] && add_asflags -g dwarf2
            enabled debug && [ "${AS}" = nasm ] && add_asflags -g
@@ -21,5 +31,5 @@ index 890be135b..8dfda7da7 100644
            ;;
          darwin*)
 -- 
-2.39.2
+2.43.0
 
