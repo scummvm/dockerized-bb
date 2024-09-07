@@ -28,6 +28,7 @@ RUN apt-get update && \
 		libzstd-dev \
 		lld \
 		lzip \
+		nasm \
 		p7zip-full \
 		python-is-python3 \
 		python3-mako \
