@@ -64,6 +64,8 @@ vdpm_package(openssl)
 
 vdpm_package(curl)
 
+# Freetype needs bzip2
+vdpm_package(bzip2)
 vdpm_package(freetype)
 
 vdpm_package(fribidi)
