@@ -50,3 +50,5 @@ ENV \
 	def_aclocal(`${PREFIX}') \
 	def_pkg_config(`${PREFIX}') \
         PATH=$PATH:${PS3DEV}/bin:${PS3DEV}/ppu/bin:${PS3DEV}/spu/bin:${PS3DEV}/portlibs/ppu/bin
+
+define_aliases(ps3, ps3pkg)

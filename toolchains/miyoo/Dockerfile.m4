@@ -75,3 +75,5 @@ helpers_package(libvpx)
 # sdl_net is already installed in original toolchain
 
 helpers_package(fluidlite)
+
+define_aliases(miyoo, sd-root, --disable-detection-full --enable-plugins --default-dynamic)

@@ -112,3 +112,13 @@ local_mxe_package(winsparkle)
 local_mxe_package(discord-rpc)
 
 local_mxe_package(retrowave)
+
+m4_define(`define_mxe_aliases', `define_aliases(
+$1-w64-mingw32.static, win32dist-mingw DESTDIR=win32dist-mingw, , \
+CXX=${MXE_PREFIX_DIR}/bin/$1-w64-mingw32.static-c++ \
+STRIP=${MXE_PREFIX_DIR}/bin/$1-w64-mingw32.static-strip \
+STRINGS=${MXE_PREFIX_DIR}/bin/$1-w64-mingw32.static-strings \
+PKG_CONFIG_LIBDIR=${MXE_PREFIX_DIR}/$1-w64-mingw32.static/lib/pkgconfig \
+PATH=$PATH:${MXE_PREFIX_DIR}/$1-w64-mingw32.static/bin, $2)')m4_dnl
+define_mxe_aliases(i686, x86)
+define_mxe_aliases(x86_64, x86_64)

@@ -89,3 +89,5 @@ ENV \
 helpers_package(giflib,,CFLAGS="${CFLAGS} -fno-PIC")
 
 helpers_package(fribidi)
+
+define_aliases(psp, , --disable-debug --enable-plugins --default-dynamic)

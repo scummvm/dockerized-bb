@@ -75,3 +75,5 @@ vdpm_package(FluidLite)
 vdpm_package(sdl2)
 
 vdpm_package(sdl2_net)
+
+define_aliases(psp2, psp2vpk, --enable-plugins)

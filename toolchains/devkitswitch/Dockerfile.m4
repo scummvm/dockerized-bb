@@ -90,3 +90,5 @@ helpers_package(libmpcdec)
 # sdl2_net is already installed in original toolchain
 
 helpers_package(fluidlite, -DCMAKE_TOOLCHAIN_FILE=${DEVKITPRO}/cmake/Switch.cmake)
+
+define_aliases(switch, switch_release)

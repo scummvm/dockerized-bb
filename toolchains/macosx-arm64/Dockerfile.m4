@@ -15,3 +15,7 @@ helpers_package(discord-rpc, -DCMAKE_SYSTEM_NAME=Darwin)
 # This package isn't available for i386 so put it here
 # It's in macosx-common for any MacOS toolchain
 common_package(sparkle)
+
+define_aliases(MACOSX_TARGET_ARCH`'-apple-darwin`'MACOSX_TARGET_VERSION, bundle, \
+--enable-static --with-staticlib-prefix=${DESTDIR}/${PREFIX} --with-sparkle-prefix=${DESTDIR}/${PREFIX}/Library/Frameworks --disable-osx-dock-plugin, \
+DISCORD_LIBS=\"-framework AppKit\")

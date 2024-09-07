@@ -90,3 +90,6 @@ helpers_package(libvpx, --disable-multithread)
 # fribidi is already installed in original-toolchain
 
 # No fluidsynth
+
+define_aliases(gamecube, wiidist, --enable-plugins --default-dynamic --enable-vkeybd, , gamecube)
+define_aliases(wii, wiidist, --enable-plugins --default-dynamic --enable-vkeybd, , wii)

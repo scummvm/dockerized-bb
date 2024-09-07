@@ -63,3 +63,5 @@ ENV \
 	PKG_CONFIG_LIBDIR=${RPI_ROOT}/usr/lib/$HOST/pkgconfig:${RPI_ROOT}/usr/share/pkgconfig \
 	PKG_CONFIG_SYSROOT_DIR=${RPI_ROOT} \
         PATH=$PATH:${RPI_HOME}/bin:${RPI_ROOT}/usr/bin
+
+define_aliases(raspberrypi, dist-generic)

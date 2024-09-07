@@ -7,3 +7,5 @@ m4_define(`XOS_SDK_BASE',AppleTVOS)m4_dnl
 m4_define(`XOS_PLATFORM',tv)m4_dnl
 
 m4_include(`apple/xos.m4')m4_dnl
+
+define_aliases(appletv, tvosbundle, --enable-static --with-staticlib-prefix=${PREFIX})

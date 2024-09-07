@@ -7,3 +7,5 @@ m4_define(`XOS_SDK_BASE',iPhoneOS)m4_dnl
 m4_define(`XOS_PLATFORM',iphone)m4_dnl
 
 m4_include(`apple/xos.m4')m4_dnl
+
+define_aliases(ios7-arm64, ios7bundle, --enable-static --with-staticlib-prefix=${PREFIX})

@@ -71,3 +71,12 @@ helpers_package(fribidi)
 # sdl2_net is already installed in original toolchain
 
 # fluidsynth is already installed in original toolchain
+m4_define(`define_od_aliases', `define_aliases(
+opendingux-$1, od-make-opk, , \
+CXX=${OPENDINGUX_ROOT}/$1-toolchain/bin/mipsel-linux-c++ \
+PKG_CONFIG_LIBDIR=${OPENDINGUX_ROOT}/$1-toolchain/mipsel-$1-linux-$2/sysroot/usr/lib/pkgconfig \
+PKG_CONFIG_SYSROOT_DIR=${OPENDINGUX_ROOT}/$1-toolchain/mipsel-$1-linux-$2/sysroot \
+PATH=$PATH:${OPENDINGUX_ROOT}/$1-toolchain/mipsel-$1-linux-$2/sysroot/usr/bin:${OPENDINGUX_ROOT}/$1-toolchain/bin, $1)')m4_dnl
+define_od_aliases(gcw0, uclibc)
+define_od_aliases(lepus, musl)
+define_od_aliases(rs90, musl)

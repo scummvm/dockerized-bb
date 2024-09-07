@@ -100,3 +100,5 @@ local_package(sdl-net1.2)
 # TODO: openssl and curl
 
 # fluidsynth is unlikely to be fast enough.
+
+define_aliases(caanoo, caanoo-bundle, --enable-plugins --default-dynamic --enable-vkeybd)

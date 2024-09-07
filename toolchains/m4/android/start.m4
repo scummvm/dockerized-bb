@@ -1,3 +1,5 @@
+m4_dnl For define_aliases macro
+m4_include(`paths.m4')m4_dnl
 m4_define(`local_sdk_package', COPY packages/$1 lib-helpers/packages/$1/
 RUN $3 lib-helpers/packages/$1/build.sh $2)m4_dnl
 m4_define(`local_package', COPY packages/$1 lib-helpers/packages/$1/

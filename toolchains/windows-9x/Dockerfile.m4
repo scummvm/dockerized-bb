@@ -102,3 +102,5 @@ RUN ln -s ${PREFIX}/bin/sdl-config ${PREFIX}/../bin/${HOST}-sdl-config
 
 COPY packages/retrowave lib-helpers/packages/retrowave/
 helpers_package(retrowave, -DCMAKE_SYSTEM_NAME=Windows)
+
+define_aliases(mingw32, win32dist-mingw, --disable-windows-unicode --disable-enet)

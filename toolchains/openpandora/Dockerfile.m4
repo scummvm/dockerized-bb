@@ -116,3 +116,5 @@ local_package(gnutls)
 local_package(curl)
 
 # fluidsynth is unlikely to be fast enough.
+
+define_aliases(openpandora, op-pnd, --enable-plugins --default-dynamic --enable-vkeybd)

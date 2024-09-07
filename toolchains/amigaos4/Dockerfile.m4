@@ -95,3 +95,5 @@ local_package(libsdl2)
 local_package(libsdl2_net)
 
 # No fluidsynth
+
+define_aliases(ppc-amigaos, amigaosdist, --enable-plugins --default-dynamic --enable-detection-dynamic)

@@ -51,3 +51,5 @@ helpers_package(zlib)
 helpers_package(libmad)
 
 local_package(libvorbisidec)
+
+define_aliases(n64, , --disable-all-engines --enable-vkeybd)

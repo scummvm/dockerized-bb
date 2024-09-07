@@ -51,3 +51,5 @@ ENV \
 # zlib is already installed in original toolchain
 
 helpers_package(libmad)
+
+define_aliases(dreamcast, dcdist, --enable-plugins --default-dynamic --enable-vkeybd)

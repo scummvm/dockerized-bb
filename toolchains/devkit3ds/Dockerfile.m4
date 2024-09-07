@@ -76,3 +76,5 @@ local_package(freetype)
 # fribidi is already installed in original toolchain
 
 helpers_package(fluidlite, -DCMAKE_TOOLCHAIN_FILE=${DEVKITPRO}/cmake/3DS.cmake)
+
+define_aliases(3ds, dist_3ds, --enable-plugins --default-dynamic)

@@ -109,3 +109,5 @@ local_package(sdl-net1.2)
 # TODO: openssl and curl
 
 # fluidsynth is unlikely to be fast enough.
+
+define_aliases(dingux, dingux-dist, --enable-plugins --default-dynamic --enable-vkeybd)

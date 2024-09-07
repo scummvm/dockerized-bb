@@ -40,3 +40,8 @@ m4_include(`android/packages_list.m4')
 ENV ANDROID_SDK_ROOT=${ANDROID_ROOT}/sdk
 # Install SDK using settings above
 local_sdk_package(sdk)
+
+define_aliases(android-arm-v7a, androiddistdebug, , , arm)
+define_aliases(android-arm64-v8a, androiddistdebug, , , arm64)
+define_aliases(android-x86, androiddistdebug, , , x86)
+define_aliases(android-x86_64, androiddistdebug, , , x86_64)

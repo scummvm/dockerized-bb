@@ -8,3 +8,5 @@ m4_define(`MACOSX_DEPLOYMENT_TARGET',10.6)m4_dnl
 m4_define(`MACOSX_ARCHITECTURES',`i386')m4_dnl
 m4_define(`MACOSX_PORTS_ARCH_ARG',`--i386')m4_dnl
 m4_include(`apple/macosx.m4')m4_dnl
+
+define_aliases(MACOSX_TARGET_ARCH`'-apple-darwin`'MACOSX_TARGET_VERSION, bundle, --enable-static --with-staticlib-prefix=${DESTDIR}/${PREFIX} --disable-osx-dock-plugin)

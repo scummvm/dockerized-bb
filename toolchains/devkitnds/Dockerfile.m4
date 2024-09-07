@@ -29,3 +29,5 @@ ENV \
 # zlib is already installed in original toolchain
 
 helpers_package(libmad, --enable-fpm=arm --enable-speed --enable-sso)
+
+define_aliases(ds, dsdist, --enable-plugins --default-dynamic)
