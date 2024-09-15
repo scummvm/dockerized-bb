@@ -22,7 +22,7 @@ __do_patch () {
 	if [ -d "$PACKAGE_DIR/patches$suffix" ]; then
 		for p in "$PACKAGE_DIR/patches$suffix"/*.patch; do
 			echo "Applying $p"
-			patch -t -p1 < "$p"
+			patch -tN -p1 < "$p"
 		done
 	fi
 }

@@ -42,7 +42,7 @@ do_http_fetch binutils $(make_url ${BINUTILS_GROUP} "binutils-${BINUTILS_VERSION
 
 for p in arch/mingw32/*.patch; do
 	echo "Applying $p"
-	patch -t -p1 < "$p"
+	patch -tN -p1 < "$p"
 done
 
 ./configure --target=${target} --prefix="${prefix}" --disable-werror
@@ -56,7 +56,7 @@ do_http_fetch gcc $(make_url ${GCC_GROUP} "gcc-${GCC_VERSION}-mingw32-src.tar.xz
 
 for p in arch/mingw32/*.patch; do
 	echo "Applying $p"
-	patch -t -p1 < "$p"
+	patch -tN -p1 < "$p"
 done
 
 # Do off tree build

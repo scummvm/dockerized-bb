@@ -20,7 +20,7 @@ index 096b094..47ec86e 100755
 -fi
 -cd "$REPO_FOLDER" && git fetch origin && git reset --hard "origin/${REPO_REFERENCE}" && git checkout "${REPO_REFERENCE}" || exit 1
 +for p in "$PACKAGE_DIR/$REPO_FOLDER-patches"/*; do
-+	patch -p1 < "$p" || { exit 1; }
++	patch -N -p1 < "$p" || { exit 1; }
 +done
  
  ## Build and install.
@@ -47,7 +47,7 @@ index ab89aee..5d5ec20 100755
 -fi
 -cd "$REPO_FOLDER" && git fetch origin && git reset --hard "origin/${REPO_REFERENCE}" && git checkout "${REPO_REFERENCE}" || exit 1
 +for p in "$PACKAGE_DIR/$REPO_FOLDER-patches"/*; do
-+	patch -p1 < "$p" || { exit 1; }
++	patch -N -p1 < "$p" || { exit 1; }
 +done
  
  ## Build and install.

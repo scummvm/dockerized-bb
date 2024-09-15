@@ -36,7 +36,7 @@ index a75b5e9..3235381 100644
    pushd $BUILD_DIR &>/dev/null
  
    get_sources https://github.com/tpoechtrager/xar.git $XAR_VERSION
-+  patch -d "$CURRENT_BUILD_PROJECT_NAME" -p1 <<-'EOF'
++  patch -N -d "$CURRENT_BUILD_PROJECT_NAME" -p1 <<-'EOF'
 +commit 9047e5820c2a65829100f183dae342700d5cf604
 +Author: Le Philousophe <lephilousophe@users.noreply.github.com>
 +Date:   Sun Jan 24 17:22:23 2021 +0100
@@ -148,7 +148,7 @@ index a75b5e9..3235381 100644
  function build_pbxz()
  {
    get_sources https://github.com/tpoechtrager/pbzx.git $PBZX_VERSION
-+  patch -d "$CURRENT_BUILD_PROJECT_NAME" -p1 <<-'EOF'
++  patch -N -d "$CURRENT_BUILD_PROJECT_NAME" -p1 <<-'EOF'
 +commit 3fc6a63b1489c18150cd171f8901d15269a79ea2
 +Author: Le Philousophe <lephilousophe@users.noreply.github.com>
 +Date:   Sun Jan 24 19:06:57 2021 +0100

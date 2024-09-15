@@ -20,7 +20,7 @@ index 732e96a..babb6f8 100755
 +git checkout FETCH_HEAD || { exit 1; }
 +
 +for p in "$PACKAGE_DIR/$REPO_FOLDER-patches"/*; do
-+	patch -p1 < "$p" || { exit 1; }
++	patch -N -p1 < "$p" || { exit 1; }
 +done
  
  ## Build and install.
