@@ -8,8 +8,11 @@ do_make_bdir
 
 do_pkg_fetch libvorbis
 
+# Fix clang compilation
+sed -i -e '/CFLAGS/s:-mno-ieee-fp::' configure.ac
+
 # Avoid compiling and installing doc
-sed -ie 's/^\(SUBDIRS.*\) doc/\1/' Makefile.am
+sed -i -e 's/^\(SUBDIRS.*\) doc/\1/' Makefile.am
 
 autoreconf -fi -I m4
 do_configure

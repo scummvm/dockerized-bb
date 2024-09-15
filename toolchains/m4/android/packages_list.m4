@@ -17,9 +17,6 @@ helpers_package(libogg)
 
 helpers_package(libtheora)
 
-# Platform patch provided in android-common
-# Remove compilation flag not supported by clang
-COPY --from=android-helpers /lib-helpers/packages/libvorbis lib-helpers/packages/libvorbis
 helpers_package(libvorbis)
 
 helpers_package(flac)
