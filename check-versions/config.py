@@ -171,13 +171,11 @@ VERSIONS = {
     ('./toolchains/apple-common/packages/osxcross-clang/build.sh', 'OSXCROSS'): osxcross_check,
     ('./toolchains/apple-common/packages/osxcross/build.sh', 'OSXCROSS'): osxcross_check,
     ('./toolchains/apple-common/packages/osxcross/build.sh', 'XAR'): xar_check,
-    ('./toolchains/apple-common/packages/ldid/build.sh', 'LDID'): {
-        # For MacOSX we need upstream ldid with latest MacOS support
+    ('./toolchains/apple-common/packages/rcodesign/build.sh', 'RCODESIGN'): {
+        # For MacOSX we need rcodesign for latest MacOS support
         'check': 'git tag',
-        'repository': 'https://github.com/ProcursusTeam/ldid.git',
-        # Only keep unpatched releases
-        'exclude pattern': r'.*-procursus\d*$',
-        'prefix': 'v',
+        'repository': 'https://github.com/indygreg/apple-platform-rs.git',
+        'prefix': 'apple-codesign/',
     },
     ('./toolchains/apple-common/packages/sparkle/build.sh', 'SPARKLE'): {
         'check': 'git tag',

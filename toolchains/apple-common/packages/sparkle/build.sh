@@ -14,10 +14,6 @@ do_http_fetch Sparkle "https://github.com/sparkle-project/Sparkle/releases/downl
 rm "Sparkle.framework/XPCServices"
 rm -rf "Sparkle.framework/Versions/B/XPCServices"
 
-# Sign remaining binaries: our codesign shim doesn't handle well deep binaries
-ldid -P -Cadhoc -Cruntime -S Sparkle.framework/Versions/B/Autoupdate
-ldid -P -Cadhoc -Cruntime -S Sparkle.framework/Versions/B/Updater.app
-
 mkdir -p "${DESTDIR}/${PREFIX}/Library/Frameworks"
 
 mv Sparkle.framework "${DESTDIR}/${PREFIX}/Library/Frameworks"
