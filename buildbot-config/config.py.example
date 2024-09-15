@@ -89,7 +89,7 @@ change_horizon = 1000
 
 # URL used to download daily builds
 # If serve_daily_builds is True, it will be:
-# daily_builds_url = buildbot_url + "wsgi_dashboards/dailybuilds/packages/"
+# daily_builds_url = buildbot_url + "plugins/wsgi_dashboards/dailybuilds/packages/"
 daily_builds_url = "https://buildbot.scummvm.org/dailybuilds/"
 
 enable_list_daily_builds = True
