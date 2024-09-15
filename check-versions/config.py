@@ -88,8 +88,9 @@ debian_check = {
 }
 raspios_check = {
     'check': 'scrape',
-    'url': 'https://downloads.raspberrypi.org/raspios_armhf/os.json',
-    'filter pattern': r'(?m)^\s*"version": "(?P<version>[a-z]+)",?$',
+    'url': 'https://downloads.raspberrypi.org/os_list_imagingutility_v4.json',
+    'encoding': 'utf-8',
+    'filter pattern': r'https://.*raspios_armhf-.*-raspios-(?P<version>[^-]+)-armhf.img.xz',
     'case insensitive': True,
 }
 alpine_check = {
