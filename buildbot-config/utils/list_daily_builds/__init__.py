@@ -27,6 +27,13 @@ class ConfiguredBottle(bottle.Bottle):
         # Return module name
         return dict(name=__name__)
 
+    def __setattr__(self, name, value):
+        # Bottle doesn't like that we erase an exisiting attribute
+        # In our case it's safe
+        if name == 'buildbot_api' and name in self.__dict__:
+            delattr(self, name)
+        return super().__setattr__(name, value)
+
 module_path = os.path.abspath(os.path.dirname(__file__))
 static_path = os.path.join(module_path, 'static')
 tmpl_path = [os.path.join(module_path, 'templates')]
