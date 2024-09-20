@@ -40,9 +40,6 @@ RUN apt-get update && \
 		zip \
 		unzip \
 		wget && \
-	dpkg-divert --package dash --no-rename --remove /bin/sh && \
-	dpkg-divert --no-rename --divert /bin/sh.dash --add /bin/sh && \
-	ln -sf /bin/bash /bin/sh && \
 	rm -rf /var/lib/apt/lists/*
 
 ENV PSPDEV=/usr/local/pspdev HOST=psp

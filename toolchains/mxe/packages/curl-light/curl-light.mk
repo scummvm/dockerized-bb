@@ -23,6 +23,7 @@ define $(PKG)_BUILD
         $(MXE_CONFIGURE_OPTS) \
         --with-schannel \
         --without-winidn \
+        --without-libpsl \
         --enable-sspi \
         --enable-ipv6 \
         --enable-threaded-resolver \
