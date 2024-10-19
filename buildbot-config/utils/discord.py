@@ -128,7 +128,6 @@ class DiscordStatusPush(ReporterBase):
             mentions = {}
 
         super().checkConfig(generators=generators, **kwargs)
-        httpclientservice.HTTPClientService.checkAvailable(self.__class__.__name__)
 
     @defer.inlineCallbacks
     def reconfigService(self, webhook_url, token=None,

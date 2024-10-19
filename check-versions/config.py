@@ -116,12 +116,6 @@ VERSIONS = {
         'repository': 'https://github.com/bottlepy/bottle.git',
         'exclude pattern': r'.*(b|rc).*'
     },
-    ('./Makefile', 'TREQ'): {
-        'check': 'git tag',
-        'repository': 'https://github.com/twisted/treq.git',
-        'prefix': 'release-',
-        'exclude pattern': r'.*(b|rc).*'
-    },
     ('./Makefile', 'DOCKER_PY'): {
         'check': 'git tag',
         'repository': 'https://github.com/docker/docker-py.git',
