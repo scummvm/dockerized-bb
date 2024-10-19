@@ -38,7 +38,7 @@ class Platform:
             'configureargs', 'buildconfigureargs',
             'packageable', 'built_files', 'data_files',
             'packaging_cmd', 'strip_cmd', 'archiveext',
-            'testable', 'run_tests', 'build_devtools',
+            'run_tests', 'build_devtools',
             'workerimage', 'lock_access',
             'icon', 'description_']
 
@@ -57,8 +57,6 @@ class Platform:
         self.packaging_cmd = None
         self.strip_cmd = None
         self.archiveext = "tar.xz"
-        # Can build tests
-        self.testable = True
         # Can run tests
         self.run_tests = False
 
@@ -106,8 +104,6 @@ class Platform:
         return _getFromBuild(self.packaging_cmd, build)
     def getStripCmd(self, build):
         return _getFromBuild(self.strip_cmd, build)
-    def canBuildTests(self, build):
-        return _getFromBuild(self.testable, build)
     def canRunTests(self, build):
         return _getFromBuild(self.run_tests, build)
     def getWorkerImage(self, build):
@@ -136,7 +132,6 @@ def _3ds():
         builds.ScummVMBuild: [ "dist_3ds/*" ],
     }
     platform.archiveext = "zip"
-    platform.testable = False
 
     platform.description = "Nintendo 3DS"
     platform.icon = "3ds"
@@ -213,7 +208,6 @@ def android(suffix, scummvm_target, ndk_target, cxx_target, abi_version,
         builds.ScummVMBuild: [ "debug" ],
     }
     platform.archiveext = "zip"
-    platform.testable = False
 
     platform.description = description
     platform.icon = "android"
@@ -268,7 +262,7 @@ appletv()
 
 def debian(name_suffix, image_suffix, host,
         package=True,
-        build_tests=True, run_tests=True, build_devtools=False,
+        run_tests=True, build_devtools=False,
         buildconfigureargs=None, env=None, tools=True,
         description=None):
     platform = Platform("debian-{0}".format(name_suffix))
@@ -303,7 +297,6 @@ def debian(name_suffix, image_suffix, host,
             "scummvm-tools-cli"
         ]
     }
-    platform.testable = build_tests
     platform.run_tests = run_tests
     platform.build_devtools = build_devtools
     platform.packageable = package
@@ -316,24 +309,24 @@ debian("i686", "x86", "i686-linux-gnu", description="Debian (32\xa0bits)")
 debian("x86-64", "x86_64", "x86_64-linux-gnu", description="Debian (64\xa0bits)",
     build_devtools=True)
 debian("x86-64-nullbackend", "x86_64", "x86_64-linux-gnu", package=False, tools=False,
-    build_tests=False, run_tests=False,
+    run_tests=False,
     buildconfigureargs = {
         builds.ScummVMBuild: [ "--backend=null", "--enable-opl2lpt", "--enable-text-console" ],
     })
 debian("x86-64-clang", "x86_64-clang", "x86_64-linux-gnu", package=False, tools=False,
     run_tests=False, build_devtools=True)
 debian("x86-64-plugins", "x86_64", "x86_64-linux-gnu", package=False, tools=False,
-    build_tests=False, run_tests=False,
+    run_tests=False,
     buildconfigureargs = {
         builds.ScummVMBuild: [ "--enable-plugins", "--default-dynamic" ],
     })
 debian("x86-64-dynamic-detection", "x86_64", "x86_64-linux-gnu", package=False, tools=False,
-    build_tests=False, run_tests=False,
+    run_tests=False,
     buildconfigureargs = {
         builds.ScummVMBuild: [ "--enable-plugins", "--default-dynamic", "--enable-detection-dynamic" ],
     })
 debian("x86-64-sdl1.2", "x86_64", "x86_64-linux-gnu", package=False, tools=False,
-    build_tests=False, run_tests=False,
+    run_tests=False,
     buildconfigureargs = {
         builds.ScummVMBuild: [ "--disable-all-engines", "--enable-engine=testbed",],
     },
@@ -565,7 +558,6 @@ def nds():
         builds.ScummVMBuild: [ "dsdist/*" ],
     }
     platform.archiveext = "zip"
-    platform.testable = False
 
     platform.description = "Nintendo DS"
     platform.icon = 'ds'
@@ -604,7 +596,6 @@ def opendingux_beta(target, toolchain, libc, description=None):
         builds.ScummVMBuild: [ "scummvm_{0}.opk".format(target) ],
     }
     platform.archiveext = "zip"
-    platform.testable = False
 
     platform.description = "OpenDingux beta - {0}".format(description)
     platform.icon = "dingux"
@@ -734,7 +725,6 @@ def riscos(suffix, prefix_subdir, variable_suffix, host, description = None):
         builds.ScummVMToolsBuild: [ "!ScummTool" ],
     }
     platform.archiveext = "zip"
-    platform.testable = False
 
     platform.icon = 'riscos'
     platform.description = description
@@ -754,7 +744,6 @@ def switch():
         builds.ScummVMBuild: [ "switch_release/*" ],
     }
     platform.archiveext = "zip"
-    platform.testable = False
 
     platform.description = "Nintendo Switch"
     platform.icon = 'switch'
@@ -777,7 +766,6 @@ def vita():
         builds.ScummVMBuild: [ "scummvm.vpk" ],
     }
     platform.archiveext = "zip"
-    platform.testable = False
 
     platform.description = "PlayStation Vita"
     platform.icon = 'psp2'

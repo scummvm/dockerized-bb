@@ -403,17 +403,10 @@ class StandardBuild(Build):
             **kwargs))
 
     def addTestsSteps(self, f, platform, *, env, **kwargs):
-        if not platform.canBuildTests(self):
+        if not platform.canRunTests(self):
             return
 
-        if platform.canRunTests(self):
-            f.addStep(steps.Test(env = env, **kwargs))
-        else:
-            # Compile Tests (Runner), but do not execute (as binary is non-native)
-            f.addStep(steps.Test(command = [
-                    "make",
-                    "test/runner" ],
-                env = env, **kwargs))
+        f.addStep(steps.Test(env = env, **kwargs))
 
     def addPackagingSteps(self, f, platform, *, env,
         src_path, daily_builds_path, daily_builds_url):
