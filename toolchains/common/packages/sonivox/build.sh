@@ -1,6 +1,6 @@
 #! /bin/sh
 
-SONIVOX_VERSION=3.6.12
+SONIVOX_VERSION=3.6.14
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..
@@ -13,7 +13,7 @@ do_http_fetch sonivox \
 
 # -DCMAKE_SYSTEM_NAME=Windows for Windows
 
-do_cmake -DBUILD_SONIVOX_SHARED=OFF -DBUILD_TESTING=OFF "$@"
+do_cmake -DBUILD_SONIVOX_SHARED=OFF -DBUILD_TESTING=OFF -DBUILD_EXAMPLE=OFF "$@"
 do_make
 do_make install
 

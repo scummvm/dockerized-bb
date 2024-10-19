@@ -26,7 +26,7 @@ index f29faec..d554c9d 100755
  
  fi
  
--SDKS=$(ls | grep -E "^MacOSX14.*|^MacOSX13.*|^MacOSX12.*|^MacOSX11.*|^MacOSX10.*" | grep -v "Patch")
+-SDKS=$(ls | grep -E "^MacOSX15.*|^MacOSX14.*|^MacOSX13.*|^MacOSX12.*|^MacOSX11.*|^MacOSX10.*" | grep -v "Patch")
 +SDKS=$(for platform in $SDK_PLATFORMS; do ls -1d ${platform}.platform/Developer/SDKs/*.*.sdk | grep -v 'Patch'; done)
  
  if [ -z "$SDKS" ]; then
