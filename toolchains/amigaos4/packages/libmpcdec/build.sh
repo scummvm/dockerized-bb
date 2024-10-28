@@ -8,9 +8,8 @@ do_make_bdir
 
 do_lha_fetch audio/libmpcdec "libmpcdec*/"
 
-do_lha_install
+find . -depth -type d -name .svn -exec rm -rf '{}' ';'
 
-# libmpcdec.a is located in common folder where it should not and it has a bad casing, fix this
-cp local/common/lib/libMPCdec.a $DESTDIR/$PREFIX/lib/libmpcdec.a
+do_lha_install
 
 do_clean_bdir
