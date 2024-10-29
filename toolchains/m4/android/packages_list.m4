@@ -1,3 +1,5 @@
+android_package(oboe)
+
 m4_dnl This file is included by Dockerfile.m4
 # zlib is already provided by Android but doesn't come with a pkg-config file
 # This package just installs one to please libpng and others which require it

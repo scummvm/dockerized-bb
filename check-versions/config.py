@@ -153,6 +153,10 @@ VERSIONS = {
         'url': 'https://developer.android.com/studio',
         'filter pattern': r'>commandlinetools-linux-(?P<version>\d+)_latest.zip</'
     },
+    ('./toolchains/android-common/packages/oboe/build.sh', 'OBOE'): {
+        'check': 'git tag',
+        'repository': 'https://github.com/google/oboe.git',
+    },
 
     # Android NDK must match ScummVM build system
     ('./toolchains/android/Dockerfile.m4', 'ANDROID_NDK'): 'ignore',

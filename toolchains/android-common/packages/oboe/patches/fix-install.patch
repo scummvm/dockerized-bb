@@ -1,0 +1,18 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index ac798aac..610c20aa 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -98,9 +98,10 @@ target_compile_definitions(oboe PUBLIC $<$<CONFIG:DEBUG>:OBOE_ENABLE_LOGGING=1>)
+ target_link_libraries(oboe PRIVATE log OpenSLES)
+ 
+ # When installing oboe put the libraries in the lib/<ABI> folder e.g. lib/arm64-v8a
++include(GNUInstallDirs)
+ install(TARGETS oboe
+-        LIBRARY DESTINATION lib/${ANDROID_ABI}
+-        ARCHIVE DESTINATION lib/${ANDROID_ABI})
++        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
++        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+ 
+ # Also install the headers
+-install(DIRECTORY include/oboe DESTINATION include)
++install(DIRECTORY include/oboe DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
