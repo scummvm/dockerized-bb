@@ -25,7 +25,7 @@ COPY --from=android-helpers /lib-helpers/functions-platform.sh \
 RUN for i in $(seq 1 8); do mkdir -p "/usr/share/man/man${i}"; done && \
 	apt-get update && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-		default-jre-headless \
+		default-jdk-headless \
 		nasm \
 		python3-protobuf && \
 	rm -rf /var/lib/apt/lists/*
