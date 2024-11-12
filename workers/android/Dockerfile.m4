@@ -8,7 +8,7 @@ m4_include(`debian-builder-base.m4')m4_dnl
 RUN for i in $(seq 1 8); do mkdir -p "/usr/share/man/man${i}"; done && \
 	apt-get update && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-		default-jre-headless \
+		default-jdk-headless \
 		nasm && \
 	rm -rf /var/lib/apt/lists/*
 
