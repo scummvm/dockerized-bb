@@ -41,7 +41,10 @@ ENV ANDROID_SDK_ROOT=${ANDROID_ROOT}/sdk
 # Install SDK using settings above
 local_sdk_package(sdk)
 
-define_aliases(android-arm-v7a, androiddistdebug, , , arm)
-define_aliases(android-arm64-v8a, androiddistdebug, , , arm64)
-define_aliases(android-x86, androiddistdebug, , , x86)
-define_aliases(android-x86_64, androiddistdebug, , , x86_64)
+m4_define(`define_android_aliases', `define_aliases(
+android-$1, androiddistdebug, , \
+PATH=$PATH:${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/${HOST_TAG}/sysroot/usr/bin/$2/$3, $4)')m4_dnl
+define_android_aliases(arm-v7a, arm-linux-androideabi, 16, arm)
+define_android_aliases(arm64-v8a, aarch64-linux-android, 21, arm64)
+define_android_aliases(x86, i686-linux-android, 16, x86)
+define_android_aliases(x86_64, x86_64-linux-android, 21, x86_64)
