@@ -76,7 +76,7 @@ class StandardBuild(Build):
         'names',
         'baseurl', 'giturl', 'branch',
         'daily', 'enable_force',
-        'verbose_build',
+        'verbose_build', 'use_ccache',
         'lock_src']
 
     PATCHES = []
@@ -87,7 +87,8 @@ class StandardBuild(Build):
 
     def __init__(self, name, baseurl, branch, *,
             daily = None, enable_force = True, giturl = None,
-            verbose_build = False, description = None):
+            verbose_build = False, use_ccache = True,
+            description = None):
         super().__init__(name, description = description)
         if giturl is None:
             giturl = baseurl + ".git"
@@ -97,6 +98,7 @@ class StandardBuild(Build):
         self.daily = daily
         self.enable_force = enable_force
         self.verbose_build = verbose_build
+        self.use_ccache = use_ccache
 
         if self.CONFIGURE_GENERATED_FILE is None:
             raise Exception("Invalid CONFIGURE_GENERATED_FILE setting")
@@ -300,6 +302,11 @@ class StandardBuild(Build):
             locks = [ lock_build.access('counting') ]
         )
 
+    def patchBuildEnvironment(self, env):
+        if self.use_ccache:
+            # Setup ccache as the compiler, use already set CXX as real compiler or environement CXX from docker image
+            env['CXX'] = 'ccache {0}'.format(env.get('CXX', '${CXX}'))
+
     def getPerPlatformBuilders(self, platform):
         if not platform.canBuild(self):
             return
@@ -316,8 +323,7 @@ class StandardBuild(Build):
         configure_path = src_path + "/configure"
 
         env = platform.getEnv(self)
-        # Setup ccache as the compiler, use already set CXX as real compiler or environement CXX from docker image
-        env['CXX'] = 'ccache {0}'.format(env.get('CXX', '${CXX}'))
+        self.patchBuildEnvironment(env)
 
         f = util.BuildFactory()
         f.workdir = ""
@@ -568,6 +574,6 @@ class ScummVMToolsBuild(StandardBuild):
 builds = []
 
 builds.append(ScummVMBuild("master", "https://github.com/scummvm/scummvm", "master", verbose_build=True, daily=(4, 1), description="ScummVM latest\nBranch master"))
-builds.append(ScummVMStableBuild("stable", "https://github.com/scummvm/scummvm", "branch-2-9", verbose_build=True, daily=(4, 1), description="ScummVM stable\nFuture 2.9.x"))
+builds.append(ScummVMStableBuild("stable", "https://github.com/scummvm/scummvm", "branch-2-9", verbose_build=True, use_ccache=False, daily=(4, 1), description="ScummVM stable\nFuture 2.9.x"))
 #builds.append(ScummVMBuild("gsoc2012", "https://github.com/digitall/scummvm", "gsoc2012-scalers-cont", verbose_build=True))
 builds.append(ScummVMToolsBuild("tools-master", "https://github.com/scummvm/scummvm-tools", "master", verbose_build=True, daily=(4, 1), description="ScummVM tools"))
