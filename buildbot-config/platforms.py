@@ -369,7 +369,7 @@ def gamecube():
     platform.compatibleBuilds = (builds.ScummVMBuild, )
     platform.configureargs.append("--host=gamecube")
     platform.buildconfigureargs = {
-        builds.ScummVMBuild: [ "--enable-plugins", "--default-dynamic", "--enable-vkeybd" ],
+        builds.ScummVMBuild: [ "--enable-plugins", "--default-dynamic", "--enable-detection-dynamic", "--enable-vkeybd" ],
     }
     platform.packaging_cmd = "wiidist"
     platform.built_files = {
@@ -779,7 +779,7 @@ def wii():
     platform.compatibleBuilds = (builds.ScummVMBuild, )
     platform.configureargs.append("--host=wii")
     platform.buildconfigureargs = {
-        builds.ScummVMBuild: [ "--enable-plugins", "--default-dynamic", "--enable-vkeybd" ],
+        builds.ScummVMBuild: [ "--enable-plugins", "--default-dynamic", "--enable-detection-dynamic", "--enable-vkeybd" ],
     }
     platform.packaging_cmd = "wiidist"
     platform.built_files = {

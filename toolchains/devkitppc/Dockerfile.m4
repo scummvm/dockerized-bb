@@ -91,5 +91,5 @@ helpers_package(libvpx, --disable-multithread)
 
 # No fluidsynth
 
-define_aliases(gamecube, wiidist, --enable-plugins --default-dynamic --enable-vkeybd, , gamecube)
-define_aliases(wii, wiidist, --enable-plugins --default-dynamic --enable-vkeybd, , wii)
+define_aliases(gamecube, wiidist, --enable-plugins --default-dynamic --enable-detection-dynamic --enable-vkeybd, , gamecube)
+define_aliases(wii, wiidist, --enable-plugins --default-dynamic --enable-detection-dynamic --enable-vkeybd, , wii)
