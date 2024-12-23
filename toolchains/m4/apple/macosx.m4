@@ -117,7 +117,8 @@ helpers_package(giflib)
 # Ports package is not static anymore (since faad 2.11) due to build system change in upstream
 helpers_package(faad2)
 
-ports_package(libmad)
+# Ports package is not static anymore (since mad 0.16.4) due to build system change in upstream
+helpers_package(libmad)
 
 ports_package(libtheora)
 

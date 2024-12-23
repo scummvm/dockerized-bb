@@ -1,6 +1,6 @@
 #! /bin/sh
 
-LIBRARIES_VERSION=82f7ead27aeb23f826f043aa7bcca5e5e3fbf3b8
+LIBRARIES_VERSION=98d06bce3a67656697f7f768550658f4b60c4cb8
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..

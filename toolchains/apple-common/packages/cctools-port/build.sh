@@ -1,6 +1,6 @@
 #! /bin/sh
 
-CCTOOLS_PORT_VERSION=a2724f04cafe3590fbc3d0beacc37293d83a2177
+CCTOOLS_PORT_VERSION=81f205e8ca6bbf2fdbcb6948132454fd1f97839e
 export LDID_VERSION=4bf8f4d60384a0693dbbe2084ce62a35bfeb87ab
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)

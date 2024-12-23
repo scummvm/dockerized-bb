@@ -1,6 +1,6 @@
 #! /bin/sh
 
-LIBICONV_VERSION=1.17
+LIBICONV_VERSION=1.18
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..

@@ -1,6 +1,6 @@
 #! /bin/sh
 
-PSP_PACKAGES_VERSION=dd17a8caccdd90b1e73ead5b5c7e91674061c59c
+PSP_PACKAGES_VERSION=755a1a6ed64ff0a72485fa1ae2aaeead7fb5fe55
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..

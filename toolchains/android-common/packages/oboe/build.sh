@@ -1,6 +1,6 @@
 #! /bin/sh
 
-OBOE_VERSION=1.9.0
+OBOE_VERSION=1.9.3
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..
