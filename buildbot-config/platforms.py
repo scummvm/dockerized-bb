@@ -515,7 +515,7 @@ def macosx_i386():
             "scummvm-tools-cli"
         ]
     }
-    platform.archiveext = "tar.xz"
+    platform.archiveext = "tar.bz2"
 
     platform.description = "Mac OS (Intel x86)"
     platform.icon = 'macos'
