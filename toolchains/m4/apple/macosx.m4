@@ -35,6 +35,7 @@ common_package(osxcross-clang)
 RUN . /etc/os-release && \
 	echo "deb http://apt.llvm.org/$VERSION_CODENAME/ llvm-toolchain-$VERSION_CODENAME`'PPA_CLANG`' main" > /etc/apt/sources.list.d/clang.list && \
 	wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - && \
+	rm -f "${HOME}/.wget-hsts" && \
 	apt-get update && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 		clang`'PPA_CLANG`' \

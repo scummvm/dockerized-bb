@@ -45,4 +45,6 @@ CLANG_DARWIN_LIB_DIR="${CLANG_LIB_DIR}/lib/darwin"
 mkdir -p "$(dirname "${CLANG_DARWIN_LIB_DIR}")"
 ln -s ${TARGET_DIR}/compiler_rt/lib/darwin ${CLANG_DARWIN_LIB_DIR}
 
+find /tmp -mindepth 1 -delete
+
 do_clean_bdir
