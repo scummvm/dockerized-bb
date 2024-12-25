@@ -49,7 +49,10 @@ def get_application(
         daily_builds_dir, daily_builds_url, helpers,
         builds, platforms)
 
-    app = ConfiguredBottle(catchall=False, autojson=False)
+    app = ConfiguredBottle()
+    app.catchall = False
+    # There seems to be no other way to disable autojson on Bottle v0.13
+    app.uninstall(bottle.JSONPlugin)
 
     app.helpers = helpers
     app.packaged_builds = packaged_builds
