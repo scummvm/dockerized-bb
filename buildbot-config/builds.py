@@ -461,6 +461,7 @@ class ScummVMBuild(StandardBuild):
         "dists/engine-data/access.dat",
         "dists/engine-data/bagel.dat",
         "dists/engine-data/cryomni3d.dat",
+        "dists/engine-data/darkseed.dat",
         "dists/engine-data/drascula.dat",
         "dists/engine-data/fonts.dat",
         "dists/engine-data/freescape.dat",
