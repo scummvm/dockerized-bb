@@ -545,6 +545,50 @@ class ScummVMStableBuild(ScummVMBuild):
     DISABLE_ENGINES_BUILD_FLAG = "--disable-all-unstable-engines"
 
     # Settings below (if any) are for stable version and must be updated when release is done
+    DATA_FILES = [
+        "AUTHORS",
+        "COPYING",
+        "COPYRIGHT",
+        "LICENSES",
+        "NEWS.md",
+        "README.md",
+        "gui/themes/translations.dat",
+        "gui/themes/scummclassic.zip",
+        "gui/themes/scummmodern.zip",
+        "gui/themes/scummremastered.zip",
+        "gui/themes/gui-icons.dat",
+        "dists/engine-data/access.dat",
+        "dists/engine-data/bagel.dat",
+        "dists/engine-data/cryomni3d.dat",
+        #"dists/engine-data/darkseed.dat", # Not in stable
+        "dists/engine-data/drascula.dat",
+        "dists/engine-data/fonts.dat",
+        "dists/engine-data/freescape.dat",
+        "dists/engine-data/hugo.dat",
+        "dists/engine-data/kyra.dat",
+        "dists/engine-data/lure.dat",
+        "dists/engine-data/mm.dat",
+        "dists/engine-data/mort.dat",
+        "dists/engine-data/nancy.dat",
+        "dists/engine-data/neverhood.dat",
+        "dists/engine-data/queen.tbl",
+        "dists/engine-data/sky.cpt",
+        "dists/engine-data/supernova.dat",
+        "dists/engine-data/teenagent.dat",
+        "dists/engine-data/titanic.dat",
+        "dists/engine-data/tony.dat",
+        "dists/engine-data/toon.dat",
+        "dists/engine-data/ultima.dat",
+        "dists/engine-data/wintermute.zip",
+        "dists/networking/wwwroot.zip",
+        "dists/pred.dic",
+        "dists/engine-data/cryo.dat",
+        "dists/engine-data/macgui.dat",
+        "dists/engine-data/macventure.dat",
+        "dists/engine-data/myst3.dat",
+        "dists/engine-data/grim-patch.lab",
+        "dists/engine-data/monkey4-patch.m4b"
+    ]
 
 class ScummVMToolsBuild(StandardBuild):
     __slots__ = [ 'verbose_build' ]
