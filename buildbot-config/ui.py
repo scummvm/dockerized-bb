@@ -87,6 +87,9 @@ try:
 except TypeError:
     www['port'] = "tcp:{0}".format(config.www_port)
 
+if hasattr(config, 'ws_ping_interval'):
+    www['ws_ping_interval'] = config.ws_ping_interval
+
 if hasattr(config, 'irc') and config.irc:
     services.append(reporters.IRC(
         host=config.irc['server'],

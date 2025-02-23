@@ -85,6 +85,9 @@ buildbot_url = "https://buildbot.scummvm.org/"
 # Retention time for data (in weeks)
 data_retention_weeks = 4
 
+# Ping interval to keep websocket alive
+ws_ping_interval = 0
+
 change_horizon = 1000
 
 # URL used to download daily builds
