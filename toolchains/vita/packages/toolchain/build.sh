@@ -1,8 +1,8 @@
 #! /bin/sh
 
-VITA_VERSION=2.527
+VITA_VERSION=2.529
 # This one must be updated as well
-PKG_DATE=2024-08-09_11-28-39
+PKG_DATE=2025-03-11_15-12-52
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..

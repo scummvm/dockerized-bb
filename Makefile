@@ -1,7 +1,7 @@
 BUILDBOT_VERSION   := 4.2.1
 BUILDBOT_BASEDIR   := buildbot-workdir
 
-BOTTLE_VERSION     := 0.13.2
+BOTTLE_VERSION     := 0.13.3
 DOCKER_PY_VERSION  := 7.1.0
 
 # Without toolchains/ part, all is a placeholder for all detected toolchains

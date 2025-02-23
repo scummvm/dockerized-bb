@@ -1,6 +1,6 @@
 #! /bin/sh
 
-SONIVOX_VERSION=3.6.15
+SONIVOX_VERSION=3.6.16
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..
