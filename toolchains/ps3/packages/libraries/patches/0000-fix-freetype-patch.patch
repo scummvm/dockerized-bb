@@ -1,0 +1,100 @@
+diff --git a/patches/freetype-2.13.3.patch b/patches/freetype-2.13.3.patch
+index fda1f5a..0622ccd 100644
+--- a/patches/freetype-2.13.3.patch
++++ b/patches/freetype-2.13.3.patch
+@@ -1,6 +1,6 @@
+ --- old/modules.cfg	2023-07-07 07:00:40
+ +++ new/modules.cfg-new	2024-12-28 12:21:23
+-@@ -37,35 +37,35 @@ FONT_MODULES += type1
++@@ -37,35 +37,35 @@ FONT_MODULES += truetype
+  # PostScript Type 1 font driver.
+  #
+  # This driver needs the `psaux', `pshinter', and `psnames' modules.
+@@ -44,7 +44,7 @@
+  
+  # SFNT files support.  If used without `truetype' or `cff', it supports
+  # bitmap-only fonts within an SFNT wrapper.
+-@@ -82,7 +82,7 @@ HINTING_MODULES += pshinter
++@@ -82,7 +82,7 @@ FONT_MODULES += sfnt
+  HINTING_MODULES += autofit
+  
+  # PostScript hinter.
+@@ -53,7 +53,7 @@
+  
+  # The TrueType hinting engine doesn't have a module of its own but is
+  # controlled in file include/freetype/config/ftoption.h
+-@@ -100,7 +100,7 @@ RASTER_MODULES += svg
++@@ -100,7 +100,7 @@ RASTER_MODULES += smooth
+  RASTER_MODULES += raster
+  
+  # OT-SVG.
+@@ -62,12 +62,7 @@
+  
+  # Signed distance field rasterizer.
+  RASTER_MODULES += sdf
+-@@ -122,17 +122,17 @@ AUX_MODULES += gzip
+- # Support for streams compressed with gzip (files with suffix .gz).
+- #
+- # See include/freetype/ftgzip.h for the API.
+- AUX_MODULES += gzip
+- 
++@@ -127,12 +127,12 @@ AUX_MODULES += gzip
+  # Support for streams compressed with LZW (files with suffix .Z).
+  #
+  # See include/freetype/ftlzw.h for the API.
+@@ -82,7 +77,7 @@
+  
+  # OpenType table validation.  Needs `ftotval.c' below.
+  #
+-@@ -141,13 +141,13 @@ AUX_MODULES += psaux
++@@ -141,13 +141,13 @@ AUX_MODULES += bzip2
+  # Auxiliary PostScript driver component to share common code.
+  #
+  # This module depends on `psnames'.
+@@ -98,7 +93,7 @@
+  
+  
+  ####
+-@@ -157,12 +157,12 @@ BASE_EXTENSIONS += ftbbox.c
++@@ -157,12 +157,12 @@ AUX_MODULES += psnames
+  # Exact bounding box calculation.
+  #
+  # See include/freetype/ftbbox.h for the API.
+@@ -113,7 +108,7 @@
+  
+  # Utility functions for converting 1bpp, 2bpp, 4bpp, and 8bpp bitmaps into
+  # 8bpp format, and for emboldening of bitmap glyphs.
+-@@ -173,17 +173,17 @@ BASE_EXTENSIONS += ftcid.c
++@@ -173,17 +173,17 @@ BASE_EXTENSIONS += ftbitmap.c
+  # Access CID font information.
+  #
+  # See include/freetype/ftcid.h for the API.
+@@ -134,7 +129,7 @@
+  
+  # Convenience functions to handle glyphs.  Needs `ftbitmap.c'.
+  #
+-@@ -193,27 +193,27 @@ BASE_EXTENSIONS += ftgxval.c
++@@ -193,7 +193,7 @@ BASE_EXTENSIONS += ftglyph.c
+  # Interface for gxvalid module.
+  #
+  # See include/freetype/ftgxval.h for the API.
+@@ -143,9 +138,7 @@
+  
+  # Multiple Master font interface.
+  #
+- # See include/freetype/ftmm.h for the API.
+- BASE_EXTENSIONS += ftmm.c
+- 
++@@ -203,17 +203,17 @@ BASE_EXTENSIONS += ftmm.c
+  # Interface for otvalid module.
+  #
+  # See include/freetype/ftotval.h for the API.
+@@ -166,7 +159,7 @@
+  
+  # Path stroker.  Needs `ftglyph.c'.
+  #
+-@@ -230,13 +230,13 @@ BASE_EXTENSIONS += fttype1.c
++@@ -230,13 +230,13 @@ BASE_EXTENSIONS += ftsynth.c
+  # fonts.
+  #
+  # See include/freetype/t1tables.h for the API.

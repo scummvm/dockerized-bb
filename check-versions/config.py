@@ -132,11 +132,11 @@ VERSIONS = {
     },
     ('./toolchains/amigaos4/packages/libsdl2/build.sh', 'SDL2'): {
         'check': 'git tag',
-        'repository': 'https://github.com/AmigaPorts/SDL-2.0.git',
+        'repository': 'https://github.com/AmigaPorts/SDL.git',
         # Remove v and -amigaos4
         'prefix': 'v',
         'suffix': '-amigaos4',
-        'exclude pattern': r'.*-rc\d+-.*'
+        'exclude pattern': r'(v3.*|.*-rc\d+-.*)'
     },
     ('./toolchains/amigaos4/packages/regina-rexx/build.sh', 'REXX'): {
         'check': 'svn tag',
