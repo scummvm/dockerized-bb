@@ -10,9 +10,6 @@ do_make_bdir
 
 do_git_fetch mxe "https://github.com/mxe/mxe.git" "${MXE_VERSION}"
 
-# Remove ccache to prevent its compilation: we don't need it
-rm src/ccache.mk
-
 cd ..
 
 # Install MXE

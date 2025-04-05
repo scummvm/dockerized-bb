@@ -3,7 +3,7 @@ m4_define(`MXE_VERSION',df99ec78ab9ff526fb7b0df323f615c3aeeceb49)m4_dnl
 m4_include(`paths.m4')m4_dnl
 m4_include(`packages.m4')m4_dnl
 m4_define(`mxe_package', RUN cd "${MXE_DIR}" && \
-	$3 make $1 $2 -j$(nproc) PREFIX="${MXE_PREFIX_DIR}" && \
+	$3 make $1 $2 -j$(nproc) PREFIX="${MXE_PREFIX_DIR}" MXE_USE_CCACHE= && \
 	make PREFIX="${MXE_PREFIX_DIR}" -j$(nproc) clean-junk && \
 	rm -f $HOME/.wget-hsts && find /tmp -mindepth 1 -delete)m4_dnl
 m4_dnl FIXME: don't hardcode /usr/src here
