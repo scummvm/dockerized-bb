@@ -1,0 +1,40 @@
+From 43ba7ad05f1656e885ce2f34a9a72494f45705ae Mon Sep 17 00:00:00 2001
+From: Erik de Castro Lopo <erikd@mega-nerd.com>
+Date: Fri, 28 Nov 2014 23:39:25 +1100
+Subject: [PATCH] src/libFLAC/stream_decoder.c : Fix another input validation bug.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf8
+Content-Transfer-Encoding: 8bit
+
+If a file says it contains a stupidly large number of vorbis comments,
+the stream decoder would try to allocate enough memory which would fail
+returning NULL and then write to that pointer anyway. The solution is
+to set a hard limit of 10000 vorbis comments and force num_comments to
+zero if the number is too large.
+
+Problem found using the afl (american fuzzy lop) fuzzer.
+
+Closes: https://sourceforge.net/p/flac/bugs/421/
+Reported-by : Hanno Böck <hanno@hboeck.de>
+
+(from Debian Stretch)
+https://www.openwall.com/lists/oss-security/2015/02/14/4
+
+---
+ src/libFLAC/stream_decoder.c |    5 +++++
+ 1 files changed, 5 insertions(+), 0 deletions(-)
+
+--- a/src/libFLAC/stream_decoder.c
++++ b/src/libFLAC/stream_decoder.c
+@@ -1739,6 +1739,11 @@
+ 		return false; /* read_callback_ sets the state for us */
+ 
+ 	/* read comments */
++	if (obj->num_comments > 100000) {
++		/* Possibly malicious file. */
++		obj->num_comments = 0;
++		return false;
++	}
+ 	if(obj->num_comments > 0) {
+ 		if(0 == (obj->comments = (FLAC__StreamMetadata_VorbisComment_Entry*)safe_malloc_mul_2op_(obj->num_comments, /*times*/sizeof(FLAC__StreamMetadata_VorbisComment_Entry)))) {
+ 			decoder->protected_->state = FLAC__STREAM_DECODER_MEMORY_ALLOCATION_ERROR;
