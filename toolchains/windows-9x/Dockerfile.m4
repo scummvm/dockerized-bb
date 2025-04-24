@@ -58,9 +58,12 @@ helpers_package(libvorbis)
 
 helpers_package(libtheora)
 
-# FLAC is not compatible with Win9x due to missing functions in MSVCRT.DLL
-# _fstat64, _stat64, _wstat64, _wutime64
-# helpers_package(flac)
+# Modern FLAC is not compatible with Win9x due to missing functions in MSVCRT.DLL
+# _fstat64, _stat64, _wstat64, _wutime64.  FLAC 1.3.2+ also "assume all currently
+# used OSes support SSE2", which is not good news for Windows 95 or 98.
+#
+# On the other hand, various users expect FLAC to work, so use an older release
+local_package(flac)
 
 helpers_package(libmikmod)
 

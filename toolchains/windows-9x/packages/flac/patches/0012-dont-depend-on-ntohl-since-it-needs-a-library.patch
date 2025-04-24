@@ -1,0 +1,72 @@
+avoid an unnecessary dependency on ntohl(); we'd rather avoid linking to a
+library just for that
+
+--- a/configure.in
++++ b/configure.in
+@@ -83,11 +83,7 @@
+ esac
+ AC_SUBST(OBJ_FORMAT)
+ 
+-# only needed because of ntohl() usage, can get rid of after that's gone:
+-case "$host" in
+-	*-*-cygwin|*mingw*) MINGW_WINSOCK_LIBS=-lwsock32 ;;
+-	*) MINGW_WINSOCK_LIBS= ;;
+-esac
++MINGW_WINSOCK_LIBS=
+ AC_SUBST(MINGW_WINSOCK_LIBS)
+ 
+ case "$host" in
+--- a/src/libFLAC/bitreader.c
++++ b/src/libFLAC/bitreader.c
+@@ -35,15 +35,6 @@
+ 
+ #include <stdlib.h> /* for malloc() */
+ #include <string.h> /* for memcpy(), memset() */
+-#ifdef _MSC_VER
+-#include <winsock.h> /* for ntohl() */
+-#elif defined FLAC__SYS_DARWIN
+-#include <machine/endian.h> /* for ntohl() */
+-#elif defined __MINGW32__
+-#include <winsock.h> /* for ntohl() */
+-#else
+-#include <netinet/in.h> /* for ntohl() */
+-#endif
+ #include "private/bitmath.h"
+ #include "private/bitreader.h"
+ #include "private/crc.h"
+@@ -64,7 +55,7 @@
+ #ifdef _MSC_VER
+ #define SWAP_BE_WORD_TO_HOST(x) local_swap32_(x)
+ #else
+-#define SWAP_BE_WORD_TO_HOST(x) ntohl(x)
++#define SWAP_BE_WORD_TO_HOST(x) __builtin_bswap32(x)
+ #endif
+ #endif
+ /* counts the # of zero MSBs in a word */
+--- a/src/libFLAC/bitwriter.c
++++ b/src/libFLAC/bitwriter.c
+@@ -35,15 +35,6 @@
+ 
+ #include <stdlib.h> /* for malloc() */
+ #include <string.h> /* for memcpy(), memset() */
+-#ifdef _MSC_VER
+-#include <winsock.h> /* for ntohl() */
+-#elif defined FLAC__SYS_DARWIN
+-#include <machine/endian.h> /* for ntohl() */
+-#elif defined __MINGW32__
+-#include <winsock.h> /* for ntohl() */
+-#else
+-#include <netinet/in.h> /* for ntohl() */
+-#endif
+ #if 0 /* UNUSED */
+ #include "private/bitmath.h"
+ #endif
+@@ -66,7 +57,7 @@
+ #ifdef _MSC_VER
+ #define SWAP_BE_WORD_TO_HOST(x) local_swap32_(x)
+ #else
+-#define SWAP_BE_WORD_TO_HOST(x) ntohl(x)
++#define SWAP_BE_WORD_TO_HOST(x) __builtin_bswap32(x)
+ #endif
+ #endif
+ 
