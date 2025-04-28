@@ -23,7 +23,7 @@ def _buildInData(data, build):
     if data is None:
         return True
     if len(data) == 0:
-        return None
+        return False
     if build.name in data:
         return True
     for cls in type(build).mro():
@@ -381,7 +381,8 @@ def gamecube():
     platform.icon = 'gc'
 
     register_platform(platform)
-gamecube()
+# Disabling for now
+#gamecube()
 
 def ios7_arm64():
     platform = Platform("ios7-arm64")
@@ -791,7 +792,8 @@ def wii():
     platform.icon = 'wii'
 
     register_platform(platform)
-wii()
+# Disabling for now
+#wii()
 
 def windows_mxe(suffix, target, description=None):
     platform = Platform("windows-{0}".format(suffix))
