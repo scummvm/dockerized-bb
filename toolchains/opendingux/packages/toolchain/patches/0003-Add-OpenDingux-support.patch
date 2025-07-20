@@ -8043,11 +8043,13 @@ diff --git a/packages/uClibc/package.desc b/packages/uClibc/package.desc
 index 7035b96b..68c189ed 100644
 --- a/packages/uClibc/package.desc
 +++ b/packages/uClibc/package.desc
-@@ -4,5 +4,5 @@ preferred='uClibc-ng'
+@@ -3,6 +3,6 @@
+ preferred='uClibc-ng'
  origin='uclibc.org'
  repository='git git://git.busybox.net/uClibc'
- mirrors='http://www.uclibc.org/downloads http://www.uclibc.org/downloads/old-releases'
+-mirrors='http://www.uclibc.org/downloads http://www.uclibc.org/downloads/old-releases'
 -milestones='0.9.33.2 1.0.0 1.0.15 1.0.21 1.0.23'
++mirrors='https://web.archive.org/web/https://uclibc.org/downloads https://web.archive.org/web/https://uclibc.org/downloads/old-releases'
 +milestones='0.9.31 0.9.33.2 1.0.0 1.0.15 1.0.21 1.0.23'
  archive_formats='.tar.xz .tar.bz2'
 diff --git a/scripts/build/libc/uClibc.sh b/scripts/build/libc/uClibc.sh
