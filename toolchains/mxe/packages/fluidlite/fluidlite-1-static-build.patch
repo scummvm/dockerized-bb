@@ -43,9 +43,9 @@ index a159ddd..5e6ea4b 100644
 +#define FLUIDLITE_STATIC
 +#endif
 +
- #if defined(_WIN32)
  #if defined(FLUIDLITE_STATIC)
  #define FLUIDSYNTH_API
+ 
 -- 
 2.34.1
 

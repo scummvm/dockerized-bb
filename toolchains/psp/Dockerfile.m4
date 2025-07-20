@@ -32,7 +32,7 @@ RUN apt-get update && \
 		libncurses-dev \
 		libreadline-dev \
 		libssl-dev \
-		libusb-dev \
+		libusb-1.0-0-dev \
 		zlib1g-dev \
 		python3-pip \
 		python3-venv \

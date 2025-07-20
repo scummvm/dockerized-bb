@@ -2,8 +2,8 @@ PKG             := fluidlite
 $(PKG)_WEBSITE  := https://github.com/divideconcept/FluidLite
 $(PKG)_DESCR    := Fluidlite
 $(PKG)_IGNORE   := 
-$(PKG)_VERSION  := b0f187b
-$(PKG)_CHECKSUM := 44f240b0017eb76a5ae1b7c162d9199b0cb014f03f8bd863a56a980b101e6e88
+$(PKG)_VERSION  := 4a01cf1
+$(PKG)_CHECKSUM := e0f7b6789021ef55c6f51ca5b82a1f9274564b4936ae6960f5db64ff4d6ef1ea
 $(PKG)_GH_CONF  := divideconcept/FluidLite/branches/master
 $(PKG)_DEPS     := cc
 

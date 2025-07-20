@@ -6,7 +6,7 @@ HELPERS_DIR=$PACKAGE_DIR/../..
 
 do_make_bdir
 
-do_lha_fetch misc/libfribidi "libfribidi-*/SDK"
+do_lha_fetch misc/libfribidi "fribidi-*/SDK"
 
 do_lha_install
 

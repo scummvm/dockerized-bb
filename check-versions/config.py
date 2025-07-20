@@ -159,7 +159,7 @@ VERSIONS = {
     ('./toolchains/apple-common/packages/cctools-port/build.sh', 'CCTOOLS_PORT'): {
         'check': 'git commit',
         'repository': 'https://github.com/tpoechtrager/cctools-port.git',
-        'branch': '1021.4-ld64-954.16',
+        'branch': '1024.3-ld64-955.13',
     },
     ('./toolchains/apple-common/packages/cctools-port/build.sh', 'LDID'): {
         'check': 'git commit',
@@ -170,6 +170,11 @@ VERSIONS = {
     ('./toolchains/apple-common/packages/osxcross-clang/build.sh', 'OSXCROSS'): osxcross_check,
     ('./toolchains/apple-common/packages/osxcross/build.sh', 'OSXCROSS'): osxcross_check,
     ('./toolchains/apple-common/packages/osxcross/build.sh', 'XAR'): xar_check,
+    ('./toolchains/apple-common/packages/osxcross/build.sh', 'LIBDISPATCH'): {
+        'check': 'git commit',
+        'repository': 'https://github.com/tpoechtrager/apple-libdispatch.git',
+        'branch': 'main',
+    },
     ('./toolchains/apple-common/packages/rcodesign/build.sh', 'RCODESIGN'): {
         # For MacOSX we need rcodesign for latest MacOS support
         'check': 'git tag',
@@ -474,17 +479,17 @@ VERSIONS = {
     ('./toolchains/psp/packages/toolchain/build.sh', 'BINUTILS'): {
         'check': 'git commit',
         'repository': 'https://github.com/pspdev/binutils-gdb.git',
-        'branch': 'allegrex-v2.40.0',
+        'branch': 'allegrex-v2.44',
     },
     ('./toolchains/psp/packages/toolchain/build.sh', 'GCC'): {
         'check': 'git commit',
         'repository': 'https://github.com/pspdev/gcc.git',
-        'branch': 'allegrex-v14.1.0',
+        'branch': 'allegrex-v15.1.1',
     },
     ('./toolchains/psp/packages/toolchain/build.sh', 'NEWLIB'): {
         'check': 'git commit',
         'repository': 'https://github.com/pspdev/newlib.git',
-        'branch': 'allegrex-v4.4.0',
+        'branch': 'allegrex-v4.5.0',
     },
     ('./toolchains/psp/packages/toolchain/build.sh', 'PTHREAD_EMBEDDED'): {
         'check': 'git commit',
@@ -540,6 +545,7 @@ VERSIONS = {
     ('./toolchains/windows-9x/packages/toolchain/build.sh', 'GCC'): 'ignore',
     ('./toolchains/windows-9x/packages/toolchain/build.sh', 'MINGWRT'): 'ignore',
     ('./toolchains/windows-9x/packages/toolchain/build.sh', 'W32API'): 'ignore',
+    ('./toolchains/windows-9x/packages/flac/build.sh', 'FLAC'): 'ignore',
 
     ('./workers/fetcher/Dockerfile.m4', 'ALPINE'): alpine_check,
     ('./workers/m4/debian-builder-base.m4', 'DEBIAN'): debian_check,
