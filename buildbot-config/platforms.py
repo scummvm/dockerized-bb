@@ -381,8 +381,7 @@ def gamecube():
     platform.icon = 'gc'
 
     register_platform(platform)
-# Disabling for now
-#gamecube()
+gamecube()
 
 def ios7_arm64():
     platform = Platform("ios7-arm64")
@@ -792,8 +791,7 @@ def wii():
     platform.icon = 'wii'
 
     register_platform(platform)
-# Disabling for now
-#wii()
+wii()
 
 def windows_mxe(suffix, target, description=None):
     platform = Platform("windows-{0}".format(suffix))
