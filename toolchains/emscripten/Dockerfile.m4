@@ -1,5 +1,8 @@
 m4_include(`paths.m4')m4_dnl
 m4_include(`packages.m4')m4_dnl
+m4_define(`em_package', RUN embuilder build `m4_foreachq(`pkg', `$@',`pkg ')' && embuilder --pic build `m4_foreachq(`pkg', `$@',`pkg ')' && \
+	rm -rf /tmp/* ${SYSROOT_DIR}/../ports/*/* ${SYSROOT_DIR}/../build/* && \
+	if [ -d "${SYSROOT_DIR}/../ports" ]; then find ${SYSROOT_DIR}/../ports -maxdepth 1 -type f -delete; fi)
 
 m4_dnl Include Debian base preparation steps
 m4_dnl This ensures all common steps are shared by all toolchains
@@ -19,50 +22,64 @@ RUN apt-get update && \
 	rm -rf /var/lib/apt/lists/*
 
 ENV EMSDK=/usr/local/emscripten HOST=wasm32-unknown-none
-ENV PREFIX=$EMSDK/scummvm-libs
+ENV PREFIX=$EMSDK/scummvm-libs SYSROOT_DIR=${EMSDK}/upstream/emscripten/cache/sysroot
 
 local_package(toolchain)
 
 # We add PATH here for *-config and platform specific binaries
 ENV \
+	def_binaries(`${EMSDK}/upstream/emscripten/em', `ar, cc, ranlib, strip') \
+	def_binaries(`${EMSDK}/upstream/bin/llvm-', `cxxfilt, nm, objcopy, objdump, strings') \
+	AS=${EMSDK}/upstream/bin/wasm-as \
+	CXX=${EMSDK}/upstream/emscripten/em++ \
+	LD=${EMSDK}/upstream/emscripten/emcc \
 	def_aclocal(`${PREFIX}') \
-	def_pkg_config(`${PREFIX}') \
-        PATH=$PATH:${EMSDK}:${EMSDK}/node/14.18.2_64bit/bin:${EMSDK}/upstream/emscripten:${PREFIX}/bin \
+	PKG_CONFIG_LIBDIR=${PREFIX}/lib/pkgconfig:${PREFIX}/share/pkgconfig:${SYSROOT_DIR}/lib/pkgconfig:${SYSROOT_DIR}/local/lib/pkgconfig \
+	PATH=$PATH:${EMSDK}:${EMSDK}/node/current/bin:${EMSDK}/upstream/emscripten:${SYSROOT_DIR}/bin:${PREFIX}/bin \
+	EMSDK_NODE=${EMSDK}/node/current/bin/node \
 	CPPFLAGS="-I${PREFIX}/include" \
+	CFLAGS="-fPIC" \
+	CXXFLAGS="-fPIC" \
 	LDFLAGS="-L${PREFIX}/lib"
 
-RUN emcc -s USE_ZLIB -E - < /dev/null
+# Build system libraries for PIC
+em_package(libGL, libal, libhtml5, libstubs, libnoexit, libc,
+	libdlmalloc, libcompiler_rt, libc++-noexcept, libc++abi-noexcept, libsockets)
 
-RUN emcc -s USE_LIBPNG=1 -E - < /dev/null
+em_package(zlib)
 
-RUN emcc -s USE_LIBJPEG=1 -E - < /dev/null
+em_package(libpng)
 
-RUN emcc -s USE_GIFLIB=1 -E - < /dev/null
+em_package(libjpeg)
 
-helpers_package(libmad, --with-pic --enable-fpm=no)
+em_package(giflib)
 
-RUN emcc -s USE_OGG=1 -E - < /dev/null
+helpers_package(libmad, --with-pic --enable-fpm=64bit)
 
-RUN emcc -s USE_VORBIS=1 -E - < /dev/null
+em_package(ogg)
 
-# helpers_package(libtheora, --disable-asm, CFLAGS="-fPIC -s USE_OGG=1 -s USE_VORBIS=1")
-helpers_package(libtheora, --disable-asm, CFLAGS="-fPIC -s USE_OGG=1")
+em_package(vorbis)
+
+# helpers_package(libtheora, --disable-asm, CFLAGS="$CFLAGS -sUSE_OGG=1 -sUSE_VORBIS=1")
+helpers_package(libtheora, --disable-asm, CFLAGS="$CFLAGS -sUSE_OGG=1")
 
 # TODO: flac
 
-helpers_package(faad2, , CFLAGS="-fPIC")
+helpers_package(faad2)
 
-helpers_package(mpeg2dec, , CFLAGS="-fPIC")
+helpers_package(mpeg2dec)
 
-helpers_package(a52dec, , CFLAGS="-fPIC")
-
+helpers_package(a52dec)
 
 # TODO: fluidlite
 
-RUN emcc -s USE_FREETYPE=1 -E - < /dev/null
+em_package(freetype)
 
 # TODO: fribidi
 
-RUN emcc -s USE_SDL=2 -E - < /dev/null
+# This is needed for SDL2
+em_package(libGL-getprocaddr)
 
-RUN emcc -s USE_SDL_NET=2 -E - < /dev/null
+em_package(sdl2)
+
+em_package(sdl2_net)

@@ -363,6 +363,29 @@ def dreamcast():
     register_platform(platform)
 dreamcast()
 
+def emscripten():
+    platform = Platform("emscripten")
+    platform.workerimage = "emscripten"
+    platform.compatibleBuilds = (builds.ScummVMBuild, )
+    platform.configureargs.append("--host=wasm32-unknown-emscripten")
+    platform.buildconfigureargs = {
+        builds.ScummVMBuild: [ "--enable-gif", "--enable-jpeg", "--enable-ogg", "--enable-png", "--enable-vorbis",
+                              "--enable-zlib", "--enable-freetype2", "--enable-a52", "--enable-faad", "--enable-mad",
+                              "--enable-mpeg2", "--enable-theoradec",
+                              "--enable-plugins", "--default-dynamic", "--enable-detection-dynamic" ],
+    }
+    platform.packaging_cmd = "dist-emscripten"
+    platform.built_files = {
+        builds.ScummVMBuild: [ "build-emscripten" ],
+    }
+    platform.archiveext = "tar.xz"
+
+    platform.description = "Emscripten"
+    #platform.icon = ''
+
+    register_platform(platform)
+emscripten()
+
 def gamecube():
     platform = Platform("gamecube")
     platform.workerimage = "devkitppc"

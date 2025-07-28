@@ -17,6 +17,11 @@ cd ${EMSDK}
 ./emsdk install ${EMSDK_VERSION}
 ./emsdk activate ${EMSDK_VERSION}
 
+# Also create a symink to current node
+# This avoids us to track which version of node is active
+NODE_JS=$(grep '^NODE_JS =' .emscripten | sed -e "s/.*'\\(.*\\)'$/\1/")
+ln -rs "$(dirname "$(dirname "./${NODE_JS}")")" ./node/current
+
 do_clean_bdir
 
 # Cleanup wget HSTS
