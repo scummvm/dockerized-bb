@@ -1,6 +1,6 @@
 #! /bin/sh
 
-OSXCROSS_VERSION=3d6a91c14a65b170aa50ecc3fda19dd6414e23a9
+OSXCROSS_VERSION=f873f534c6cdb0776e457af8c7513da1e02abe59
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..

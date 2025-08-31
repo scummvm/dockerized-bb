@@ -1,14 +1,14 @@
-From 108cffa6525633559085897898bdd2ec431622da Mon Sep 17 00:00:00 2001
+From 130429671a25d35be0fc88dddae11d9321d1b168 Mon Sep 17 00:00:00 2001
 From: Le Philousophe <lephilousophe@users.noreply.github.com>
-Date: Sun, 24 Jan 2021 19:19:14 +0100
+Date: Sat, 30 Aug 2025 17:58:44 +0200
 Subject: [PATCH 3/3] Generate all SDKs and not only MacOSX
 
 ---
- tools/gen_sdk_package.sh | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+ tools/gen_sdk_package.sh | 15 ++++++++-------
+ 1 file changed, 8 insertions(+), 7 deletions(-)
 
 diff --git a/tools/gen_sdk_package.sh b/tools/gen_sdk_package.sh
-index 0aa39f2..8f5607f 100755
+index fc24005..a240379 100755
 --- a/tools/gen_sdk_package.sh
 +++ b/tools/gen_sdk_package.sh
 @@ -126,8 +126,8 @@ if [ -z "$XCODE_TOOLS" ]; then
@@ -22,26 +22,32 @@ index 0aa39f2..8f5607f 100755
    else
      if [ -d "../Packages" ]; then
        pushd "../Packages" &>/dev/null
-@@ -190,7 +190,7 @@ else
- 
+@@ -191,12 +191,12 @@ else
  fi
  
--SDKS=$(ls | grep -E "^MacOSX15.*|^MacOSX14.*|^MacOSX13.*|^MacOSX12.*|^MacOSX11.*|^MacOSX10.*" | grep -v "Patch")
-+SDKS=$(for platform in $SDK_PLATFORMS; do ls -1d ${platform}.platform/Developer/SDKs/*.*.sdk | grep -v 'Patch'; done)
+ SDKS=()
+-for pat in MacOS[0-9]*.sdk MacOSX[0-9]*.sdk; do
++for platform in $SDK_PLATFORMS; do
+   while IFS= read -r d; do
+     if [[ "$d" != "MacOS.sdk" && "$d" != "MacOSX.sdk" && "$d" != *Patch* && -d "$d" ]]; then
+       SDKS+=("$d")
+     fi
+-  done < <(compgen -G "$pat")
++  done < <(compgen -G "${platform}.platform/Developer/SDKs/*.*.sdk")
+ done
  
- if [ -z "$SDKS" ]; then
-   echo "No SDK found" 1>&2
-@@ -209,7 +209,8 @@ LIBCXXDIR3="usr/include/c++/v1"
+ 
+@@ -217,7 +217,8 @@ LIBCXXDIR3="usr/include/c++/v1"
  # Manual directory
  MANDIR="Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/share/man"
  
--for SDK in $SDKS; do
-+for SDK_DIR in $SDKS; do
+-for SDK in "${SDKS[@]}"; do
++for SDK_DIR in "${SDKS[@]}"; do
 +  SDK=$(basename "$SDK_DIR")
    echo -n "packaging $(echo "$SDK" | sed -E "s/(.sdk|.pkg)//g") SDK "
    echo "(this may take several minutes) ..."
  
-@@ -219,7 +220,7 @@ for SDK in $SDKS; do
+@@ -227,7 +228,7 @@ for SDK in "${SDKS[@]}"; do
    fi
  
    TMP=$(mktemp -d /tmp/XXXXXXXXXXX)
@@ -50,12 +56,12 @@ index 0aa39f2..8f5607f 100755
  
    pushd "$XCODEDIR" &>/dev/null
  
-@@ -254,4 +255,4 @@ popd &>/dev/null
+@@ -262,4 +263,4 @@ popd &>/dev/null
  popd &>/dev/null
  
  echo ""
 -ls -lh | grep MacOSX
 +ls -lh *.*.sdk.*
 -- 
-2.49.0
+2.49.1
 
