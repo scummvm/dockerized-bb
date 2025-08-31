@@ -55,7 +55,7 @@ discord_rpc_check = {
 
 libiconv_check = {
     'check': 'git tag',
-    'repository': 'https://git.savannah.gnu.org/git/libiconv.git',
+    'repository': 'https://https.git.savannah.gnu.org/git/libiconv.git',
     'prefix': 'v',
 }
 

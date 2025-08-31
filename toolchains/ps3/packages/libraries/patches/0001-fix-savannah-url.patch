@@ -1,0 +1,225 @@
+diff --git a/scripts/002-libpng.sh b/scripts/002-libpng.sh
+index d7c1ba1..bcb7350 100755
+--- a/scripts/002-libpng.sh
++++ b/scripts/002-libpng.sh
+@@ -7,8 +7,8 @@ VER=1.6.44
+ if [ ! -f libpng-${VER}.tar.gz ]; then wget --continue http://download.sourceforge.net/libpng/libpng-${VER}.tar.gz; fi
+ 
+ ## Download an up-to-date config.guess and config.sub
+-if [ ! -f config.guess ]; then wget --continue http://git.savannah.gnu.org/cgit/config.git/plain/config.guess; fi
+-if [ ! -f config.sub ]; then wget --continue http://git.savannah.gnu.org/cgit/config.git/plain/config.sub; fi
++if [ ! -f config.guess ]; then wget --continue https://cgit.git.savannah.gnu.org/cgit/config.git/plain/config.guess; fi
++if [ ! -f config.sub ]; then wget --continue https://cgit.git.savannah.gnu.org/cgit/config.git/plain/config.sub; fi
+ 
+ ## Unpack the source code.
+ rm -Rf libpng-${VER} && tar xfz libpng-${VER}.tar.gz && cd libpng-${VER}
+diff --git a/scripts/003-jpeg.sh b/scripts/003-jpeg.sh
+index 4965f5f..806d5a9 100755
+--- a/scripts/003-jpeg.sh
++++ b/scripts/003-jpeg.sh
+@@ -7,8 +7,8 @@ VER=9f
+ wget --continue http://www.ijg.org/files/jpegsrc.v${VER}.tar.gz
+ 
+ ## Download an up-to-date config.guess and config.sub
+-if [ ! -f config.guess ]; then wget --continue http://git.savannah.gnu.org/cgit/config.git/plain/config.guess; fi
+-if [ ! -f config.sub ]; then wget --continue http://git.savannah.gnu.org/cgit/config.git/plain/config.sub; fi
++if [ ! -f config.guess ]; then wget --continue https://cgit.git.savannah.gnu.org/cgit/config.git/plain/config.guess; fi
++if [ ! -f config.sub ]; then wget --continue https://cgit.git.savannah.gnu.org/cgit/config.git/plain/config.sub; fi
+ 
+ ## Unpack the source code.
+ rm -Rf jpeg-${VER} && tar xfz jpegsrc.v${VER}.tar.gz && cd jpeg-${VER}
+diff --git a/scripts/004-freetype.sh b/scripts/004-freetype.sh
+index 7b3c2c7..4e527ff 100755
+--- a/scripts/004-freetype.sh
++++ b/scripts/004-freetype.sh
+@@ -7,8 +7,8 @@ VER=2.13.3
+ wget --continue https://download.savannah.gnu.org/releases/freetype/freetype-${VER}.tar.gz
+ 
+ ## Download an up-to-date config.guess and config.sub
+-if [ ! -f config.guess ]; then wget --continue http://git.savannah.gnu.org/cgit/config.git/plain/config.guess; fi
+-if [ ! -f config.sub ]; then wget --continue http://git.savannah.gnu.org/cgit/config.git/plain/config.sub; fi
++if [ ! -f config.guess ]; then wget --continue https://cgit.git.savannah.gnu.org/cgit/config.git/plain/config.guess; fi
++if [ ! -f config.sub ]; then wget --continue https://cgit.git.savannah.gnu.org/cgit/config.git/plain/config.sub; fi
+ 
+ ## Unpack the source code.
+ rm -Rf freetype-${VER} && tar xfz freetype-${VER}.tar.gz && cd freetype-${VER}
+diff --git a/scripts/007-libogg.sh b/scripts/007-libogg.sh
+index e56f4cd..5305cc5 100755
+--- a/scripts/007-libogg.sh
++++ b/scripts/007-libogg.sh
+@@ -7,8 +7,8 @@ VER=1.3.5
+ wget --continue http://downloads.xiph.org/releases/ogg/libogg-${VER}.tar.gz
+ 
+ ## Download an up-to-date config.guess and config.sub
+-if [ ! -f config.guess ]; then wget --continue http://git.savannah.gnu.org/cgit/config.git/plain/config.guess; fi
+-if [ ! -f config.sub ]; then wget --continue http://git.savannah.gnu.org/cgit/config.git/plain/config.sub; fi
++if [ ! -f config.guess ]; then wget --continue https://cgit.git.savannah.gnu.org/cgit/config.git/plain/config.guess; fi
++if [ ! -f config.sub ]; then wget --continue https://cgit.git.savannah.gnu.org/cgit/config.git/plain/config.sub; fi
+ 
+ ## Unpack the source code.
+ rm -Rf libogg-${VER} && tar xfz libogg-${VER}.tar.gz && cd libogg-${VER}
+diff --git a/scripts/008-libvorbis.sh b/scripts/008-libvorbis.sh
+index 0ceb3f9..4abb19a 100755
+--- a/scripts/008-libvorbis.sh
++++ b/scripts/008-libvorbis.sh
+@@ -7,8 +7,8 @@ VER=1.3.7
+ wget --continue http://downloads.xiph.org/releases/vorbis/libvorbis-${VER}.tar.gz
+ 
+ ## Download an up-to-date config.guess and config.sub
+-if [ ! -f config.guess ]; then wget --continue http://git.savannah.gnu.org/cgit/config.git/plain/config.guess; fi
+-if [ ! -f config.sub ]; then wget --continue http://git.savannah.gnu.org/cgit/config.git/plain/config.sub; fi
++if [ ! -f config.guess ]; then wget --continue https://cgit.git.savannah.gnu.org/cgit/config.git/plain/config.guess; fi
++if [ ! -f config.sub ]; then wget --continue https://cgit.git.savannah.gnu.org/cgit/config.git/plain/config.sub; fi
+ 
+ ## Unpack the source code.
+ rm -Rf libvorbis-${VER} && tar xfz libvorbis-${VER}.tar.gz && cd libvorbis-${VER}
+diff --git a/scripts/016-libcurl.sh b/scripts/016-libcurl.sh
+index 41cd0ed..f34a7fc 100755
+--- a/scripts/016-libcurl.sh
++++ b/scripts/016-libcurl.sh
+@@ -11,8 +11,8 @@ wget https://curl.haxx.se/ca/cacert.pem
+ mv cacert.pem $PSL1GHT/
+ 
+ ## Download an up-to-date config.guess and config.sub
+-if [ ! -f config.guess ]; then wget --continue http://git.savannah.gnu.org/cgit/config.git/plain/config.guess; fi
+-if [ ! -f config.sub ]; then wget --continue http://git.savannah.gnu.org/cgit/config.git/plain/config.sub; fi
++if [ ! -f config.guess ]; then wget --continue https://cgit.git.savannah.gnu.org/cgit/config.git/plain/config.guess; fi
++if [ ! -f config.sub ]; then wget --continue https://cgit.git.savannah.gnu.org/cgit/config.git/plain/config.sub; fi
+ 
+ ## Unpack the source code.
+ rm -Rf curl-${VER} && tar xfz curl-${VER}.tar.gz && cd curl-${VER}
+diff --git a/scripts/017-libmad.sh b/scripts/017-libmad.sh
+index f507fbb..22ba9e8 100755
+--- a/scripts/017-libmad.sh
++++ b/scripts/017-libmad.sh
+@@ -7,8 +7,8 @@ VER=0.15.1b
+ wget --continue https://sourceforge.net/projects/mad/files/libmad/${VER}/libmad-${VER}.tar.gz/download -O libmad-${VER}.tar.gz
+ 
+ ## Download an up-to-date config.guess and config.sub
+-if [ ! -f config.guess ]; then wget --continue http://git.savannah.gnu.org/cgit/config.git/plain/config.guess; fi
+-if [ ! -f config.sub ]; then wget --continue http://git.savannah.gnu.org/cgit/config.git/plain/config.sub; fi
++if [ ! -f config.guess ]; then wget --continue https://cgit.git.savannah.gnu.org/cgit/config.git/plain/config.guess; fi
++if [ ! -f config.sub ]; then wget --continue https://cgit.git.savannah.gnu.org/cgit/config.git/plain/config.sub; fi
+ 
+ ## Unpack the source code.
+ rm -Rf libmad-${VER} && tar xfz libmad-${VER}.tar.gz && cd libmad-${VER}
+diff --git a/scripts/018-flac.sh b/scripts/018-flac.sh
+index 3744099..13fe7f7 100755
+--- a/scripts/018-flac.sh
++++ b/scripts/018-flac.sh
+@@ -7,8 +7,8 @@ VER=1.2.1
+ wget --continue http://downloads.sourceforge.net/project/flac/flac-src/flac-${VER}-src/flac-${VER}.tar.gz
+ 
+ ## Download an up-to-date config.guess and config.sub
+-if [ ! -f config.guess ]; then wget --continue http://git.savannah.gnu.org/cgit/config.git/plain/config.guess; fi
+-if [ ! -f config.sub ]; then wget --continue http://git.savannah.gnu.org/cgit/config.git/plain/config.sub; fi
++if [ ! -f config.guess ]; then wget --continue https://cgit.git.savannah.gnu.org/cgit/config.git/plain/config.guess; fi
++if [ ! -f config.sub ]; then wget --continue https://cgit.git.savannah.gnu.org/cgit/config.git/plain/config.sub; fi
+ 
+ ## Unpack the source code.
+ rm -Rf flac-${VER} && tar xfz flac-${VER}.tar.gz && cd flac-${VER}
+diff --git a/scripts/019-faad2.sh b/scripts/019-faad2.sh
+index c23de3f..b85c946 100755
+--- a/scripts/019-faad2.sh
++++ b/scripts/019-faad2.sh
+@@ -5,8 +5,8 @@
+ wget --continue https://github.com/knik0/faad2/archive/refs/tags/2_10_0.tar.gz -O faad2-2.10.tar.gz
+ 
+ ## Download an up-to-date config.guess and config.sub
+-if [ ! -f config.guess ]; then wget --continue http://git.savannah.gnu.org/cgit/config.git/plain/config.guess; fi
+-if [ ! -f config.sub ]; then wget --continue http://git.savannah.gnu.org/cgit/config.git/plain/config.sub; fi
++if [ ! -f config.guess ]; then wget --continue https://cgit.git.savannah.gnu.org/cgit/config.git/plain/config.guess; fi
++if [ ! -f config.sub ]; then wget --continue https://cgit.git.savannah.gnu.org/cgit/config.git/plain/config.sub; fi
+ 
+ ## Unpack the source code.
+ rm -Rf faad2-2.10 && tar xfz faad2-2.10.tar.gz && cd faad2-2_10_0
+diff --git a/scripts/020-libtheora.sh b/scripts/020-libtheora.sh
+index a400947..af7f9cd 100755
+--- a/scripts/020-libtheora.sh
++++ b/scripts/020-libtheora.sh
+@@ -7,8 +7,8 @@ VER=1.1.1
+ wget --continue http://downloads.xiph.org/releases/theora/libtheora-${VER}.tar.bz2
+ 
+ ## Download an up-to-date config.guess and config.sub
+-if [ ! -f config.guess ]; then wget --continue http://git.savannah.gnu.org/cgit/config.git/plain/config.guess; fi
+-if [ ! -f config.sub ]; then wget --continue http://git.savannah.gnu.org/cgit/config.git/plain/config.sub; fi
++if [ ! -f config.guess ]; then wget --continue https://cgit.git.savannah.gnu.org/cgit/config.git/plain/config.guess; fi
++if [ ! -f config.sub ]; then wget --continue https://cgit.git.savannah.gnu.org/cgit/config.git/plain/config.sub; fi
+ 
+ ## Unpack the source code.
+ rm -Rf libtheora-${VER} && tar xfj libtheora-${VER}.tar.bz2 && cd libtheora-${VER}
+diff --git a/scripts/023-a52dec.sh b/scripts/023-a52dec.sh
+index 1be0ddb..2566c9a 100755
+--- a/scripts/023-a52dec.sh
++++ b/scripts/023-a52dec.sh
+@@ -6,8 +6,8 @@ VER=0.7.4
+ wget --continue http://deb.debian.org/debian/pool/main/a/a52dec/a52dec_${VER}.orig.tar.gz -O a52dec-${VER}.tar.gz
+ 
+ ## Download an up-to-date config.guess and config.sub
+-if [ ! -f config.guess ]; then wget --continue http://git.savannah.gnu.org/cgit/config.git/plain/config.guess; fi
+-if [ ! -f config.sub ]; then wget --continue http://git.savannah.gnu.org/cgit/config.git/plain/config.sub; fi
++if [ ! -f config.guess ]; then wget --continue https://cgit.git.savannah.gnu.org/cgit/config.git/plain/config.guess; fi
++if [ ! -f config.sub ]; then wget --continue https://cgit.git.savannah.gnu.org/cgit/config.git/plain/config.sub; fi
+ 
+ ## Unpack the source code.
+ rm -Rf a52dec-${VER} && tar xfz a52dec-${VER}.tar.gz && cd a52dec-${VER}
+diff --git a/scripts/024-fribidi.sh b/scripts/024-fribidi.sh
+index 8e8dd71..dd6d75b 100755
+--- a/scripts/024-fribidi.sh
++++ b/scripts/024-fribidi.sh
+@@ -6,8 +6,8 @@ VER=1.0.16
+ wget --continue https://github.com/fribidi/fribidi/releases/download/v${VER}/fribidi-${VER}.tar.xz
+ 
+ ## Download an up-to-date config.guess and config.sub
+-if [ ! -f config.guess ]; then wget --continue http://git.savannah.gnu.org/cgit/config.git/plain/config.guess; fi
+-if [ ! -f config.sub ]; then wget --continue http://git.savannah.gnu.org/cgit/config.git/plain/config.sub; fi
++if [ ! -f config.guess ]; then wget --continue https://cgit.git.savannah.gnu.org/cgit/config.git/plain/config.guess; fi
++if [ ! -f config.sub ]; then wget --continue https://cgit.git.savannah.gnu.org/cgit/config.git/plain/config.sub; fi
+ 
+ ## Unpack the source code.
+ rm -Rf fribidi-${VER} && tar xf fribidi-${VER}.tar.xz && cd fribidi-${VER}
+diff --git a/scripts/026-libmpeg2.sh b/scripts/026-libmpeg2.sh
+index f9bcebe..87614ed 100755
+--- a/scripts/026-libmpeg2.sh
++++ b/scripts/026-libmpeg2.sh
+@@ -6,8 +6,8 @@ VER=0.5.1
+ if [ ! -f libmpeg2-${VER}.tar.gz ]; then wget --continue https://libmpeg2.sourceforge.io/files/libmpeg2-${VER}.tar.gz; fi
+ 
+ ## Download an up-to-date config.guess and config.sub
+-if [ ! -f config.guess ]; then wget --continue http://git.savannah.gnu.org/cgit/config.git/plain/config.guess; fi
+-if [ ! -f config.sub ]; then wget --continue http://git.savannah.gnu.org/cgit/config.git/plain/config.sub; fi
++if [ ! -f config.guess ]; then wget --continue https://cgit.git.savannah.gnu.org/cgit/config.git/plain/config.guess; fi
++if [ ! -f config.sub ]; then wget --continue https://cgit.git.savannah.gnu.org/cgit/config.git/plain/config.sub; fi
+ 
+ ## Unpack the source code.
+ rm -Rf libmpeg2-${VER} && tar xfz libmpeg2-${VER}.tar.gz && cd libmpeg2-${VER}
+diff --git a/scripts/028-vpx.sh b/scripts/028-vpx.sh
+index c90bf20..06ccadb 100755
+--- a/scripts/028-vpx.sh
++++ b/scripts/028-vpx.sh
+@@ -6,8 +6,8 @@ VER=1.15.0
+ wget --continue https://github.com/webmproject/libvpx/archive/v${VER}/libvpx-${VER}.tar.gz
+ 
+ ## Download an up-to-date config.guess and config.sub
+-if [ ! -f config.guess ]; then wget --continue http://git.savannah.gnu.org/cgit/config.git/plain/config.guess; fi
+-if [ ! -f config.sub ]; then wget --continue http://git.savannah.gnu.org/cgit/config.git/plain/config.sub; fi
++if [ ! -f config.guess ]; then wget --continue https://cgit.git.savannah.gnu.org/cgit/config.git/plain/config.guess; fi
++if [ ! -f config.sub ]; then wget --continue https://cgit.git.savannah.gnu.org/cgit/config.git/plain/config.sub; fi
+ 
+ ## Unpack the source code.
+ rm -Rf libvpx-${VER} && tar xzf libvpx-${VER}.tar.gz && cd libvpx-${VER}
+diff --git a/scripts/029-libmpcdec.sh b/scripts/029-libmpcdec.sh
+index a9366d2..378cade 100755
+--- a/scripts/029-libmpcdec.sh
++++ b/scripts/029-libmpcdec.sh
+@@ -6,8 +6,8 @@ VER=1.2.6
+ wget --continue https://files.musepack.net/source/libmpcdec-${VER}.tar.bz2
+ 
+ ## Download an up-to-date config.guess and config.sub
+-if [ ! -f config.guess ]; then wget --continue http://git.savannah.gnu.org/cgit/config.git/plain/config.guess; fi
+-if [ ! -f config.sub ]; then wget --continue http://git.savannah.gnu.org/cgit/config.git/plain/config.sub; fi
++if [ ! -f config.guess ]; then wget --continue https://cgit.git.savannah.gnu.org/cgit/config.git/plain/config.guess; fi
++if [ ! -f config.sub ]; then wget --continue https://cgit.git.savannah.gnu.org/cgit/config.git/plain/config.sub; fi
+ 
+ ## Unpack the source code.
+ rm -Rf libmpcdec-${VER} && tar xf libmpcdec-${VER}.tar.bz2 && cd libmpcdec-${VER}

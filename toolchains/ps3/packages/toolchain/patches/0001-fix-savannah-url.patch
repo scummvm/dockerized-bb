@@ -1,0 +1,60 @@
+diff --git a/scripts/001-binutils-PPU.sh b/scripts/001-binutils-PPU.sh
+index 3aecc19..0ec0c2b 100755
+--- a/scripts/001-binutils-PPU.sh
++++ b/scripts/001-binutils-PPU.sh
+@@ -9,8 +9,8 @@ if [ ! -d ${BINUTILS} ]; then
+   if [ ! -f ${BINUTILS}.tar.bz2 ]; then wget --continue https://ftp.gnu.org/gnu/binutils/${BINUTILS}.tar.bz2; fi
+ 
+   ## Download an up-to-date config.guess and config.sub
+-  if [ ! -f config.guess ]; then wget --continue https://git.savannah.gnu.org/cgit/config.git/plain/config.guess; fi
+-  if [ ! -f config.sub ]; then wget --continue https://git.savannah.gnu.org/cgit/config.git/plain/config.sub; fi
++  if [ ! -f config.guess ]; then wget --continue https://cgit.git.savannah.gnu.org/cgit/config.git/plain/config.guess; fi
++  if [ ! -f config.sub ]; then wget --continue https://cgit.git.savannah.gnu.org/cgit/config.git/plain/config.sub; fi
+ 
+   ## Unpack the source code.
+   tar xfj ${BINUTILS}.tar.bz2
+diff --git a/scripts/003-gdb-PPU.sh b/scripts/003-gdb-PPU.sh
+index 25984b0..6f57ea9 100755
+--- a/scripts/003-gdb-PPU.sh
++++ b/scripts/003-gdb-PPU.sh
+@@ -9,8 +9,8 @@ if [ ! -d ${GDB} ]; then
+   if [ ! -f ${GDB}.tar.gz ]; then wget --continue https://ftp.gnu.org/gnu/gdb/${GDB}.tar.gz; fi
+ 
+   ## Download an up-to-date config.guess and config.sub
+-  if [ ! -f config.guess ]; then wget --continue https://git.savannah.gnu.org/cgit/config.git/plain/config.guess; fi
+-  if [ ! -f config.sub ]; then wget --continue https://git.savannah.gnu.org/cgit/config.git/plain/config.sub; fi
++  if [ ! -f config.guess ]; then wget --continue https://cgit.git.savannah.gnu.org/cgit/config.git/plain/config.guess; fi
++  if [ ! -f config.sub ]; then wget --continue https://cgit.git.savannah.gnu.org/cgit/config.git/plain/config.sub; fi
+ 
+   ## Unpack the source code.
+   tar xzf ${GDB}.tar.gz
+diff --git a/scripts/005-binutils-SPU.sh b/scripts/005-binutils-SPU.sh
+index 4e572c5..9aa3d9a 100755
+--- a/scripts/005-binutils-SPU.sh
++++ b/scripts/005-binutils-SPU.sh
+@@ -9,8 +9,8 @@ if [ ! -d ${BINUTILS} ]; then
+   if [ ! -f ${BINUTILS}.tar.bz2 ]; then wget --continue https://ftp.gnu.org/gnu/binutils/${BINUTILS}.tar.bz2; fi
+ 
+   ## Download an up-to-date config.guess and config.sub
+-  if [ ! -f config.guess ]; then wget --continue https://git.savannah.gnu.org/cgit/config.git/plain/config.guess; fi
+-  if [ ! -f config.sub ]; then wget --continue https://git.savannah.gnu.org/cgit/config.git/plain/config.sub; fi
++  if [ ! -f config.guess ]; then wget --continue https://cgit.git.savannah.gnu.org/cgit/config.git/plain/config.guess; fi
++  if [ ! -f config.sub ]; then wget --continue https://cgit.git.savannah.gnu.org/cgit/config.git/plain/config.sub; fi
+ 
+   ## Unpack the source code.
+   tar xfj ${BINUTILS}.tar.bz2
+diff --git a/scripts/007-gdb-SPU.sh b/scripts/007-gdb-SPU.sh
+index ea917a3..a927048 100755
+--- a/scripts/007-gdb-SPU.sh
++++ b/scripts/007-gdb-SPU.sh
+@@ -9,8 +9,8 @@ if [ ! -d ${GDB} ]; then
+   if [ ! -f ${GDB}.tar.gz ]; then wget --continue https://ftp.gnu.org/gnu/gdb/${GDB}.tar.gz; fi
+ 
+   ## Download an up-to-date config.guess and config.sub
+-  if [ ! -f config.guess ]; then wget --continue https://git.savannah.gnu.org/cgit/config.git/plain/config.guess; fi
+-  if [ ! -f config.sub ]; then wget --continue https://git.savannah.gnu.org/cgit/config.git/plain/config.sub; fi
++  if [ ! -f config.guess ]; then wget --continue https://cgit.git.savannah.gnu.org/cgit/config.git/plain/config.guess; fi
++  if [ ! -f config.sub ]; then wget --continue https://cgit.git.savannah.gnu.org/cgit/config.git/plain/config.sub; fi
+ 
+   ## Unpack the source code.
+   tar xfz ${GDB}.tar.gz
