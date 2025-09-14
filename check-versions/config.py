@@ -514,7 +514,7 @@ VERSIONS = {
     ('./toolchains/riscos/packages/iconv/build.sh', 'LIBICONV'): libiconv_check,
     ('./toolchains/riscos/packages/makerun/build.sh', 'MAKERUN'): {
         'check': 'git commit',
-        'repository': 'https://git.netsurf-browser.org/makerun.git',
+        'repository': 'git://git.netsurf-browser.org/makerun.git',
         'branch': 'master',
     },
     ('./toolchains/riscos/packages/tokenize/build.sh', 'TOKENIZE'): {

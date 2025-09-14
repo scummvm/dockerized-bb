@@ -8,7 +8,7 @@ HELPERS_DIR=$PACKAGE_DIR/../..
 
 do_make_bdir
 
-do_http_fetch makerun "http://source.netsurf-browser.org/makerun.git/snapshot/makerun-${MAKERUN_VERSION}.tar.bz2" 'tar xjf'
+do_git_fetch makerun "git://git.netsurf-browser.org/makerun.git" "${MAKERUN_VERSION}"
 
 gcc -o makerun makerun.c
 
