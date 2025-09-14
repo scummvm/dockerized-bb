@@ -1,3 +1,4 @@
+import socket
 import urllib.request as urlr
 import urllib.parse as urlp
 
@@ -7,6 +8,27 @@ import checkers
 FLUSH_PKT = object()
 DELIM_PKT = object()
 ENDRS_PKT = object()
+
+class SocketReader:
+    def __init__(self, wrap, url):
+        self._wrap = wrap
+        self._url = url
+
+    def __getattr__(self, name):
+        return getattr(self._wrap, name)
+
+    def read(self, size):
+        ret = b''
+        while size > 0:
+            tmp = self._wrap.recv(size)
+            if len(tmp) == 0:
+                break
+            ret += tmp
+            size -= len(tmp)
+        return ret
+
+    def geturl(self):
+        return self._url
 
 def read_packet_line(reply):
     length = reply.read(4)
@@ -49,13 +71,14 @@ def parse_dumb_refs(reply):
         raise Exception("Duplicate references in list for {0}".format(reply.geturl()))
     return refsd
 
-def parse_smart_refs(reply):
-    data = read_packet_line(reply)
-    if data != b"# service=git-upload-pack":
-        raise Exception("Invalid Git header line: {0!r} for {1}".format(data, reply.geturl()))
-    data = read_packet_line(reply)
-    if data is not FLUSH_PKT:
-        raise Exception("Missing Git flush packet for {0}".format(reply.geturl()))
+def parse_smart_refs(reply, http=True):
+    if http:
+        data = read_packet_line(reply)
+        if data != b"# service=git-upload-pack":
+            raise Exception("Invalid Git header line: {0!r} for {1}".format(data, reply.geturl()))
+        data = read_packet_line(reply)
+        if data is not FLUSH_PKT:
+            raise Exception("Missing Git flush packet for {0}".format(reply.geturl()))
     data = read_packet_line(reply)
     version = 0
     if data.startswith(b"version "):
@@ -91,19 +114,15 @@ def parse_smart_refs(reply):
         data = read_packet_line(reply)
 
     assert(data is FLUSH_PKT)
-    assert(reply.read() == b'')
+    if http:
+        assert(reply.read() == b'')
 
     refsd = dict(refs)
     if len(refsd) != len(refs):
         raise Exception("Duplicate references in list for {0}".format(reply.geturl()))
     return refsd
 
-@checkers.cache
-def fetch_refs(repository, context=None):
-    parts = urlp.urlsplit(repository, allow_fragments=False)
-    if parts.scheme.lower() not in('http' ,'https'):
-        raise Exception("HTTP and HTTPS are the only schemes supported for Git protocol for {0}".format(repository))
-
+def fetch_refs_http(parts, context=None):
     parts = (parts.scheme, parts.netloc,
             "{0}/info/refs".format(parts.path),
             "service=git-upload-pack", "")
@@ -122,6 +141,34 @@ def fetch_refs(repository, context=None):
         else:
             refs = parse_dumb_refs(reply)
     return refs
+
+def fetch_refs_git(parts):
+    try:
+        port = parts.port
+    except ValueError:
+        port = None
+    if port is None:
+        port = 9418
+
+    sock = SocketReader(socket.create_connection((parts.hostname, port)), urlp.urlunsplit(parts))
+
+    upload_pack = 'git-upload-pack {}\0host={}\0\0version=1\0'.format(parts.path, parts.netloc).encode('utf-8')
+    sock.send('{:04x}'.format(len(upload_pack) + 4).encode('ascii') + upload_pack)
+    refs = parse_smart_refs(sock, False)
+    sock.close()
+    return refs
+
+@checkers.cache
+def fetch_refs(repository, context=None):
+    parts = urlp.urlsplit(repository, allow_fragments=False)
+    scheme = parts.scheme.lower()
+    if scheme in ('http' ,'https'):
+        return fetch_refs_http(parts, context)
+
+    if scheme == 'git':
+        return fetch_refs_git(parts)
+
+    raise Exception("HTTP, HTTPS and GIT are the only schemes supported for Git protocol for {0}".format(repository))
 
 def git_commit(version, *, repository, branch, context=None, short=False):
     refs = fetch_refs(repository, context)
