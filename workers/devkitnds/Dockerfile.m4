@@ -8,6 +8,7 @@ ENV DEVKITPRO=/opt/devkitpro
 ENV DEVKITARM=${DEVKITPRO}/devkitARM
 ENV PREFIX=${DEVKITPRO}/portlibs/nds HOST=arm-none-eabi
 
+COPY --from=toolchain ${DEVKITPRO}/calico ${DEVKITPRO}/calico/
 COPY --from=toolchain ${DEVKITPRO}/devkitARM ${DEVKITPRO}/devkitARM/
 COPY --from=toolchain ${DEVKITPRO}/libnds ${DEVKITPRO}/libnds/
 COPY --from=toolchain ${DEVKITPRO}/portlibs/nds ${DEVKITPRO}/portlibs/nds/

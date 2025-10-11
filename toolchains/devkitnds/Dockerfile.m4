@@ -16,7 +16,7 @@ ENV \
 	def_pkg_config(`${PREFIX}') \
         PATH=$PATH:${DEVKITPRO}/tools/bin:${DEVKITPRO}/portlibs/nds/bin
 
-# From pkgbuild-scripts/ndsvars.sh
+# From pacman-packages:dkp-toolchain-vars/ndsvars.sh
 ENV \
 	CFLAGS="-march=armv5te -mtune=arm946e-s -O2 -ffunction-sections -fdata-sections" \
 	CXXFLAGS="-march=armv5te -mtune=arm946e-s -O2 -ffunction-sections -fdata-sections" \
