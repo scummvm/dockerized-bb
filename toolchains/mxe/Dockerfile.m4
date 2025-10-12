@@ -1,4 +1,4 @@
-m4_define(`MXE_VERSION',be3ac46b3f6e501bef517e527bf4d5c3d5ccfc99)m4_dnl
+m4_define(`MXE_VERSION',2ffe7bb05ce08a036cc1e39bdd6962e19e0f6321)m4_dnl
 
 m4_include(`paths.m4')m4_dnl
 m4_include(`packages.m4')m4_dnl
@@ -84,7 +84,7 @@ mxe_package(flac)
 
 mxe_package(libmikmod)
 
-local_mxe_package(libmpeg2)
+mxe_package(libmpeg2)
 
 mxe_package(a52dec)
 

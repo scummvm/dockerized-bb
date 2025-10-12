@@ -1,6 +1,6 @@
 #! /bin/sh
 
-LHA_VERSION=8e301f21a821c607461536d2667f9b2a7876f13f
+LHA_VERSION=0a07ec7fcc8014d0a4a3fa844abf1ea4f8278a28
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..
