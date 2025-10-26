@@ -10,6 +10,8 @@ do_make_bdir
 
 do_svn_fetch gcc4 svn://svn.riscos.info/gccsdk/trunk/gcc4/ -r"$GCCSDK_VERSION"
 
+find recipe/scripts -type f -exec chmod +x {} \;
+
 echo "export GCCSDK_INSTALL_CROSSBIN=$GCCSDK_INSTALL_CROSSBIN" > gccsdk-params
 echo "export GCCSDK_INSTALL_ENV=$GCCSDK_INSTALL_ENV" >> gccsdk-params
 

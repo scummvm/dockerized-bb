@@ -95,6 +95,9 @@ lighten() {
 	rm -rf "$full"
 }
 
+# Some configure script needs that because we run as root
+export FORCE_UNSAFE_CONFIGURE=1
+
 # Enable ccache for tools built with host gcc, this will speed up things a little
 export CCACHE_DIR="$(pwd)/ccache"
 

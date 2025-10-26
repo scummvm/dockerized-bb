@@ -23,7 +23,7 @@ export PATH="${PATH}:${prefix}/bin"
 # Binutils
 do_http_fetch binutils "https://ftp.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.bz2" 'tar xjf'
 
-CFLAGS="-fcommon" CXXFLAGS="-fcommon" \
+CFLAGS="-fcommon -std=gnu89" CXXFLAGS="-fcommon" \
 ./configure --target=${target} --prefix="${prefix}" --disable-werror
 do_make
 do_make install
@@ -43,7 +43,7 @@ cd ..
 mkdir gcc-build-stage1
 cd gcc-build-stage1
 
-CFLAGS="-fcommon" CXXFLAGS="-fcommon" \
+CFLAGS="-fcommon -std=gnu89" CXXFLAGS="-fcommon" \
 "${GCC_DIR}"/configure \
 	--target=${target} \
 	--prefix="${prefix}" \
@@ -62,6 +62,7 @@ cd ..
 # Newlib
 do_http_fetch newlib "ftp://sourceware.org/pub/newlib/newlib-${NEWLIB_VERSION}.tar.gz" 'tar xzf'
 
+CFLAGS_FOR_BUILD="-fcommon -std=gnu89" CXXFLAGS_FOR_BUILD="-fcommon" \
 CC_FOR_TARGET="${prefix}/bin/${target}-gcc" ./configure \
 	--target=${target} \
 	--prefix="${prefix}" \
@@ -76,7 +77,7 @@ cd ..
 mkdir gcc-build-stage2
 cd gcc-build-stage2
 
-CFLAGS="-fcommon" CXXFLAGS="-fcommon" \
+CFLAGS="-fcommon -std=gnu89" CXXFLAGS="-fcommon" \
 "${GCC_DIR}"/configure \
 	--target=${target} \
 	--prefix="${prefix}" \

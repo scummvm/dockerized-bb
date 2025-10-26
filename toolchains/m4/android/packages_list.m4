@@ -31,10 +31,9 @@ helpers_package(libmikmod)
 
 helpers_package(libmpcdec)
 
-# --as is used for x86* and overrides AS environment variable: exactly what we want
-# Fix build with nasm
+# Setup Android build with everything needed
 COPY --from=android-helpers /lib-helpers/packages/libvpx lib-helpers/packages/libvpx
-helpers_package(libvpx, --as=nasm --enable-pic)
+helpers_package(libvpx, --enable-pic)
 
 android_package(openssl)
 

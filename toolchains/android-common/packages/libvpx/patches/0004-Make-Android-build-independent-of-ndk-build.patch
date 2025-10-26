@@ -1,0 +1,58 @@
+From 5197de383d67eafe9b831fcfff30914187794887 Mon Sep 17 00:00:00 2001
+From: Le Philousophe <lephilousophe@users.noreply.github.com>
+Date: Sat, 18 Oct 2025 18:02:20 +0200
+Subject: [PATCH] Make Android build independent of ndk-build
+
+---
+ build/make/configure.sh |  6 ++++++
+ libs.mk                 | 10 ++++++++++
+ 2 files changed, 16 insertions(+)
+
+diff --git a/build/make/configure.sh b/build/make/configure.sh
+index 246ec61..6310472 100644
+--- a/build/make/configure.sh
++++ b/build/make/configure.sh
+@@ -833,6 +833,9 @@ process_common_toolchain() {
+ 
+     # detect tgt_os
+     case "$gcctarget" in
++      *android*)
++        tgt_os=android
++        ;;
+       *darwin1[0-9]*)
+         tgt_isa=x86_64
+         tgt_os=`echo $gcctarget | sed 's/.*\(darwin1[0-9]\).*/\1/'`
+@@ -1370,6 +1373,9 @@ EOF
+       case  ${tgt_os} in
+         android)
+           soft_enable realtime_only
++          AS=nasm
++          # x86 uses nasm which hasn't __ANDROID__ defined
++          add_asflags "-D__ANDROID__"
+           ;;
+         win*)
+           enabled gcc && add_cflags -fno-common
+diff --git a/libs.mk b/libs.mk
+index a4c7fca..d7cec3d 100644
+--- a/libs.mk
++++ b/libs.mk
+@@ -47,6 +47,16 @@ CODEC_SRCS-yes += $(addprefix vpx_scale/,$(call enabled,SCALE_SRCS))
+ include $(SRC_PATH_BARE)/vpx_ports/vpx_ports.mk
+ CODEC_SRCS-yes += $(addprefix vpx_ports/,$(call enabled,PORTS_SRCS))
+ 
++ifeq ($(filter android%,$(TGT_OS)),$(TGT_OS))
++$(BUILD_PFX)vpx_ports/%_cpudetect.c.o: CFLAGS += "-I$(ANDROID_NDK_ROOT)/sources/android/cpufeatures"
++$(BUILD_PFX)third_party/cpu-features.c.o: CFLAGS += "-I$(ANDROID_NDK_ROOT)/sources/android/cpufeatures"
++$(BUILD_PFX)third_party/cpu-features.c: $(ANDROID_NDK_ROOT)/sources/android/cpufeatures/cpu-features.c
++	@echo "    [LN]     $< $@"
++	$(qexec)mkdir -p $(dir $@)
++	$(qexec)ln -sf $< $@
++CODEC_SRCS-yes += $(BUILD_PFX)third_party/cpu-features.c
++endif
++
+ include $(SRC_PATH_BARE)/vpx_dsp/vpx_dsp.mk
+ CODEC_SRCS-yes += $(addprefix vpx_dsp/,$(call enabled,DSP_SRCS))
+ 
+-- 
+2.49.1
+

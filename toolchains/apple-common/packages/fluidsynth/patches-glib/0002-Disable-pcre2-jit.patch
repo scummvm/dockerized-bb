@@ -1,0 +1,15 @@
+Index: glib-2.84.4/meson.build
+===================================================================
+--- glib-2.84.4.orig/meson.build
++++ glib-2.84.4/meson.build
+@@ -2232,6 +2232,10 @@ pcre2_options = [
+   'test=false',
+ ]
+ 
++if host_system == 'ios'
++  pcre2_options += 'jit=disabled'
++endif
++
+ # Pick up pcre from the system, or if "--force-fallback-for libpcre2-8" was specified
+ pcre2 = dependency('libpcre2-8', version: pcre2_req, required: false, default_options: pcre2_options)
+ if not pcre2.found()

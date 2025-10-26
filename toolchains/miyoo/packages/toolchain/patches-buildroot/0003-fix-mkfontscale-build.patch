@@ -1,0 +1,21 @@
+Index: buildroot-2018.02.9/package/x11r7/xapp_mkfontscale/0001-fix-build.patch
+===================================================================
+--- /dev/null
++++ buildroot-2018.02.9/package/x11r7/xapp_mkfontscale/0001-fix-build.patch
+@@ -0,0 +1,16 @@
++Index: mkfontscale-1.1.2/mkfontscale.c
++===================================================================
++--- mkfontscale-1.1.2.orig/mkfontscale.c
+++++ mkfontscale-1.1.2/mkfontscale.c
++@@ -157,9 +157,9 @@ main(int argc, char **argv)
++ 
++     outfilename = NULL;
++ 
++-    encodings = makeList(encodings_array, countof(encodings_array), NULL, 0);
+++    encodings = makeList((char **)encodings_array, countof(encodings_array), NULL, 0);
++ 
++-    extra_encodings = makeList(extra_encodings_array,
+++    extra_encodings = makeList((char **)extra_encodings_array,
++                                countof(extra_encodings_array),
++                                NULL, 0);
++     doBitmaps = 0;

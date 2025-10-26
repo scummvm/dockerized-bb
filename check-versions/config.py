@@ -78,8 +78,8 @@ debian_check = {
     'registry': 'https://registry-1.docker.io',
     'image name': 'library/debian',
     'architecture': 'amd64',
-    'reference': 'bookworm-slim',
-    'tag_format': 'bookworm-{0}-slim',
+    'reference': 'trixie-slim',
+    'tag_format': 'trixie-{0}-slim',
 }
 raspios_check = {
     'check': 'scrape',

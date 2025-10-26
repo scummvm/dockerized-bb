@@ -7,39 +7,26 @@ HELPERS_DIR=$PACKAGE_DIR/../..
 
 do_make_bdir
 
+# Download Raspbian keys
+wget "http://raspbian.raspberrypi.org/raspbian.public.key" -O - | gpg --dearmor -o "raspbian.gpg"
+wget "http://archive.raspberrypi.org/debian/raspberrypi.gpg.key" -O - | gpg --dearmor -o "raspberrypi.gpg"
+
+# We can't specify several sources and a directory target... Create a tar (using convoluted means) and extract it.
+mkdir -p host
+ln -s /usr/bin/tar host/
+
+FAKECHROOT_EXCLUDE_PATH="$(pwd)/host" mmdebstrap --mode=fakeroot --variant=extract --architectures=armhf \
+	--setup-hook="mkdir -p \$1/usr/bin/; ln -s $(pwd)/host/tar \$1/usr/bin/" \
+	--include="$(echo "$@" | tr ' ' ',')">toolchain.tar <<EOF
+deb [signed-by=$(pwd)/raspbian.gpg] http://raspbian.raspberrypi.org/raspbian/ $RASPBIAN_VERSION main contrib non-free rpi
+deb [signed-by=$(pwd)/raspberrypi.gpg] http://archive.raspberrypi.org/debian/ $RASPBIAN_VERSION main
+EOF
+
 sysroot="$(pwd)/sysroot"
 mkdir -p "$sysroot"
 
-# Download Raspbian key directly in sysroot
-mkdir -p "$sysroot/etc/apt/trusted.gpg.d"
-wget "http://raspbian.raspberrypi.org/raspbian.public.key" -O - | apt-key --keyring "$sysroot/etc/apt/trusted.gpg.d/raspbian.gpg" add -
-wget "http://archive.raspberrypi.org/debian/raspberrypi.gpg.key" -O - | apt-key --keyring "$sysroot/etc/apt/trusted.gpg.d/raspberrypî.gpg" add -
-
-# Build a multistrap config file
-cat <<EOF >./multistrap.conf
-[General]
-arch=armhf
-unpack=true
-cleanup=true
-bootstrap=raspbian raspberrypi
-aptsources=
-
-[raspbian]
-packages=$@
-source=http://raspbian.raspberrypi.org/raspbian/
-keyring=
-suite=$RASPBIAN_VERSION main contrib non-free rpi
-omitdebsrc=true
-
-[raspberrypi]
-packages=$@
-source=http://archive.raspberrypi.org/debian/
-keyring=
-suite=$RASPBIAN_VERSION main
-omitdebsrc=true
-EOF
-
-multistrap -f multistrap.conf -d "$sysroot"
+tar -C "$sysroot" -xf toolchain.tar --exclude './dev'
+rm toolchain.tar
 
 # Copy only sysroot bits we need
 mkdir -p "$RPI_ROOT" "$RPI_ROOT/usr" "$RPI_ROOT/usr/bin" \

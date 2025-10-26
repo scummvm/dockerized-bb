@@ -10,7 +10,9 @@ do_make_bdir
 
 do_pkg_fetch libffi
 
-do_configure --disable-builddir
+autoreconf -fi
+
+do_configure --disable-builddir --disable-docs
 do_make
 # Install only includes and library (no man pages, nor info)
 do_make -C include install
@@ -18,22 +20,12 @@ do_make install-pkgconfigDATA install-toolexeclibLTLIBRARIES
 
 cd ..
 
-do_pkg_fetch gettext
-
-autoreconf -vfi
-
-do_configure --disable-libasprintf --disable-java --disable-c++
-# No binaries, no man, ...
-do_make -C gettext-runtime/intl
-do_make -C gettext-runtime/intl install
-
-cd ..
-
 do_pkg_fetch glib2.0
 do_patch glib
 
 # Only keep glib and gthread
-sed -i -e "/subdir('/{/'glib'/n; /'gthread'/n; s/^/#/}" meson.build
+# tools doesn't produce anything but is needed for the build
+sed -i -e "/subdir('/{/'glib'/{p;d}; /'gthread'/{p;d}; /'tools'/{p;d}; s/^/#/}" meson.build
 
 do_meson
 ninja

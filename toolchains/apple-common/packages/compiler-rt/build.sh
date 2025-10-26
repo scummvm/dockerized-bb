@@ -86,6 +86,9 @@ fi
 # Don't build for osx
 sed -i 's/set(BUILTIN_SUPPORTED_OS .*)$/set(BUILTIN_SUPPORTED_OS )/' cmake/builtin-config-ix.cmake
 
+# Disable all modules by default, we will enable builtins afterwards
+sed -i '/option(COMPILER_RT_BUILD_/s/ON)/OFF)/' CMakeLists.txt
+
 # Fix paths
 sed -i "s|COMMAND lipo |COMMAND $LIPO |g" \
 	cmake/Modules/CompilerRTDarwinUtils.cmake
@@ -95,10 +98,6 @@ sed -i "s|COMMAND codesign |COMMAND true |g" \
 	cmake/Modules/AddCompilerRT.cmake
 sed -i 's|${CMAKE_COMMAND} -E ${COMPILER_RT_LINK_OR_COPY}|ln -sf|g' \
 	lib/builtins/CMakeLists.txt
-if [ -f lib/orc/CMakeLists.txt ]; then
-	sed -i 's|list(APPEND ORC_CFLAGS -I${DIR})||g' \
-		lib/orc/CMakeLists.txt
-fi
 
 # Use raw clang/clang++ as the build system already adds parameters
 # Override MacOSX version as we don't have any SDK for it
@@ -114,14 +113,7 @@ do_cmake \
 	-DDARWIN_${SDK_PLATFORM}_CACHED_SYSROOT="$SDK_DIR" \
 	-DDARWIN_${SDK_PLATFORM}_OVERRIDE_SDK_VERSION="$SDK_VERSION" \
 	-DCOMPILER_RT_ENABLE_TVOS=ON \
-	-DCOMPILER_RT_BUILD_BUILTINS=ON \
-	-DCOMPILER_RT_BUILD_SANITIZERS=OFF \
-	-DCOMPILER_RT_BUILD_XRAY=OFF \
-	-DCOMPILER_RT_BUILD_LIBFUZZER=OFF \
-	-DCOMPILER_RT_BUILD_PROFILE=OFF \
-	-DCOMPILER_RT_BUILD_MEMPROF=OFF \
-	-DCOMPILER_RT_BUILD_ORC=OFF \
-	-DCOMPILER_RT_BUILD_GWP_ASAN=OFF
+	-DCOMPILER_RT_BUILD_BUILTINS=ON
 
 do_make
 

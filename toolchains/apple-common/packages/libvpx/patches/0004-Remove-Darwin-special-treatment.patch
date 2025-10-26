@@ -1,0 +1,74 @@
+From dc292a4f0797c1c0a6f56fdd621db974e0506ecf Mon Sep 17 00:00:00 2001
+From: Le Philousophe <lephilousophe@users.noreply.github.com>
+Date: Sat, 18 Oct 2025 19:18:21 +0200
+Subject: [PATCH] Remove Darwin special treatment
+
+We don't use Xcode
+---
+ build/make/configure.sh | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
+
+diff --git a/build/make/configure.sh b/build/make/configure.sh
+index 246ec61..0f2d6a1 100644
+--- a/build/make/configure.sh
++++ b/build/make/configure.sh
+@@ -794,7 +794,7 @@ process_common_toolchain() {
+     gcctarget="${CHOST:-$($CC -dumpmachine 2> /dev/null)}"
+     # detect tgt_isa
+     case "$gcctarget" in
+-      aarch64*)
++      aarch64*|arm64*)
+         tgt_isa=arm64
+         ;;
+       armv7*-hardfloat* | armv7*-gnueabihf | arm-*-gnueabihf)
+@@ -833,12 +833,13 @@ process_common_toolchain() {
+ 
+     # detect tgt_os
+     case "$gcctarget" in
++      *arm*-darwin*)
++	tgt_os=darwin
++	;;
+       *darwin1[0-9]*)
+-        tgt_isa=x86_64
+         tgt_os=`echo $gcctarget | sed 's/.*\(darwin1[0-9]\).*/\1/'`
+         ;;
+       *darwin2[0-3]*)
+-        tgt_isa=`uname -m`
+         tgt_os=`echo $gcctarget | sed 's/.*\(darwin2[0-9]\).*/\1/'`
+         ;;
+       x86_64*mingw32*)
+@@ -917,6 +918,7 @@ process_common_toolchain() {
+ #endif
+ EOF
+ 
++if false; then
+   # Minimum iOS version for all target platforms (darwin and iphonesimulator).
+   # Shared library framework builds are only possible on iOS 8 and later.
+   if enabled shared; then
+@@ -1010,6 +1012,7 @@ EOF
+       fi
+       ;;
+   esac
++fi
+ 
+   # Handle Solaris variants. Solaris 10 needs -lposix4
+   case ${toolchain} in
+@@ -1187,6 +1190,7 @@ EOF
+           ;;
+ 
+         darwin)
++if false; then
+           if ! enabled external_build; then
+             XCRUN_FIND="xcrun --sdk iphoneos --find"
+             CXX="$(${XCRUN_FIND} clang++)"
+@@ -1240,6 +1244,7 @@ EOF
+               check_add_ldflags -fembed-bitcode
+             fi
+           fi
++fi
+ 
+           asm_conversion_cmd="${source_path_mk}/build/make/ads2gas_apple.pl"
+           ;;
+-- 
+2.49.1
+

@@ -173,6 +173,8 @@ CT_CC_LANG_CXX=y
 #
 # Companion tools
 #
+# glibc 2.7 doesn't build with recent versions of GNU Make 
+CT_COMP_TOOLS_MAKE=y
 
 #
 # Test suite

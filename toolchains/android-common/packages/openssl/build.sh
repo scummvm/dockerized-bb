@@ -29,10 +29,10 @@ if [ "$API" = "." ]; then
 	export ANDROID_NDK_ROOT=$TOOLCHAIN
 else
 	# Android fully unified toolchain
-	and_api=-D__ANDROID_API__=$API
+	and_api="-U__ANDROID_API__ -D__ANDROID_API__=$API"
 fi
 
-./Configure $ssl_target no-shared no-threads -fno-integrated-as $and_api --prefix=${PREFIX} --libdir=${PREFIX}/lib/${TARGET}/${API}
+./Configure $ssl_target no-shared no-threads $and_api --prefix=${PREFIX} --libdir=${PREFIX}/lib/${TARGET}/${API}
 do_make build_libs
 do_make install_dev
 

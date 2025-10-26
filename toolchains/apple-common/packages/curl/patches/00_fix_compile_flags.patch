@@ -1,13 +1,13 @@
-Index: curl-7.74.0/curl-config.in
+Index: curl-8.14.1/curl-config.in
 ===================================================================
---- curl-7.74.0.orig/curl-config.in
-+++ curl-7.74.0/curl-config.in
-@@ -163,7 +163,7 @@ while test $# -gt 0; do
+--- curl-8.14.1.orig/curl-config.in
++++ curl-8.14.1/curl-config.in
+@@ -157,7 +157,7 @@ while test $# -gt 0; do
  
-     --static-libs)
-         if test "X@ENABLE_STATIC@" != "Xno" ; then
--          echo -Wl,-Bstatic -lcurl -Wl,-Bdynamic @LIBCURL_LIBS@
-+          echo -lcurl @LDFLAGS@ @LIBCURL_LIBS@
-         else
-           echo "curl was built with static libraries disabled" >&2
-           exit 1
+   --static-libs)
+     if test 'X@ENABLE_STATIC@' != 'Xno'; then
+-      echo -Wl,-Bstatic -lcurl -Wl,-Bdynamic @LIBCURL_PC_LIBS_PRIVATE@
++      echo -lcurl @LIBCURL_PC_LDFLAGS_PRIVATE@ @LIBCURL_PC_LIBS_PRIVATE@
+     else
+       echo 'curl was built with static libraries disabled' >&2
+       exit 1

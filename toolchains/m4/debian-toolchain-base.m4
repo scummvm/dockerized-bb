@@ -1,4 +1,4 @@
-m4_ifdef(`DEBIAN_RELEASE',,`m4_define(`DEBIAN_RELEASE',bookworm)')
+m4_ifdef(`DEBIAN_RELEASE',,`m4_define(`DEBIAN_RELEASE',trixie)')
 m4_ifdef(`DEBIAN_VERSION',,`m4_define(`DEBIAN_VERSION',20250929)')
 FROM toolchains/common AS helpers
 

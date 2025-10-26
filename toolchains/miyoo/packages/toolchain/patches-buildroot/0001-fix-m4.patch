@@ -24,11 +24,10 @@ Signed-off-by: Thomas Petazzoni <thomas.petazzoni@bootlin.com>
  1 file changed, 106 insertions(+)
  create mode 100644 package/m4/0003-c-stack-stop-using-SIGSTKSZ.patch
 
-diff --git a/package/m4/0003-c-stack-stop-using-SIGSTKSZ.patch b/package/m4/0003-c-stack-stop-using-SIGSTKSZ.patch
-new file mode 100644
-index 00000000000..f262fc818e6
+Index: buildroot-2018.02.9/package/m4/0003-c-stack-stop-using-SIGSTKSZ.patch
+===================================================================
 --- /dev/null
-+++ b/package/m4/0003-c-stack-stop-using-SIGSTKSZ.patch
++++ buildroot-2018.02.9/package/m4/0003-c-stack-stop-using-SIGSTKSZ.patch
 @@ -0,0 +1,106 @@
 +c-stack: stop using SIGSTKSZ
 +

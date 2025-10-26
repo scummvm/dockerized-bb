@@ -1,4 +1,4 @@
-From 2730d8520ada759d1f92b5c1e1a7e2853644aca4 Mon Sep 17 00:00:00 2001
+From 6c68035cbcbeda0f3bbff602fdae788ef0e1e05d Mon Sep 17 00:00:00 2001
 From: Le Philousophe <lephilousophe@users.noreply.github.com>
 Date: Mon, 11 Oct 2021 20:47:00 +0200
 Subject: [PATCH 3/3] Fix gperf code for modern gcc
@@ -9,7 +9,7 @@ Subject: [PATCH 3/3] Fix gperf code for modern gcc
  2 files changed, 9 deletions(-)
 
 diff --git a/gcc/cp/cfns.gperf b/gcc/cp/cfns.gperf
-index c713eb0c2bd..30f7a39e1aa 100644
+index c713eb0c..30f7a39e 100644
 --- a/gcc/cp/cfns.gperf
 +++ b/gcc/cp/cfns.gperf
 @@ -3,9 +3,6 @@
@@ -23,7 +23,7 @@ index c713eb0c2bd..30f7a39e1aa 100644
  %}
  %%
 diff --git a/gcc/cp/cfns.h b/gcc/cp/cfns.h
-index e6d43d8acfb..cf3f243263b 100644
+index e6d43d8a..cf3f2432 100644
 --- a/gcc/cp/cfns.h
 +++ b/gcc/cp/cfns.h
 @@ -34,9 +34,6 @@
@@ -47,5 +47,5 @@ index e6d43d8acfb..cf3f243263b 100644
  libc_name_p (register const char *str, register unsigned int len)
  {
 -- 
-2.32.0
+2.49.1
 

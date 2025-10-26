@@ -11,10 +11,12 @@ m4_dnl Include Debian base preparation steps
 m4_dnl This ensures all common steps are shared by all toolchains
 m4_include(`debian-toolchain-base.m4')m4_dnl
 
+# libltdl-dev is needed for autoreconf of libffi in fluidsynth
 RUN apt-get update && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 		g++ \
 		libbz2-dev \
+		libltdl-dev \
 		liblzma-dev \
 		libxml2-dev \
 		libssl-dev \
@@ -26,8 +28,9 @@ RUN apt-get update && \
 
 m4_ifdef(`PPA_CLANG',
 RUN . /etc/os-release && \
-	echo "deb http://apt.llvm.org/$VERSION_CODENAME/ llvm-toolchain-$VERSION_CODENAME`'PPA_CLANG`' main" > /etc/apt/sources.list.d/clang.list && \
-	wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - && \
+	wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | gpg --dearmor -o /usr/share/keyrings/llvm.gpg && \
+	echo "deb [signed-by=/usr/share/keyrings/llvm.gpg] http://apt.llvm.org/$VERSION_CODENAME/ llvm-toolchain-$VERSION_CODENAME`'PPA_CLANG`' main" > /etc/apt/sources.list.d/clang.list && \
+	rm -f "${HOME}/.wget-hsts" && \
 	apt-get update && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 		clang`'PPA_CLANG`' \
@@ -91,8 +94,6 @@ common_package(compiler-rt)
 # Needed for freetype (at least that's what ScummVM thinks)
 helpers_package(bzip2)
 
-# Patch for modern clang
-COPY --from=apple-common /lib-helpers/packages/libpng1.6 lib-helpers/packages/libpng1.6
 helpers_package(libpng1.6)
 
 helpers_package(libjpeg-turbo, -DCMAKE_TOOLCHAIN_FILE=${TARGET_DIR}/XOS_PLATFORM`'.platform)
@@ -133,7 +134,7 @@ helpers_package(libvpx)
 # Disable NTLM since it requires fork which is not supported in tvOS
 # This is never used anyway
 COPY --from=apple-common /lib-helpers/packages/curl lib-helpers/packages/curl
-helpers_package(curl, --without-openssl --with-secure-transport --disable-ntlm-wb, CFLAGS="-m`'XOS_PLATFORM`'os-version-min=XOS_DEPLOYMENT_TARGET")
+helpers_package(curl, --without-openssl --with-secure-transport --disable-ntlm, CFLAGS="-m`'XOS_PLATFORM`'os-version-min=XOS_DEPLOYMENT_TARGET")
 
 helpers_package(freetype)
 

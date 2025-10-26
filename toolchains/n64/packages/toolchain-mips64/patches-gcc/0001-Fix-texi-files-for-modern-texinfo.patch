@@ -1,17 +1,18 @@
-From fd998eeee4010910544d8798723c8308af35503f Mon Sep 17 00:00:00 2001
+From adb8b9225914e2138c980cd1e186a0764295bff9 Mon Sep 17 00:00:00 2001
 From: Le Philousophe <lephilousophe@users.noreply.github.com>
 Date: Mon, 11 Oct 2021 20:35:56 +0200
 Subject: [PATCH 1/3] Fix texi files for modern texinfo
 
 ---
- gcc/doc/c-tree.texi  |  4 ++--
- gcc/doc/cppopts.texi |  2 +-
- gcc/doc/gcc.texi     |  6 +++---
- gcc/doc/invoke.texi  | 14 +++++++-------
- 4 files changed, 13 insertions(+), 13 deletions(-)
+ gcc/doc/c-tree.texi      |  4 ++--
+ gcc/doc/cppopts.texi     |  2 +-
+ gcc/doc/gcc.texi         |  6 +++---
+ gcc/doc/invoke.texi      | 14 +++++++-------
+ gcc/doc/sourcebuild.texi |  2 +-
+ 5 files changed, 14 insertions(+), 14 deletions(-)
 
 diff --git a/gcc/doc/c-tree.texi b/gcc/doc/c-tree.texi
-index 6eabd34a7b1..451f5230944 100644
+index 6eabd34a..451f5230 100644
 --- a/gcc/doc/c-tree.texi
 +++ b/gcc/doc/c-tree.texi
 @@ -2338,13 +2338,13 @@ generate these expressions anyhow, if it can tell that strictness does
@@ -31,7 +32,7 @@ index 6eabd34a7b1..451f5230944 100644
  @itemx MULT_EXPR
  These nodes represent various binary arithmetic operations.
 diff --git a/gcc/doc/cppopts.texi b/gcc/doc/cppopts.texi
-index 2fca3664d8f..2c49976608e 100644
+index 2fca3664..2c499766 100644
 --- a/gcc/doc/cppopts.texi
 +++ b/gcc/doc/cppopts.texi
 @@ -758,7 +758,7 @@ Replacement:      [    ]    @{    @}    #    \    ^    |    ~
@@ -44,7 +45,7 @@ index 2fca3664d8f..2c49976608e 100644
  @opindex help
  @opindex target-help
 diff --git a/gcc/doc/gcc.texi b/gcc/doc/gcc.texi
-index 41031752bf2..276cadf3887 100644
+index 41031752..276cadf3 100644
 --- a/gcc/doc/gcc.texi
 +++ b/gcc/doc/gcc.texi
 @@ -84,11 +84,11 @@ This file documents the use of the GNU compilers.
@@ -63,7 +64,7 @@ index 41031752bf2..276cadf3887 100644
  @tab Tel 617-542-5942
  @item Boston, MA 02110-1301 USA
 diff --git a/gcc/doc/invoke.texi b/gcc/doc/invoke.texi
-index ccb2776f233..ecd1bac7cc2 100644
+index ccb2776f..ecd1bac7 100644
 --- a/gcc/doc/invoke.texi
 +++ b/gcc/doc/invoke.texi
 @@ -4645,11 +4645,11 @@ Dump after duplicating the computed gotos.
@@ -121,6 +122,19 @@ index ccb2776f233..ecd1bac7cc2 100644
  @opindex fdump-rtl-pro_and_epilogue
  Dump after generating the function pro and epilogues.
  
+diff --git a/gcc/doc/sourcebuild.texi b/gcc/doc/sourcebuild.texi
+index fb639826..4c515897 100644
+--- a/gcc/doc/sourcebuild.texi
++++ b/gcc/doc/sourcebuild.texi
+@@ -573,7 +573,7 @@ standard rule in @file{gcc/Makefile.in} to the variable
+ @code{lang_checks}.
+ 
+ @table @code
+-@itemx all.cross
++@item all.cross
+ @itemx start.encap
+ @itemx rest.encap
+ FIXME: exactly what goes in each of these targets?
 -- 
-2.32.0
+2.49.1
 

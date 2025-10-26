@@ -9,7 +9,7 @@ HELPERS_DIR=$PACKAGE_DIR/../..
 
 do_make_bdir
 
-cc -o scramble "${PACKAGE_DIR}"/scramble.c
+cc -ansi -o scramble "${PACKAGE_DIR}"/scramble.c
 
 install -D -t "${DCTOOLCHAIN}"/bin/ scramble
 

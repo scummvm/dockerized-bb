@@ -31,11 +31,11 @@ Signed-off-by: Peter Korsgaard <peter@korsgaard.com>
  Makefile | 3 +++
  1 file changed, 3 insertions(+)
 
-diff --git a/Makefile b/Makefile
-index 31624f77a2d..09e769f6130 100644
---- a/Makefile
-+++ b/Makefile
-@@ -188,6 +188,9 @@ ifneq ($(BR2_EXTERNAL_ERROR),)
+Index: buildroot-2018.02.9/Makefile
+===================================================================
+--- buildroot-2018.02.9.orig/Makefile
++++ buildroot-2018.02.9/Makefile
+@@ -205,6 +205,9 @@ ifneq ($(BR2_EXTERNAL_ERROR),)
  $(error $(BR2_EXTERNAL_ERROR))
  endif
  

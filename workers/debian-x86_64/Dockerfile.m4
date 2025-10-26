@@ -6,9 +6,10 @@ m4_include(`debian-libraries.m4')m4_dnl
 
 RUN apt-get update && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+		binutils-gold \
+		g++ \
 		libsdl1.2-dev \
 		libsdl-net1.2-dev \
-		g++ \
 	&& \
 	rm -rf /var/lib/apt/lists/*
 
