@@ -78,7 +78,7 @@ mxe_package(ogg)
 
 mxe_package(vorbis)
 
-mxe_package(theora)
+local_mxe_package(theora)
 
 mxe_package(flac)
 
