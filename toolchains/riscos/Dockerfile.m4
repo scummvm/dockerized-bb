@@ -80,7 +80,7 @@ helpers_package(libvorbis)
 
 helpers_package(libvorbisidec)
 
-helpers_package(libtheora)
+helpers_package(libtheora, --disable-asflag-probe)
 
 # Remove POSIX.1-2008 code which is incomplete (no utimensat)
 COPY packages/flac lib-helpers/packages/flac

@@ -250,6 +250,11 @@ VERSIONS = {
         'exclude pattern': r'.*\.(beta|rc)\d+$'
     },
     ('./toolchains/common/packages/libiconv/build.sh', 'LIBICONV'): libiconv_check,
+    ('./toolchains/common/packages/libtheora/build.sh', 'THEORA'): {
+        'check': 'git commit',
+        'repository': 'https://gitlab.xiph.org/xiph/theora.git',
+        'branch': 'main',
+    },
     ('./toolchains/common/packages/libsdl1.2/build.sh', 'SDL'): {
         'check': 'git commit',
         'repository': 'https://github.com/libsdl-org/SDL-1.2.git',
@@ -401,6 +406,7 @@ VERSIONS = {
     ('./toolchains/openpandora/packages/libogg/build.sh', 'LIBOGG'): 'ignore',
     ('./toolchains/openpandora/packages/libpng/build.sh', 'LIBPNG'): 'ignore',
     ('./toolchains/openpandora/packages/libsdl/build.sh', 'SDL'): 'ignore',
+    ('./toolchains/openpandora/packages/libtheora/build.sh', 'LIBTHEORA'): 'ignore',
     ('./toolchains/openpandora/packages/libvorbis/build.sh', 'LIBVORBIS'): 'ignore',
     ('./toolchains/openpandora/packages/sdl-net1.2/build.sh', 'SDL_NET'): 'ignore',
     ('./toolchains/openpandora/packages/tslib/build.sh', 'TSLIB'): 'ignore',

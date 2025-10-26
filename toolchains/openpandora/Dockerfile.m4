@@ -58,8 +58,8 @@ helpers_package(libmad, --enable-shared)
 # Use same version as official toolchain
 local_package(libogg)
 
-# libtheora hasn't seen any activity since a really long time and still has the same version
-helpers_package(libtheora, --enable-shared)
+# Use same version as official toolchain
+local_package(libtheora)
 
 # Use same version as official toolchain
 local_package(libvorbis)

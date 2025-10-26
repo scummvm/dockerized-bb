@@ -1,0 +1,36 @@
+commit a09bb8a7ab624550ac2b8507fcce3012c3e51115
+Author: Le Philousophe <lephilousophe@users.noreply.github.com>
+Date:   Fri Oct 24 20:51:55 2025 +0200
+
+    Allow building with old OGG library
+
+diff --git a/lib/state.c b/lib/state.c
+index 28a6027..5a8c0d2 100644
+--- a/lib/state.c
++++ b/lib/state.c
+@@ -15,6 +15,7 @@
+ 
+  ********************************************************************/
+ 
++#include <stdint.h>
+ #include <stdlib.h>
+ #include <string.h>
+ #include "state.h"
+@@ -388,7 +389,7 @@ static void oc_state_border_init(oc_theora_state *_state){
+         /*Otherwise, check to see if it straddles the border.*/
+         else if(x<crop_x0&&crop_x0<x+8||x<crop_xf&&crop_xf<x+8||
+          y<crop_y0&&crop_y0<y+8||y<crop_yf&&crop_yf<y+8){
+-          ogg_uint64_t mask;
++          uint64_t mask;
+           int         npixels;
+           int         i;
+           mask=npixels=0;
+@@ -396,7 +397,7 @@ static void oc_state_border_init(oc_theora_state *_state){
+             int j;
+             for(j=0;j<8;j++){
+               if(x+j>=crop_x0&&x+j<crop_xf&&y+i>=crop_y0&&y+i<crop_yf){
+-                mask|=(ogg_uint64_t)1<<(i<<3|j);
++                mask|=(uint64_t)1<<(i<<3|j);
+                 npixels++;
+               }
+             }
