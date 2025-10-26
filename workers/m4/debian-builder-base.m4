@@ -1,5 +1,5 @@
 m4_ifdef(`DEBIAN_RELEASE',,`m4_define(`DEBIAN_RELEASE',trixie)')
-m4_ifdef(`DEBIAN_VERSION',,`m4_define(`DEBIAN_VERSION',20250929)')
+m4_ifdef(`DEBIAN_VERSION',,`m4_define(`DEBIAN_VERSION',20251020)')
 m4_define(`BASE_DEBIAN',`')m4_dnl
 FROM debian:DEBIAN_RELEASE-DEBIAN_VERSION-slim
 USER root
