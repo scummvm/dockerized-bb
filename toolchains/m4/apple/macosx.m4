@@ -157,7 +157,6 @@ ports_package(libsdl2_net)
 # Lighten glib build by removing Objective C and Cocoa and fix intl detection
 m4_ifdef(`USE_FLUIDLITE',m4_dnl
 helpers_package(fluidlite),m4_dnl
-COPY --from=apple-common /lib-helpers/packages/fluidsynth lib-helpers/packages/fluidsynth
 helpers_package(fluidsynth, -DCMAKE_SYSTEM_NAME=Darwin -DLIB_SUFFIX= -DCMAKE_FRAMEWORK_PATH=${TARGET_DIR}/SDK/MacOSX`'MACOSX_SDK_VERSION`'.sdk/usr/lib))
 
 helpers_package(retrowave, -DCMAKE_SYSTEM_NAME=Darwin)

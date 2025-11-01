@@ -105,7 +105,7 @@ local_mxe_package(sdl2)
 
 mxe_package(sdl2_net)
 
-local_mxe_package(fluidlite)
+local_mxe_package(fluidsynth-embedded)
 
 local_mxe_package(winsparkle)
 

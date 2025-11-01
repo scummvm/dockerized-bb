@@ -144,6 +144,4 @@ helpers_package(fribidi)
 COPY --from=apple-common /lib-helpers/packages/libsdl2-net lib-helpers/packages/libsdl2-net
 helpers_package(libsdl2-net)
 
-# Lighten glib build by removing Objective C and Cocoa and fix intl detection
-COPY --from=apple-common /lib-helpers/packages/fluidsynth lib-helpers/packages/fluidsynth
 helpers_package(fluidsynth, -DCMAKE_SYSTEM_NAME=Darwin -DLIB_SUFFIX=)
