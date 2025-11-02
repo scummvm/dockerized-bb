@@ -53,6 +53,13 @@ discord_rpc_check = {
 }
 
 
+fluidsynth_check = {
+    'check': 'git tag',
+    'repository': 'https://github.com/FluidSynth/fluidsynth.git',
+    'prefix': 'v',
+    'exclude pattern': r'.*\.(beta|rc)\d+$'
+}
+
 libiconv_check = {
     'check': 'git tag',
     'repository': 'https://https.git.savannah.gnu.org/git/libiconv.git',
@@ -243,12 +250,7 @@ VERSIONS = {
         'repository': 'https://github.com/divideconcept/FluidLite.git',
         'branch': 'master',
     },
-    ('./toolchains/common/packages/fluidsynth/build.sh', 'FLUIDSYNTH'): {
-        'check': 'git tag',
-        'repository': 'https://github.com/FluidSynth/fluidsynth.git',
-        'prefix': 'v',
-        'exclude pattern': r'.*\.(beta|rc)\d+$'
-    },
+    ('./toolchains/common/packages/fluidsynth/build.sh', 'FLUIDSYNTH'): fluidsynth_check,
     ('./toolchains/common/packages/libiconv/build.sh', 'LIBICONV'): libiconv_check,
     ('./toolchains/common/packages/libtheora/build.sh', 'THEORA'): {
         'check': 'git commit',
@@ -342,10 +344,10 @@ VERSIONS = {
         'prefix': 'v',
         'exclude pattern': r'.*-beta$',
     },
-    # This is the system version so no need to check
-    ('./toolchains/mxe/packages/fluidlite/fluidlite.mk', ''): {
+    ('./toolchains/mxe/packages/fluidsynth-embedded/fluidsynth-embedded.mk', ''): fluidsynth_check,
+    ('./toolchains/mxe/packages/fluidsynth-embedded/gcem.mk', ''): {
         'check': 'git commit',
-        'repository': 'https://github.com/divideconcept/FluidLite.git',
+        'repository': 'https://github.com/kthohr/gcem',
         'branch': 'master',
         'short': True,
     },
