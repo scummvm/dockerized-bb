@@ -1,6 +1,6 @@
 #! /bin/sh
 
-FLUIDSYNTH_VERSION=2.5.0
+FLUIDSYNTH_VERSION=2.5.1
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..
@@ -11,10 +11,6 @@ do_make_bdir
 # Debian version doesn't support the embedded OS abstraction layer
 do_http_fetch fluidsynth \
 	"https://github.com/FluidSynth/fluidsynth/archive/v${FLUIDSYNTH_VERSION}.tar.gz" 'tar xzf'
-
-# Don't install fluidsynth binary
-# Still build it to ensure we have a working setup with all static libraries
-sed -i -e 's/install\(.*\) fluidsynth /install\1 /g' src/CMakeLists.txt
 
 # -DCMAKE_SYSTEM_NAME=Windows for Windows
 
@@ -38,6 +34,7 @@ do_cmake \
 	-Denable-framework=off \
 	"$@"
 do_make
-do_make install
+cmake --install . --component fluidsynth_runtime
+cmake --install . --component fluidsynth_development
 
 do_clean_bdir

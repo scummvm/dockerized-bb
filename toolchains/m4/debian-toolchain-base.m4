@@ -1,5 +1,5 @@
 m4_ifdef(`DEBIAN_RELEASE',,`m4_define(`DEBIAN_RELEASE',trixie)')
-m4_ifdef(`DEBIAN_VERSION',,`m4_define(`DEBIAN_VERSION',20251020)')
+m4_ifdef(`DEBIAN_VERSION',,`m4_define(`DEBIAN_VERSION',20251103)')
 FROM toolchains/common AS helpers
 
 FROM debian:DEBIAN_RELEASE-DEBIAN_VERSION-slim m4_ifdef(`STAGE_IMAGE_NAME',AS STAGE_IMAGE_NAME,)
