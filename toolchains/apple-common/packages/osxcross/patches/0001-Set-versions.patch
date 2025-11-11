@@ -1,7 +1,7 @@
-From b0112ce3d8ce82bb74ef7b7b47be4b44c6aaac6e Mon Sep 17 00:00:00 2001
+From 062777073b2f3251cf90d0769589f8b9d2a694ea Mon Sep 17 00:00:00 2001
 From: Le Philousophe <lephilousophe@users.noreply.github.com>
 Date: Sun, 24 Jan 2021 19:15:52 +0100
-Subject: [PATCH 1/4] Set versions
+Subject: [PATCH 1/5] Set versions
 
 ---
  tools/tools.sh | 4 ++--
@@ -30,5 +30,5 @@ index f903f0b..12305ea 100644
    if [ $f_res -eq 1 ]; then
      pushd $CURRENT_BUILD_PROJECT_NAME &>/dev/null
 -- 
-2.49.1
+2.48.1
 

@@ -1,0 +1,51 @@
+From 716cfe22487980cf51e46d66296a9f9b70b1221e Mon Sep 17 00:00:00 2001
+From: Le Philousophe <lephilousophe@users.noreply.github.com>
+Date: Sun, 2 Nov 2025 18:51:37 +0100
+Subject: [PATCH 5/5] Fix build on MacOS i386
+
+---
+ build_compiler_rt.sh                |  6 ++++++
+ patches/compiler-rt_i386_type.patch | 14 ++++++++++++++
+ 2 files changed, 20 insertions(+)
+ create mode 100644 patches/compiler-rt_i386_type.patch
+
+diff --git a/build_compiler_rt.sh b/build_compiler_rt.sh
+index 17c0e6c..374d0d8 100755
+--- a/build_compiler_rt.sh
++++ b/build_compiler_rt.sh
+@@ -105,6 +105,12 @@ if [ $f_res -eq 1 ]; then
+     # https://github.com/tpoechtrager/osxcross/issues/178
+     patch -p1 < $PATCH_DIR/compiler-rt_clock-gettime.patch
+   fi
++  if [ $(osxcross-cmp $SDK_VERSION "<=" 10.13) -eq 1 ] &&
++	 [ $(osxcross-cmp $CLANG_VERSION ">=" 20.0) -eq 1 ]; then
++	# fix type discrepancy between INTPTR_TYPE and ptrdiff_t on i386
++	patch -p1 < $PATCH_DIR/compiler-rt_i386_type.patch
++  fi
++
+ 
+   EXTRA_MAKE_FLAGS=""
+   if [ -n "$OCDEBUG" ]; then
+diff --git a/patches/compiler-rt_i386_type.patch b/patches/compiler-rt_i386_type.patch
+new file mode 100644
+index 0000000..aaea5a2
+--- /dev/null
++++ b/patches/compiler-rt_i386_type.patch
+@@ -0,0 +1,14 @@
++diff --git a/compiler-rt/lib/interception/interception_type_test.cpp b/compiler-rt/lib/interception/interception_type_test.cpp
++index 41041ce6f..588d3f8d8 100644
++--- a/lib/interception/interception_type_test.cpp
+++++ b/lib/interception/interception_type_test.cpp
++@@ -23,7 +23,9 @@
++ COMPILER_CHECK((__sanitizer::is_same<__sanitizer::uptr, ::uintptr_t>::value));
++ COMPILER_CHECK((__sanitizer::is_same<__sanitizer::sptr, ::intptr_t>::value));
++ COMPILER_CHECK((__sanitizer::is_same<__sanitizer::usize, ::size_t>::value));
+++#if !SANITIZER_I386
++ COMPILER_CHECK((__sanitizer::is_same<::PTRDIFF_T, ::ptrdiff_t>::value));
+++#endif
++ COMPILER_CHECK((__sanitizer::is_same<::SIZE_T, ::size_t>::value));
++ #if !SANITIZER_WINDOWS
++ // No ssize_t on Windows.
+-- 
+2.48.1
+

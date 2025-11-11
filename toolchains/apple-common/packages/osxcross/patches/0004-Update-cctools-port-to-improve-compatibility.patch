@@ -1,7 +1,7 @@
-From 00ec2f88f739e4b0aa439f56d62cd4f02e038358 Mon Sep 17 00:00:00 2001
+From 7c3c611d9c02fecf3fe37d6db8d96db93364efec Mon Sep 17 00:00:00 2001
 From: Le Philousophe <lephilousophe@users.noreply.github.com>
 Date: Thu, 24 Apr 2025 08:31:19 +0200
-Subject: [PATCH 4/4] Update cctools-port to improve compatibility
+Subject: [PATCH 4/5] Update cctools-port to improve compatibility
 
 Latest libraries from MacPorts need objc_msgSend support
 
@@ -11,10 +11,10 @@ Latest cctools-port need libdispatch
  1 file changed, 17 insertions(+), 2 deletions(-)
 
 diff --git a/build.sh b/build.sh
-index 68e4210..2130744 100755
+index b87522b..4bb1f8c 100755
 --- a/build.sh
 +++ b/build.sh
-@@ -144,10 +144,24 @@ if [ $NEED_TAPI_SUPPORT -eq 1 ]; then
+@@ -145,10 +145,24 @@ if [ $NEED_TAPI_SUPPORT -eq 1 ]; then
    fi
  fi
  
@@ -41,7 +41,7 @@ index 68e4210..2130744 100755
  
  get_sources \
    https://github.com/tpoechtrager/cctools-port.git \
-@@ -161,6 +175,7 @@ if [ $f_res -eq 1 ]; then
+@@ -162,6 +176,7 @@ if [ $f_res -eq 1 ]; then
    if [ $NEED_TAPI_SUPPORT -eq 1 ]; then
      CONFFLAGS+="--with-libtapi=$TARGET_DIR "
    fi
@@ -50,5 +50,5 @@ index 68e4210..2130744 100755
    [ -n "$DISABLE_CLANG_AS" ] && CONFFLAGS+="--disable-clang-as "
    [ -n "$DISABLE_LTO_SUPPORT" ] && CONFFLAGS+="--disable-lto-support "
 -- 
-2.49.1
+2.48.1
 

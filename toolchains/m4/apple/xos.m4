@@ -38,7 +38,7 @@ RUN . /etc/os-release && \
 		libomp`'PPA_CLANG`'-dev \
 		&& \
 	rm -rf /var/lib/apt/lists/* && \
-	rm /etc/apt/sources.list.d/clang.list /etc/apt/trusted.gpg
+	rm /etc/apt/sources.list.d/clang.list /usr/share/keyrings/llvm.gpg
 
 # Add newly installed LLVM to path
 ENV PATH=$PATH:/usr/lib/llvm`'PPA_CLANG`'/bin

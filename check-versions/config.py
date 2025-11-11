@@ -166,7 +166,7 @@ VERSIONS = {
     ('./toolchains/apple-common/packages/cctools-port/build.sh', 'CCTOOLS_PORT'): {
         'check': 'git commit',
         'repository': 'https://github.com/tpoechtrager/cctools-port.git',
-        'branch': '1024.3-ld64-955.13',
+        'branch': '1030.6.3-ld64-956.6',
     },
     ('./toolchains/apple-common/packages/cctools-port/build.sh', 'LDID'): {
         'check': 'git commit',

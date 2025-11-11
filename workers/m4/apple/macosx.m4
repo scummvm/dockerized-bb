@@ -20,15 +20,16 @@ RUN apt-get update && \
 	rm -rf /var/lib/apt/lists/*
 
 RUN . /etc/os-release && \
-	echo "deb http://apt.llvm.org/$VERSION_CODENAME/ llvm-toolchain-$VERSION_CODENAME`'PPA_CLANG`' main" > /etc/apt/sources.list.d/clang.list && \
-	wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - && \
+	wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | gpg --dearmor -o /usr/share/keyrings/llvm.gpg && \
+	echo "deb [signed-by=/usr/share/keyrings/llvm.gpg] http://apt.llvm.org/$VERSION_CODENAME/ llvm-toolchain-$VERSION_CODENAME`'PPA_CLANG`' main" > /etc/apt/sources.list.d/clang.list && \
+	rm -f "${HOME}/.wget-hsts" && \
 	apt-get update && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 		clang`'PPA_CLANG`' \
 		llvm`'PPA_CLANG`' \
 		&& \
 	rm -rf /var/lib/apt/lists/* && \
-	rm /etc/apt/sources.list.d/clang.list /etc/apt/trusted.gpg
+	rm /etc/apt/sources.list.d/clang.list /usr/share/keyrings/llvm.gpg
 
 # Add newly installed LLVM to path
 ENV PATH=$PATH:/usr/lib/llvm`'PPA_CLANG`'/bin

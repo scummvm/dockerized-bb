@@ -51,6 +51,13 @@ do_http_fetch cmake "https://github.com/llvm/llvm-project/releases/download/llvm
 mv "$(pwd)" ../cmake
 cd ..
 
+if [ "${CLANG_MAJOR}" -ge 17 ]; then
+	# Fetch third-party
+	do_http_fetch third-party "https://github.com/llvm/llvm-project/releases/download/llvmorg-${CLANG_VERSION}/third-party-${CLANG_VERSION}.src.tar.xz" 'tar xJf'
+	mv "$(pwd)" ../third-party
+	cd ..
+fi
+
 do_http_fetch compiler-rt "https://github.com/llvm/llvm-project/releases/download/llvmorg-${CLANG_VERSION}/compiler-rt-${CLANG_VERSION}.src.tar.xz" 'tar xJf'
 
 # We try to support as much versions as we can so fallback on a common ground and fix it
@@ -85,6 +92,9 @@ fi
 
 # Don't build for osx
 sed -i 's/set(BUILTIN_SUPPORTED_OS .*)$/set(BUILTIN_SUPPORTED_OS )/' cmake/builtin-config-ix.cmake
+
+# armv7 fails to build with tvos but is misdetected
+sed -i '/set(DARWIN_tvos_BUILTIN_ALL_POSSIBLE_ARCHS/s/ armv7//' cmake/builtin-config-ix.cmake
 
 # Disable all modules by default, we will enable builtins afterwards
 sed -i '/option(COMPILER_RT_BUILD_/s/ON)/OFF)/' CMakeLists.txt

@@ -1,7 +1,7 @@
-From c57255de8f2a4369204e14c3cd12aacfc03097db Mon Sep 17 00:00:00 2001
+From 6cc29752b76506be89987ac7d664530f61f23246 Mon Sep 17 00:00:00 2001
 From: Le Philousophe <lephilousophe@users.noreply.github.com>
 Date: Tue, 25 Jun 2024 05:56:44 +0000
-Subject: [PATCH 3/4] Disable ORC which uses C++17 features on older SDKs
+Subject: [PATCH 3/5] Disable ORC which uses C++17 features on older SDKs
 
 ---
  build_compiler_rt.sh | 6 ++++++
@@ -25,5 +25,5 @@ index 5ce8697..17c0e6c 100755
        pushd $build_dir &>/dev/null
  
 -- 
-2.49.1
+2.48.1
 
