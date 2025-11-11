@@ -80,6 +80,7 @@ helpers_package(libvorbis)
 
 helpers_package(libvorbisidec)
 
+# Don't try to enable anything more: the linker would fail because we are mixing arches
 helpers_package(libtheora, --disable-asflag-probe)
 
 # Remove POSIX.1-2008 code which is incomplete (no utimensat)

@@ -1,11 +1,5 @@
-commit 305566da3d6e09deb014339d10eb0798be4791e8
-Author: Le Philousophe <lephilousophe@users.noreply.github.com>
-Date:   Tue Oct 21 19:52:09 2025 +0200
-
-    Mark XMM registers as clobbered
-
 diff --git a/lib/x86/sse2encfrag.c b/lib/x86/sse2encfrag.c
-index b7726c7..4da7d0c 100644
+index b7726c7..c0fa887 100644
 --- a/lib/x86/sse2encfrag.c
 +++ b/lib/x86/sse2encfrag.c
 @@ -64,7 +64,7 @@
@@ -31,11 +25,34 @@ index b7726c7..4da7d0c 100644
  /*Load a 2x8 array of pixels values from %[src] and %[ref] and compute their
     horizontal sums as well as their 16-bit differences subject to a mask.
 -  %%xmm5 must contain OC_MASK_CONSTS[0...7] and %%xmm6 must contain 0.*/
-+  %%xmm6 must contain OC_MASK_CONSTS[0...7] and %%xmm7 must contain 0.*/
++  %[cr] must contain OC_MASK_CONSTS[0...7] and %[mr] must contain 0.*/
  #define OC_LOAD_SUB_MASK_2x8 \
   "#OC_LOAD_SUB_MASK_2x8\n\t" \
   /*Start the loads and expand the next 8 bits of the mask.*/ \
-@@ -127,7 +129,7 @@ static const unsigned char __attribute__((aligned(16))) OC_MASK_CONSTS[8]={
+@@ -104,8 +106,8 @@ static const unsigned char __attribute__((aligned(16))) OC_MASK_CONSTS[8]={
+  "shr $8,%[m]\n\t" \
+  "pshuflw $0x00,%%xmm4,%%xmm4\n\t" \
+  "mov %h[m],%b[m]\n\t" \
+- "pand %%xmm6,%%xmm4\n\t" \
+- "pcmpeqb %%xmm6,%%xmm4\n\t" \
++ "pand %[cr],%%xmm4\n\t" \
++ "pcmpeqb %[cr],%%xmm4\n\t" \
+  /*Perform the masking.*/ \
+  "pand %%xmm4,%%xmm0\n\t" \
+  "pand %%xmm4,%%xmm2\n\t" \
+@@ -115,9 +117,9 @@ static const unsigned char __attribute__((aligned(16))) OC_MASK_CONSTS[8]={
+  "movq (%[src],%[ystride]),%%xmm1\n\t" \
+  "pshuflw $0x00,%%xmm4,%%xmm4\n\t" \
+  "movq (%[ref],%[ystride]),%%xmm3\n\t" \
+- "pand %%xmm6,%%xmm4\n\t" \
++ "pand %[cr],%%xmm4\n\t" \
+  "punpcklbw %%xmm2,%%xmm0\n\t" \
+- "pcmpeqb %%xmm6,%%xmm4\n\t" \
++ "pcmpeqb %[cr],%%xmm4\n\t" \
+  "punpcklbw %%xmm2,%%xmm2\n\t" \
+  /*Mask and unpack the second set of rows.*/ \
+  "pand %%xmm4,%%xmm1\n\t" \
+@@ -127,16 +129,19 @@ static const unsigned char __attribute__((aligned(16))) OC_MASK_CONSTS[8]={
   "psubw %%xmm2,%%xmm0\n\t" \
   "psubw %%xmm3,%%xmm1\n\t" \
  
@@ -44,43 +61,64 @@ index b7726c7..4da7d0c 100644
   const unsigned char *_ref,int _ystride,ogg_int64_t _mask){
    ptrdiff_t ystride;
    unsigned  ret;
-@@ -138,6 +140,7 @@ unsigned oc_enc_frag_border_ssd_sse2(const unsigned char *_src,
-     "movq %[c],%%xmm6\n\t"
-     :
+   int       i;
+   ystride=_ystride;
++  /*Store intermediate values across __asm__ blocks*/
++  register sse2_reg cr;
++  register sse2_reg mr;
+   __asm__ __volatile__(
+-    "pxor %%xmm7,%%xmm7\n\t"
+-    "movq %[c],%%xmm6\n\t"
+-    :
++    "pxor %[mr],%[mr]\n\t"
++    "movq %[c],%[cr]\n\t"
++    :[cr]"=x"(cr), [mr]"=x"(mr)
      :[c]"m"(OC_CONST_ARRAY_OPERAND(unsigned char,OC_MASK_CONSTS,8))
-+    :"%xmm6", "%xmm7"
    );
    for(i=0;i<4;i++){
-     unsigned m;
-@@ -151,6 +154,9 @@ unsigned oc_enc_frag_border_ssd_sse2(const unsigned char *_src,
-         "paddd %%xmm0,%%xmm7\n\t"
-         "paddd %%xmm1,%%xmm7\n\t"
-         :[src]"+r"(_src),[ref]"+r"(_ref),[ystride]"+r"(ystride),[m]"+Q"(m)
-+        :
+@@ -148,22 +153,27 @@ unsigned oc_enc_frag_border_ssd_sse2(const unsigned char *_src,
+         OC_LOAD_SUB_MASK_2x8
+         "pmaddwd %%xmm0,%%xmm0\n\t"
+         "pmaddwd %%xmm1,%%xmm1\n\t"
+-        "paddd %%xmm0,%%xmm7\n\t"
+-        "paddd %%xmm1,%%xmm7\n\t"
+-        :[src]"+r"(_src),[ref]"+r"(_ref),[ystride]"+r"(ystride),[m]"+Q"(m)
++        "paddd %%xmm0,%[mr]\n\t"
++        "paddd %%xmm1,%[mr]\n\t"
++        :[src]"+r"(_src),[ref]"+r"(_ref),[ystride]"+r"(ystride),[m]"+Q"(m),[mr]"+x"(mr)
++        :[cr]"x"(cr)
 +        :"%xmm0", "%xmm1", "%xmm2", "%xmm3",
-+         "%xmm4", /*"%xmm5",*/ "%xmm6", "%xmm7"
++         "%xmm4"/*, "%xmm5", "%xmm6", "%xmm7"*/
        );
      }
      _src+=2*ystride;
-@@ -164,6 +170,8 @@ unsigned oc_enc_frag_border_ssd_sse2(const unsigned char *_src,
+     _ref+=2*ystride;
+   }
+   __asm__ __volatile__(
+-    "movdqa %%xmm7,%%xmm6\n\t"
+-    "punpckhqdq %%xmm7,%%xmm7\n\t"
++    "movdqa %[mr],%%xmm6\n\t"
++    "punpckhqdq %[mr],%%xmm7\n\t"
+     "paddd %%xmm6,%%xmm7\n\t"
+     "pshufd $1,%%xmm7,%%xmm6\n\t"
      "paddd %%xmm6,%%xmm7\n\t"
      "movd %%xmm7,%[ret]\n\t"
      :[ret]"=a"(ret)
-+    :
++    :[mr]"x"(mr)
 +    :"%xmm6", "%xmm7"
    );
    return ret;
  }
-@@ -381,7 +389,7 @@ unsigned oc_enc_frag_border_ssd_sse2(const unsigned char *_src,
+@@ -381,7 +391,7 @@ unsigned oc_enc_frag_border_ssd_sse2(const unsigned char *_src,
   OC_HADAMARD_AB_8x8 \
   OC_HADAMARD_C_ABS_ACCUM_8x8
  
 -static unsigned oc_int_frag_satd_sse2(int *_dc,
-+static __attribute__((target("sse2"))) unsigned oc_int_frag_satd_sse2(int *_dc,
++static unsigned __attribute__((target("sse2"))) oc_int_frag_satd_sse2(int *_dc,
   const unsigned char *_src,int _src_ystride,
   const unsigned char *_ref,int _ref_ystride){
    OC_ALIGN16(ogg_int16_t buf[16]);
-@@ -434,25 +442,27 @@ static unsigned oc_int_frag_satd_sse2(int *_dc,
+@@ -434,25 +444,27 @@ static unsigned oc_int_frag_satd_sse2(int *_dc,
       [ref]"a"(_ref),[ref_ystride]"d"((ptrdiff_t)_ref_ystride)
      /*We have to use neg, so we actually clobber the condition codes for once
         (not to mention sub, and add).*/
@@ -112,7 +150,7 @@ index b7726c7..4da7d0c 100644
   const unsigned char *_src,int _ystride){
    OC_ALIGN16(ogg_int16_t buf[16]);
    unsigned ret;
-@@ -491,7 +501,9 @@ unsigned oc_enc_frag_intra_satd_sse2(int *_dc,
+@@ -491,7 +503,9 @@ unsigned oc_enc_frag_intra_satd_sse2(int *_dc,
      :[src]"r"(_src),[src4]"r"(_src+4*_ystride),
       [ystride]"r"((ptrdiff_t)_ystride),[ystride3]"r"((ptrdiff_t)3*_ystride)
      /*We have to use sub, so we actually clobber the condition codes for once.*/
@@ -150,7 +188,7 @@ index 7787cb9..e2d0a0d 100644
  }
  #endif
 diff --git a/lib/x86/sse2idct.c b/lib/x86/sse2idct.c
-index 1f71e3a..cf8c1e4 100644
+index 1f71e3a..878aad3 100644
 --- a/lib/x86/sse2idct.c
 +++ b/lib/x86/sse2idct.c
 @@ -206,7 +206,7 @@ const unsigned short __attribute__((aligned(16),used)) OC_IDCT_CONSTS[64]={
@@ -158,11 +196,11 @@ index 1f71e3a..cf8c1e4 100644
    "movdqa %%xmm7,"OC_MEM_OFFS(0x70,y)"\n\t" \
  
 -static void oc_idct8x8_slow_sse2(ogg_int16_t _y[64],ogg_int16_t _x[64]){
-+static __attribute__((target("sse2"))) void oc_idct8x8_slow_sse2(ogg_int16_t _y[64],ogg_int16_t _x[64]){
++static void __attribute__((target("sse2"))) oc_idct8x8_slow_sse2(ogg_int16_t _y[64],ogg_int16_t _x[64]){
    OC_ALIGN16(ogg_int16_t buf[16]);
    int i;
    /*This routine accepts an 8x8 matrix pre-transposed.*/
-@@ -230,8 +230,10 @@ static void oc_idct8x8_slow_sse2(ogg_int16_t _y[64],ogg_int16_t _x[64]){
+@@ -230,16 +230,21 @@ static void oc_idct8x8_slow_sse2(ogg_int16_t _y[64],ogg_int16_t _x[64]){
       [y]"=m"(OC_ARRAY_OPERAND(ogg_int16_t,_y,64))
      :[x]"m"(OC_CONST_ARRAY_OPERAND(ogg_int16_t,_x,64)),
       [c]"m"(OC_CONST_ARRAY_OPERAND(ogg_int16_t,OC_IDCT_CONSTS,64))
@@ -170,20 +208,26 @@ index 1f71e3a..cf8c1e4 100644
 +     "%xmm4", "%xmm5", "%xmm6", "%xmm7"
    );
 -  __asm__ __volatile__("pxor %%xmm0,%%xmm0\n\t"::);
-+  __asm__ __volatile__("pxor %%xmm0,%%xmm0\n\t":::"%xmm0");
++  /*Store 0 in zr and use it in the loop. This translates to nothing with -O1.*/
++  register sse2_reg zr;
++  __asm__ __volatile__("pxor %[zr],%[zr]\n\t":[zr]"=x"(zr));
    /*Clear input data for next block (decoder only).*/
    for(i=0;i<2;i++){
      __asm__ __volatile__(
-@@ -240,6 +242,8 @@ static void oc_idct8x8_slow_sse2(ogg_int16_t _y[64],ogg_int16_t _x[64]){
-       "movdqa %%xmm0,"OC_MEM_OFFS(0x20,x)"\n\t"
-       "movdqa %%xmm0,"OC_MEM_OFFS(0x30,x)"\n\t"
+-      "movdqa %%xmm0,"OC_MEM_OFFS(0x00,x)"\n\t"
+-      "movdqa %%xmm0,"OC_MEM_OFFS(0x10,x)"\n\t"
+-      "movdqa %%xmm0,"OC_MEM_OFFS(0x20,x)"\n\t"
+-      "movdqa %%xmm0,"OC_MEM_OFFS(0x30,x)"\n\t"
++      "movdqa %[zr],"OC_MEM_OFFS(0x00,x)"\n\t"
++      "movdqa %[zr],"OC_MEM_OFFS(0x10,x)"\n\t"
++      "movdqa %[zr],"OC_MEM_OFFS(0x20,x)"\n\t"
++      "movdqa %[zr],"OC_MEM_OFFS(0x30,x)"\n\t"
        :[x]"=m"(OC_ARRAY_OPERAND(ogg_int16_t,_x+i*32,32))
-+      :
-+      :"%xmm0"
++      :[zr]"x"(zr)
      );
    }
  }
-@@ -392,7 +396,7 @@ static void oc_idct8x8_slow_sse2(ogg_int16_t _y[64],ogg_int16_t _x[64]){
+@@ -392,7 +397,7 @@ static void oc_idct8x8_slow_sse2(ogg_int16_t _y[64],ogg_int16_t _x[64]){
    "psubw %%xmm7,%%xmm4\n\t" \
    "psubw %%xmm6,%%xmm5\n\t" \
  
@@ -192,7 +236,7 @@ index 1f71e3a..cf8c1e4 100644
    OC_ALIGN16(ogg_int16_t buf[16]);
    /*This routine accepts an 8x8 matrix pre-transposed.*/
    __asm__ __volatile__(
-@@ -408,6 +412,8 @@ static void oc_idct8x8_10_sse2(ogg_int16_t _y[64],ogg_int16_t _x[64]){
+@@ -408,6 +413,8 @@ static void oc_idct8x8_10_sse2(ogg_int16_t _y[64],ogg_int16_t _x[64]){
       [y]"=m"(OC_ARRAY_OPERAND(ogg_int16_t,_y,64))
      :[x]"m"OC_CONST_ARRAY_OPERAND(ogg_int16_t,_x,64),
       [c]"m"(OC_CONST_ARRAY_OPERAND(ogg_int16_t,OC_IDCT_CONSTS,64))
@@ -201,15 +245,7 @@ index 1f71e3a..cf8c1e4 100644
    );
    /*Clear input data for next block (decoder only).*/
    __asm__ __volatile__(
-@@ -417,13 +423,15 @@ static void oc_idct8x8_10_sse2(ogg_int16_t _y[64],ogg_int16_t _x[64]){
-     "movq %%mm0,"OC_MEM_OFFS(0x20,x)"\n\t"
-     "movq %%mm0,"OC_MEM_OFFS(0x30,x)"\n\t"
-     :[x]"+m"(OC_ARRAY_OPERAND(ogg_int16_t,_x,28))
-+    :
-+    :"%xmm0"
-   );
- }
- 
+@@ -423,7 +430,7 @@ static void oc_idct8x8_10_sse2(ogg_int16_t _y[64],ogg_int16_t _x[64]){
  /*Performs an inverse 8x8 Type-II DCT transform.
    The input is assumed to be scaled by a factor of 4 relative to orthonormal
     version of the transform.*/
@@ -218,6 +254,57 @@ index 1f71e3a..cf8c1e4 100644
    /*_last_zzi is subtly different from an actual count of the number of
       coefficients we decoded for this block.
      It contains the value of zzi BEFORE the final token in the block was
+diff --git a/lib/x86/sse2trans.h b/lib/x86/sse2trans.h
+index d1218df..a23911b 100644
+--- a/lib/x86/sse2trans.h
++++ b/lib/x86/sse2trans.h
+@@ -19,6 +19,8 @@
+ # define _x86_sse2trans_H (1)
+ # include "x86int.h"
+ 
++typedef char sse2_reg __attribute__((vector_size(16),__may_alias__));
++
+ # if defined(OC_X86_64_ASM)
+ /*On x86-64 we can transpose in-place without spilling registers.
+   By clever choices of the order to apply the butterflies and the order of
+diff --git a/lib/x86/x86cpu.c b/lib/x86/x86cpu.c
+index 9fd0ab9..0dfb74b 100644
+--- a/lib/x86/x86cpu.c
++++ b/lib/x86/x86cpu.c
+@@ -20,6 +20,12 @@
+ 
+ #include "x86cpu.h"
+ 
++#if defined(_WIN32)
++# define WIN32_LEAN_AND_MEAN
++# define WIN32_EXTRA_LEAN
++# include <windows.h>
++#endif
++
+ #if !defined(OC_X86_ASM)
+ ogg_uint32_t oc_cpu_flags_get(void){
+   return 0;
+@@ -177,6 +183,20 @@ ogg_uint32_t oc_cpu_flags_get(void){
+     /*Implement me.*/
+     flags=0;
+   }
++#if defined(_WIN32)
++  OSVERSIONINFO win_version_info;
++  memset(&win_version_info, 0, sizeof(win_version_info));
++  win_version_info.dwOSVersionInfoSize = sizeof(win_version_info);
++  GetVersionEx(&win_version_info);
++
++  if (win_version_info.dwMajorVersion < 4 ||
++      (win_version_info.dwMajorVersion == 4 && win_version_info.dwMinorVersion == 0)) {
++    // Windows 95 and NT4 or before don't backup SSE+ XMM registers when switching tasks
++    // Disable SSE and stick to MMX to avoid possible corruption
++    flags &= OC_CPU_X86_MMX|OC_CPU_X86_3DNOW|OC_CPU_X86_3DNOWEXT|OC_CPU_X86_MMXEXT;
++  }
++
++#endif
+   return flags;
+ }
+ #endif
 diff --git a/lib/x86/x86enquant.c b/lib/x86/x86enquant.c
 index 49368e8..8c01e51 100644
 --- a/lib/x86/x86enquant.c

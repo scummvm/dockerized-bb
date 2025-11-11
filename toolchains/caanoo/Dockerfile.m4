@@ -59,7 +59,7 @@ local_package(libogg)
 
 # No theora in the original toolchain build ours statically but fix build with our old libogg
 COPY packages/libtheora lib-helpers/packages/libtheora/
-helpers_package(libtheora, --disable-asflag-probe)
+helpers_package(libtheora)
 
 # libvorbisidec in the original toolchain/firmware is too old for us, build ours statically
 helpers_package(libvorbisidec)
