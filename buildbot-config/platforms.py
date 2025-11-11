@@ -452,11 +452,12 @@ def macosx_x86_64():
     platform.env["DISCORD_LIBS"] = "-framework AppKit"
 
     platform.configureargs.append("--host=x86_64-apple-darwin25.1")
+    # Don't enable updates on x86_64 as the platform is getting older
     platform.buildconfigureargs = {
         builds.ScummVMBuild: [ "--enable-static",
             "--with-staticlib-prefix=${DESTDIR}/${PREFIX}",
             "--with-sparkle-prefix=${DESTDIR}/${PREFIX}/Library/Frameworks",
-            "--disable-osx-dock-plugin", "--enable-updates"],
+            "--disable-osx-dock-plugin"],
     }
     platform.packaging_cmd = {
         builds.ScummVMBuild: "bundle",
