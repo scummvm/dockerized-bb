@@ -1,0 +1,2506 @@
+diff --git a/bfd/Makefile.am b/bfd/Makefile.am
+index 4f67b59585d..43a535fb446 100644
+--- a/bfd/Makefile.am
++++ b/bfd/Makefile.am
+@@ -299,6 +299,7 @@ BFD32_BACKENDS = \
+ 	elf32-am33lin.lo \
+ 	elf32-arc.lo \
+ 	elf32-arm.lo \
++	elf32-atariprg.lo \
+ 	elf32-avr.lo \
+ 	elf32-bfin.lo \
+ 	elf32-cr16.lo \
+@@ -434,6 +435,7 @@ BFD32_BACKENDS_CFILES = \
+ 	elf32-am33lin.c \
+ 	elf32-arc.c \
+ 	elf32-arm.c \
++	elf32-atariprg.c \
+ 	elf32-avr.c \
+ 	elf32-bfin.c \
+ 	elf32-cr16.c \
+@@ -706,7 +708,7 @@ SOURCE_HFILES = \
+ 	coff-arm.h coff-bfd.h coffcode.h coffswap.h \
+ 	cpu-aarch64.h cpu-arm.h cpu-h8300.h cpu-m68k.h cpu-riscv.h \
+ 	ecoff-bfd.h ecoffswap.h \
+-	elf32-arm.h elf32-avr.h elf32-bfin.h elf32-cr16.h elf32-csky.h \
++	elf32-arm.h elf32-atariprg.h elf32-avr.h elf32-bfin.h elf32-cr16.h elf32-csky.h \
+ 	elf32-dlx.h elf32-hppa.h elf32-m68hc1x.h elf32-m68k.h \
+ 	elf32-metag.h elf32-nds32.h elf32-nios2.h elf32-ppc.h \
+ 	elf32-rx.h elf32-score.h elf32-sh-relocs.h elf32-spu.h \
+diff --git a/bfd/Makefile.in b/bfd/Makefile.in
+index faaa0c424b8..d168a9cfc86 100644
+--- a/bfd/Makefile.in
++++ b/bfd/Makefile.in
+@@ -766,6 +766,7 @@ BFD32_BACKENDS = \
+ 	elf32-am33lin.lo \
+ 	elf32-arc.lo \
+ 	elf32-arm.lo \
++	elf32-atariprg.lo \
+ 	elf32-avr.lo \
+ 	elf32-bfin.lo \
+ 	elf32-cr16.lo \
+@@ -901,6 +902,7 @@ BFD32_BACKENDS_CFILES = \
+ 	elf32-am33lin.c \
+ 	elf32-arc.c \
+ 	elf32-arm.c \
++	elf32-atariprg.c \
+ 	elf32-avr.c \
+ 	elf32-bfin.c \
+ 	elf32-cr16.c \
+@@ -1170,7 +1172,7 @@ SOURCE_HFILES = \
+ 	coff-arm.h coff-bfd.h coffcode.h coffswap.h \
+ 	cpu-aarch64.h cpu-arm.h cpu-h8300.h cpu-m68k.h cpu-riscv.h \
+ 	ecoff-bfd.h ecoffswap.h \
+-	elf32-arm.h elf32-avr.h elf32-bfin.h elf32-cr16.h elf32-csky.h \
++	elf32-arm.h elf32-atariprg.h elf32-avr.h elf32-bfin.h elf32-cr16.h elf32-csky.h \
+ 	elf32-dlx.h elf32-hppa.h elf32-m68hc1x.h elf32-m68k.h \
+ 	elf32-metag.h elf32-nds32.h elf32-nios2.h elf32-ppc.h \
+ 	elf32-rx.h elf32-score.h elf32-sh-relocs.h elf32-spu.h \
+@@ -1580,6 +1582,7 @@ distclean-compile:
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/elf32-am33lin.Plo@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/elf32-arc.Plo@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/elf32-arm.Plo@am__quote@
++@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/elf32-atariprg.Plo@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/elf32-avr.Plo@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/elf32-bfin.Plo@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/elf32-cr16.Plo@am__quote@
+diff --git a/bfd/acinclude.m4 b/bfd/acinclude.m4
+index 0ba7957760d..25959f38f05 100644
+--- a/bfd/acinclude.m4
++++ b/bfd/acinclude.m4
+@@ -21,7 +21,7 @@ AC_DEFUN([BFD_BINARY_FOPEN],
+ [AC_REQUIRE([AC_CANONICAL_TARGET])
+ case "${host}" in
+ changequote(,)dnl
+-*-*-msdos* | *-*-go32* | *-*-mingw32* | *-*-cygwin* | *-*-windows*)
++*-*-msdos* | *-*-go32* | *-*-mingw32* | *-*-cygwin* | *-*-windows* | *-*-mint*)
+ changequote([,])dnl
+   AC_DEFINE(USE_BINARY_FOPEN, 1, [Use b modifier when opening binary files?]) ;;
+ esac])dnl
+diff --git a/bfd/bfd.c b/bfd/bfd.c
+index 0776145af52..6231df182f4 100644
+--- a/bfd/bfd.c
++++ b/bfd/bfd.c
+@@ -662,6 +662,7 @@ EXTERNAL
+ #include "libecoff.h"
+ #undef obj_symbols
+ #include "elf-bfd.h"
++#include "elf32-atariprg.h"
+ 
+ #ifndef EXIT_FAILURE
+ #define EXIT_FAILURE 1
+@@ -1746,6 +1747,8 @@ bfd_init (void)
+   _bfd_error_internal = error_handler_fprintf;
+   _bfd_assert_handler = _bfd_default_assert_handler;
+ 
++  bfd_elf32_atariprg_init ();
++
+   return BFD_INIT_MAGIC;
+ }
+ 
+diff --git a/bfd/config.bfd b/bfd/config.bfd
+index bbf12447517..bafd54d80af 100644
+--- a/bfd/config.bfd
++++ b/bfd/config.bfd
+@@ -855,6 +855,10 @@ case "${targ}" in
+     targ_selvecs="m68hc11_elf32_vec m68hc12_elf32_vec"
+     ;;
+ 
++  m68k-*-mintelf)
++    targ_defvec=m68k_elf32_vec
++    targ_selvecs="m68k_elf32_vec m68k_elf32_atariprg_vec"
++    ;;
+   m68*-*-*)
+     targ_defvec=m68k_elf32_vec
+     ;;
+diff --git a/bfd/configure b/bfd/configure
+index 5618c5d3217..f0d9cb639a9 100755
+--- a/bfd/configure
++++ b/bfd/configure
+@@ -12094,7 +12094,7 @@ if test "${with_pkgversion+set}" = set; then :
+       *)   PKGVERSION="($withval) " ;;
+      esac
+ else
+-  PKGVERSION="(GNU Binutils) "
++  PKGVERSION="(GNU Binutils for MiNT ELF) "
+ 
+ fi
+ 
+@@ -12112,7 +12112,7 @@ if test "${with_bugurl+set}" = set; then :
+ 	   ;;
+      esac
+ else
+-  BUGURL="https://sourceware.org/bugzilla/"
++  BUGURL="https://github.com/freemint/m68k-atari-mint-binutils-gdb/issues"
+ 
+ fi
+ 
+@@ -15179,7 +15179,7 @@ _ACEOF
+ 
+ 
+ case "${host}" in
+-*-*-msdos* | *-*-go32* | *-*-mingw32* | *-*-cygwin* | *-*-windows*)
++*-*-msdos* | *-*-go32* | *-*-mingw32* | *-*-cygwin* | *-*-windows* | *-*-mint*)
+ 
+ $as_echo "#define USE_BINARY_FOPEN 1" >>confdefs.h
+  ;;
+@@ -15927,6 +15927,7 @@ do
+     m68hc11_elf32_vec)		 tb="$tb elf32-m68hc11.lo elf32-m68hc1x.lo elf32.lo $elf" ;;
+     m68hc12_elf32_vec)		 tb="$tb elf32-m68hc12.lo elf32-m68hc1x.lo elf32.lo $elf" ;;
+     m68k_elf32_vec)		 tb="$tb elf32-m68k.lo elf32.lo $elf" ;;
++    m68k_elf32_atariprg_vec)	 tb="$tb elf32-atariprg.lo elf32-m68k.lo elf32.lo $elf" ;;
+     s12z_elf32_vec)		 tb="$tb elf32-s12z.lo elf32.lo $elf" ;;
+     mach_o_be_vec)		 tb="$tb mach-o.lo dwarf2.lo" ;;
+     mach_o_le_vec)		 tb="$tb mach-o.lo dwarf2.lo" ;;
+diff --git a/bfd/configure.ac b/bfd/configure.ac
+index 7fcc5d4a947..89a0d522895 100644
+--- a/bfd/configure.ac
++++ b/bfd/configure.ac
+@@ -168,8 +168,8 @@ AC_ARG_WITH(separate-debug-dir,
+ [DEBUGDIR="${withval}"])
+ AC_SUBST(DEBUGDIR)
+ 
+-ACX_PKGVERSION([GNU Binutils])
+-ACX_BUGURL([https://sourceware.org/bugzilla/])
++ACX_PKGVERSION([GNU Binutils for MiNT ELF])
++ACX_BUGURL([https://github.com/freemint/m68k-atari-mint-binutils-gdb/issues])
+ 
+ AM_BINUTILS_WARNINGS
+ 
+@@ -512,6 +512,7 @@ do
+     m68hc11_elf32_vec)		 tb="$tb elf32-m68hc11.lo elf32-m68hc1x.lo elf32.lo $elf" ;;
+     m68hc12_elf32_vec)		 tb="$tb elf32-m68hc12.lo elf32-m68hc1x.lo elf32.lo $elf" ;;
+     m68k_elf32_vec)		 tb="$tb elf32-m68k.lo elf32.lo $elf" ;;
++    m68k_elf32_atariprg_vec)	 tb="$tb elf32-atariprg.lo elf32-m68k.lo elf32.lo $elf" ;;
+     s12z_elf32_vec)		 tb="$tb elf32-s12z.lo elf32.lo $elf" ;;
+     mach_o_be_vec)		 tb="$tb mach-o.lo dwarf2.lo" ;;
+     mach_o_le_vec)		 tb="$tb mach-o.lo dwarf2.lo" ;;
+diff --git a/bfd/elf.c b/bfd/elf.c
+index 88c75ae3ce0..6450af605e7 100644
+--- a/bfd/elf.c
++++ b/bfd/elf.c
+@@ -44,6 +44,7 @@ SECTION
+ #include "libiberty.h"
+ #include "safe-ctype.h"
+ #include "elf-linux-core.h"
++#include "elf32-atariprg.h"
+ 
+ #ifdef CORE_HEADER
+ #include CORE_HEADER
+@@ -5979,6 +5980,9 @@ assign_file_positions_for_load_sections (bfd *abfd,
+   Elf_Internal_Phdr *phdrs;
+   Elf_Internal_Phdr *p;
+   file_ptr off;  /* Octets.  */
++  file_ptr vma_off = 0; /* File offset of memory start.  */
++#define VMA (off - vma_off) /* Current memory offset.  */
++  bfd_size_type sizeof_extra_header = 0; /* Size of extra header before ELF header in segment.  */
+   bfd_size_type maxpagesize;
+   unsigned int alloc, actual;
+   unsigned int i, j;
+@@ -5989,13 +5993,25 @@ assign_file_positions_for_load_sections (bfd *abfd,
+       && !_bfd_elf_map_sections_to_segments (abfd, link_info, NULL))
+     return false;
+ 
++  off = 0; /* Current file offset */
++
++  if (abfd->xvec == &m68k_elf32_atariprg_vec)
++    {
++      /* There is an extra header before the ELF file header.  */
++      bfd_elf32_atariprg_get_extra_header_info (abfd, &vma_off, &sizeof_extra_header);
++      off = vma_off + sizeof_extra_header;
++    }
++
++  /* Sections must map to file offsets past the ELF file header.  */
++  off += bed->s->sizeof_ehdr;
++
+   alloc = 0;
+   for (m = elf_seg_map (abfd); m != NULL; m = m->next)
+     m->idx = alloc++;
+ 
+   if (alloc)
+     {
+-      elf_elfheader (abfd)->e_phoff = bed->s->sizeof_ehdr;
++      elf_elfheader (abfd)->e_phoff = off;
+       elf_elfheader (abfd)->e_phentsize = bed->s->sizeof_phdr;
+     }
+   else
+@@ -6022,7 +6038,7 @@ assign_file_positions_for_load_sections (bfd *abfd,
+ 
+   if (alloc == 0)
+     {
+-      elf_next_file_pos (abfd) = bed->s->sizeof_ehdr;
++      elf_next_file_pos (abfd) = off;
+       return true;
+     }
+ 
+@@ -6073,8 +6089,6 @@ assign_file_positions_for_load_sections (bfd *abfd,
+ 	maxpagesize = bed->maxpagesize;
+     }
+ 
+-  /* Sections must map to file offsets past the ELF file header.  */
+-  off = bed->s->sizeof_ehdr;
+   /* And if one of the PT_LOAD headers doesn't include the program
+      headers then we'll be mapping program headers in the usual
+      position after the ELF file header.  */
+@@ -6112,6 +6126,7 @@ assign_file_positions_for_load_sections (bfd *abfd,
+       p->p_flags = m->p_flags;
+       p_align = bed->p_align;
+       p_align_p = false;
++      p->p_offset = vma_off;
+ 
+       if (m->count == 0)
+ 	p->p_vaddr = m->p_vaddr_offset * opb;
+@@ -6219,7 +6234,7 @@ assign_file_positions_for_load_sections (bfd *abfd,
+ 		break;
+ 	      }
+ 
+-	  off_adjust = vma_page_aligned_bias (p->p_vaddr, off, align * opb);
++	  off_adjust = vma_page_aligned_bias (p->p_vaddr, VMA, align * opb);
+ 
+ 	  /* Broken hardware and/or kernel require that files do not
+ 	     map the same page with different permissions on some hppa
+@@ -6268,15 +6283,15 @@ assign_file_positions_for_load_sections (bfd *abfd,
+ 	{
+ 	  if (!m->p_flags_valid)
+ 	    p->p_flags |= PF_R;
+-	  p->p_filesz = bed->s->sizeof_ehdr;
+-	  p->p_memsz = bed->s->sizeof_ehdr;
++	  p->p_filesz = sizeof_extra_header + bed->s->sizeof_ehdr;
++	  p->p_memsz = sizeof_extra_header + bed->s->sizeof_ehdr;
+ 	  if (p->p_type == PT_LOAD)
+ 	    {
+ 	      if (m->count > 0)
+ 		{
+-		  if (p->p_vaddr < (bfd_vma) off
++		  if (p->p_vaddr < (bfd_vma) VMA
+ 		      || (!m->p_paddr_valid
+-			  && p->p_paddr < (bfd_vma) off))
++			  && p->p_paddr < (bfd_vma) VMA))
+ 		    {
+ 		      _bfd_error_handler
+ 			(_("%pB: not enough room for program headers,"
+@@ -6285,9 +6300,9 @@ assign_file_positions_for_load_sections (bfd *abfd,
+ 		      bfd_set_error (bfd_error_bad_value);
+ 		      return false;
+ 		    }
+-		  p->p_vaddr -= off;
++		  p->p_vaddr -= VMA;
+ 		  if (!m->p_paddr_valid)
+-		    p->p_paddr -= off;
++		    p->p_paddr -= VMA;
+ 		}
+ 	    }
+ 	  else if (sorted_seg_map[0]->includes_filehdr)
+@@ -6320,9 +6335,9 @@ assign_file_positions_for_load_sections (bfd *abfd,
+ 	      else if (phdr_load_seg != NULL)
+ 		{
+ 		  Elf_Internal_Phdr *phdr = phdrs + phdr_load_seg->idx;
+-		  bfd_vma phdr_off = 0;  /* Octets.  */
++		  bfd_vma phdr_off = sizeof_extra_header;  /* Octets.  */
+ 		  if (phdr_load_seg->includes_filehdr)
+-		    phdr_off = bed->s->sizeof_ehdr;
++		    phdr_off += bed->s->sizeof_ehdr;
+ 		  p->p_vaddr = phdr->p_vaddr + phdr_off;
+ 		  if (!m->p_paddr_valid)
+ 		    p->p_paddr = phdr->p_paddr + phdr_off;
+@@ -6483,7 +6498,7 @@ assign_file_positions_for_load_sections (bfd *abfd,
+ 		     also makes the PT_TLS header have the same
+ 		     p_offset value.  */
+ 		  bfd_vma adjust = vma_page_aligned_bias (this_hdr->sh_addr,
+-							  off, align);
++							  VMA, align);
+ 		  this_hdr->sh_offset = sec->filepos = off + adjust;
+ 		}
+ 
+@@ -6640,6 +6655,7 @@ assign_file_positions_for_load_sections (bfd *abfd,
+     }
+ 
+   return true;
++#undef VMA
+ }
+ 
+ /* Determine if a bfd is a debuginfo file.  Unfortunately there
+@@ -6695,6 +6711,15 @@ assign_file_positions_for_non_load_sections (bfd *abfd,
+   i_shdrpp = elf_elfsections (abfd);
+   end_hdrpp = i_shdrpp + elf_numsections (abfd);
+   off = elf_next_file_pos (abfd);
++
++  if (abfd->xvec == &m68k_elf32_atariprg_vec)
++    {
++      /* Align the size of the DATA segment.
++	 The first non-load section will be placed just after.  */
++      off = align_file_position (off, 1 << bed->s->log_file_align);
++      bfd_elf32_atariprg_set_nonload_pos (abfd, off);
++    }
++
+   for (hdrpp = i_shdrpp + 1; hdrpp < end_hdrpp; hdrpp++)
+     {
+       Elf_Internal_Shdr *hdr;
+@@ -7954,6 +7979,7 @@ rewrite_elf_program_header (bfd *ibfd, bfd *obfd, bfd_vma maxpagesize)
+ 	      && !bed->want_p_paddr_set_to_zero)
+ 	    {
+ 	      bfd_vma hdr_size = 0;
++	      BFD_ASSERT(obfd->xvec != &m68k_elf32_atariprg_vec);
+ 	      if (map->includes_filehdr)
+ 		hdr_size = iehdr->e_ehsize;
+ 	      if (map->includes_phdrs)
+@@ -7996,6 +8022,7 @@ rewrite_elf_program_header (bfd *ibfd, bfd *obfd, bfd_vma maxpagesize)
+ 	  if (map->includes_filehdr)
+ 	    {
+ 	      bfd_vma align = (bfd_vma) 1 << matching_lma->alignment_power;
++	      BFD_ASSERT(obfd->xvec != &m68k_elf32_atariprg_vec);
+ 	      map->p_paddr -= iehdr->e_ehsize;
+ 	      /* We've subtracted off the size of headers from the
+ 		 first section lma, but there may have been some
+@@ -8216,6 +8243,14 @@ copy_elf_program_header (bfd *ibfd, bfd *obfd)
+   bool p_paddr_valid;
+   bool p_palign_valid;
+   unsigned int opb = bfd_octets_per_byte (ibfd, NULL);
++  file_ptr vma_off = 0; /* File offset of memory start.  */
++  bfd_size_type sizeof_extra_header = 0; /* Size of extra header before ELF header in segment.  */
++
++  if (obfd->xvec == &m68k_elf32_atariprg_vec)
++    {
++      /* There is an extra header before the ELF file header.  */
++      bfd_elf32_atariprg_get_extra_header_info (obfd, &vma_off, &sizeof_extra_header);
++    }
+ 
+   iehdr = elf_elfheader (ibfd);
+ 
+@@ -8299,7 +8334,7 @@ copy_elf_program_header (bfd *ibfd, bfd *obfd)
+ 
+       /* Determine if this segment contains the ELF file header
+ 	 and if it contains the program headers themselves.  */
+-      map->includes_filehdr = (segment->p_offset == 0
++      map->includes_filehdr = ((file_ptr) segment->p_offset == vma_off
+ 			       && segment->p_filesz >= iehdr->e_ehsize);
+ 
+       map->includes_phdrs = 0;
+@@ -8361,7 +8396,7 @@ copy_elf_program_header (bfd *ibfd, bfd *obfd)
+ 	  /* Account for padding before the first section in the segment.  */
+ 	  bfd_vma hdr_size = 0;
+ 	  if (map->includes_filehdr)
+-	    hdr_size = iehdr->e_ehsize;
++	    hdr_size = sizeof_extra_header + iehdr->e_ehsize;
+ 	  if (map->includes_phdrs)
+ 	    hdr_size += iehdr->e_phnum * iehdr->e_phentsize;
+ 
+@@ -8471,6 +8506,14 @@ copy_private_bfd_data (bfd *ibfd, bfd *obfd)
+     }
+ 
+  rewrite:
++  if (obfd->xvec == &m68k_elf32_atariprg_vec)
++    {
++      /* Are we going to support that some day?  */
++      _bfd_error_handler ("error: target %s doesn't support rewriting ELF program headers", obfd->xvec->name);
++       bfd_set_error (bfd_error_invalid_operation);
++       return false;
++    }
++
+   maxpagesize = 0;
+   if (ibfd->xvec == obfd->xvec)
+     {
+@@ -8934,7 +8977,7 @@ swap_out_syms (bfd *abfd,
+ 	  sym.st_size = value;
+ 	  if (type_ptr == NULL
+ 	      || type_ptr->internal_elf_sym.st_value == 0)
+-	    sym.st_value = value >= 16 ? 16 : (1 << bfd_log2 (value));
++	    sym.st_value = value >= 2 ? 2 : (1 << bfd_log2 (value));
+ 	  else
+ 	    sym.st_value = type_ptr->internal_elf_sym.st_value;
+ 	  sym.st_shndx = _bfd_elf_section_from_bfd_section
+diff --git a/bfd/elf32-atariprg.c b/bfd/elf32-atariprg.c
+new file mode 100644
+index 00000000000..63aec741a91
+--- /dev/null
++++ b/bfd/elf32-atariprg.c
+@@ -0,0 +1,1070 @@
++/* Support for Atari TOS PRG/ELF binaries.
++   ELF-specific code written by Vincent Riviere, 2023.
++   Based on the original a.out patch by Guido Flohr, 1998.
++   Copyright (C) 1998-2024 Free Software Foundation, Inc.
++
++   This file is part of BFD, the Binary File Descriptor library.
++
++   This program is free software; you can redistribute it and/or modify
++   it under the terms of the GNU General Public License as published by
++   the Free Software Foundation; either version 3 of the License, or
++   (at your option) any later version.
++
++   This program is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++   GNU General Public License for more details.
++
++   You should have received a copy of the GNU General Public License
++   along with this program; if not, write to the Free Software
++   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston,
++   MA 02110-1301, USA.  */
++
++#include "sysdep.h"
++#include "bfd.h"
++#include "libbfd.h"
++#include "elf32-atariprg.h"
++#include "elf-bfd.h"
++#include "elf/m68k.h"
++
++/* Set this to 1 to enable debug traces.  */
++#if 0
++# define TRACE(fmt, ...) printf (fmt, __VA_ARGS__)
++#else
++# define TRACE(fmt, ...)
++#endif
++#define TRACE0(msg) TRACE ("%s", msg)
++
++/* To display well-formatted addresses.  */
++#define ADR_F "0x%08" PRIx32
++typedef uint32_t adr_t;
++
++/* Test if an integer is even.  */
++#define IS_EVEN(x) (((x) & 1) == 0)
++
++/* The main idea here is to reuse the elf32-m68k target, but with a few
++   overrides to add a PRG extended header before ELF data, and a PRG relocation
++   table just after.  So the ELF executable is actually embedded into a standard
++   PRG executable.  ELF Program Headers are specially tailored to fit the GEMDOS
++   process TEXT/DATA/BSS segments.  TEXT segment starts with an extra header
++   to support custom entry point and adjustable stack size.  Next comes the ELF
++   File Header followed by the ELF Program Headers and the rest of the TEXT
++   segment.  DATA and BSS segments are used normally.  Then non-alloc sections
++   and ELF Section Headers are stored in the PRG symbols table area, so they
++   aren't loaded by TOS at run-time.  Finally, the standard PRG relocation table
++   is appended after ELF data.  */
++
++/* Target vector of our base implementation, for inheritance.  */
++extern const bfd_target m68k_elf32_vec;
++
++/* Our own target vector.  */
++bfd_target m68k_elf32_atariprg_vec;
++static struct elf_backend_data m68k_elf32_atariprg_bed;
++static struct elf_size_info m68k_elf32_atariprg_size_info;
++
++/* Data structure that holds some private information for us.  */
++struct mint_internal_info
++{
++  bfd_byte	*tparel;	     /* Data for TPA relative relocation
++					information.  */
++  file_ptr	nonload_pos;	     /* File position of the first non-load
++					section.  */
++  file_ptr	tparel_pos;	     /* File position of TPA relative
++					relocation information.  */
++  bfd_size_type tparel_size;	     /* Size of TPA relative relocation
++					information.  */
++#define MINT_RELOC_CHUNKSIZE 0x1000
++  bfd_vma	*relocs;	     /* Array of address relocations.  */
++  unsigned int  relocs_used;	     /* Number of relocation entries
++					already used up.  */
++  unsigned int  relocs_allocated;    /* Number of relocation entries
++					allocated.  */
++
++  file_ptr	stkpos; 	     /* File offset of _stksize variable.  */
++
++  uint32_t	prg_flags;	     /* Standard GEMDOS flags.  */
++
++  bool		override_stack_size; /* true if the executable stack size
++					must be overridden with stack_size.  */
++  int32_t	stack_size;
++};
++
++/* Standard PRG header, external format.  */
++typedef struct {
++  unsigned char magic[2];	/* Magic number */
++  unsigned char text[4];	/* Size of TEXT segment */
++  unsigned char data[4];	/* Size of DATA segment */
++  unsigned char bss[4];		/* Size of BSS segment */
++  unsigned char symbols[4];	/* Size of the symbols table */
++  unsigned char reserved[4];	/* Used as file-format identifier */
++  unsigned char flags[4];	/* Program flags */
++  unsigned char absflag[2];	/* Must be 0 for relocatable PRG */
++} PRG_HEADER;
++
++/* Extended PRG/ELF header, external format.  */
++typedef struct {
++  /* Standard PRG header */
++  PRG_HEADER prg_header;
++  /* Extra PRG header */
++  unsigned char trampoline[4][2];	/* Jump to entry point */
++  unsigned char g_stkpos[4];		/* File offset of stack size variable */
++} PRGELF_HEADER;
++
++#define PRG_MAGIC 0x601a 		/* PRG file identifier */
++
++/* Nice macros to determine various offsets.  */
++#define PRGELF_PHNUM 3 /* Number of ELF Program Headers */
++#define FILE_OFFSET_PRGELF_HEADER 0
++#define FILE_OFFSET_TEXT sizeof (PRG_HEADER)
++#define VMA_TEXT 0
++#define SIZEOF_PRG_EXTRA_HEADER (sizeof (PRGELF_HEADER) - sizeof (PRG_HEADER))
++#define FILE_OFFSET_ELF_HEADER (FILE_OFFSET_PRGELF_HEADER + sizeof (PRGELF_HEADER))
++#define PRGELF_RESERVED (0x454c4600 /* ELF0 */ + FILE_OFFSET_ELF_HEADER)
++#define FILE_OFFSET_E_ENTRY (FILE_OFFSET_ELF_HEADER + offsetof(Elf32_External_Ehdr, e_entry))
++#define FILE_OFFSET_TRAMPOLINE (FILE_OFFSET_PRGELF_HEADER + offsetof(PRGELF_HEADER, trampoline))
++#define E_ENTRY_PCREL (FILE_OFFSET_E_ENTRY - (FILE_OFFSET_TRAMPOLINE + 2))
++#define TEXT_PCREL (FILE_OFFSET_TEXT - (FILE_OFFSET_TRAMPOLINE + 6))
++
++/* We need to store extra information in a bfd. As this target will never be
++   used for core dumps, just hijack the core pointer for us.  */
++
++static void
++set_mint_internal_info (bfd *abfd, struct mint_internal_info *myinfo)
++{
++  BFD_ASSERT (elf_tdata (abfd)->core == NULL);
++  elf_tdata (abfd)->core = (struct core_elf_obj_tdata *) myinfo;
++}
++
++static struct mint_internal_info *
++get_mint_internal_info_maybe_null (bfd *abfd)
++{
++  struct mint_internal_info *myinfo;
++
++  if (abfd->xvec != &m68k_elf32_atariprg_vec)
++    return NULL;
++  if (elf_tdata (abfd) == NULL)
++    return NULL;
++  myinfo = (struct mint_internal_info *) elf_tdata (abfd)->core;
++
++  return myinfo;
++}
++
++static struct mint_internal_info *
++get_mint_internal_info (bfd *abfd)
++{
++  struct mint_internal_info *myinfo = get_mint_internal_info_maybe_null (abfd);
++
++  BFD_ASSERT (myinfo != NULL);
++
++  return myinfo;
++}
++
++/* Allocate a new bfd_object for output or input.  */
++
++static bool
++m68k_elf32_atariprg_make_object (bfd *abfd)
++{
++  struct mint_internal_info *myinfo;
++
++  TRACE ("m68k_elf32_atariprg_make_object %s %s\n", abfd->xvec->name, abfd->filename);
++
++  if (! m68k_elf32_vec._bfd_set_format[bfd_object] (abfd))
++    return false;
++
++  /* Allocate our private BFD data.  */
++  myinfo = bfd_zalloc (abfd, sizeof (struct mint_internal_info));
++  if (myinfo == NULL)
++    return false;
++
++  set_mint_internal_info (abfd, myinfo);
++
++  return true;
++}
++
++/* Can we read this input file?
++   If not, other targets will be asked.  **/
++
++static bfd_cleanup
++m68k_elf32_atariprg_object_p (bfd *abfd)
++{
++  PRGELF_HEADER ph_ext;
++  bfd_size_type amt;
++  uint16_t magic;
++  uint32_t reserved;
++  struct mint_internal_info *myinfo;
++  bfd_cleanup ret;
++  uint32_t text, data, symbols;
++
++  TRACE ("m68k_elf32_atariprg_object_p %s %s\n", abfd->xvec->name, abfd->filename);
++
++  /* Read the PRG extended header from the file.  */
++  amt = sizeof (PRGELF_HEADER);
++  if (bfd_read (&ph_ext, amt, abfd) != amt)
++    {
++      if (bfd_get_error () != bfd_error_system_call)
++	bfd_set_error (bfd_error_wrong_format);
++      return NULL;
++    }
++
++  /* Is this a PRG?  */
++  magic = H_GET_16 (abfd, ph_ext.prg_header.magic);
++  if (magic != PRG_MAGIC)
++    {
++      bfd_set_error (bfd_error_wrong_format);
++      return NULL;
++    }
++
++  /* Is this a PRG/ELF?  */
++  reserved = H_GET_32 (abfd, ph_ext.prg_header.reserved);
++  if (reserved != PRGELF_RESERVED)
++    {
++      bfd_set_error (bfd_error_wrong_format);
++      return NULL;
++    }
++
++  /* Seek to the ELF File Header position.  */
++  if (bfd_seek (abfd, FILE_OFFSET_ELF_HEADER, SEEK_SET) != 0)
++    {
++      bfd_set_error (bfd_error_wrong_format);
++      return NULL;
++    }
++
++  /* Continue with the standard ELF implementation.  */
++  ret = m68k_elf32_vec._bfd_check_format[bfd_object] (abfd);
++  if (ret == NULL)
++    return NULL;
++
++  /* The base implementation has called m68k_elf32_atariprg_make_object (),
++     so our internal info has just been allocated.  */
++  myinfo = get_mint_internal_info (abfd);
++
++  /* Store extra header information.  */
++  myinfo->prg_flags = H_GET_32 (abfd, ph_ext.prg_header.flags);
++  myinfo->stkpos = H_GET_32 (abfd, ph_ext.g_stkpos);
++  /* Other header fields will be regenerated on write.  */
++
++  /* We read these values just to determine the TPA relocation position.  */
++  text = H_GET_32 (abfd, ph_ext.prg_header.text);
++  data = H_GET_32 (abfd, ph_ext.prg_header.data);
++  symbols = H_GET_32 (abfd, ph_ext.prg_header.symbols);
++  myinfo->tparel_pos = sizeof (PRG_HEADER) + text + data + symbols;
++
++  return ret;
++}
++
++/* Determine the size of the file headers for the linker SIZEOF_HEADERS.  */
++
++static int
++m68k_elf32_atariprg_sizeof_headers (bfd *abfd, struct bfd_link_info *info)
++{
++  int ret = SIZEOF_PRG_EXTRA_HEADER
++	    + m68k_elf32_vec._bfd_sizeof_headers (abfd, info);
++
++  TRACE ("m68k_elf32_atariprg_sizeof_headers %s %s %d\n", abfd->xvec->name, abfd->filename, ret);
++
++  return ret;
++}
++
++/* Set the GEMDOS executable flags.
++   Called by the linker emulation script.  */
++
++bool
++bfd_elf32_atariprg_set_extended_flags (bfd *abfd, uint32_t prg_flags)
++{
++  struct mint_internal_info *myinfo = get_mint_internal_info (abfd);
++
++  TRACE ("bfd_elf32_atariprg_set_extended_flags %s %s " ADR_F "\n", abfd->xvec->name, abfd->filename, (adr_t) prg_flags);
++
++  myinfo->prg_flags = prg_flags;
++
++  return true;
++}
++
++/* Override the stack size.
++   Called by the linker emulation script.  */
++
++bool
++bfd_elf32_atariprg_set_stack_size (bfd *abfd, int32_t stack_size)
++{
++  struct mint_internal_info *myinfo = get_mint_internal_info (abfd);
++
++  TRACE ("bfd_elf32_atariprg_set_stack_size %s %s " ADR_F "\n", abfd->xvec->name, abfd->filename, (adr_t) stack_size);
++
++  myinfo->stack_size = stack_size;
++  myinfo->override_stack_size = true;
++
++  return true;
++}
++
++/* Determine extra header information before the ELF File Header.
++   Called from elf.c.  */
++
++void
++bfd_elf32_atariprg_get_extra_header_info (bfd *abfd ATTRIBUTE_UNUSED,
++					  file_ptr *vma_offp,
++					  bfd_size_type *sizeof_extra_headerp)
++{
++  /* File offset of memory start.  */
++  *vma_offp = FILE_OFFSET_TEXT;
++
++  /* Size of extra header before ELF header in segment.  */
++  *sizeof_extra_headerp = SIZEOF_PRG_EXTRA_HEADER;
++
++  TRACE ("bfd_elf32_atariprg_get_extra_header_info %s %s " ADR_F " %lu\n", abfd->xvec->name, abfd->filename, (adr_t) *vma_offp, *sizeof_extra_headerp);
++}
++
++/* Record the file offset of the first non-load section.
++   This will be the beginning of the PRG symbol table.
++   Called from elf.c.  */
++
++void
++bfd_elf32_atariprg_set_nonload_pos (bfd *abfd, file_ptr nonload_pos)
++{
++  struct mint_internal_info *myinfo = get_mint_internal_info (abfd);
++
++  TRACE ("bfd_elf32_atariprg_set_nonload_pos %s %s " ADR_F "\n", abfd->xvec->name, abfd->filename, (adr_t) nonload_pos);
++
++  myinfo->nonload_pos = nonload_pos;
++}
++
++static unsigned int
++bfd_read_4byte_int (bfd *abfd, file_ptr pos)
++{
++  bfd_byte buffer[4];
++  file_ptr offset;
++  unsigned int val;
++
++  offset = bfd_tell(abfd);
++  if (bfd_seek(abfd, pos, SEEK_SET) != 0
++      || bfd_read (buffer, (bfd_size_type) 4, abfd) != 4)
++    {
++      return -1;
++    }
++  val = bfd_get_32 (abfd, buffer);
++  if (bfd_seek(abfd, offset, SEEK_SET) != 0)
++    return -1;
++  return val;
++}
++
++/* Add a TPA relocation entry.
++   Called for each absolute address in TEXT/DATA segments.
++   Actual relocation will be performed by the OS at load time.  */
++
++static bool
++add_tpa_relocation_entry (bfd *abfd, bfd *input_bfd, bfd_vma address)
++{
++  struct mint_internal_info *myinfo = get_mint_internal_info (abfd);
++
++  if (address & 1)
++    {
++      _bfd_error_handler ("%pB(%pB): TPA relocation at odd address: " ADR_F,
++			  abfd, input_bfd, (adr_t) address);
++      bfd_set_error (bfd_error_bad_value);
++      return false;
++    }
++
++  /* Enlarge the buffer if necessary.  */
++  if (myinfo->relocs_used * sizeof (bfd_vma) >= myinfo->relocs_allocated)
++    {
++      bfd_vma *newbuf;
++      myinfo->relocs_allocated += MINT_RELOC_CHUNKSIZE;
++      newbuf = bfd_realloc (myinfo->relocs, myinfo->relocs_allocated);
++      if (newbuf == NULL)
++	return false;
++
++      myinfo->relocs = newbuf;
++    }
++
++  /* The TPA relative relocation actually just adds the address of
++     the text segment (i. e. beginning of the executable in memory)
++     to the addresses at the specified locations.  This allows an
++     executable to be loaded everywhere in the address space without
++     memory management.  */
++  myinfo->relocs[myinfo->relocs_used++] = address;
++
++  return true;
++}
++
++/* The RELOCATE_SECTION function is called by the ELF backend linker
++   to handle the relocations for a section.  */
++
++static int
++m68k_elf32_atariprg_relocate_section (bfd *output_bfd,
++				      struct bfd_link_info *info,
++				      bfd *input_bfd,
++				      asection *input_section,
++				      bfd_byte *contents,
++				      Elf_Internal_Rela *relocs,
++				      Elf_Internal_Sym *local_syms,
++				      asection **local_sections)
++{
++  int ret;
++  Elf_Internal_Rela *rel;
++  Elf_Internal_Rela *relend;
++
++  TRACE ("m68k_elf32_atariprg_relocate_section %s %s %s %s\n", output_bfd->xvec->name, output_bfd->filename, input_bfd->filename, input_section->name);
++
++  /* First, call the base implementation.  */
++  ret = xvec_get_elf_backend_data (&m68k_elf32_vec)->elf_backend_relocate_section (output_bfd,
++    info, input_bfd, input_section, contents, relocs, local_syms, local_sections);
++  if (! ret)
++    return ret;
++
++  /* Non-load sections have no TPA relocations.  */
++  if (! (input_section->output_section->flags & SEC_LOAD))
++    return ret;
++
++  /* Walk all ELF relocations to determine if a TPA relocation is needed.  */
++  rel = relocs;
++  relend = relocs + input_section->reloc_count;
++  for (; rel < relend; rel++)
++    {
++      int r_type;
++
++      r_type = ELF32_R_TYPE (rel->r_info);
++      switch (r_type)
++	{
++	  case R_68K_32:
++	    {
++	      /* Absolute 32-bit address.  */
++	      bfd_vma offset = _bfd_elf_section_offset(output_bfd, info, input_section, rel->r_offset);
++	      if (offset != (bfd_vma) -1 && offset != (bfd_vma) -2)
++		{
++		  bfd_vma relocation = input_section->output_section->vma + input_section->output_offset + offset;
++		  if (! add_tpa_relocation_entry (output_bfd, input_bfd, relocation))
++		    return false;
++		}
++	    }
++	    break;
++
++	  case R_68K_16:
++	  case R_68K_8:
++	    /* PRG format doesn't support short absolute relocations.  */
++	    _bfd_error_handler("%pB: invalid relocation type %d for target %s",
++			       output_bfd, r_type, output_bfd->xvec->name);
++	    bfd_set_error (bfd_error_bad_value);
++	    return false;
++
++	  default:
++	    /* Ignore PC-relative relocations.  */
++	    break;
++	}
++    }
++
++  return ret;
++}
++
++/* Do a link based on the link_order structures attached to each
++   section of the BFD.
++   After calling the base implementation, this is a good place to examine the
++   contents of the newly linked executable.
++   The symbol lookup is inspired from elf_link_output_extsym ().  */
++
++static bool
++m68k_elf32_atariprg_final_link (bfd *abfd, struct bfd_link_info *info)
++{
++  struct mint_internal_info *myinfo = get_mint_internal_info (info->output_bfd);
++  struct elf_link_hash_entry *h;
++
++  TRACE ("m68k_elf32_atariprg_final_link %s %s\n", abfd->xvec->name, abfd->filename);
++
++  /* First, call the base implementation.  */
++  if (! m68k_elf32_vec._bfd_final_link (abfd, info))
++    return false;
++
++  TRACE ("m68k_elf32_atariprg_final_link END %s %s\n", abfd->xvec->name, abfd->filename);
++
++  /* Remember the address of the stack size variable.  */
++  h = (struct elf_link_hash_entry *) bfd_hash_lookup (&info->hash->table, "_stksize", false, false);
++  if (h != NULL && h->root.type == bfd_link_hash_defined && h->type == STT_OBJECT)
++    {
++      asection *input_sec;
++      bfd_vma vma;
++
++      input_sec = h->root.u.def.section;
++      vma = input_sec->output_section->vma + input_sec->output_offset + h->root.u.def.value;
++      TRACE ("h=%p %s %s " ADR_F "\n", h, input_sec->name, h->root.root.string, (adr_t) vma);
++      myinfo->stkpos = FILE_OFFSET_TEXT + vma;
++    }
++
++  return true;
++}
++
++/* Check and adjust the ELF Program Headers.
++   - Ensure that the p_vaddr, p_paddr and p_offset fields are always set.
++   - Ensure that segments are contiguous.
++   - Ensure that addresses are consistent with offsets.
++   This is a requirement for write_prgelf_header ().  */
++
++static bool
++fix_phdrs (bfd *abfd)
++{
++  Elf_Internal_Ehdr *i_ehdrp = elf_elfheader (abfd);
++  unsigned int phnum = i_ehdrp->e_phnum;
++  struct elf_obj_tdata *tdata = elf_tdata (abfd);
++  Elf_Internal_Phdr *phdr_text, *phdr_data, *phdr_bss;
++  struct mint_internal_info *myinfo = get_mint_internal_info (abfd);
++  bfd_vma real_vaddr_data_end;
++  const struct elf_backend_data *bed = get_elf_backend_data (abfd);
++  struct elf_segment_map *mtext = elf_seg_map (abfd);
++
++  TRACE ("fix_phdrs %s %s\n", abfd->xvec->name, abfd->filename);
++
++  if (phnum != PRGELF_PHNUM)
++    {
++      _bfd_error_handler ("%pB: number of Program Headers %u must be exactly %u for segments TEXT, DATA and BSS",
++			  abfd, phnum, PRGELF_PHNUM);
++      bfd_set_error (bfd_error_bad_value);
++      return false;
++    }
++
++  BFD_ASSERT(mtext->idx == 0); /* TEXT */
++  phdr_text = &tdata->phdr[0];
++  phdr_data = &tdata->phdr[1];
++  phdr_bss  = &tdata->phdr[2];
++
++  /* Fix TEXT segment address.  */
++  if (phdr_text->p_memsz == 0)
++    {
++      phdr_text->p_vaddr = 0;
++      phdr_text->p_paddr = phdr_text->p_vaddr;
++      phdr_text->p_offset = FILE_OFFSET_TEXT + phdr_text->p_vaddr;
++    }
++
++  /* Check TEXT segment address.  */
++  if (mtext->includes_filehdr && phdr_text->p_vaddr != VMA_TEXT)
++    {
++      _bfd_error_handler ("%pB: TEXT segment start address " ADR_F " must be " ADR_F,
++			  abfd, (adr_t) phdr_text->p_vaddr, (adr_t) VMA_TEXT);
++      bfd_set_error (bfd_error_bad_value);
++      return false;
++    }
++
++  /* Fix DATA segment address.  */
++  BFD_ASSERT (myinfo->nonload_pos > 0);
++  real_vaddr_data_end = myinfo->nonload_pos - FILE_OFFSET_TEXT;
++  if (phdr_data->p_memsz == 0)
++    {
++      phdr_data->p_vaddr = real_vaddr_data_end;
++      phdr_data->p_paddr = phdr_data->p_vaddr;
++      phdr_data->p_offset = FILE_OFFSET_TEXT + phdr_data->p_vaddr;
++    }
++
++  /* Fix DATA segment size.  */
++  phdr_data->p_memsz = real_vaddr_data_end - phdr_data->p_vaddr;
++  phdr_data->p_filesz = phdr_data->p_memsz;
++
++  /* Fix TEXT segment size.  */
++  phdr_text->p_memsz = phdr_data->p_vaddr - phdr_text->p_vaddr;
++  phdr_text->p_filesz = phdr_text->p_memsz;
++
++  /* Fix BSS segment address.  */
++  if (phdr_bss->p_memsz == 0)
++    {
++      phdr_bss->p_vaddr = phdr_data->p_vaddr + phdr_data->p_memsz;
++      phdr_bss->p_paddr = phdr_bss->p_vaddr;
++    }
++  else
++    {
++      /* To satisfy the alignment of some variables, the linker might try to
++	 align the BSS segment after the end of the DATA segment. As this isn't
++	 possible with TOS, we extend the front of the BSS segment so it
++	 precisely matches the end of the DATA segment. This doesn't matter
++	 because the VMA of the .bss section doesn't change.  */
++      uint32_t expected_bss_vaddr = phdr_data->p_vaddr + phdr_data->p_memsz;
++      if (phdr_bss->p_vaddr > expected_bss_vaddr)
++	{
++	  uint32_t offset = phdr_bss->p_vaddr - expected_bss_vaddr;
++	  phdr_bss->p_vaddr -= offset;
++	  phdr_bss->p_paddr -= offset;
++	  phdr_bss->p_memsz += offset;
++	}
++    }
++  phdr_bss->p_offset = FILE_OFFSET_TEXT + phdr_bss->p_vaddr;
++
++  /* Fix BSS segment size.  */
++  phdr_bss->p_memsz = BFD_ALIGN (phdr_bss->p_memsz, 1 << bed->s->log_file_align);
++  BFD_ASSERT (phdr_bss->p_filesz == 0);
++
++  /* Check that DATA segment directly follows TEXT segment.  */
++  if (phdr_data->p_vaddr != phdr_text->p_vaddr + phdr_text->p_memsz)
++    {
++      _bfd_error_handler ("%pB: DATA segment start address " ADR_F " must directly follow TEXT segment at " ADR_F,
++			  abfd, (adr_t) phdr_data->p_vaddr,
++			  (adr_t) (phdr_text->p_vaddr + phdr_text->p_memsz));
++      bfd_set_error (bfd_error_bad_value);
++      return false;
++    }
++
++  /* Check that BSS segment directly follows DATA segment.  */
++  if (phdr_bss->p_vaddr != phdr_data->p_vaddr + phdr_data->p_memsz)
++    {
++      _bfd_error_handler ("%pB: BSS segment start address " ADR_F " must directly follow DATA segment at " ADR_F,
++			  abfd, (adr_t) phdr_bss->p_vaddr,
++			  (adr_t) (phdr_data->p_vaddr + phdr_data->p_memsz));
++      bfd_set_error (bfd_error_bad_value);
++      return false;
++    }
++
++  /* Check that VMA of TEXT segment matches its file offset.  */
++  if (phdr_text->p_vaddr != phdr_text->p_offset - FILE_OFFSET_TEXT)
++    {
++      _bfd_error_handler ("%pB: TEXT segment start address " ADR_F " must be " ADR_F " to match its file offset",
++			  abfd, (adr_t) phdr_text->p_vaddr,
++			  (adr_t) (phdr_text->p_offset - FILE_OFFSET_TEXT));
++      bfd_set_error (bfd_error_bad_value);
++      return false;
++    }
++
++  /* Check that VMA of DATA segment matches its file offset.  */
++  if (phdr_data->p_vaddr != phdr_data->p_offset - FILE_OFFSET_TEXT)
++    {
++      _bfd_error_handler ("%pB: DATA segment start address " ADR_F " must be " ADR_F " to match its file offset",
++			  abfd, (adr_t) phdr_data->p_vaddr,
++			  (adr_t) (phdr_data->p_offset - FILE_OFFSET_TEXT));
++      bfd_set_error (bfd_error_bad_value);
++      return false;
++    }
++
++  /* Check that VMA of BSS segment matches its file offset.  */
++  if (phdr_bss->p_vaddr != phdr_bss->p_offset - FILE_OFFSET_TEXT)
++    {
++      _bfd_error_handler ("%pB: BSS segment start address " ADR_F " must be " ADR_F " to match its file offset",
++			  abfd, (adr_t) phdr_bss->p_vaddr,
++			  (adr_t) (phdr_bss->p_offset - FILE_OFFSET_TEXT));
++      bfd_set_error (bfd_error_bad_value);
++      return false;
++    }
++
++  /* As we may have modified the Program Headers, write them again.  */
++  if (bfd_seek (abfd, i_ehdrp->e_phoff, SEEK_SET) != 0
++      || bed->s->write_out_phdrs (abfd, tdata->phdr, phnum) != 0)
++    return false;
++
++  return true;
++}
++
++/* Write the PRG extended header before ELF data.  */
++
++static bool
++write_prgelf_header (bfd *abfd)
++{
++  struct mint_internal_info *myinfo = get_mint_internal_info (abfd);
++  Elf_Internal_Phdr *phdrs = elf_tdata (abfd)->phdr;
++  unsigned int phnum = elf_elfheader (abfd)->e_phnum;
++  Elf_Internal_Phdr *phdr_text, *phdr_data, *phdr_bss;
++  uint32_t prg_text_size, prg_data_size, prg_bss_size, prg_symbols_size;
++  PRGELF_HEADER ph_ext;
++
++  TRACE ("write_prgelf_header %s %s\n", abfd->xvec->name, abfd->filename);
++
++  BFD_ASSERT (phnum == PRGELF_PHNUM);
++  phdr_text = &phdrs[0];
++  phdr_data = &phdrs[1];
++  phdr_bss  = &phdrs[2];
++
++  /* The segment sizes have been fixed, so we can trust them.  */
++  prg_text_size = phdr_text->p_vaddr + phdr_text->p_filesz;
++  prg_data_size = phdr_data->p_filesz;
++  prg_bss_size = phdr_bss->p_memsz;
++
++  /* We will write the TPA relocation table right after the ELF data.  */
++  myinfo->tparel_pos = elf_next_file_pos (abfd);
++  BFD_ASSERT (IS_EVEN (myinfo->tparel_pos));
++
++  /* Compute the size of the PRG symbol table.  */
++  prg_symbols_size = myinfo->tparel_pos - myinfo->nonload_pos;
++
++  /* Prepare the PRG/ELF header.  */
++  memset (&ph_ext, 0, sizeof ph_ext);
++
++  /* Standard PRG header.  */
++  H_PUT_16 (abfd, PRG_MAGIC, &ph_ext.prg_header.magic);
++  H_PUT_32 (abfd, prg_text_size, &ph_ext.prg_header.text);
++  H_PUT_32 (abfd, prg_data_size, &ph_ext.prg_header.data);
++  H_PUT_32 (abfd, prg_bss_size, &ph_ext.prg_header.bss);
++  H_PUT_32 (abfd, prg_symbols_size, &ph_ext.prg_header.symbols);
++  H_PUT_32 (abfd, PRGELF_RESERVED, &ph_ext.prg_header.reserved);
++  H_PUT_32 (abfd, myinfo->prg_flags, &ph_ext.prg_header.flags);
++
++  /* Extended PRG header.  */
++  H_PUT_16 (abfd, 0x203a, &ph_ext.trampoline[0]); /* move.l e_entry(pc),d0 */
++  H_PUT_16 (abfd, E_ENTRY_PCREL, &ph_ext.trampoline[1]);
++  H_PUT_16 (abfd, 0x4efb, &ph_ext.trampoline[2]); /* jmp VMA_TEXT(pc,d0.l) */
++  H_PUT_16 (abfd, 0x0800 | ((uint8_t) TEXT_PCREL) , &ph_ext.trampoline[3]);
++  H_PUT_32 (abfd, myinfo->stkpos, &ph_ext.g_stkpos); /* stack size address */
++
++  /* Write the PRG/ELF header.  */
++  if (bfd_seek (abfd, 0, SEEK_SET) != 0)
++    return false;
++  if (bfd_write (&ph_ext, sizeof ph_ext, abfd) != sizeof ph_ext)
++    return false;
++
++  /* Override the stack size.  */
++  if (myinfo->override_stack_size)
++    {
++      bfd_byte big_endian_stack_size[4];
++
++      if (myinfo->stkpos == 0)
++	{
++	  _bfd_error_handler ("%pB: unable to determine the _stksize position",
++			      abfd);
++	  bfd_set_error (bfd_error_invalid_operation);
++	  return false;
++	}
++
++      bfd_put_32 (abfd, myinfo->stack_size, &big_endian_stack_size);
++
++      if (bfd_seek (abfd, myinfo->stkpos, SEEK_SET) != 0)
++	return false;
++      if (bfd_write (big_endian_stack_size, 4, abfd) != 4)
++	return false;
++  }
++
++  return true;
++}
++
++/* This is used by qsort() to sort the TPA relocation table.  */
++
++static int
++vma_cmp (const void *v1, const void *v2)
++{
++  return (int) ((*((bfd_vma *) v1)) - (*((bfd_vma *) v2)));
++}
++
++/* Alloc and fill the TPA relocation table.  */
++
++static bool
++fill_tparel (bfd *abfd)
++{
++  struct mint_internal_info *myinfo = get_mint_internal_info (abfd);
++  unsigned int i;
++  bfd_size_type bytes;
++  bfd_byte *ptr;
++  unsigned int val;
++  bfd_vma last;
++
++  TRACE ("fill_tparel %s %s\n", abfd->xvec->name, abfd->filename);
++
++  BFD_ASSERT (myinfo->tparel == NULL);
++  BFD_ASSERT (myinfo->tparel_size == 0);
++
++  /* Sort the relocation info.  */
++  if (myinfo->relocs != NULL)
++    qsort (myinfo->relocs, myinfo->relocs_used, sizeof (bfd_vma), vma_cmp);
++
++  /* Now calculate the number of bytes we need.  The relocation info
++     is encoded as follows:  The first entry is a 32-bit value
++     denoting the first offset to relocate.  All following entries
++     are relative to the preceding one.  For relative offsets of
++     more than 254 bytes a value of 1 is used.  The OS will then
++     add 254 bytes to the current offset.  The list is then terminated
++     with the byte 0.  */
++  bytes = 4; /* First entry is a long.  */
++  for (i = 1; i < myinfo->relocs_used; i++)
++    {
++      bfd_signed_vma diff = myinfo->relocs[i] - myinfo->relocs[i - 1];
++      /* No backward relocation.  */
++      if (diff <= 0)
++	{
++	  _bfd_error_handler ("%pB: duplicate relocation: " ADR_F " <= " ADR_F,
++	    abfd,
++	    (adr_t)myinfo->relocs[i], (adr_t)myinfo->relocs[i - 1]);
++	  bfd_set_error (bfd_error_bad_value);
++	  return false;
++	}
++      BFD_ASSERT (! (diff & 1)); /* No relocation to odd address.  */
++      bytes += (diff + 253) / 254;
++    }
++  /* Last entry is (bfd_byte) 0 if there are some relocations.  */
++  if (myinfo->relocs_used > 0)
++    bytes++;
++  myinfo->tparel_size = bytes;
++
++  /* Allocate the TPA relocation table.  */
++  myinfo->tparel = bfd_alloc (abfd, bytes);
++  if (myinfo->tparel == NULL)
++    return false;
++
++  /* Write the first entry. Always 32-bit.  */
++  ptr = myinfo->tparel;
++  i = 1;
++  last = 0;
++  if (myinfo->relocs != NULL)
++    {
++      last = myinfo->relocs[0];
++      while (bfd_read_4byte_int(abfd, last + FILE_OFFSET_TEXT) == 0 && i < myinfo->relocs_used)
++	{
++	  last = myinfo->relocs[i];
++	  i++;
++	}
++    }
++  bfd_put_32 (abfd, last, ptr);
++  ptr += 4;
++
++  /* Write next entries.  Always 8-bit.  */
++  for (; i < myinfo->relocs_used; i++)
++    {
++      bfd_signed_vma diff;
++
++      /*
++       * Do not add an entry, if the address to be relocated is zero.
++       * This can happen with weak symbols.
++       */
++      val = bfd_read_4byte_int(abfd, myinfo->relocs[i] + FILE_OFFSET_TEXT);
++      if (val == 0)
++	{
++	  continue;
++	}
++      diff = myinfo->relocs[i] - last;
++      last = myinfo->relocs[i];
++      while (diff > 254)
++	{
++	  *ptr++ = 1;
++	  diff -= 254;
++	}
++      *ptr++ = (bfd_byte) diff;
++    }
++  if (myinfo->relocs_used > 0)
++    *ptr = 0;
++
++  return true;
++}
++
++/* Write out the TPA relocation table.  */
++
++static bool
++write_tparel (bfd *abfd)
++{
++  struct mint_internal_info *myinfo = get_mint_internal_info (abfd);
++
++  TRACE ("write_tparel %s %s\n", abfd->xvec->name, abfd->filename);
++
++  BFD_ASSERT (myinfo->tparel != NULL);
++  BFD_ASSERT (myinfo->tparel_size > 0);
++
++  if (bfd_seek (abfd, myinfo->tparel_pos, SEEK_SET) != 0)
++    return false;
++
++  if (bfd_write (myinfo->tparel, myinfo->tparel_size, abfd) != myinfo->tparel_size)
++    return false;
++
++  return true;
++}
++
++/* Write out the section headers and the ELF File Header.  */
++
++static bool
++m68k_elf32_atariprg_write_shdrs_and_ehdr (bfd *abfd)
++{
++  struct mint_internal_info *myinfo = get_mint_internal_info (abfd);
++
++  TRACE ("m68k_elf32_atariprg_write_shdrs_and_ehdr %s %s\n", abfd->xvec->name, abfd->filename);
++
++  /* Now we have all the required information to fix the Program Headers.
++     We can't do that in modify_headers because we need to know the offset of
++     the Section Headers, and it isn't known yet at that time.  */
++  if (! fix_phdrs(abfd))
++    return false;
++
++  /* Write out the PRG/ELF extended header.  */
++  if (! write_prgelf_header (abfd))
++    return false;
++
++  /* Write out the Section Headers and the ELF File Header.  */
++  if (! xvec_get_elf_backend_data (&m68k_elf32_vec)->s->write_shdrs_and_ehdr (abfd))
++    return false;
++
++  /* The TPA relocation table already exists if it has been read from an input
++     file with objcopy/strip.  */
++  if (myinfo->tparel_size == 0)
++    {
++      /* Generate the PRG relocation table.  */
++      if (! fill_tparel (abfd))
++	return false;
++    }
++
++  /* Write out the PRG relocation table.  */
++  if (! write_tparel (abfd))
++    return false;
++
++  return true;
++}
++
++/* Called when the BFD is being closed to do any necessary cleanup.  */
++
++static bool
++m68k_elf32_atariprg_close_and_cleanup (bfd *abfd)
++{
++  struct mint_internal_info *myinfo = get_mint_internal_info_maybe_null (abfd);
++
++  TRACE ("m68k_elf32_atariprg_close_and_cleanup %s %s\n", abfd->xvec->name, abfd->filename);
++
++  if (myinfo != NULL && myinfo->relocs != NULL)
++    {
++      free (myinfo->relocs);
++      myinfo->relocs = NULL;
++    }
++
++  /* myinfo itself has been allocated by bfd_zalloc()
++     so will be automatically freed along with the BFD.
++     Same for myinfo->tparel.  */
++
++  return m68k_elf32_vec._close_and_cleanup (abfd);
++}
++
++/* objcopy/strip support.
++   Sections are loaded from the input file, then written individually to the
++   output file. During the process, some of them might be dropped. Headers are
++   recreated from scratch. We must copy all extra data manually in order to
++   generate the output file identically.  */
++
++/* Copy private header information.  */
++
++static bool
++m68k_elf32_atariprg_copy_private_header_data (bfd *ibfd, bfd *obfd)
++{
++  struct mint_internal_info *myinfo_in;
++  struct mint_internal_info *myinfo_out;
++
++  TRACE ("m68k_elf32_atariprg_copy_private_header_data %s %s %s %s\n", ibfd->xvec->name, ibfd->filename, obfd->xvec->name, obfd->filename);
++
++  /* First, call the base implementation.  */
++  if (! m68k_elf32_vec._bfd_copy_private_header_data (ibfd, obfd))
++    return false;
++
++  /* obfd uses our file format, ibfd may be foreign.  */
++  if (ibfd->xvec != &m68k_elf32_atariprg_vec)
++    return true;
++
++  myinfo_in = get_mint_internal_info (ibfd);
++  myinfo_out = get_mint_internal_info (obfd);
++
++  /* Copy extra header data.  */
++  myinfo_out->prg_flags = myinfo_in->prg_flags;
++  myinfo_out->stkpos = myinfo_in->stkpos;
++
++  return true;
++}
++
++/* Read the TPA relocation table.  */
++
++static bool read_tparel (bfd *abfd)
++{
++  struct mint_internal_info *myinfo = get_mint_internal_info (abfd);
++#define TPAREL_CHUNK_SIZE 4096
++  bfd_size_type alloc_size;
++  bfd_size_type already_read;
++  bfd_size_type amt;
++
++  TRACE ("read_tparel %s %s\n", abfd->xvec->name, abfd->filename);
++
++  BFD_ASSERT (myinfo->tparel == NULL);
++
++  /* The TPA relocation position was determined when reading the PRG header.  */
++  BFD_ASSERT (myinfo->tparel_pos > 0);
++  if (bfd_seek (abfd, myinfo->tparel_pos, SEEK_SET) != 0)
++    return false;
++
++  /* We don't know the size of the TPA relocation table in advance. So just
++     read chunks up to the end of file.  */
++
++  alloc_size = TPAREL_CHUNK_SIZE;
++  myinfo->tparel = bfd_malloc (alloc_size);
++  if (myinfo->tparel == NULL)
++    return false;
++
++  already_read = 0;
++
++  for (;;)
++    {
++      amt = bfd_read (myinfo->tparel + already_read, TPAREL_CHUNK_SIZE, abfd);
++      if (amt == (bfd_size_type) -1)
++	return false;
++
++      already_read += amt;
++
++      if (amt < TPAREL_CHUNK_SIZE)
++	{
++	  myinfo->tparel_size = already_read;
++	  return true;
++	}
++
++      alloc_size += TPAREL_CHUNK_SIZE;
++      myinfo->tparel = bfd_realloc (myinfo->tparel, alloc_size);
++      if (myinfo->tparel == NULL)
++	return false;
++    }
++}
++
++/* Copy the program header and other data from one object module to
++   another.  */
++
++static bool
++m68k_elf32_atariprg_copy_private_bfd_data (bfd *ibfd, bfd *obfd)
++{
++  struct mint_internal_info *myinfo_in;
++  struct mint_internal_info *myinfo_out;
++
++  TRACE ("m68k_elf32_atariprg_copy_private_bfd_data %s %s %s %s\n", ibfd->xvec->name, ibfd->filename, obfd->xvec->name, obfd->filename);
++
++  /* First, call the base implementation.  */
++  if (! m68k_elf32_vec._bfd_copy_private_bfd_data (ibfd, obfd))
++      return false;
++
++  /* obfd uses our file format, ibfd may be foreign.  */
++  if (ibfd->xvec != &m68k_elf32_atariprg_vec)
++    return true;
++
++  myinfo_in = get_mint_internal_info (ibfd);
++  myinfo_out = get_mint_internal_info (obfd);
++
++  /* Read the input TPA relocation table.  */
++  if (! read_tparel (ibfd))
++    return false;
++
++  /* Allocate the output relocation table.  */
++  myinfo_out->tparel_size = myinfo_in->tparel_size;
++  myinfo_out->tparel = bfd_alloc (obfd, myinfo_out->tparel_size);
++  if (myinfo_out->tparel == NULL)
++    return false;
++
++  /* Copy the TPA relocation table.  */
++  memcpy (myinfo_out->tparel, myinfo_in->tparel, myinfo_out->tparel_size);
++
++  return true;
++}
++
++/* Initialize our target.
++   Called by bfd_init ().  */
++
++void
++bfd_elf32_atariprg_init (void)
++{
++  TRACE0 ("bfd_elf32_atariprg_init\n");
++
++  /* Our target is basically the same as elf32-m68k...  */
++  m68k_elf32_atariprg_vec = m68k_elf32_vec;
++  m68k_elf32_atariprg_vec.name = "elf32-atariprg";
++
++  /* ... but with a few overrides.  */
++  m68k_elf32_atariprg_vec._bfd_check_format[bfd_object] = m68k_elf32_atariprg_object_p;
++  m68k_elf32_atariprg_vec._bfd_set_format[bfd_object] = m68k_elf32_atariprg_make_object;
++  m68k_elf32_atariprg_vec._bfd_sizeof_headers = m68k_elf32_atariprg_sizeof_headers;
++  m68k_elf32_atariprg_vec._close_and_cleanup = m68k_elf32_atariprg_close_and_cleanup;
++  m68k_elf32_atariprg_vec._bfd_copy_private_header_data = m68k_elf32_atariprg_copy_private_header_data;
++  m68k_elf32_atariprg_vec._bfd_copy_private_bfd_data = m68k_elf32_atariprg_copy_private_bfd_data;
++  m68k_elf32_atariprg_vec._bfd_final_link = m68k_elf32_atariprg_final_link;
++
++  /* ELF backend data.  */
++  m68k_elf32_atariprg_bed = *xvec_get_elf_backend_data(&m68k_elf32_atariprg_vec);
++  m68k_elf32_atariprg_vec.backend_data = &m68k_elf32_atariprg_bed;
++  m68k_elf32_atariprg_bed.maxpagesize = 2; /* Align segments on this.  */
++  m68k_elf32_atariprg_bed.elf_backend_relocate_section = m68k_elf32_atariprg_relocate_section;
++
++  /* ELF size info.  */
++  m68k_elf32_atariprg_size_info = *m68k_elf32_atariprg_bed.s;
++  m68k_elf32_atariprg_bed.s = &m68k_elf32_atariprg_size_info;
++  m68k_elf32_atariprg_size_info.log_file_align = 1; /* 2**1 = 2 */
++  m68k_elf32_atariprg_size_info.write_shdrs_and_ehdr = m68k_elf32_atariprg_write_shdrs_and_ehdr;
++}
+diff --git a/bfd/elf32-atariprg.h b/bfd/elf32-atariprg.h
+new file mode 100644
+index 00000000000..de34e9a9507
+--- /dev/null
++++ b/bfd/elf32-atariprg.h
+@@ -0,0 +1,50 @@
++/* Support for Atari TOS PRG/ELF binaries.
++   Copyright (C) 1998-2024 Free Software Foundation, Inc.
++
++   This file is part of BFD, the Binary File Descriptor library.
++
++   This program is free software; you can redistribute it and/or modify
++   it under the terms of the GNU General Public License as published by
++   the Free Software Foundation; either version 3 of the License, or
++   (at your option) any later version.
++
++   This program is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++   GNU General Public License for more details.
++
++   You should have received a copy of the GNU General Public License
++   along with this program; if not, write to the Free Software
++   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston,
++   MA 02110-1301, USA.  */
++
++/* Standard GEMDOS program flags.  */
++#define _MINT_F_FASTLOAD      0x01    /* Don't clear heap.  */
++#define _MINT_F_ALTLOAD       0x02    /* OK to load in alternate RAM.  */
++#define _MINT_F_ALTALLOC      0x04    /* OK to malloc from alt. RAM.  */
++#define _MINT_F_BESTFIT       0x08    /* Load with optimal heap size.  */
++/* The memory flags are mutually exclusive.  */
++#define _MINT_F_MEMPROTECTION 0xf0    /* Masks out protection bits.  */
++#define _MINT_F_MEMPRIVATE    0x00    /* Memory is private.  */
++#define _MINT_F_MEMGLOBAL     0x10    /* Read/write access to mem allowed.  */
++#define _MINT_F_MEMSUPER      0x20    /* Only supervisor access allowed.  */
++#define _MINT_F_MEMREADABLE   0x30    /* Any read access OK.  */
++#define _MINT_F_SHTEXT        0x800   /* Program's text may be shared */
++
++extern bfd_target m68k_elf32_atariprg_vec;
++
++/* Called by bfd_init ().  */
++extern void bfd_elf32_atariprg_init
++  (void);
++
++/* Called by elf.c.  */
++extern void bfd_elf32_atariprg_get_extra_header_info
++  (bfd *, file_ptr *, bfd_size_type *);
++extern void bfd_elf32_atariprg_set_nonload_pos
++  (bfd *, file_ptr);
++
++/* Called by the linker.  */
++extern bool bfd_elf32_atariprg_set_extended_flags
++  (bfd *, uint32_t);
++extern bool bfd_elf32_atariprg_set_stack_size
++  (bfd *, int32_t);
+diff --git a/bfd/elfcode.h b/bfd/elfcode.h
+index 1e0784611bc..0926a062901 100644
+--- a/bfd/elfcode.h
++++ b/bfd/elfcode.h
+@@ -72,6 +72,7 @@
+ #include "libbfd.h"
+ #include "elf-bfd.h"
+ #include "libiberty.h"
++#include "elf32-atariprg.h"
+ 
+ /* Renaming structures, typedefs, macros and functions to be size-specific.  */
+ #define Elf_External_Ehdr	NAME(Elf,External_Ehdr)
+@@ -1107,10 +1108,20 @@ elf_write_shdrs_and_ehdr (bfd *abfd)
+   Elf_Internal_Shdr **i_shdrp;	/* Section header table, internal form */
+   unsigned int count;
+   size_t amt;
++  file_ptr ehdr_offset = 0;	/* File offset of ELF Header */
+ 
+   i_ehdrp = elf_elfheader (abfd);
+   i_shdrp = elf_elfsections (abfd);
+ 
++  if (abfd->xvec == &m68k_elf32_atariprg_vec)
++    {
++      /* There is an extra header before the ELF file header.  */
++      file_ptr vma_off;
++      bfd_size_type sizeof_extra_header;
++      bfd_elf32_atariprg_get_extra_header_info (abfd, &vma_off, &sizeof_extra_header);
++      ehdr_offset = vma_off + sizeof_extra_header;
++    }
++
+   /* swap the header before spitting it out...  */
+ 
+ #if DEBUG & 1
+@@ -1118,7 +1129,7 @@ elf_write_shdrs_and_ehdr (bfd *abfd)
+ #endif
+   elf_swap_ehdr_out (abfd, i_ehdrp, &x_ehdr);
+   amt = sizeof (x_ehdr);
+-  if (bfd_seek (abfd, 0, SEEK_SET) != 0
++  if (bfd_seek (abfd, ehdr_offset, SEEK_SET) != 0
+       || bfd_write (&x_ehdr, amt, abfd) != amt)
+     return false;
+ 
+diff --git a/bfd/opncls.c b/bfd/opncls.c
+index a0a5c40fba8..447e32394b8 100644
+--- a/bfd/opncls.c
++++ b/bfd/opncls.c
+@@ -26,6 +26,9 @@
+ #include "libbfd.h"
+ #include "libiberty.h"
+ #include "elf-bfd.h"
++#include "elf32-atariprg.h"
++
++extern bfd_target m68k_elf32_vec;
+ 
+ #ifndef S_IXUSR
+ #define S_IXUSR 0100	/* Execute by owner.  */
+@@ -971,7 +974,14 @@ bfd_create (const char *filename, bfd *templ)
+       return NULL;
+     }
+   if (templ)
+-    nbfd->xvec = templ->xvec;
++    {
++      /* This is called by ld plugin_get_ir_dummy_bfd ()
++	 when creating some intermediate object files for LTO.  */
++      if (templ->xvec == &m68k_elf32_atariprg_vec)
++	nbfd->xvec = &m68k_elf32_vec;
++      else
++	nbfd->xvec = templ->xvec;
++    }
+   nbfd->direction = no_direction;
+   bfd_set_format (nbfd, bfd_object);
+ 
+diff --git a/bfd/targets.c b/bfd/targets.c
+index 3addf2fe373..a6d7914bc5a 100644
+--- a/bfd/targets.c
++++ b/bfd/targets.c
+@@ -784,6 +784,7 @@ extern const bfd_target m32r_elf32_linux_le_vec;
+ extern const bfd_target m68hc11_elf32_vec;
+ extern const bfd_target m68hc12_elf32_vec;
+ extern const bfd_target m68k_elf32_vec;
++extern const bfd_target m68k_elf32_atariprg_vec;
+ extern const bfd_target s12z_elf32_vec;
+ extern const bfd_target mach_o_be_vec;
+ extern const bfd_target mach_o_le_vec;
+@@ -1149,6 +1150,7 @@ static const bfd_target * const _bfd_target_vector[] =
+ 	&m68hc12_elf32_vec,
+ 
+ 	&m68k_elf32_vec,
++	&m68k_elf32_atariprg_vec,
+ 
+ 	&s12z_elf32_vec,
+ 
+diff --git a/binutils/configure b/binutils/configure
+index 94a0d4a177e..4c89db67ea7 100755
+--- a/binutils/configure
++++ b/binutils/configure
+@@ -15676,7 +15676,7 @@ fi
+ 
+ 
+ case "${host}" in
+-*-*-msdos* | *-*-go32* | *-*-mingw32* | *-*-cygwin* | *-*-windows*)
++*-*-msdos* | *-*-go32* | *-*-mingw32* | *-*-cygwin* | *-*-windows* | *-*-mint*)
+ 
+ $as_echo "#define USE_BINARY_FOPEN 1" >>confdefs.h
+  ;;
+diff --git a/binutils/elfedit.c b/binutils/elfedit.c
+index 76316365b57..05d1d0045e3 100644
+--- a/binutils/elfedit.c
++++ b/binutils/elfedit.c
+@@ -793,7 +793,16 @@ process_file (const char *file_name)
+     ret = process_archive (file_name, file, true);
+   else
+     {
+-      rewind (file);
++      if (armag[0] == 0x60 && armag[1] == 0x1a)
++	{
++	  /* This is a PRG/ELF executable with extra header.  */
++	  if (fseek(file, 0x28, SEEK_SET) != 0)
++	    return 1;
++	}
++      else
++	{
++	  rewind (file);
++	}
+       archive_file_size = archive_file_offset = 0;
+       ret = process_object (file_name, file);
+ #ifdef HAVE_MMAP
+diff --git a/binutils/objcopy.c b/binutils/objcopy.c
+index a85d26203e9..8de9cef846c 100644
+--- a/binutils/objcopy.c
++++ b/binutils/objcopy.c
+@@ -304,6 +304,9 @@ enum long_section_name_handling
+    This is also the only behaviour for 'strip'.  */
+ static enum long_section_name_handling long_section_names = KEEP;
+ 
++/* If input_target is elf32-atariprg, force output_target to elf32-m68k.  */
++static bool force_elf_output = false;
++
+ /* 150 isn't special; it's just an arbitrary non-ASCII char value.  */
+ enum command_line_switch
+ {
+@@ -3963,6 +3966,9 @@ copy_file (const char *input_filename, const char *output_filename, int ofd,
+       if (output_target == NULL)
+ 	output_target = bfd_get_target (ibfd);
+ 
++      if (force_elf_output && strcmp (output_target, "elf32-atariprg") == 0)
++	output_target = "elf32-m68k";
++
+       if (ofd >= 0)
+ 	obfd = bfd_fdopenw (output_filename, output_target, ofd);
+       else
+@@ -4879,6 +4885,7 @@ strip_main (int argc, char *argv[])
+ 	  break;
+ 	case OPTION_ONLY_KEEP_DEBUG:
+ 	  strip_symbols = STRIP_NONDEBUG;
++	  force_elf_output = true;
+ 	  break;
+ 	case OPTION_KEEP_FILE_SYMBOLS:
+ 	  keep_file_symbols = 1;
+@@ -5282,6 +5289,7 @@ copy_main (int argc, char *argv[])
+ 	case 'j':
+ 	  find_section_list (optarg, true, SECTION_CONTEXT_COPY);
+ 	  sections_copied = true;
++	  force_elf_output = true;
+ 	  break;
+ 
+ 	case 'R':
+@@ -5318,6 +5326,7 @@ copy_main (int argc, char *argv[])
+ 
+ 	case OPTION_ONLY_KEEP_DEBUG:
+ 	  strip_symbols = STRIP_NONDEBUG;
++	  force_elf_output = true;
+ 	  break;
+ 
+ 	case OPTION_KEEP_FILE_SYMBOLS:
+diff --git a/binutils/readelf.c b/binutils/readelf.c
+index 5e4ad6ea6ad..3e54b32be8a 100644
+--- a/binutils/readelf.c
++++ b/binutils/readelf.c
+@@ -9563,7 +9563,7 @@ ia64_process_unwind (Filedata * filedata)
+ 	    printf ("'%s'", printable_section_name (filedata, unwsec));
+ 
+ 	  printf (_(" at offset %#" PRIx64 " contains %" PRIu64 " entries:\n"),
+-		  unwsec->sh_offset,
++		  (uint64_t) unwsec->sh_offset,
+ 		  unwsec->sh_size / (3 * eh_addr_size));
+ 
+ 	  if (slurp_ia64_unwind_table (filedata, & aux, unwsec)
+@@ -9938,7 +9938,7 @@ hppa_process_unwind (Filedata * filedata)
+ 			    "contains %" PRIu64 " entries:\n",
+ 			    num_unwind),
+ 		  printable_section_name (filedata, sec),
+-		  sec->sh_offset,
++		  (uint64_t) sec->sh_offset,
+ 		  num_unwind);
+ 
+           if (! slurp_hppa_unwind_table (filedata, &aux, sec))
+@@ -11046,7 +11046,7 @@ arm_process_unwind (Filedata * filedata)
+ 			      "contains %" PRIu64 " entries:\n",
+ 			      num_unwind),
+ 		    printable_section_name (filedata, sec),
+-		    sec->sh_offset,
++		    (uint64_t) sec->sh_offset,
+ 		    num_unwind);
+ 
+ 	    if (! dump_arm_unwind (filedata, &aux, sec))
+@@ -12634,7 +12634,7 @@ process_version_sections (Filedata * filedata)
+ 
+ 	    printf (_(" Addr: 0x%016" PRIx64), section->sh_addr);
+ 	    printf (_("  Offset: 0x%08" PRIx64 "  Link: %u (%s)\n"),
+-		    section->sh_offset, section->sh_link,
++		    (uint64_t) section->sh_offset, section->sh_link,
+ 		    printable_section_name_from_index (filedata, section->sh_link, NULL));
+ 
+ 	    edefs = (Elf_External_Verdef *)
+@@ -12780,7 +12780,7 @@ process_version_sections (Filedata * filedata)
+ 
+ 	    printf (_(" Addr: 0x%016" PRIx64), section->sh_addr);
+ 	    printf (_("  Offset: 0x%08" PRIx64 "  Link: %u (%s)\n"),
+-		    section->sh_offset, section->sh_link,
++		    (uint64_t) section->sh_offset, section->sh_link,
+ 		    printable_section_name_from_index (filedata, section->sh_link, NULL));
+ 
+ 	    eneed = (Elf_External_Verneed *) get_data (NULL, filedata,
+@@ -12945,7 +12945,7 @@ process_version_sections (Filedata * filedata)
+ 
+ 	    printf (_(" Addr: 0x%016" PRIx64), section->sh_addr);
+ 	    printf (_("  Offset: 0x%08" PRIx64 "  Link: %u (%s)\n"),
+-		    section->sh_offset, section->sh_link,
++		    (uint64_t) section->sh_offset, section->sh_link,
+ 		    printable_section_name (filedata, link_section));
+ 
+ 	    off = offset_from_vma (filedata,
+@@ -22851,6 +22851,18 @@ get_file_header (Filedata * filedata)
+   if (fread (filedata->file_header.e_ident, EI_NIDENT, 1, filedata->handle) != 1)
+     return false;
+ 
++  if (filedata->file_header.e_ident[0] == 0x60
++      && filedata->file_header.e_ident[1] == 0x1a)
++    {
++      /* This is a PRG/ELF executable with extra header.  */
++      if (fseek(filedata->handle, 0x28, SEEK_SET) != 0)
++	return false;
++
++      /* Read in the identity array again.  */
++      if (fread (filedata->file_header.e_ident, EI_NIDENT, 1, filedata->handle) != 1)
++	return false;
++    }
++
+   /* Determine how to read the rest of the header.  */
+   switch (filedata->file_header.e_ident[EI_DATA])
+     {
+diff --git a/gas/config/tc-m68k.c b/gas/config/tc-m68k.c
+index d04aa1edecd..814a66553ce 100644
+--- a/gas/config/tc-m68k.c
++++ b/gas/config/tc-m68k.c
+@@ -4668,9 +4668,12 @@ md_begin (void)
+ 
+   init_regtable ();
+ 
+-  record_alignment (text_section, 2);
+-  record_alignment (data_section, 2);
+-  record_alignment (bss_section, 2);
++  /* Default alignment of 2 (= 2**1) is enough for Atari ST programs. It is
++     possible to align data explicitly with .align 4, but that will only be
++     honored if the program is loaded by TOS 4 or FreeMiNT.  */
++  record_alignment (text_section, 1);
++  record_alignment (data_section, 1);
++  record_alignment (bss_section, 1);
+ }
+ 
+ 
+diff --git a/gas/config/te-mintelf.h b/gas/config/te-mintelf.h
+new file mode 100644
+index 00000000000..176aa08e8d3
+--- /dev/null
++++ b/gas/config/te-mintelf.h
+@@ -0,0 +1,41 @@
++/* Copyright (C) 2023-2024 Free Software Foundation, Inc.
++
++   This file is part of GAS, the GNU Assembler.
++
++   GAS is free software; you can redistribute it and/or modify
++   it under the terms of the GNU General Public License as
++   published by the Free Software Foundation; either version 3,
++   or (at your option) any later version.
++
++   GAS is distributed in the hope that it will be useful, but
++   WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
++   the GNU General Public License for more details.
++
++   You should have received a copy of the GNU General Public License
++   along with GAS; see the file COPYING.  If not, write to the Free
++   Software Foundation, 51 Franklin Street - Fifth Floor, Boston, MA
++   02110-1301, USA.  */
++
++#define TE_MINTELF
++#define LOCAL_LABELS_FB 1
++
++/* The .lcomm directive mustn't try to align more than possible.  */
++#define TC_IMPLICIT_LCOMM_ALIGNMENT(SIZE, P2VAR)		\
++  do								\
++    {								\
++      if ((SIZE) >= 4)						\
++	(P2VAR) = 2;						\
++      else if ((SIZE) >= 2)					\
++	(P2VAR) = 1;						\
++      else							\
++	(P2VAR) = 0;						\
++    }								\
++  while (0)
++
++#include "obj-format.h"
++
++/* No shared lib support, so we don't need to ensure externally
++   visible symbols can be overridden.  */
++#undef  EXTERN_FORCE_RELOC
++#define EXTERN_FORCE_RELOC 0
+diff --git a/gas/configure.tgt b/gas/configure.tgt
+index 7c66734e362..f21a89a977f 100644
+--- a/gas/configure.tgt
++++ b/gas/configure.tgt
+@@ -302,6 +302,7 @@ case ${generic_target} in
+   m68k-*-gnu*)				fmt=elf ;;
+   m68k-*-netbsd*)			fmt=elf em=nbsd ;;
+   m68k-*-haiku*)			fmt=elf em=haiku ;;
++  m68k-*-mintelf*)			fmt=elf em=mintelf ;;
+ 
+   s12z-*-*)				fmt=elf ;;
+ 
+diff --git a/gprof/corefile.c b/gprof/corefile.c
+index 0ea435fd2db..4c98497e1c0 100644
+--- a/gprof/corefile.c
++++ b/gprof/corefile.c
+@@ -178,6 +178,8 @@ core_init (const char * aout_name)
+   asymbol *synthsyms;
+   long synth_count;
+ 
++  bfd_init ();
++
+   core_bfd = bfd_openr (aout_name, 0);
+ 
+   if (!core_bfd)
+diff --git a/ld/Makefile.am b/ld/Makefile.am
+index f9ee05b1400..12390622349 100644
+--- a/ld/Makefile.am
++++ b/ld/Makefile.am
+@@ -320,6 +320,7 @@ ALL_EMULATION_SOURCES = \
+ 	em68hc12elfb.c \
+ 	em68kelf.c \
+ 	em68kelfnbsd.c \
++	em68kmintelf.c \
+ 	em9s12zelf.c \
+ 	emcorepe.c \
+ 	emn10200.c \
+diff --git a/ld/Makefile.in b/ld/Makefile.in
+index abb0565718f..58f0cc84e36 100644
+--- a/ld/Makefile.in
++++ b/ld/Makefile.in
+@@ -831,6 +831,7 @@ ALL_EMULATION_SOURCES = \
+ 	em68hc12elfb.c \
+ 	em68kelf.c \
+ 	em68kelfnbsd.c \
++	em68kmintelf.c \
+ 	em9s12zelf.c \
+ 	emcorepe.c \
+ 	emn10200.c \
+@@ -1529,6 +1530,7 @@ distclean-compile:
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/em68hc12elfb.Po@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/em68kelf.Po@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/em68kelfnbsd.Po@am__quote@
++@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/em68kmintelf.Po@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/em9s12zelf.Po@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/emcorepe.Po@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/emmo.Po@am__quote@
+diff --git a/ld/configure b/ld/configure
+index ba1e5e2a215..7d56f6416b2 100755
+--- a/ld/configure
++++ b/ld/configure
+@@ -18741,7 +18741,7 @@ done
+ 
+ 
+ case "${host}" in
+-*-*-msdos* | *-*-go32* | *-*-mingw32* | *-*-cygwin* | *-*-windows*)
++*-*-msdos* | *-*-go32* | *-*-mingw32* | *-*-cygwin* | *-*-windows* | *-*-mint*)
+ 
+ $as_echo "#define USE_BINARY_FOPEN 1" >>confdefs.h
+  ;;
+diff --git a/ld/configure.tgt b/ld/configure.tgt
+index f937f78b876..66faebbf3d9 100644
+--- a/ld/configure.tgt
++++ b/ld/configure.tgt
+@@ -71,6 +71,7 @@ if test "${ac_default_ld_warn_execstack}" = 2; then
+       # use executable stacks for signals and syscalls.
+       # Many MIPS targets use executable stacks.
+     hppa*-*-* | \
++    m68k-*-mint* | \
+     mips*-*-*)
+       ac_default_ld_warn_execstack=0
+       ;;
+@@ -503,6 +504,9 @@ m68hc11-*-*|m6811-*-*)	targ_emul=m68hc11elf
+ m68hc12-*-*|m6812-*-*)	targ_emul=m68hc12elf
+ 			targ_extra_emuls="m68hc12elfb m68hc11elf m68hc11elfb"
+ 			;;
++m68*-*-mintelf*)	targ_emul=m68kmintelf
++			targ_extra_emuls=m68kelf
++			;;
+ m68*-*-netbsd*)	targ_emul=m68kelfnbsd
+ 			;;
+ m68*-*-haiku*)		targ_emul=m68kelf
+diff --git a/ld/emulparams/m68kmintelf.sh b/ld/emulparams/m68kmintelf.sh
+new file mode 100644
+index 00000000000..86fe8f3526e
+--- /dev/null
++++ b/ld/emulparams/m68kmintelf.sh
+@@ -0,0 +1,25 @@
++# Customizer script for m68kmintelf emulation.
++# It is sourced by genscripts.sh to customize the templates.
++
++# This is essentially an m68kelf emulation, with a few overrides.
++source_sh ${srcdir}/emulparams/m68kelf.sh
++
++# The linker will produce PRG/ELF executables, not plain ELF.
++OUTPUT_FORMAT="elf32-atariprg"
++
++# Emulation template. Suffix ".em" will be appended.
++TEMPLATE_NAME=elf
++EXTRA_EM_FILE=m68kmintelf
++
++# Linker script template. Suffix ".sc" will be appended.
++SCRIPT_NAME=m68kmintelf
++
++# Additional parameters for above templates.
++GENERATE_SHLIB_SCRIPT=
++GENERATE_PIE_SCRIPT=
++
++# Use external linker script files.
++COMPILE_IN=no
++
++# Don't search for dynamic libraries (yet)
++LDEMUL_OPEN_DYNAMIC_ARCHIVE=NULL
+diff --git a/ld/emultempl/m68kmintelf.em b/ld/emultempl/m68kmintelf.em
+new file mode 100644
+index 00000000000..debf4ec4c3e
+--- /dev/null
++++ b/ld/emultempl/m68kmintelf.em
+@@ -0,0 +1,267 @@
++# This shell script emits a C file. -*- C -*-
++#   Copyright (C) 1998-2024 Free Software Foundation, Inc.
++#
++# This file is part of the GNU Binutils.
++#
++# This program is free software; you can redistribute it and/or modify
++# it under the terms of the GNU General Public License as published by
++# the Free Software Foundation; either version 3 of the License, or
++# (at your option) any later version.
++#
++# This program is distributed in the hope that it will be useful,
++# but WITHOUT ANY WARRANTY; without even the implied warranty of
++# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++# GNU General Public License for more details.
++#
++# You should have received a copy of the GNU General Public License
++# along with this program; if not, write to the Free Software
++# Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston,
++# MA 02110-1301, USA.
++#
++
++# This script is sourced from elf.em, and defines extra MiNT-specific routines.
++# It produces a C source file named em68kmintelf.c.
++
++# This is essentially an m68kelf emulation, with a few overrides.
++source_em "${srcdir}/emultempl/m68kelf.em"
++
++# We don't know if m68kelf.em or elf.em already provide an implementation for
++# the emulation methods. The situation could change in future updates.
++# To stay safe, we dynamically guess the name of the super-implementation.
++# **CRITICAL** The values below must stay the same as in emulation.em.
++SUPER_LDEMUL_BEFORE_PARSE=${LDEMUL_BEFORE_PARSE-gld${EMULATION_NAME}_before_parse}
++SUPER_LDEMUL_FINISH=${LDEMUL_FINISH-finish_default}
++
++fragment <<EOF
++
++#include "../bfd/elf32-atariprg.h"
++
++/* Option flags.  */
++static uint32_t prg_flags = (_MINT_F_FASTLOAD | _MINT_F_ALTLOAD
++			     | _MINT_F_ALTALLOC | _MINT_F_MEMPRIVATE);
++
++/* If override_stack_size is true, then the executable stack size
++ * must be overridden with the value of stack_size.  */
++static bool override_stack_size = false;
++static int32_t stack_size;
++
++/* This method is called before parsing the command line and script file.  */
++
++static void
++m68kmintelf_before_parse (void)
++{
++  /* First, call the base implementation.  */
++  ${SUPER_LDEMUL_BEFORE_PARSE} ();
++
++  /* Then add our own linker initialization here.  */
++
++  /* Standard default entry point is the "start" symbol. But the MiNTLib entry
++     point is named "_start". We could change the default here, but that would
++     be very non-standard. Instead, I prefer to add a custom ENTRY() in the
++     linker script.  */
++  /*lang_default_entry ("_start");*/
++}
++
++/* This method is called after assigning values from the script.  */
++
++static void
++m68kmintelf_finish (void)
++{
++  /* First, call the base implementation.  */
++  ${SUPER_LDEMUL_FINISH} ();
++
++  /* Do nothing if we are not generating a MiNT executable (ex: binary).  */
++  if (strcmp (bfd_get_target (link_info.output_bfd), "${OUTPUT_FORMAT}") != 0)
++    return;
++
++  /* Set the GEMDOS executable header flags.  */
++  if (! bfd_elf32_atariprg_set_extended_flags (link_info.output_bfd, prg_flags))
++    einfo (_("%F%P: %pB: unable to set the prgflags\n"), link_info.output_bfd);
++
++  /* Override the stack size.  */
++  if (override_stack_size)
++    if (! bfd_elf32_atariprg_set_stack_size (link_info.output_bfd, stack_size))
++      einfo (_("%F%P: %pB: unable to set the stack size\n"), link_info.output_bfd);
++}
++
++EOF
++
++# Define some shell vars to insert bits of code into the standard elf
++# parse_args and list_options functions.
++#
++PARSE_AND_LIST_PROLOGUE=$PARSE_AND_LIST_PROLOGUE'
++/* Used for setting flags in the MiNT header.  */
++enum mintelf_options
++{
++  OPTION_FASTLOAD = 500,
++  OPTION_NO_FASTLOAD,
++  OPTION_FASTRAM,
++  OPTION_NO_FASTRAM,
++  OPTION_FASTALLOC,
++  OPTION_NO_FASTALLOC,
++  OPTION_BESTFIT,
++  OPTION_NO_BESTFIT,
++  OPTION_BASEREL,
++  OPTION_NO_BASEREL,
++  OPTION_MEM_PRIVATE,
++  OPTION_MEM_GLOBAL,
++  OPTION_MEM_SUPER,
++  OPTION_MEM_READONLY,
++  OPTION_PRG_FLAGS,
++  OPTION_STACK
++};
++'
++
++PARSE_AND_LIST_LONGOPTS=$PARSE_AND_LIST_LONGOPTS'
++  {"mfastload", no_argument, NULL, OPTION_FASTLOAD},
++  {"mno-fastload", no_argument, NULL, OPTION_NO_FASTLOAD},
++  {"mfastram", no_argument, NULL, OPTION_FASTRAM},
++  {"mno-fastram", no_argument, NULL, OPTION_NO_FASTRAM},
++  {"maltram", no_argument, NULL, OPTION_FASTRAM},
++  {"mno-altram", no_argument, NULL, OPTION_NO_FASTRAM},
++  {"mfastalloc", no_argument, NULL, OPTION_FASTALLOC},
++  {"mno-fastalloc", no_argument, NULL, OPTION_NO_FASTALLOC},
++  {"maltalloc", no_argument, NULL, OPTION_FASTALLOC},
++  {"mno-altalloc", no_argument, NULL, OPTION_NO_FASTALLOC},
++  {"mbest-fit", no_argument, NULL, OPTION_BESTFIT},
++  {"mno-best-fit", no_argument, NULL, OPTION_NO_BESTFIT},
++  {"mbaserel", no_argument, NULL, OPTION_BASEREL},
++  {"mno-baserel", no_argument, NULL, OPTION_NO_BASEREL},
++  {"mshared-text", no_argument, NULL, OPTION_BASEREL},
++  {"mno-shared-text", no_argument, NULL, OPTION_NO_BASEREL},
++  {"msharable-text", no_argument, NULL, OPTION_BASEREL},
++  {"mno-sharable-text", no_argument, NULL, OPTION_NO_BASEREL},
++  /* Memory protection bits.  */
++  {"mprivate-memory", no_argument, NULL, OPTION_MEM_PRIVATE },
++  {"mglobal-memory", no_argument, NULL, OPTION_MEM_GLOBAL},
++  {"msuper-memory", no_argument, NULL, OPTION_MEM_SUPER},
++  {"mreadable-memory", no_argument, NULL, OPTION_MEM_READONLY},
++  {"mreadonly-memory", no_argument, NULL, OPTION_MEM_READONLY},
++  {"mprg-flags", required_argument, NULL, OPTION_PRG_FLAGS},
++  {"stack", required_argument, NULL, OPTION_STACK},
++'
++
++PARSE_AND_LIST_OPTIONS=$PARSE_AND_LIST_OPTIONS'
++  fprintf (file, _("  --m[no-]fastload            Enable/Disable not cleaning the heap on startup\n"));
++  fprintf (file, _("  --m[no-]altram, --m[no-]fastram\n"));
++  fprintf (file, _("                              Enable/Disable loading into alternate RAM\n"));
++  fprintf (file, _("  --m[no-]altalloc, --m[no-]fastalloc\n"));
++  fprintf (file, _("                              Enable/Disable malloc from alternate RAM\n"));
++  fprintf (file, _("  --m[no-]best-fit            Enable/Disable loading with optimal heap size\n"));
++  fprintf (file, _("  --m[no-]sharable-text, --m[no-]shared-text, --m[no-]baserel\n"));
++  fprintf (file, _("                              Enable/Disable sharing the text segment\n"));
++  fprintf (file, "\n");
++  fprintf (file, _("The following memory options are mutually exclusive:\n"));
++  fprintf (file, _("  --mprivate-memory           Process memory is not accessible\n"));
++  fprintf (file, _("  --mglobal-memory            Process memory is readable and writable\n"));
++  fprintf (file, _("  --msuper-memory             Process memory is accessible in supervisor mode\n"));
++  fprintf (file, _("  --mreadonly-memory, --mreadable-memory\n"));
++  fprintf (file, _("                              Process memory is readable but not writable\n"));
++  fprintf (file, "\n");
++  fprintf (file, _("  --mprg-flags <value>        Set all the flags with an integer raw value\n"));
++  fprintf (file, _("  --stack <size>              Override the stack size (suffix k or M allowed)\n"));
++'
++
++PARSE_AND_LIST_ARGS_CASES=$PARSE_AND_LIST_ARGS_CASES'
++    case OPTION_FASTLOAD:
++      prg_flags |= _MINT_F_FASTLOAD;
++      break;
++
++    case OPTION_NO_FASTLOAD:
++      prg_flags &= ~_MINT_F_FASTLOAD;
++      break;
++
++    case OPTION_FASTRAM:
++      prg_flags |= _MINT_F_ALTLOAD;
++      break;
++
++    case OPTION_NO_FASTRAM:
++      prg_flags &= ~_MINT_F_ALTLOAD;
++      break;
++
++    case OPTION_FASTALLOC:
++      prg_flags |= _MINT_F_ALTALLOC;
++      break;
++
++    case OPTION_NO_FASTALLOC:
++      prg_flags &= ~_MINT_F_ALTALLOC;
++      break;
++
++    case OPTION_BESTFIT:
++      prg_flags |= _MINT_F_BESTFIT;
++      break;
++
++    case OPTION_NO_BESTFIT:
++      prg_flags &= ~_MINT_F_BESTFIT;
++      break;
++
++    case OPTION_BASEREL:
++      prg_flags |= _MINT_F_SHTEXT;
++      break;
++
++    case OPTION_NO_BASEREL:
++      prg_flags &= ~_MINT_F_SHTEXT;
++      break;
++
++    case OPTION_MEM_PRIVATE:
++      prg_flags &= ~_MINT_F_MEMPROTECTION;
++      break;
++
++    case OPTION_MEM_GLOBAL:
++      prg_flags &= ~_MINT_F_MEMPROTECTION;
++      prg_flags |= _MINT_F_MEMPRIVATE;
++      break;
++
++    case OPTION_MEM_SUPER:
++      prg_flags &= ~_MINT_F_MEMPROTECTION;
++      prg_flags |= _MINT_F_MEMSUPER;
++      break;
++
++    case OPTION_MEM_READONLY:
++      prg_flags &= ~_MINT_F_MEMPROTECTION;
++      prg_flags |= _MINT_F_MEMREADABLE;
++      break;
++
++    case OPTION_PRG_FLAGS:
++      {
++	char* tail;
++	unsigned long flag_value = strtoul (optarg, &tail, 0);
++
++	if (*tail != '\''\0'\'')
++	  einfo (_("%P: warning: ignoring invalid prgflags %s\n"), optarg);
++	else
++	  prg_flags = flag_value;
++
++	break;
++      }
++    case OPTION_STACK:
++      {
++	char* tail;
++	long size = strtol (optarg, &tail, 0);
++
++	if (*tail == '\''K'\'' || *tail == '\''k'\'')
++	  {
++	    size *= 1024;
++	    ++tail;
++	  }
++	else if (*tail == '\''M'\'' || *tail == '\''m'\'')
++	  {
++	    size *= 1024*1024;
++	    ++tail;
++	  }
++
++	if (*tail != '\''\0'\'')
++	  einfo (_("%P: warning: ignoring invalid stack size %s\n"), optarg);
++	else
++	  {
++	    stack_size = size;
++	    override_stack_size = true;
++	  }
++
++	break;
++      }
++'
++
++# Override emulation methods
++LDEMUL_BEFORE_PARSE=m68kmintelf_before_parse
++LDEMUL_FINISH=m68kmintelf_finish
+diff --git a/ld/ldmain.c b/ld/ldmain.c
+index e90c2021b33..9bf663bf232 100644
+--- a/ld/ldmain.c
++++ b/ld/ldmain.c
+@@ -687,12 +687,30 @@ get_sysroot (int argc, char **argv)
+ static char *
+ get_emulation (int argc, char **argv)
+ {
++  char *default_emulation;
+   char *emulation;
+   int i;
+ 
++  default_emulation = DEFAULT_EMULATION;
++
++  if (strcmp (default_emulation, "m68kmintelf") == 0)
++    {
++      for (i = 1; i < argc; i++)
++	{
++	  if (strcmp (argv[i], "-r") == 0)
++	    {
++	      /* We are merging .o files using ld -r partial linking.
++		In this case, use the classic ELF linker to produce
++		a standard ELF .o file.  */
++	      default_emulation = "m68kelf";
++	      break;
++	    }
++	}
++    }
++
+   emulation = getenv (EMULATION_ENVIRON);
+   if (emulation == NULL)
+-    emulation = DEFAULT_EMULATION;
++    emulation = default_emulation;
+ 
+   for (i = 1; i < argc; i++)
+     {
+diff --git a/ld/po/BLD-POTFILES.in b/ld/po/BLD-POTFILES.in
+index b346e203aa8..f1775a16e7b 100644
+--- a/ld/po/BLD-POTFILES.in
++++ b/ld/po/BLD-POTFILES.in
+@@ -256,6 +256,7 @@ em68hc12elf.c
+ em68hc12elfb.c
+ em68kelf.c
+ em68kelfnbsd.c
++em68kmintelf.c
+ em9s12zelf.c
+ emcorepe.c
+ emmo.c
+diff --git a/ld/scripttempl/m68kmintelf.sc b/ld/scripttempl/m68kmintelf.sc
+new file mode 100644
+index 00000000000..d43829d9174
+--- /dev/null
++++ b/ld/scripttempl/m68kmintelf.sc
+@@ -0,0 +1,194 @@
++cat <<EOF
++/* Linker script for Atari ST PRG/ELF executables.
++   Written by Vincent Riviere, 2023.
++   Based on elf.sc and the generated m68kelf.x.  */
++
++/* Copyright (C) 2014-2024 Free Software Foundation, Inc.
++
++   Copying and distribution of this script, with or without modification,
++   are permitted in any medium without royalty provided the copyright
++   notice and this notice are preserved.  */
++
++OUTPUT_FORMAT("${OUTPUT_FORMAT}")
++ENTRY(_start) /* The MiNTLib uses this entry symbol, so we do.  */
++
++/* ELF Program Headers are mapped to GEMDOS process segments.  */
++PHDRS
++{
++  /* TEXT segment starts with PRG extended header + ELF headers.  */
++  TEXT PT_LOAD FILEHDR PHDRS FLAGS (5); /* PF_X */
++  DATA PT_LOAD FLAGS (6); /* PF_R | PF_W */
++  BSS  PT_LOAD FLAGS (6); /* PF_R | PF_W */
++}
++
++/* Sections are assigned to segments managed by the operating system.
++   There are 4 possible assignments:
++     :TEXT for program code and read-only data
++     :DATA for read-write data with initial value
++     :BSS  for read-write data initialized to 0, not stored in the executable
++     :NONE for extra sections not loaded by the operating system
++   The extra sections a stored in the PRG symbols table. They can be used to
++   store additional data inside executables, such as debugging information.
++   Extra sections take space in executable files, but aren't automatically
++   loaded into the process memory.
++   If an output section is not explicitly assigned to a segment, it will be
++   assigned to the segment used by the previous section.  */
++SECTIONS
++{
++  /*** TEXT segment: program code and read-only data **************************/
++
++  /* Skip PRG extra header, ELF File Header, ELF Program Headers.  */
++  . = SIZEOF_HEADERS;
++
++  /* Program code.  */
++  .text :
++  {
++    *crt0.o(.text .text.*)
++    *(.text.unlikely .text.*_unlikely .text.unlikely.*)
++    *(.text.exit .text.exit.*)
++    *(.text.startup .text.startup.*)
++    *(.text.hot .text.hot.*)
++    *(SORT(.text.sorted.*))
++    *(.text .stub .text.* .gnu.linkonce.t.*)
++    /* .gnu.warning sections are handled specially by elf.em.  */
++    *(.gnu.warning)
++  } :TEXT =0x4afc /* Pad with ILLEGAL instruction */
++
++  /* End of .text section.  */
++  _etext = .;
++  PROVIDE(etext = .);
++
++  /* Preinitializers array.  */
++  .preinit_array (READONLY) :
++  {
++    PROVIDE_HIDDEN (__preinit_array_start = .);
++    KEEP (*(.preinit_array))
++    PROVIDE_HIDDEN (__preinit_array_end = .);
++  }
++
++  /* Initializers array.  */
++  .init_array (READONLY) :
++  {
++    PROVIDE_HIDDEN (__init_array_start = .);
++    KEEP (*(SORT_BY_INIT_PRIORITY(.init_array.*) SORT_BY_INIT_PRIORITY(.ctors.*)))
++    KEEP (*(.init_array EXCLUDE_FILE (*crtbegin.o *crtbegin?.o *crtend.o *crtend?.o ) .ctors))
++    PROVIDE_HIDDEN (__init_array_end = .);
++  }
++
++  /* Finalizers array.  */
++  .fini_array (READONLY) :
++  {
++    PROVIDE_HIDDEN (__fini_array_start = .);
++    KEEP (*(SORT_BY_INIT_PRIORITY(.fini_array.*) SORT_BY_INIT_PRIORITY(.dtors.*)))
++    KEEP (*(.fini_array EXCLUDE_FILE (*crtbegin.o *crtbegin?.o *crtend.o *crtend?.o ) .dtors))
++    PROVIDE_HIDDEN (__fini_array_end = .);
++  }
++
++  /* Global Constructors.  */
++  .ctors (READONLY) :
++  {
++    /* gcc uses crtbegin.o to find the start of
++       the constructors, so we make sure it is
++       first.  Because this is a wildcard, it
++       doesn't matter if the user does not
++       actually link against crtbegin.o; the
++       linker won't look for a file to match a
++       wildcard.  The wildcard also means that it
++       doesn't matter which directory crtbegin.o
++       is in.  */
++    KEEP (*crtbegin.o(.ctors))
++    KEEP (*crtbegin?.o(.ctors))
++    /* We don't want to include the .ctor section from
++       the crtend.o file until after the sorted ctors.
++       The .ctor section from the crtend file contains the
++       end of ctors marker and it must be last */
++    KEEP (*(EXCLUDE_FILE (*crtend.o *crtend?.o ) .ctors))
++    KEEP (*(SORT(.ctors.*)))
++    KEEP (*(.ctors))
++  }
++
++  /* Global Destructors.  */
++  .dtors (READONLY) :
++  {
++    KEEP (*crtbegin.o(.dtors))
++    KEEP (*crtbegin?.o(.dtors))
++    KEEP (*(EXCLUDE_FILE (*crtend.o *crtend?.o ) .dtors))
++    KEEP (*(SORT(.dtors.*)))
++    KEEP (*(.dtors))
++  }
++
++  /* Read-only data.  */
++  .rodata :
++  {
++    *(.rodata .rodata.* .gnu.linkonce.r.*)
++  }
++
++  /* Exception handling.  */
++  .eh_frame_hdr   : { *(.eh_frame_hdr) *(.eh_frame_entry .eh_frame_entry.*) }
++  .eh_frame       : ONLY_IF_RO { KEEP (*(.eh_frame)) *(.eh_frame.*) }
++  .sframe         : ONLY_IF_RO { *(.sframe) *(.sframe.*) }
++  .gcc_except_table   : ONLY_IF_RO { *(.gcc_except_table .gcc_except_table.*) }
++  .gnu_extab   : ONLY_IF_RO { *(.gnu_extab*) }
++
++  /*** DATA segment: read-write data with initial value ***********************/
++
++  /* Standard data.  */
++  .data : ALIGN(2)
++  {
++    *(.data .data.* .gnu.linkonce.d.*)
++  } :DATA
++
++  /* End of .data section. */
++  _edata = .;
++
++  /* Exception handling. */
++  .eh_frame       : ONLY_IF_RW { KEEP (*(.eh_frame)) *(.eh_frame.*) }
++  .sframe         : ONLY_IF_RW { *(.sframe) *(.sframe.*) }
++  .gnu_extab      : ONLY_IF_RW { *(.gnu_extab) }
++  .gcc_except_table   : ONLY_IF_RW { *(.gcc_except_table .gcc_except_table.*) }
++  .exception_ranges   : ONLY_IF_RW { *(.exception_ranges*) }
++
++  /*** BSS segment: read-write data initialized to 0 **************************/
++
++  /* Standard BSS.  */
++  .bss : ALIGN(2)
++  {
++   *(.bss .bss.* .gnu.linkonce.b.*)
++   *(COMMON)
++  } :BSS
++
++  /* End of .bss section */
++  _end = .;
++
++  /*** Extra sections not loaded by the operating system **********************/
++
++  .comment       0 : { *(.comment) } :NONE
++  .gnu.build.attributes : { *(.gnu.build.attributes .gnu.build.attributes.*) }
++  .note.gnu.build-id  : { *(.note.gnu.build-id) }
++
++   /* ELF relocation information.  */
++  .rela.init      : { *(.rela.init) }
++  .rela.text      : { *(.rela.text .rela.text.* .rela.gnu.linkonce.t.*) }
++  .rela.fini      : { *(.rela.fini) }
++  .rela.rodata    : { *(.rela.rodata .rela.rodata.* .rela.gnu.linkonce.r.*) }
++  .rela.data.rel.ro   : { *(.rela.data.rel.ro .rela.data.rel.ro.* .rela.gnu.linkonce.d.rel.ro.*) }
++  .rela.data      : { *(.rela.data .rela.data.* .rela.gnu.linkonce.d.*) }
++  .rela.tdata	  : { *(.rela.tdata .rela.tdata.* .rela.gnu.linkonce.td.*) }
++  .rela.tbss	  : { *(.rela.tbss .rela.tbss.* .rela.gnu.linkonce.tb.*) }
++  .rela.ctors     : { *(.rela.ctors) }
++  .rela.dtors     : { *(.rela.dtors) }
++  .rela.got       : { *(.rela.got) }
++  .rela.bss       : { *(.rela.bss .rela.bss.* .rela.gnu.linkonce.b.*) }
++EOF
++
++# DWARF debug sections
++source_sh ${srcdir}/scripttempl/DWARF.sc
++
++cat <<EOF
++
++  .gnu.attributes 0 : { KEEP (*(.gnu.attributes)) }
++
++  /* Input sections below won't be merged into the PRG.  */
++  /DISCARD/ : { *(.note.GNU-stack) *(.gnu_debuglink) *(.gnu.lto_*) }
++}
++EOF

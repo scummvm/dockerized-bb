@@ -231,6 +231,12 @@ VERSIONS = {
     ('./workers/macosx-x86_64/Dockerfile.m4', 'MACOSX_SDK'): 'ignore',
     ('./workers/macosx-x86_64/Dockerfile.m4', 'MACOSX_TARGET'): 'ignore',
 
+    ('./toolchains/atari/packages/toolchain/build.sh', 'BINUTILS'): 'ignore',
+    ('./toolchains/atari/packages/toolchain/build.sh', 'GCC'): 'ignore',
+    ('./toolchains/atari/packages/toolchain/build.sh', 'MINTLIB'): 'ignore',
+    ('./toolchains/atari/packages/toolchain/build.sh', 'FDLIBM'): 'ignore',
+    ('./toolchains/atari/packages/toolchain/build.sh', 'MINTBIN'): 'ignore',
+
     # Caanoo packages (except toolchain) are set by old firmware
     ('./toolchains/caanoo/packages/freetype/build.sh', 'FREETYPE'): 'ignore',
     ('./toolchains/caanoo/packages/libjpeg/build.sh', 'JPEG'): 'ignore',
