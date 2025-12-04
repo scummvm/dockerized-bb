@@ -7,7 +7,7 @@ HELPERS_DIR=$PACKAGE_DIR/../..
 do_make_bdir
 
 do_pkg_fetch freetype
-do_configure
+do_configure "$@"
 do_make
 do_make install
 

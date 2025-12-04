@@ -15,7 +15,7 @@ sed -i -e '/CFLAGS/s:-mno-ieee-fp::' configure.ac
 sed -i -e 's/^\(SUBDIRS.*\) doc/\1/' Makefile.am
 
 autoreconf -fi -I m4
-do_configure
+do_configure "$@"
 do_make
 do_make install
 

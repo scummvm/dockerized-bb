@@ -8,7 +8,7 @@ do_make_bdir
 
 do_pkg_fetch libmikmod
 
-do_configure --disable-doc --disable-alldrv --disable-threads --disable-dl
+do_configure --disable-doc --disable-alldrv --disable-threads --disable-dl "$@"
 do_make
 do_make install
 

@@ -1,0 +1,36 @@
+#!/bin/sh
+#
+# Wrapper script that calls the real pkg-config with the relocated
+# sysroot location.
+#
+set -e
+
+PLATFORM="m68k-atari-mintelf"
+
+SYSROOT=$(${PLATFORM}-gcc -print-sysroot)
+LIBDIR=${SYSROOT}/usr/lib/$(${PLATFORM}-gcc $CFLAGS $LDFLAGS -print-multi-directory)
+
+# This adds additional directories to search for .pc files. It supplements the default
+# search path rather than replacing it. Use this when you want to add extra locations
+# (like /opt/custom/lib/pkgconfig) without losing the standard system paths.
+#export PKG_CONFIG_PATH=
+
+# This is an older variable that was used similarly to PKG_CONFIG_LIBDIR. It's deprecated
+# in favor of PKG_CONFIG_LIBDIR, which has clearer semantics. You shouldn't use this in
+# new projects.
+export PKG_CONFIG_DIR=
+if [ -z ${PKG_CONFIG_LIBDIR+x} ]
+then
+	# This replaces the entire default search path. When set, pkg-config ignores its
+	# compiled-in defaults and only searches the directories you specify. This is primarily
+	# used for cross-compilation scenarios where you want to ensure you're only finding
+	# libraries for the target system, not the host.
+	export PKG_CONFIG_LIBDIR="${LIBDIR}/pkgconfig"
+fi
+# This prepends a prefix to all paths found in .pc files. If a .pc file contains prefix=/usr,
+# and you set PKG_CONFIG_SYSROOT_DIR=/home/user/sysroot, then pkg-config will treat it as
+# /home/user/sysroot/usr. This is essential for cross-compilation when your target system's
+# libraries are installed in a staging directory on your build machine.
+export PKG_CONFIG_SYSROOT_DIR=
+
+exec pkg-config --static "$@"
