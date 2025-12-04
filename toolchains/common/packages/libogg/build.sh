@@ -12,7 +12,7 @@ do_pkg_fetch libogg
 sed -ie 's/^\(SUBDIRS.*\) doc/\1/' Makefile.am
 autoreconf -fi
 
-do_configure
+do_configure "$@"
 do_make
 do_make install
 
