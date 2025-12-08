@@ -260,6 +260,37 @@ def appletv():
     register_platform(platform)
 appletv()
 
+def atari():
+    platform = Platform("atari")
+    platform.compatibleBuilds = (builds.ScummVMBuild, )
+
+    platform.env["ASFLAGS"] = "-m68020-60"
+    platform.env["CXXFLAGS"] = "-m68020-60 -DUSE_MOVE16 -DUSE_SUPERVIDEL -DUSE_SV_BLITTER -DDISABLE_LAUNCHERDISPLAY_GRID"
+    platform.env["LDFLAGS"] = "-m68020-60"
+    platform.env["PKG_CONFIG_LIBDIR"] = "${PREFIX}/lib/m68020-60/pkgconfig"
+
+    # TODO: custom patches, lite/firebee builds, icons
+
+    platform.configureargs.append("--host=m68k-atari-mintelf --backend=atari")
+    platform.buildconfigureargs = {
+        builds.ScummVMBuild: [ "--disable-engine=hugo,director,cine,ultima" ],
+    }
+
+    platform.packaging_cmd = {
+        builds.ScummVMBuild: "atarifulldist",
+    }
+
+    platform.built_files = {
+        builds.ScummVMBuild: [ "scummvm.prg" ],
+    }
+    platform.archiveext = "zip"
+
+    platform.description = "Atari Full"
+    #platform.icon = 'atari-full'
+
+    register_platform(platform)
+atari()
+
 def debian(name_suffix, image_suffix, host,
         package=True,
         run_tests=True, build_devtools=False,
