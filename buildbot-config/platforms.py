@@ -269,11 +269,11 @@ def atari():
     platform.env["LDFLAGS"] = "-m68020-60"
     platform.env["PKG_CONFIG_LIBDIR"] = "${PREFIX}/lib/m68020-60/pkgconfig"
 
-    # TODO: custom patches, lite/firebee builds, icons
+    # TODO: custom patches, icons
 
-    platform.configureargs.append("--host=m68k-atari-mintelf --backend=atari")
+    platform.configureargs.append("--host=m68k-atari-mintelf")
     platform.buildconfigureargs = {
-        builds.ScummVMBuild: [ "--disable-engine=hugo,director,cine,ultima" ],
+        builds.ScummVMBuild: [ "--backend=atari" ],
     }
 
     platform.packaging_cmd = {
@@ -281,13 +281,68 @@ def atari():
     }
 
     platform.built_files = {
-        builds.ScummVMBuild: [ "scummvm.prg" ],
+        builds.ScummVMBuild: [ "scummvm-*-atari-full/*" ],
     }
     platform.archiveext = "zip"
 
     platform.description = "Atari Full"
     #platform.icon = 'atari-full'
+    register_platform(platform)
 
+    # Atari Lite
+    platform = copy.deepcopy(platform)
+    platform.name = "atari-lite"
+
+    platform.env["ASFLAGS"] = "-m68030"
+    platform.env["CXXFLAGS"] = "-m68030 -DDISABLE_FANCY_THEMES"
+    platform.env["LDFLAGS"] = "-m68030"
+
+    platform.buildconfigureargs[builds.ScummVMBuild].append('--disable-highres')
+    platform.buildconfigureargs[builds.ScummVMBuild].append('--disable-bink')
+
+    platform.packaging_cmd = {
+        builds.ScummVMBuild: "atarilitedist",
+    }
+
+    platform.built_files = {
+        builds.ScummVMBuild: [ "scummvm-*-atari-lite/*" ],
+    }
+
+    platform.description = "Atari Lite"
+    #platform.icon = 'atari-lite'
+    register_platform(platform)
+
+    # FireBee
+    platform = copy.deepcopy(platform)
+    platform.name = "firebee"
+
+    del platform.env["ASFLAGS"]
+    platform.env["CXXFLAGS"] = "-mcpu=5475"
+    platform.env["LDFLAGS"] = "-mcpu=5475"
+    platform.env["PKG_CONFIG_LIBDIR"] = "${PREFIX}/lib/m5475/pkgconfig"
+
+    platform.buildconfigureargs = {
+        builds.ScummVMBuild: [
+            "--backend=sdl",
+            # Workaround: ${PREFIX} doesn't seem to be expanded
+            "--with-sdl-prefix=/opt/toolchains/atari/m68k-atari-mintelf/sys-root/usr/bin/m5475",
+            "--with-freetype2-prefix=/opt/toolchains/atari/m68k-atari-mintelf/sys-root/usr/bin/m5475",
+            "--with-mikmod-prefix=/opt/toolchains/atari/m68k-atari-mintelf/sys-root/usr/bin/m5475" ]
+            # "--with-sdl-prefix=${PREFIX}/bin/m5475",
+            # "--with-freetype2-prefix=${PREFIX}/bin/m5475",
+            # "--with-mikmod-prefix=${PREFIX}/bin/m5475" ]
+    }
+
+    platform.packaging_cmd = {
+        builds.ScummVMBuild: "fbdist",
+    }
+
+    platform.built_files = {
+        builds.ScummVMBuild: [ "scummvm-*-firebee/*" ],
+    }
+
+    platform.description = "FireBee"
+    #platform.icon = 'firebee'
     register_platform(platform)
 atari()
 
