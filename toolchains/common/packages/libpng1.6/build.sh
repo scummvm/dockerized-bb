@@ -7,7 +7,7 @@ HELPERS_DIR=$PACKAGE_DIR/../..
 do_make_bdir
 
 do_pkg_fetch libpng1.6
-do_configure "$@"
+do_configure
 do_make
 
 # Don't install man pages and binaries
