@@ -45,9 +45,9 @@ local_package(gemlib)
 local_package(ldg)
 local_package(usound)
 
-helpers_package(zlib, --libdir=${PREFIX}/lib/m68020-60, CFLAGS="-O2 -fomit-frame-pointer -m68020-60")
+helpers_package(zlib,, CFLAGS="-O2 -fomit-frame-pointer -m68020-60" LIBDIR=${PREFIX}/lib/m68020-60)
 
-helpers_package(zlib, --libdir=${PREFIX}/lib/m5475, CFLAGS="-O2 -fomit-frame-pointer -mcpu=5475")
+helpers_package(zlib,, CFLAGS="-O2 -fomit-frame-pointer -mcpu=5475" LIBDIR=${PREFIX}/lib/m5475)
 helpers_package(libpng1.6, --bindir=${PREFIX}/bin/m5475 --libdir=${PREFIX}/lib/m5475, CFLAGS="-O2 -fomit-frame-pointer -mcpu=5475")
 helpers_package(libjpeg-turbo, -DCMAKE_SYSTEM_NAME=Generic -DCMAKE_SYSTEM_PROCESSOR=m68k -DWITH_SIMD=OFF -DCMAKE_INSTALL_BINDIR=${PREFIX}/bin/m5475 -DCMAKE_INSTALL_LIBDIR=${PREFIX}/lib/m5475, CFLAGS="-O2 -fomit-frame-pointer -mcpu=5475")
 helpers_package(giflib,, CFLAGS="-fno-PIC -O2 -fomit-frame-pointer -mcpu=5475" LIBDIR=${PREFIX}/lib/m5475)
