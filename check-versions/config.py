@@ -231,11 +231,37 @@ VERSIONS = {
     ('./workers/macosx-x86_64/Dockerfile.m4', 'MACOSX_SDK'): 'ignore',
     ('./workers/macosx-x86_64/Dockerfile.m4', 'MACOSX_TARGET'): 'ignore',
 
+    ('./toolchains/atari/packages/gemlib/build.sh', 'GEMLIB'): {
+        'check': 'git commit',
+        'repository': 'https://github.com/freemint/gemlib.git',
+        'branch': 'master',
+    },
+    ('./toolchains/atari/packages/ldg/build.sh', 'LDG'): {
+        'check': 'svn commit',
+        'repository': 'https://svn.code.sf.net/p/ldg/code/trunk',
+    },
     ('./toolchains/atari/packages/toolchain/build.sh', 'BINUTILS'): 'ignore',
     ('./toolchains/atari/packages/toolchain/build.sh', 'GCC'): 'ignore',
-    ('./toolchains/atari/packages/toolchain/build.sh', 'MINTLIB'): 'ignore',
-    ('./toolchains/atari/packages/toolchain/build.sh', 'FDLIBM'): 'ignore',
-    ('./toolchains/atari/packages/toolchain/build.sh', 'MINTBIN'): 'ignore',
+    ('./toolchains/atari/packages/toolchain/build.sh', 'MINTLIB'): {
+        'check': 'git commit',
+        'repository': 'https://github.com/freemint/mintlib.git',
+        'branch': 'master',
+    },
+    ('./toolchains/atari/packages/toolchain/build.sh', 'FDLIBM'): {
+        'check': 'git commit',
+        'repository': 'https://github.com/freemint/fdlibm.git',
+        'branch': 'master',
+    },
+    ('./toolchains/atari/packages/toolchain/build.sh', 'MINTBIN'): {
+        'check': 'git commit',
+        'repository': 'https://github.com/freemint/mintbin.git',
+        'branch': 'master',
+    },
+    ('./toolchains/atari/packages/usound/build.sh', 'USOUND'): {
+        'check': 'git commit',
+        'repository': 'https://github.com/mikrosk/usound.git',
+        'branch': 'main',
+    },
 
     # Caanoo packages (except toolchain) are set by old firmware
     ('./toolchains/caanoo/packages/freetype/build.sh', 'FREETYPE'): 'ignore',

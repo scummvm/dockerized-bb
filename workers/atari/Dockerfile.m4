@@ -4,7 +4,7 @@ m4_include(`paths.m4')m4_dnl
 
 m4_include(`debian-builder-base.m4')m4_dnl
 
-ENV ATARITOOLCHAIN=/opt/toolchains/atari HOST=m68k-atari-mintelf
+ENV ATARI_TOOLCHAIN=/opt/toolchains/atari HOST=m68k-atari-mintelf
 
 # Add libraries needed by toolchain to run
 # Currently libgmp is already installed so don't add it
@@ -19,9 +19,9 @@ RUN apt-get update && \
 		unzip && \
 	rm -rf /var/lib/apt/lists/*
 
-COPY --from=toolchain $ATARITOOLCHAIN $ATARITOOLCHAIN
+COPY --from=toolchain $ATARI_TOOLCHAIN $ATARI_TOOLCHAIN
 
-ENV PREFIX=$ATARITOOLCHAIN/$HOST/sys-root/usr
+ENV PREFIX=$ATARI_TOOLCHAIN/$HOST/sysroot/usr
 
 # We add PATH here for *-config and platform specific binaries
 ENV \
@@ -29,8 +29,11 @@ ENV \
 	def_binaries(`${HOST}-', `gcc, cpp, c++') \
 	CC=${HOST}-gcc \
 	def_aclocal(`${PREFIX}') \
-	PATH=$PATH:${ATARITOOLCHAIN}/bin
-# Disable because it doesn't support multilib
-#	def_pkg_config(`${PREFIX}')
+	PATH="$PATH:${ATARI_TOOLCHAIN}/bin" \
+	CFLAGS="-fno-PIC -O2 -fomit-frame-pointer" \
+	CXXFLAGS="-fno-PIC -O2 -fomit-frame-pointer" \
+	CPUFLAG_M68020_60="-m68020-60" \
+	CPUFLAG_M68030="-m68030" \
+	CPUFLAG_M5475="-mcpu=5475"
 
 m4_include(`run-buildbot.m4')m4_dnl

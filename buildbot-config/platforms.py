@@ -260,91 +260,68 @@ def appletv():
     register_platform(platform)
 appletv()
 
-def atari():
-    platform = Platform("atari")
+
+def atari(target, cpu_dir, env_target, backend,
+          defines, configure_args,
+          packaging, description = None):
+    platform = Platform(target)
+    platform.workerimage = "atari"
     platform.compatibleBuilds = (builds.ScummVMBuild, )
 
-    platform.env["ASFLAGS"] = "-m68020-60"
-    platform.env["CXXFLAGS"] = "-m68020-60 -DUSE_MOVE16 -DUSE_SUPERVIDEL -DUSE_SV_BLITTER -DDISABLE_LAUNCHERDISPLAY_GRID"
-    platform.env["LDFLAGS"] = "-m68020-60"
-    platform.env["PKG_CONFIG_LIBDIR"] = "${PREFIX}/lib/m68020-60/pkgconfig"
-
-    # TODO: custom patches, icons
+    platform.env['ASFLAGS'] = ' '.join([
+        "${{CPUFLAG_{0}}}".format(env_target), # CPU flag
+        platform.env.get('ASFLAGS', "${ASFLAGS}"), # User provided flags or worker default ones
+    ])
+    platform.env['CFLAGS'] = ' '.join([
+        "${{CPUFLAG_{0}}}".format(env_target), # CPU flag
+        platform.env.get('CFLAGS', "${CFLAGS}"), # User provided flags or worker default ones
+        defines
+    ])
+    platform.env['CPPFLAGS'] = ' '.join([
+        # No CPU flag
+        platform.env.get('CPPFLAGS', "${CPPFLAGS}"), # User provided flags or worker default ones
+        defines
+    ])
+    platform.env['CXXFLAGS'] = ' '.join([
+        "${{CPUFLAG_{0}}}".format(env_target), # CPU flag
+        platform.env.get('CXXFLAGS', "${CXXFLAGS}"), # User provided flags or worker default ones
+        defines
+    ])
+    platform.env['LDFLAGS'] = ' '.join([
+        "${{CPUFLAG_{0}}}".format(env_target), # CPU flag
+        platform.env.get('LDFLAGS', "${LDFLAGS}"), # User provided flags or worker default ones
+    ])
+    platform.env["PKG_CONFIG_LIBDIR"] = "${{PREFIX}}/lib/{0}/pkgconfig".format(cpu_dir)
+    # Altering PATH for *-config, that lets us reuse environment variables instead of using configure args
+    platform.env["PATH"] = ["${{PREFIX}}/bin/{0}".format(cpu_dir), "${PATH}"]
 
     platform.configureargs.append("--host=m68k-atari-mintelf")
     platform.buildconfigureargs = {
-        builds.ScummVMBuild: [ "--backend=atari" ],
+        builds.ScummVMBuild: [ "--backend={0}".format(backend) ] + configure_args,
     }
 
     platform.packaging_cmd = {
-        builds.ScummVMBuild: "atarifulldist",
+        builds.ScummVMBuild: packaging,
     }
 
     platform.built_files = {
-        builds.ScummVMBuild: [ "scummvm-*-atari-full/*" ],
+        builds.ScummVMBuild: [ "scummvm-*-{0}/*".format(target) ],
     }
     platform.archiveext = "zip"
 
-    platform.description = "Atari Full"
-    #platform.icon = 'atari-full'
+    platform.description = description
+    platform.icon = target
     register_platform(platform)
 
-    # Atari Lite
-    platform = copy.deepcopy(platform)
-    platform.name = "atari-lite"
-
-    platform.env["ASFLAGS"] = "-m68030"
-    platform.env["CXXFLAGS"] = "-m68030 -DDISABLE_FANCY_THEMES"
-    platform.env["LDFLAGS"] = "-m68030"
-
-    platform.buildconfigureargs[builds.ScummVMBuild].append('--disable-highres')
-    platform.buildconfigureargs[builds.ScummVMBuild].append('--disable-bink')
-
-    platform.packaging_cmd = {
-        builds.ScummVMBuild: "atarilitedist",
-    }
-
-    platform.built_files = {
-        builds.ScummVMBuild: [ "scummvm-*-atari-lite/*" ],
-    }
-
-    platform.description = "Atari Lite"
-    #platform.icon = 'atari-lite'
-    register_platform(platform)
-
-    # FireBee
-    platform = copy.deepcopy(platform)
-    platform.name = "firebee"
-
-    del platform.env["ASFLAGS"]
-    platform.env["CXXFLAGS"] = "-mcpu=5475"
-    platform.env["LDFLAGS"] = "-mcpu=5475"
-    platform.env["PKG_CONFIG_LIBDIR"] = "${PREFIX}/lib/m5475/pkgconfig"
-
-    platform.buildconfigureargs = {
-        builds.ScummVMBuild: [
-            "--backend=sdl",
-            # Workaround: ${PREFIX} doesn't seem to be expanded
-            "--with-sdl-prefix=/opt/toolchains/atari/m68k-atari-mintelf/sys-root/usr/bin/m5475",
-            "--with-freetype2-prefix=/opt/toolchains/atari/m68k-atari-mintelf/sys-root/usr/bin/m5475",
-            "--with-mikmod-prefix=/opt/toolchains/atari/m68k-atari-mintelf/sys-root/usr/bin/m5475" ]
-            # "--with-sdl-prefix=${PREFIX}/bin/m5475",
-            # "--with-freetype2-prefix=${PREFIX}/bin/m5475",
-            # "--with-mikmod-prefix=${PREFIX}/bin/m5475" ]
-    }
-
-    platform.packaging_cmd = {
-        builds.ScummVMBuild: "fbdist",
-    }
-
-    platform.built_files = {
-        builds.ScummVMBuild: [ "scummvm-*-firebee/*" ],
-    }
-
-    platform.description = "FireBee"
-    #platform.icon = 'firebee'
-    register_platform(platform)
-#atari()
+atari("atari-full", "m68020-60", "M68020_60", "atari",
+      "-DUSE_MOVE16 -DUSE_SUPERVIDEL -DUSE_SV_BLITTER -DDISABLE_LAUNCHERDISPLAY_GRID", [],
+      "atarifulldist", "Atari Full")
+atari("atari-lite", "m68020-60", "M68030", "atari",
+      "-DDISABLE_FANCY_THEMES", ["--disable-highres", "--disable-bink"],
+      "atarilitedist", "Atari Lite")
+atari("firebee", "m5475", "M5475", "sdl",
+      "", [],
+      "fbdist", "FireBee")
 
 def debian(name_suffix, image_suffix, host,
         package=True,
