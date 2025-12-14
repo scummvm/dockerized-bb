@@ -344,7 +344,7 @@ def atari():
     platform.description = "FireBee"
     #platform.icon = 'firebee'
     register_platform(platform)
-atari()
+#atari()
 
 def debian(name_suffix, image_suffix, host,
         package=True,
