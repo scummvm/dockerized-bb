@@ -1,6 +1,6 @@
 #! /bin/sh
 
-USOUND_VERSION=51307c0
+USOUND_VERSION=51307c04cb5e472cf11ad498cd036dcbab307609
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..

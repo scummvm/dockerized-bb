@@ -2,9 +2,9 @@
 
 BINUTILS_VERSION=2.42
 GCC_VERSION=13.4.0
-MINTLIB_VERSION=fba33c9
-FDLIBM_VERSION=46a0b20
-MINTBIN_VERSION=d595f7c
+MINTLIB_VERSION=fba33c97fb2979edc0f9133ca54b133e1a66d707
+FDLIBM_VERSION=46a0b20e7094cb2946be02f905a6bdea9933cf29
+MINTBIN_VERSION=d595f7cfb6c51c4ed3a2c39d3d1c278d14a145a5
 
 # This package is inspired by dc-chain scripts for KallistiOS. Credits go to them.
 
@@ -13,7 +13,7 @@ HELPERS_DIR=$PACKAGE_DIR/../..
 . $HELPERS_DIR/functions.sh
 
 target=m68k-atari-mintelf
-prefix="${ATARITOOLCHAIN}"
+prefix="${ATARI_TOOLCHAIN}"
 
 do_make_bdir
 
@@ -52,7 +52,7 @@ cd gcc-build-stage1
 	--disable-shared \
 	--disable-nls \
 	--disable-threads \
-	--with-sysroot \
+	--with-sysroot="${prefix}/${target}/sysroot" \
 	--disable-decimal-float \
 	--disable-libgomp \
 	--disable-libssp \
@@ -73,20 +73,20 @@ cd ..
 
 # MiNTLib
 do_http_fetch mintlib "https://github.com/freemint/mintlib/archive/${MINTLIB_VERSION}.tar.gz" 'tar xf'
-do_make CROSS_TOOL=${target} SHELL=/bin/bash DESTDIR=${prefix}/${target}/sys-root WITH_020_LIB=yes WITH_V4E_LIB=yes WITH_DEBUG_LIB=no
-do_make CROSS_TOOL=${target} SHELL=/bin/bash DESTDIR=${prefix}/${target}/sys-root WITH_020_LIB=yes WITH_V4E_LIB=yes WITH_DEBUG_LIB=no install
+do_make CROSS_TOOL=${target} SHELL=/bin/bash DESTDIR=${prefix}/${target}/sysroot WITH_020_LIB=yes WITH_V4E_LIB=yes WITH_DEBUG_LIB=no
+do_make CROSS_TOOL=${target} SHELL=/bin/bash DESTDIR=${prefix}/${target}/sysroot WITH_020_LIB=yes WITH_V4E_LIB=yes WITH_DEBUG_LIB=no install
 
 # remove m68000 leftovers
-rm -r ${prefix}/${target}/sys-root/sbin
-rm -r ${prefix}/${target}/sys-root/usr/sbin
+rm -r ${prefix}/${target}/sysroot/sbin
+rm -r ${prefix}/${target}/sysroot/usr/sbin
 
 cd ..
 
 # FDLIBM
 do_http_fetch fdlibm "https://github.com/freemint/fdlibm/archive/${FDLIBM_VERSION}.tar.gz" 'tar xf'
 ./configure --host=${target} --prefix=/usr
-do_make DESTDIR=${prefix}/${target}/sys-root
-do_make DESTDIR=${prefix}/${target}/sys-root install
+do_make DESTDIR=${prefix}/${target}/sysroot
+do_make DESTDIR=${prefix}/${target}/sysroot install
 
 cd ..
 
@@ -99,7 +99,7 @@ CFLAGS_FOR_TARGET="-O2 -fomit-frame-pointer" CXXFLAGS_FOR_TARGET="-O2 -fomit-fra
 "${GCC_DIR}"/configure \
 	--target=${target} \
 	--prefix="${prefix}" \
-	--with-sysroot \
+	--with-sysroot="${prefix}/${target}/sysroot" \
 	--disable-nls \
 	--enable-lto \
 	--enable-languages="c,c++,lto" \
