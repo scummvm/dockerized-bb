@@ -118,7 +118,7 @@ $1, riscosdist, --enable-plugins --default-dynamic, \
 CFLAGS=\"-isysroot ${PREFIX}/$2include \${CFLAGS} \${CFLAGS_$3}\" \
 CPPFLAGS=\"-isysroot ${PREFIX}/$2include \${CPPFLAGS} \${CPPFLAGS_$3}\" \
 CXXFLAGS=\"-isysroot ${PREFIX}/$2include \${CXXFLAGS} \${CXXFLAGS_$3}\" \
-LDFLAGS=\"-isysroot ${PREFIX}/$2lib \${LDFLAGS} \${LDFLAGS_$3}\" \
+LDFLAGS=\"-L${PREFIX}/$2lib \${LDFLAGS} \${LDFLAGS_$3}\" \
 PKG_CONFIG_LIBDIR=${PREFIX}/$2lib/pkgconfig`'m4_ifelse(m4_eval($# > 3), 1, `, '$4,))')m4_dnl
 define_riscos_aliases(arm-unknown-riscos, , STD)
 define_riscos_aliases(arm-vfp-riscos, vfp/, VFP, vfp)
