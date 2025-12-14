@@ -7,7 +7,12 @@ HELPERS_DIR=$PACKAGE_DIR/../..
 do_make_bdir
 
 do_pkg_fetch zlib
-./configure --prefix=$PREFIX --static "$@"
+
+# Don't use do_configure as it's not autotools compliant
+if [ -n "$LIBDIR" ]; then
+	libdir="--libdir=$LIBDIR"
+fi
+./configure --prefix=$PREFIX --static $libdir
 
 # Only build the library and not its samples
 do_make libz.a
