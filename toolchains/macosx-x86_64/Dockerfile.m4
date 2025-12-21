@@ -1,8 +1,8 @@
 m4_dnl These settings must be kept in sync between toolchain and worker
 m4_define(`PPA_CLANG',-21)m4_dnl
-m4_define(`MACOSX_SDK_VERSION',26.1)m4_dnl
+m4_define(`MACOSX_SDK_VERSION',26.2)m4_dnl
 m4_define(`MACOSX_TARGET_ARCH',x86_64)m4_dnl
-m4_define(`MACOSX_TARGET_VERSION',25.1)m4_dnl
+m4_define(`MACOSX_TARGET_VERSION',25.2)m4_dnl
 m4_define(`MACOSX_DEPLOYMENT_TARGET',10.9)m4_dnl
 m4_define(`MACOSX_ARCHITECTURES',`x86_64')m4_dnl
 m4_define(`MACOSX_PORTS_ARCH_ARG',`')m4_dnl

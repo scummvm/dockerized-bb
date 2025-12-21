@@ -1,7 +1,7 @@
-From 716cfe22487980cf51e46d66296a9f9b70b1221e Mon Sep 17 00:00:00 2001
+From 85ed97a1948a531d91b4bd32a84657cb49889400 Mon Sep 17 00:00:00 2001
 From: Le Philousophe <lephilousophe@users.noreply.github.com>
 Date: Sun, 2 Nov 2025 18:51:37 +0100
-Subject: [PATCH 5/5] Fix build on MacOS i386
+Subject: [PATCH 4/4] Fix build on MacOS i386
 
 ---
  build_compiler_rt.sh                |  6 ++++++
@@ -47,5 +47,5 @@ index 0000000..aaea5a2
 + #if !SANITIZER_WINDOWS
 + // No ssize_t on Windows.
 -- 
-2.48.1
+2.51.2
 

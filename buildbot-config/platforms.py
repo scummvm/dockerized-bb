@@ -473,7 +473,7 @@ def macosx_arm64():
     # configure script doesn't compile discord check with proper flags
     platform.env["DISCORD_LIBS"] = "-framework AppKit"
 
-    platform.configureargs.append("--host=aarch64-apple-darwin25.1")
+    platform.configureargs.append("--host=aarch64-apple-darwin25.2")
     platform.buildconfigureargs = {
         builds.ScummVMBuild: [ "--enable-static",
             "--with-staticlib-prefix=${DESTDIR}/${PREFIX}",
@@ -514,7 +514,7 @@ def macosx_x86_64():
     # configure script doesn't compile discord check with proper flags
     platform.env["DISCORD_LIBS"] = "-framework AppKit"
 
-    platform.configureargs.append("--host=x86_64-apple-darwin25.1")
+    platform.configureargs.append("--host=x86_64-apple-darwin25.2")
     # Don't enable updates on x86_64 as the platform is getting older
     platform.buildconfigureargs = {
         builds.ScummVMBuild: [ "--enable-static",

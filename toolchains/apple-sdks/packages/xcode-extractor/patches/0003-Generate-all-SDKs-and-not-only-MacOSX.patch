@@ -1,4 +1,4 @@
-From 130429671a25d35be0fc88dddae11d9321d1b168 Mon Sep 17 00:00:00 2001
+From 4e3847babce15dd8ad9efa88408cb3c33f2428bf Mon Sep 17 00:00:00 2001
 From: Le Philousophe <lephilousophe@users.noreply.github.com>
 Date: Sat, 30 Aug 2025 17:58:44 +0200
 Subject: [PATCH 3/3] Generate all SDKs and not only MacOSX
@@ -63,5 +63,5 @@ index fc24005..a240379 100755
 -ls -lh | grep MacOSX
 +ls -lh *.*.sdk.*
 -- 
-2.49.1
+2.51.2
 
