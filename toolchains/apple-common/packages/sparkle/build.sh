@@ -1,6 +1,6 @@
 #! /bin/sh
 
-SPARKLE_VERSION=2.8.0
+SPARKLE_VERSION=2.8.1
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..
