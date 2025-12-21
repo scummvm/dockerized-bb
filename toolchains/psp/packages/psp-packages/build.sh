@@ -22,6 +22,12 @@ chmod o+w "$PSPDEV"
 # To let build.sh find psp-pacman
 export PATH="$PATH:$PSPDEV/bin"
 
+MAKE_MTAB=0
+if ! [ -f /etc/mtab ]; then
+	MAKE_MTAB=1
+	ln -s /proc/mounts /etc/mtab
+fi
+
 # One argument with the whole list
 MAKEFLAGS="-d -j16" ./build.sh --install "$*"
 
@@ -39,6 +45,10 @@ echo "$PKG_CONFIG_LIBDIR" | tr ':' '\n' | while read p; do
 		sed -i -e "s|\${PSPDEV}/psp|${PREFIX}|" "$f"
 	done
 done
+
+if [ "$MAKE_MTAB" -eq 1 ]; then
+	rm /etc/mtab
+fi
 
 do_clean_bdir
 
