@@ -374,7 +374,7 @@ debian("x86-64", "x86_64", "x86_64-linux-gnu", description="Debian (64\xa0bits)"
 debian("x86-64-nullbackend", "x86_64", "x86_64-linux-gnu", package=False, tools=False,
     run_tests=False,
     buildconfigureargs = {
-        builds.ScummVMBuild: [ "--backend=null", "--enable-opl2lpt", "--enable-text-console" ],
+        builds.ScummVMBuild: [ "--backend=null", "--enable-opl2lpt", "--enable-text-console", "--disable-all-engines", "--enable-engine=testbed" ],
     })
 debian("x86-64-clang", "x86_64-clang", "x86_64-linux-gnu", package=False, tools=False,
     run_tests=False, build_devtools=True)
@@ -391,7 +391,7 @@ debian("x86-64-dynamic-detection", "x86_64", "x86_64-linux-gnu", package=False, 
 debian("x86-64-sdl1.2", "x86_64", "x86_64-linux-gnu", package=False, tools=False,
     run_tests=False,
     buildconfigureargs = {
-        builds.ScummVMBuild: [ "--disable-all-engines", "--enable-engine=testbed",],
+        builds.ScummVMBuild: [ "--disable-all-engines", "--enable-engine=testbed" ],
     },
     env = {
         'SDL_CONFIG':'sdl-config',
