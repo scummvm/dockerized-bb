@@ -423,7 +423,7 @@ def dreamcast():
 
     platform.description = "Dreamcast with serial port debugging"
 
-    register_platform(platform)
+    #register_platform(platform)
 dreamcast()
 
 def gamecube():
