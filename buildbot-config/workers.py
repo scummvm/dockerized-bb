@@ -1,6 +1,7 @@
 import collections
 import os
 import random
+import resource
 import string
 
 import docker
@@ -30,6 +31,11 @@ with docker.APIClient(base_url=config.docker_socket) as docker_client:
 
     utils.worker.setup_uid_gid(docker_client, BUILDBOT_UID, BUILDBOT_GID)
 
+# To avoid performance issues soft limit the maximum number of files to a traditional value
+# Still allow to go upper if needed by letting the process increase its value to our own limit
+_, NOFILE_LIMIT_HARD = resource.getrlimit(resource.RLIMIT_NOFILE)
+NOFILE_LIMIT_SOFT = 1024
+
 # The worker used for all build stuff, image name depends on build property
 def StandardBuilderWorker(name, **kwargs):
     volumes = [
@@ -40,6 +46,7 @@ def StandardBuilderWorker(name, **kwargs):
     ]
     password = ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(32))
     tmpfs = docker.types.Mount('/tmp', None, type='tmpfs')
+    nofile_limit = docker.types.Ulimit(name='nofile', soft=NOFILE_LIMIT_SOFT, hard=NOFILE_LIMIT_HARD)
     return utils.worker.DockerWorker(name, password,
         docker_host=config.docker_socket,
         image=util.Interpolate('workers/%(prop:workerimage)s'),
@@ -49,6 +56,7 @@ def StandardBuilderWorker(name, **kwargs):
             'network_mode': config.docker_workers_net,
             'read_only': True,
             'mounts': [tmpfs],
+            'ulimits': [nofile_limit],
         },
         **kwargs
     )
@@ -64,6 +72,7 @@ def FetcherWorker(name, **kwargs):
     ]
     password = ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(32))
     tmpfs = docker.types.Mount('/tmp', None, type='tmpfs')
+    nofile_limit = docker.types.Ulimit(name='nofile', soft=NOFILE_LIMIT_SOFT, hard=NOFILE_LIMIT_HARD)
     return utils.worker.DockerWorker(name, password,
         docker_host=config.docker_socket,
         image='workers/{0}'.format(name),
@@ -73,6 +82,7 @@ def FetcherWorker(name, **kwargs):
             'network_mode': config.docker_workers_net,
             'read_only': True,
             'mounts': [tmpfs],
+            'ulimits': [nofile_limit],
         },
         **kwargs
     )
