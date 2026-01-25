@@ -1,6 +1,6 @@
 #! /bin/sh
 
-PROJECT_CTR_VERSION=makerom-v0.18.4
+PROJECT_CTR_VERSION=makerom-v0.19.0
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..

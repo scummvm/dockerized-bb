@@ -62,6 +62,8 @@ vdpm_package(libvpx)
 
 vdpm_package(openssl)
 
+# curl needs zstd
+vdpm_package(zstd)
 vdpm_package(curl)
 
 # Freetype needs bzip2

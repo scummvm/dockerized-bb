@@ -1,6 +1,6 @@
 #! /bin/sh
 
-THEORA_VERSION=23161c4a63fd9f9d09b9e972f95def2d56c777af
+THEORA_VERSION=edfba372beb02ff70a1e2797d8cf561c242d0e0b
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..

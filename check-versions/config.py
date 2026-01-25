@@ -146,7 +146,7 @@ VERSIONS = {
     },
     ('./toolchains/amigaos4/packages/toolchain/build.sh', 'TOOLCHAIN'): {
         'check': 'git commit',
-        'repository': 'https://github.com/sba1/adtools.git',
+        'repository': 'https://github.com/AmigaLabs/adtools.git',
         'branch': 'master',
     },
 
@@ -302,7 +302,7 @@ VERSIONS = {
     },
     ('./toolchains/common/packages/sonivox/build.sh', 'SONIVOX'): {
         'check': 'git tag',
-        'repository': 'https://github.com/pedrolcl/sonivox.git',
+        'repository': 'https://github.com/EmbeddedSynth/sonivox.git',
         'prefix': 'v',
         'exclude pattern': r'.*\.(beta|rc)\d+$'
     },
@@ -524,7 +524,7 @@ VERSIONS = {
     ('./toolchains/psp/packages/toolchain/build.sh', 'GCC'): {
         'check': 'git commit',
         'repository': 'https://github.com/pspdev/gcc.git',
-        'branch': 'allegrex-v15.1.1',
+        'branch': 'allegrex-v15.2.0',
     },
     ('./toolchains/psp/packages/toolchain/build.sh', 'NEWLIB'): {
         'check': 'git commit',

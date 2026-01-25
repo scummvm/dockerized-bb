@@ -1,3 +1,15 @@
+From d21af6f7f385dd448e9517e51c782a7df1f3087d Mon Sep 17 00:00:00 2001
+From: Le Philousophe <lephilousophe@users.noreply.github.com>
+Date: Sun, 25 Jan 2026 16:26:27 +0100
+Subject: [PATCH 2/2] Fix build with modern tools
+
+---
+ gcc/11/patches/9998-replace-itemx.patch       | 25 +++++++++++++
+ ...libiberty-Darwin-Fix-a-build-warning.patch | 37 +++++++++++++++++++
+ 2 files changed, 62 insertions(+)
+ create mode 100644 gcc/11/patches/9998-replace-itemx.patch
+ create mode 100644 gcc/11/patches/9999-libiberty-Darwin-Fix-a-build-warning.patch
+
 diff --git a/gcc/11/patches/9998-replace-itemx.patch b/gcc/11/patches/9998-replace-itemx.patch
 new file mode 100644
 index 0000000..cebf77c
@@ -72,3 +84,6 @@ index 0000000..3c694a8
 +-- 
 +2.45.0
 +
+-- 
+2.52.0
+

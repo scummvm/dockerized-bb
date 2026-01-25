@@ -1,6 +1,6 @@
 #! /bin/sh
 
-TOOLCHAIN_VERSION=09624111ca3a1ac3ee0e84c8405bbd284b27ef56
+TOOLCHAIN_VERSION=5f93e923a1c5957fe51f774bf89007e21c268051
 
 # Versions of components to use provided by toolchain
 BINUTILS_VER=2.23.2
@@ -12,7 +12,7 @@ HELPERS_DIR=$PACKAGE_DIR/../..
 
 do_make_bdir
 
-do_git_fetch adtools "https://github.com/sba1/adtools.git" "${TOOLCHAIN_VERSION}"
+do_git_fetch adtools "https://github.com/AmigaLabs/adtools.git" "${TOOLCHAIN_VERSION}"
 
 # gild uses git am which needs author information
 # Don't pollute home directory
