@@ -8,8 +8,21 @@ HELPERS_DIR=$PACKAGE_DIR/../..
 do_make_bdir
 
 # Download Raspbian keys
-wget "http://raspbian.raspberrypi.org/raspbian.public.key" -O - | gpg --dearmor -o "raspbian.gpg"
-wget "http://archive.raspberrypi.org/debian/raspberrypi.gpg.key" -O - | gpg --dearmor -o "raspberrypi.gpg"
+(
+	export GNUPGHOME=$(mktemp -d)
+
+	wget 'https://archive.raspbian.org/raspbian/pool/main/r/raspbian-archive-keyring/raspbian-archive-keyring_20120528.4.tar.gz' -O - | \
+	       tar --wildcards -xzO 'raspbian-archive-keyring-*/raspbian.public.key' | \
+	       gpg --import
+
+	wget 'https://archive.raspberrypi.org/debian/pool/main/r/raspberrypi-archive-keyring/raspberrypi-archive-keyring_2025.1+rpt1.tar.xz' -O - | \
+	       tar --wildcards -xJO 'raspberrypi-archive-keyring-*/apt-trusted-asc/raspberrypi-archive.asc' | \
+	       gpg --import
+
+	gpg -o raspbian.gpg --export 9165938D90FDDD2E
+	gpg -o raspberrypi.gpg --export 82B129927FA3303E
+	rm -rf "${GNUPGHOME}"
+)
 
 # We can't specify several sources and a directory target... Create a tar (using convoluted means) and extract it.
 mkdir -p host
