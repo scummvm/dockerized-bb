@@ -20,10 +20,10 @@ endef
 
 define $(PKG)_BUILD
     cd '$(SOURCE_DIR)' && autoreconf -fi
-    cd '$(BUILD_DIR)' && $(SOURCE_DIR)/configure \
+    cd '$(BUILD_DIR)' && CPPFLAGS="-D_WIN32_WINNT=0x0600" $(SOURCE_DIR)/configure \
         $(MXE_CONFIGURE_OPTS) \
         --with-schannel \
-        --without-winidn \
+        --with-winidn \
         --without-libpsl \
         --enable-sspi \
         --enable-ipv6 \

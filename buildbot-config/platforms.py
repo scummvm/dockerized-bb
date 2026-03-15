@@ -871,9 +871,13 @@ def windows_mxe(suffix, target, description=None):
     platform.env["PATH"] = [ "${PATH}", "${{MXE_PREFIX_DIR}}/{0}/bin".format(target)]
 
     platform.configureargs.append("--host={0}".format(target))
-    if suffix != 'x86':
+    if suffix == 'x86':
         platform.buildconfigureargs = {
-            builds.ScummVMBuild: [ "--enable-updates"],
+            builds.ScummVMBuild: [ "--disable-libcurl" ],
+        }
+    else:
+        platform.buildconfigureargs = {
+            builds.ScummVMBuild: [ "--enable-updates" ],
         }
     platform.strip_cmd = {
         # As we use an environment variable, we need to use string to spawn a shell
@@ -908,10 +912,10 @@ def windows_mxe(suffix, target, description=None):
 
 windows_mxe(suffix="x86",
         target="i686-w64-mingw32.static",
-        description="Windows (32\xa0bits)")
+        description="Windows XP+ (32\xa0bits)")
 windows_mxe(suffix="x86-64",
         target="x86_64-w64-mingw32.static",
-        description="Windows (64\xa0bits)")
+        description="Windows Vista+ (64\xa0bits)")
 
 def win9x():
     platform = Platform("win9x")
