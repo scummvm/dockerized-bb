@@ -317,7 +317,7 @@ atari("atari-full", "m68020-60", "M68020_60", "atari",
       "-DUSE_MOVE16 -DUSE_SUPERVIDEL -DUSE_SV_BLITTER -DDISABLE_LAUNCHERDISPLAY_GRID", [],
       "atarifulldist", "Atari Full")
 atari("atari-lite", "m68020-60", "M68030", "atari",
-      "-DDISABLE_FANCY_THEMES", ["--disable-highres", "--disable-bink"],
+      "-DDISABLE_FANCY_THEMES -DDISABLE_DOSBOX_OPL", ["--disable-highres", "--disable-bink"],
       "atarilitedist", "Atari Lite")
 atari("firebee", "m5475", "M5475", "sdl",
       "", [],
