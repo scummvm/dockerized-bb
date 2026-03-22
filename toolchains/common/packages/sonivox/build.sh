@@ -1,6 +1,6 @@
 #! /bin/sh
 
-SONIVOX_VERSION=4.0.0
+SONIVOX_VERSION=4.0.1
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..
@@ -13,7 +13,8 @@ do_http_fetch sonivox \
 
 # -DCMAKE_SYSTEM_NAME=Windows for Windows
 
-do_cmake -DBUILD_TESTING=OFF -DBUILD_APPLICATION=OFF "$@"
+# Don't enable FM synth as our code doesn't make use of it
+do_cmake -DBUILD_TESTING=OFF -DBUILD_APPLICATION=OFF -DEAS_FM_SYNTH=OFF "$@"
 do_make
 do_make install
 
