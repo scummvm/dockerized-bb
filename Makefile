@@ -65,6 +65,12 @@ endef
 
 m4_cmdline = m4 -P -EE $(3) -I $(dir $(1))m4 -I $(1) toolchains/m4/library.m4 $(2)
 
+ifeq ($(DOCKER_DEBUG),1)
+docker_cmdline = ($(if $(filter -,$(3)),tmp_file=$$(mktemp); trap 'rm -f -- "$${tmp_file}"' EXIT; cat >"$${tmp_file}" &&) BUILDX_EXPERIMENTAL=1 docker buildx debug --invoke /bin/bash build $(1) -t $(2) -f $(if $(filter -,$(3)),"$${tmp_file}",$(3)) $(4) </dev/tty)
+else
+docker_cmdline = docker build $(1) -t $(2) -f $(3) $(4)
+endif
+
 # Return the docker URL with path sanitized
 build_docker_url = $(DOCKER_REGISTRY)$(DOCKER_BASE_SEP)$(subst /,$(DOCKER_PATH_SEP),$(1))
 
@@ -224,7 +230,7 @@ $(TOOLCHAINS_PULL): %/pull: | $(BUILDDIR)/toolchains
 # They generate a timestamp file in $(BUILDDIR)
 $(TOOLCHAINS_DOC_TS): $(BUILDDIR)/%: %/Dockerfile | $(BUILDDIR)/toolchains
 	@echo "Building $*"
-	docker build -t $* -f $< $(<D)
+	$(call docker_cmdline,,$*,$<,$(<D))
 	touch "$@"
 
 # m4 Dockerfile toolchains are preprocessed using GNU m4 before being built by docker
@@ -238,7 +244,7 @@ ifeq ($(VERBOSE),1)
 	$(call m4_cmdline,$(<D),$<,$(M4_DEBUG)) > $(<D)/Dockerfile.debug 2>&1
 endif
 	$(call m4_cmdline,$(<D),$<) | \
-		docker build -t $* -f - $(<D)
+		$(call docker_cmdline,,$*,-,$(<D))
 	touch "$@"
 
 # Non-built toolchains are downloaded using previously defined recipe
@@ -383,7 +389,7 @@ $(WORKERS_PULL): %/pull: | $(BUILDDIR)/workers
 # They generate a timestamp file in $(BUILDDIR)
 $(WORKERS_DOC_TS): $(BUILDDIR)/%: %/Dockerfile | $(BUILDDIR)/workers
 	@echo "Building $*"
-	docker build --build-arg BUILDBOT_VERSION=$(BUILDBOT_VERSION) -t $* -f $< $(<D)
+	$(call docker_cmdline,--build-arg BUILDBOT_VERSION=$(BUILDBOT_VERSION),$*,$<,$(<D))
 	touch "$@"
 
 # m4 Dockerfile workers are preprocessed using GNU m4 before being built by docker
@@ -397,7 +403,7 @@ ifeq ($(VERBOSE),1)
 	$(call m4_cmdline,$(<D),$<,$(M4_DEBUG)) > $(<D)/Dockerfile.debug 2>&1
 endif
 	$(call m4_cmdline,$(<D),$<) | \
-		docker build --build-arg BUILDBOT_VERSION=$(BUILDBOT_VERSION) -t $* -f - $(<D)
+		$(call docker_cmdline,--build-arg BUILDBOT_VERSION=$(BUILDBOT_VERSION),$*,-,$(<D))
 	touch "$@"
 
 # Non-built workers are downloaded using previously defined recipe
