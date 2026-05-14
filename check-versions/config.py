@@ -263,19 +263,6 @@ VERSIONS = {
         'branch': 'main',
     },
 
-    # Caanoo packages (except toolchain) are set by old firmware
-    ('./toolchains/caanoo/packages/freetype/build.sh', 'FREETYPE'): 'ignore',
-    ('./toolchains/caanoo/packages/libjpeg/build.sh', 'JPEG'): 'ignore',
-    ('./toolchains/caanoo/packages/libogg/build.sh', 'LIBOGG'): 'ignore',
-    ('./toolchains/caanoo/packages/libpng/build.sh', 'LIBPNG'): 'ignore',
-    ('./toolchains/caanoo/packages/libsdl/build.sh', 'SDL'): 'ignore',
-    ('./toolchains/caanoo/packages/libvorbisidec/build.sh', 'LIBTREMOR'): 'ignore',
-    ('./toolchains/caanoo/packages/sdl-net1.2/build.sh', 'SDL_NET'): 'ignore',
-    ('./toolchains/caanoo/packages/tslib/build.sh', 'TSLIB'): 'ignore',
-    ('./toolchains/caanoo/packages/zlib/build.sh', 'ZLIB'): 'ignore',
-    # This toolchain is deprecated
-    ('./toolchains/caanoo/packages/toolchain/build.sh', 'CT_NG'): 'ignore',
-
     ('./toolchains/common/packages/discord-rpc/build.sh', 'DISCORD_RPC'): discord_rpc_check,
     ('./toolchains/common/packages/fluidlite/build.sh', 'FLUIDLITE'): {
         'check': 'git commit',
