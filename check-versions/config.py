@@ -72,13 +72,6 @@ retrowave_check = {
     'prefix': 'v',
 }
 
-crosstool_ng_check = {
-    'check': 'git tag',
-    'repository': 'https://github.com/crosstool-ng/crosstool-ng.git',
-    'prefix': 'crosstool-ng-',
-    'exclude pattern': r'.*-rc\d+$',
-}
-
 # Distributions images checks
 debian_check = {
     'check': 'docker tag',
@@ -396,44 +389,6 @@ VERSIONS = {
         'repository': 'https://github.com/OpenDingux/buildroot.git',
         'branch': 'opendingux',
     },
-
-    # OpenPandora packages (except toolchain) are set by (old) firmware
-    ('./toolchains/openpandora/packages/alsa-lib/build.sh', 'ALSA_LIB'): 'ignore',
-    ('./toolchains/openpandora/packages/curl/build.sh', 'CURL'): 'ignore',
-    ('./toolchains/openpandora/packages/faad2/build.sh', 'FAAD2'): 'ignore',
-    ('./toolchains/openpandora/packages/flac/build.sh', 'FLAC'): 'ignore',
-    ('./toolchains/openpandora/packages/freetype/build.sh', 'FREETYPE'): 'ignore',
-    ('./toolchains/openpandora/packages/gnutls/build.sh', 'LIBGPG_ERROR'): 'ignore',
-    ('./toolchains/openpandora/packages/gnutls/build.sh', 'LIBGCRYPT'): 'ignore',
-    ('./toolchains/openpandora/packages/gnutls/build.sh', 'GNUTLS'): 'ignore',
-    ('./toolchains/openpandora/packages/libjpeg/build.sh', 'JPEG'): 'ignore',
-    ('./toolchains/openpandora/packages/libogg/build.sh', 'LIBOGG'): 'ignore',
-    ('./toolchains/openpandora/packages/libpng/build.sh', 'LIBPNG'): 'ignore',
-    ('./toolchains/openpandora/packages/libsdl/build.sh', 'SDL'): 'ignore',
-    ('./toolchains/openpandora/packages/libtheora/build.sh', 'LIBTHEORA'): 'ignore',
-    ('./toolchains/openpandora/packages/libvorbis/build.sh', 'LIBVORBIS'): 'ignore',
-    ('./toolchains/openpandora/packages/sdl-net1.2/build.sh', 'SDL_NET'): 'ignore',
-    ('./toolchains/openpandora/packages/tslib/build.sh', 'TSLIB'): 'ignore',
-    ('./toolchains/openpandora/packages/x11/build.sh', 'UTIL_MACROS'): 'ignore',
-    ('./toolchains/openpandora/packages/x11/build.sh', 'BIGREQSPROTO'): 'ignore',
-    ('./toolchains/openpandora/packages/x11/build.sh', 'KBPROTO'): 'ignore',
-    ('./toolchains/openpandora/packages/x11/build.sh', 'INPUTPROTO'): 'ignore',
-    ('./toolchains/openpandora/packages/x11/build.sh', 'RANDRPROTO'): 'ignore',
-    ('./toolchains/openpandora/packages/x11/build.sh', 'RENDERPROTO'): 'ignore',
-    ('./toolchains/openpandora/packages/x11/build.sh', 'XCMISCPROTO'): 'ignore',
-    ('./toolchains/openpandora/packages/x11/build.sh', 'XEXTPROTO'): 'ignore',
-    ('./toolchains/openpandora/packages/x11/build.sh', 'XF86BIGFONTPROTO'): 'ignore',
-    ('./toolchains/openpandora/packages/x11/build.sh', 'XPROTO'): 'ignore',
-    ('./toolchains/openpandora/packages/x11/build.sh', 'XTRANS'): 'ignore',
-    ('./toolchains/openpandora/packages/x11/build.sh', 'LIBXAU'): 'ignore',
-    ('./toolchains/openpandora/packages/x11/build.sh', 'LIBXDMCP'): 'ignore',
-    ('./toolchains/openpandora/packages/x11/build.sh', 'LIBX11'): 'ignore',
-    ('./toolchains/openpandora/packages/x11/build.sh', 'LIBXEXT'): 'ignore',
-    ('./toolchains/openpandora/packages/x11/build.sh', 'LIBXRENDER'): 'ignore',
-    ('./toolchains/openpandora/packages/x11/build.sh', 'LIBXRANDR'): 'ignore',
-    ('./toolchains/openpandora/packages/zlib/build.sh', 'ZLIB'): 'ignore',
-    # This toolchain is deprecated
-    ('./toolchains/openpandora/packages/toolchain/build.sh', 'CT_NG'): 'ignore',
 
     ('./toolchains/ps3/packages/toolchain/build.sh', 'TOOLCHAIN'): {
         'check': 'git commit',
