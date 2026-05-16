@@ -1,6 +1,6 @@
 #! /bin/sh
 
-VITA_VERSION=2.535
+VITA_VERSION=2.539
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..
