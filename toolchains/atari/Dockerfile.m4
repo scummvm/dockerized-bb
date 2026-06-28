@@ -93,7 +93,7 @@ helpers_package(m5475, freetype)
 
 # No fribidi
 
-helpers_package(m5475, libsdl1.2, --disable-video-opengl --disable-threads)
+helpers_package(m68020-60 m5475, libsdl1.2, --disable-video-opengl --disable-threads)
 
 # No SDL_Net
 
