@@ -317,7 +317,7 @@ VERSIONS = {
     },
     ('./toolchains/devkitppc/packages/libgxflux/build.sh', 'GXFLUX'): {
         'check': 'git commit',
-        'repository': 'https://repo.or.cz/libgxflux.git',
+        'repository': 'https://github.com/digitall/libgxflux.git',
         'branch': 'master',
     },
 
