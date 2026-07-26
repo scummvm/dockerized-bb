@@ -1,6 +1,6 @@
 #! /bin/sh
 
-TOOLCHAIN_VERSION=c8a7cb752711d670e829a2fea8dd6ae81b3d32fd
+TOOLCHAIN_VERSION=961fddac01337f18da08f4471d558a7a5b0d9af2
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..

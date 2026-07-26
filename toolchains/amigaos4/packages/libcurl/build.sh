@@ -14,5 +14,6 @@ do_lha_install
 #rm "$PREFIX/bin/curl-config"
 # Fix specific part of curl-config
 sed -i -e 's#-L/SDK/local/newlib#-L${exec_prefix}#' "$PREFIX/bin/curl-config"
+sed -i -e 's#-I/SDK/local/common/include#-I${includedir}#' "$PREFIX/bin/curl-config"
 
 do_clean_bdir

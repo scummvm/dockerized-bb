@@ -1,23 +1,23 @@
-From 7ad44a8625cea02b28e9ce81538562ca3cfb1cbe Mon Sep 17 00:00:00 2001
+From 210aa43e5901a7132736ef0be822ee49b45f668e Mon Sep 17 00:00:00 2001
 From: Le Philousophe <lephilousophe@users.noreply.github.com>
 Date: Tue, 25 Jun 2024 05:56:44 +0000
-Subject: [PATCH 2/4] Disable ORC which uses C++17 features on older SDKs
+Subject: [PATCH 2/3] Disable ORC which uses C++17 features on older SDKs
 
 ---
  build_compiler_rt.sh | 6 ++++++
  1 file changed, 6 insertions(+)
 
 diff --git a/build_compiler_rt.sh b/build_compiler_rt.sh
-index 5ce8697..17c0e6c 100755
+index af28bb8..b700fc6 100755
 --- a/build_compiler_rt.sh
 +++ b/build_compiler_rt.sh
-@@ -182,6 +182,12 @@ if [ $f_res -eq 1 ]; then
+@@ -177,6 +177,12 @@ if [ $f_res -eq 1 ]; then
          echo ""
        fi
  
 +      # Disable ORC runtime on older SDK as it requires C++17
-+      if [ $(osxcross-cmp $SDK_VERSION "<=" 10.13) -eq 1 ] && \
-+	 [ $(osxcross-cmp $CLANG_VERSION ">=" 16.0) -eq 1 ]; then
++      if [ $(cmp-version $SDK_VERSION "<=" 10.13) -eq 1 ] && \
++	 [ $(cmp-version $CLANG_VERSION ">=" 16.0) -eq 1 ]; then
 +         extra_cmake_flags+="-DCOMPILER_RT_BUILD_ORC=OFF "
 +      fi
 +
@@ -25,5 +25,5 @@ index 5ce8697..17c0e6c 100755
        pushd $build_dir &>/dev/null
  
 -- 
-2.51.2
+2.54.0
 

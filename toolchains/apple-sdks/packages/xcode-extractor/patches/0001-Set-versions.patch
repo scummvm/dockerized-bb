@@ -1,17 +1,26 @@
-From 8bec84e583e2e360d6bd0054225ca309620ba839 Mon Sep 17 00:00:00 2001
+From 8937e868ea0cb3a23932857c5f5a5c82eb559389 Mon Sep 17 00:00:00 2001
 From: Le Philousophe <lephilousophe@users.noreply.github.com>
 Date: Sun, 24 Jan 2021 19:15:52 +0100
 Subject: [PATCH 1/3] Set versions
 
 ---
- tools/tools.sh | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ tools/tools.sh | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/tools/tools.sh b/tools/tools.sh
-index f903f0b..12305ea 100644
+index d8155fe..008714d 100644
 --- a/tools/tools.sh
 +++ b/tools/tools.sh
-@@ -523,7 +523,7 @@ function build_xar()
+@@ -485,7 +485,7 @@ function git_clone_repository
+ 
+   if [ ! -d "$project_name" ]; then
+     if [ -n "$branch" ]; then
+-      git clone $git_extra_opts --branch "$branch" "$url" "$project_name"
++      git clone $git_extra_opts "$url" "$project_name"
+     else
+       git clone $git_extra_opts "$url" "$project_name"
+     fi
+@@ -730,7 +730,7 @@ function build_xar()
  {
    pushd $BUILD_DIR &>/dev/null
  
@@ -20,7 +29,7 @@ index f903f0b..12305ea 100644
  
    if [ $f_res -eq 1 ]; then
      pushd $CURRENT_BUILD_PROJECT_NAME/xar &>/dev/null
-@@ -563,7 +563,7 @@ function build_p7zip()
+@@ -768,7 +768,7 @@ function build_p7zip()
  
  function build_pbxz()
  {
@@ -30,5 +39,5 @@ index f903f0b..12305ea 100644
    if [ $f_res -eq 1 ]; then
      pushd $CURRENT_BUILD_PROJECT_NAME &>/dev/null
 -- 
-2.51.2
+2.54.0
 

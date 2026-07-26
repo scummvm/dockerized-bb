@@ -1,4 +1,4 @@
-From 4e3847babce15dd8ad9efa88408cb3c33f2428bf Mon Sep 17 00:00:00 2001
+From fd17c2e26f02a40f5a34f754f7fa8530e09681d2 Mon Sep 17 00:00:00 2001
 From: Le Philousophe <lephilousophe@users.noreply.github.com>
 Date: Sat, 30 Aug 2025 17:58:44 +0200
 Subject: [PATCH 3/3] Generate all SDKs and not only MacOSX
@@ -8,7 +8,7 @@ Subject: [PATCH 3/3] Generate all SDKs and not only MacOSX
  1 file changed, 8 insertions(+), 7 deletions(-)
 
 diff --git a/tools/gen_sdk_package.sh b/tools/gen_sdk_package.sh
-index fc24005..a240379 100755
+index 86207ad..18b56a6 100755
 --- a/tools/gen_sdk_package.sh
 +++ b/tools/gen_sdk_package.sh
 @@ -126,8 +126,8 @@ if [ -z "$XCODE_TOOLS" ]; then
@@ -63,5 +63,5 @@ index fc24005..a240379 100755
 -ls -lh | grep MacOSX
 +ls -lh *.*.sdk.*
 -- 
-2.51.2
+2.54.0
 

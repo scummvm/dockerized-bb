@@ -1,4 +1,4 @@
-From efae670e4b1ccd64576b71933d8e2b8676cbd866 Mon Sep 17 00:00:00 2001
+From 165620adb81abc158e919cc01d29bf78ae78545a Mon Sep 17 00:00:00 2001
 From: Le Philousophe <lephilousophe@users.noreply.github.com>
 Date: Sun, 24 Jan 2021 19:18:24 +0100
 Subject: [PATCH 2/3] Accept piped data and avoid intermediate files
@@ -29,10 +29,10 @@ index cc6a742..e2bb3e3 100755
  popd &>/dev/null # TMP_DIR
  popd &>/dev/null # BUILD_DIR
 diff --git a/tools/tools.sh b/tools/tools.sh
-index 12305ea..25492c4 100644
+index 008714d..0e88b79 100644
 --- a/tools/tools.sh
 +++ b/tools/tools.sh
-@@ -524,6 +524,111 @@ function build_xar()
+@@ -731,6 +731,111 @@ function build_xar()
    pushd $BUILD_DIR &>/dev/null
  
    get_sources https://github.com/tpoechtrager/xar.git $XAR_VERSION
@@ -144,7 +144,7 @@ index 12305ea..25492c4 100644
  
    if [ $f_res -eq 1 ]; then
      pushd $CURRENT_BUILD_PROJECT_NAME/xar &>/dev/null
-@@ -564,6 +669,192 @@ function build_p7zip()
+@@ -769,6 +874,192 @@ function build_p7zip()
  function build_pbxz()
  {
    get_sources https://github.com/tpoechtrager/pbzx.git $PBZX_VERSION
@@ -338,5 +338,5 @@ index 12305ea..25492c4 100644
    if [ $f_res -eq 1 ]; then
      pushd $CURRENT_BUILD_PROJECT_NAME &>/dev/null
 -- 
-2.51.2
+2.54.0
 

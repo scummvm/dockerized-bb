@@ -1,6 +1,6 @@
 #! /bin/sh
 
-GEMLIB_VERSION=958583ad860a80fa9224021b7f6ea310b521452d
+GEMLIB_VERSION=68f94dabdffbcd7dc1bda762dc97bdccf1ad9488
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..

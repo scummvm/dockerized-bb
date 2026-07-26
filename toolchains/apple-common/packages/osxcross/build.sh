@@ -1,6 +1,6 @@
 #! /bin/sh
 
-OSXCROSS_VERSION=e6ab3fa7423f9235ce9ed6381d6d3af191b46b59
+OSXCROSS_VERSION=27d21e4977c9751d01199c7a226a6faf494c3dd9
 export XAR_VERSION=5fa4675419cfec60ac19a9c7f7c2d0e7c831a497
 export LIBDISPATCH_VERSION=323b9b4e0ca05d6c56a0c2f2d7d8d47363e612b7
 
@@ -21,7 +21,7 @@ done
 export PATH=$PATH:${TARGET_DIR}/bin
 
 # Don't ask anything
-UNATTENDED=1 ./build.sh
+BUILD_FLAVOR=latest UNATTENDED=1 ./build.sh
 
 # Prevent installation
 sed -i -e '/mkdir -p \${CLANG_INCLUDE_DIR}/,+1d' ./build_compiler_rt.sh
