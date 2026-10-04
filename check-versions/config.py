@@ -238,6 +238,7 @@ VERSIONS = {
         'repository': 'https://framagit.org/nokturnal/nfm.git',
         'pattern': r'\d+\.\d+\.\d+$',
     },
+    ('./toolchains/atari/packages/osmesa/build.sh', 'OSMESA'): 'ignore',
     ('./toolchains/atari/packages/toolchain/build.sh', 'BINUTILS'): 'ignore',
     ('./toolchains/atari/packages/toolchain/build.sh', 'GCC'): 'ignore',
     ('./toolchains/atari/packages/toolchain/build.sh', 'MINTLIB'): {

@@ -1,0 +1,50 @@
+diff -Naur Mesa-7.7.1/bin/config.sub Mesa-7.7.1-mint/bin/config.sub
+--- Mesa-7.7.1/bin/config.sub	2009-06-18 04:41:53.000000000 +1000
++++ Mesa-7.7.1-mint/bin/config.sub	2026-10-01 22:14:07.156900446 +1000
+@@ -1258,7 +1258,7 @@
+ 	# The portable systems comes first.
+ 	# Each alternative MUST END IN A *, to match a version number.
+ 	# -sysv* is not here because it comes later, after sysvr4.
+-	-gnu* | -bsd* | -mach* | -minix* | -genix* | -ultrix* | -irix* \
++	-gnu* | -bsd* | -mach* | -mintelf* | -minix* | -genix* | -ultrix* | -irix* \
+ 	      | -*vms* | -sco* | -esix* | -isc* | -aix* | -sunos | -sunos[34]*\
+ 	      | -hpux* | -unos* | -osf* | -luna* | -dgux* | -solaris* | -sym* \
+ 	      | -kopensolaris* \
+diff -Naur Mesa-7.7.1/src/mesa/drivers/osmesa/Makefile Mesa-7.7.1-mint/src/mesa/drivers/osmesa/Makefile
+--- Mesa-7.7.1/src/mesa/drivers/osmesa/Makefile	2010-03-27 11:14:51.000000000 +1000
++++ Mesa-7.7.1-mint/src/mesa/drivers/osmesa/Makefile	2026-09-23 14:54:18.628441362 +1000
+@@ -16,8 +16,7 @@
+ 
+ INCLUDE_DIRS = \
+ 	-I$(TOP)/include \
+-	-I$(TOP)/src/mesa \
+-	-I$(TOP)/src/mesa/main
++	-I$(TOP)/src/mesa
+ 
+ # Standalone osmesa needs to be linked with core Mesa APIs
+ ifeq ($(DRIVER_DIRS), osmesa)
+diff -Naur Mesa-7.7.1/src/mesa/drivers/osmesa/osmesa.c Mesa-7.7.1-mint/src/mesa/drivers/osmesa/osmesa.c
+--- Mesa-7.7.1/src/mesa/drivers/osmesa/osmesa.c	2010-03-27 11:14:51.000000000 +1000
++++ Mesa-7.7.1-mint/src/mesa/drivers/osmesa/osmesa.c	2026-09-23 16:04:56.568357236 +1000
+@@ -1370,7 +1370,7 @@
+     * osmesa_renderbuffer_storage() being called by _mesa_resize_framebuffer()
+     */
+    osmesa->rb->Data = buffer;
+-   osmesa->rb->DataType = type;
++   osmesa->rb->DataType = osmesa->format == OSMESA_RGB_565 ? GL_UNSIGNED_BYTE : type;
+    osmesa->rb->Width = osmesa->rb->Height = 0;
+ 
+    /* Set the framebuffer's size.  This causes the
+diff -Naur Mesa-7.7.1/src/mesa/main/dispatch.c Mesa-7.7.1-mint/src/mesa/main/dispatch.c
+--- Mesa-7.7.1/src/mesa/main/dispatch.c	2010-03-27 11:14:51.000000000 +1000
++++ Mesa-7.7.1-mint/src/mesa/main/dispatch.c	2026-09-24 11:05:56.175631142 +1000
+@@ -89,4 +89,9 @@
+ 
+ #include "glapi/glapitemp.h"
+ 
++#include "GL/osmesa.h"
++
++/* Any gl*() call links OSMesa too, so programs don't have to refer to it */
++static void *const osmesa_ref __attribute__((used)) = (void *) OSMesaCreateContextExt;
++
+ #endif /* USE_X86_ASM */
