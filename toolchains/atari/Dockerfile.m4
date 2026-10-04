@@ -32,6 +32,7 @@ RUN apt-get update && \
 ENV ATARI_TOOLCHAIN=/opt/toolchains/atari
 
 local_sdk_package(toolchain)
+local_sdk_package(vasm)
 
 COPY m68k-atari-mintelf-pkg-config ${ATARI_TOOLCHAIN}/bin
 

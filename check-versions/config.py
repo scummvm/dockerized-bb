@@ -255,6 +255,7 @@ VERSIONS = {
         'repository': 'https://github.com/mikrosk/usound.git',
         'branch': 'main',
     },
+    ('./toolchains/atari/packages/vasm/build.sh', 'VASM'): 'ignore',
 
     ('./toolchains/common/packages/discord-rpc/build.sh', 'DISCORD_RPC'): discord_rpc_check,
     ('./toolchains/common/packages/fluidlite/build.sh', 'FLUIDLITE'): {
