@@ -99,7 +99,7 @@ helpers_package(m5475, freetype)
 
 local_package(m68020-60 m5475, osmesa)
 
-helpers_package(m68020-60 m5475, libsdl1.2, --disable-video-opengl --disable-threads)
+helpers_package(m68020-60 m5475, libsdl1.2, --disable-threads)
 
 local_package(m68020-60, nfm)
 
