@@ -19,8 +19,13 @@ W32API_GROUP=74926
 #}
 
 # Using dotsrc mirror directly
+#make_url() {
+#	echo "https://mirrors.dotsrc.org/osdn/mingw/$1/$2"
+#}
+
+# Using IIJ mirror directly
 make_url() {
-	echo "https://mirrors.dotsrc.org/osdn/mingw/$1/$2"
+	echo "https://ftp.iij.ad.jp/pub/osdn.jp/mingw/$1/$2"
 }
 
 # This package is inspired by dc-chain scripts for KallistiOS. Credits go to them.
