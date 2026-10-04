@@ -1,5 +1,5 @@
 diff --git a/bfd/Makefile.am b/bfd/Makefile.am
-index 4f67b59585d..43a535fb446 100644
+index 4f67b59585..43a535fb44 100644
 --- a/bfd/Makefile.am
 +++ b/bfd/Makefile.am
 @@ -299,6 +299,7 @@ BFD32_BACKENDS = \
@@ -28,7 +28,7 @@ index 4f67b59585d..43a535fb446 100644
  	elf32-metag.h elf32-nds32.h elf32-nios2.h elf32-ppc.h \
  	elf32-rx.h elf32-score.h elf32-sh-relocs.h elf32-spu.h \
 diff --git a/bfd/Makefile.in b/bfd/Makefile.in
-index faaa0c424b8..d168a9cfc86 100644
+index faaa0c424b..d168a9cfc8 100644
 --- a/bfd/Makefile.in
 +++ b/bfd/Makefile.in
 @@ -766,6 +766,7 @@ BFD32_BACKENDS = \
@@ -65,7 +65,7 @@ index faaa0c424b8..d168a9cfc86 100644
  @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/elf32-bfin.Plo@am__quote@
  @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/elf32-cr16.Plo@am__quote@
 diff --git a/bfd/acinclude.m4 b/bfd/acinclude.m4
-index 0ba7957760d..25959f38f05 100644
+index 0ba7957760..25959f38f0 100644
 --- a/bfd/acinclude.m4
 +++ b/bfd/acinclude.m4
 @@ -21,7 +21,7 @@ AC_DEFUN([BFD_BINARY_FOPEN],
@@ -78,7 +78,7 @@ index 0ba7957760d..25959f38f05 100644
    AC_DEFINE(USE_BINARY_FOPEN, 1, [Use b modifier when opening binary files?]) ;;
  esac])dnl
 diff --git a/bfd/bfd.c b/bfd/bfd.c
-index 0776145af52..6231df182f4 100644
+index 0776145af5..6231df182f 100644
 --- a/bfd/bfd.c
 +++ b/bfd/bfd.c
 @@ -662,6 +662,7 @@ EXTERNAL
@@ -99,7 +99,7 @@ index 0776145af52..6231df182f4 100644
  }
  
 diff --git a/bfd/config.bfd b/bfd/config.bfd
-index bbf12447517..bafd54d80af 100644
+index bbf1244751..bafd54d80a 100644
 --- a/bfd/config.bfd
 +++ b/bfd/config.bfd
 @@ -855,6 +855,10 @@ case "${targ}" in
@@ -114,7 +114,7 @@ index bbf12447517..bafd54d80af 100644
      targ_defvec=m68k_elf32_vec
      ;;
 diff --git a/bfd/configure b/bfd/configure
-index 5618c5d3217..f0d9cb639a9 100755
+index 5618c5d321..f0d9cb639a 100755
 --- a/bfd/configure
 +++ b/bfd/configure
 @@ -12094,7 +12094,7 @@ if test "${with_pkgversion+set}" = set; then :
@@ -153,7 +153,7 @@ index 5618c5d3217..f0d9cb639a9 100755
      mach_o_be_vec)		 tb="$tb mach-o.lo dwarf2.lo" ;;
      mach_o_le_vec)		 tb="$tb mach-o.lo dwarf2.lo" ;;
 diff --git a/bfd/configure.ac b/bfd/configure.ac
-index 7fcc5d4a947..89a0d522895 100644
+index 7fcc5d4a94..89a0d52289 100644
 --- a/bfd/configure.ac
 +++ b/bfd/configure.ac
 @@ -168,8 +168,8 @@ AC_ARG_WITH(separate-debug-dir,
@@ -176,7 +176,7 @@ index 7fcc5d4a947..89a0d522895 100644
      mach_o_be_vec)		 tb="$tb mach-o.lo dwarf2.lo" ;;
      mach_o_le_vec)		 tb="$tb mach-o.lo dwarf2.lo" ;;
 diff --git a/bfd/elf.c b/bfd/elf.c
-index 88c75ae3ce0..6450af605e7 100644
+index 88c75ae3ce..6450af605e 100644
 --- a/bfd/elf.c
 +++ b/bfd/elf.c
 @@ -44,6 +44,7 @@ SECTION
@@ -411,10 +411,10 @@ index 88c75ae3ce0..6450af605e7 100644
  	  sym.st_shndx = _bfd_elf_section_from_bfd_section
 diff --git a/bfd/elf32-atariprg.c b/bfd/elf32-atariprg.c
 new file mode 100644
-index 00000000000..63aec741a91
+index 0000000000..d15556b56f
 --- /dev/null
 +++ b/bfd/elf32-atariprg.c
-@@ -0,0 +1,1070 @@
+@@ -0,0 +1,1072 @@
 +/* Support for Atari TOS PRG/ELF binaries.
 +   ELF-specific code written by Vincent Riviere, 2023.
 +   Based on the original a.out patch by Guido Flohr, 1998.
@@ -1198,8 +1198,10 @@ index 00000000000..63aec741a91
 +    bytes++;
 +  myinfo->tparel_size = bytes;
 +
-+  /* Allocate the TPA relocation table.  */
-+  myinfo->tparel = bfd_alloc (abfd, bytes);
++  /* Allocate the TPA relocation table.  BYTES is an upper bound: relocations
++     pointing to a zero value are skipped below, so the table is written out
++     with unused trailing space that must not contain garbage.  */
++  myinfo->tparel = bfd_zalloc (abfd, bytes);
 +  if (myinfo->tparel == NULL)
 +    return false;
 +
@@ -1487,7 +1489,7 @@ index 00000000000..63aec741a91
 +}
 diff --git a/bfd/elf32-atariprg.h b/bfd/elf32-atariprg.h
 new file mode 100644
-index 00000000000..de34e9a9507
+index 0000000000..de34e9a950
 --- /dev/null
 +++ b/bfd/elf32-atariprg.h
 @@ -0,0 +1,50 @@
@@ -1541,8 +1543,21 @@ index 00000000000..de34e9a9507
 +  (bfd *, uint32_t);
 +extern bool bfd_elf32_atariprg_set_stack_size
 +  (bfd *, int32_t);
+diff --git a/bfd/elf32-m68k.c b/bfd/elf32-m68k.c
+index 240b4efab8..595b75cee8 100644
+--- a/bfd/elf32-m68k.c
++++ b/bfd/elf32-m68k.c
+@@ -4655,6 +4655,8 @@ elf_m68k_grok_psinfo (bfd *abfd, Elf_Internal_Note *note)
+ #define elf_backend_grok_prstatus	elf_m68k_grok_prstatus
+ #define elf_backend_grok_psinfo		elf_m68k_grok_psinfo
+ 
++#define elf_backend_relocs_compatible	_bfd_elf_relocs_compatible
++
+ #define elf_backend_can_gc_sections 1
+ #define elf_backend_can_refcount 1
+ #define elf_backend_want_got_plt 1
 diff --git a/bfd/elfcode.h b/bfd/elfcode.h
-index 1e0784611bc..0926a062901 100644
+index 1e0784611b..0926a06290 100644
 --- a/bfd/elfcode.h
 +++ b/bfd/elfcode.h
 @@ -72,6 +72,7 @@
@@ -1584,7 +1599,7 @@ index 1e0784611bc..0926a062901 100644
      return false;
  
 diff --git a/bfd/opncls.c b/bfd/opncls.c
-index a0a5c40fba8..447e32394b8 100644
+index a0a5c40fba..447e32394b 100644
 --- a/bfd/opncls.c
 +++ b/bfd/opncls.c
 @@ -26,6 +26,9 @@
@@ -1614,7 +1629,7 @@ index a0a5c40fba8..447e32394b8 100644
    bfd_set_format (nbfd, bfd_object);
  
 diff --git a/bfd/targets.c b/bfd/targets.c
-index 3addf2fe373..a6d7914bc5a 100644
+index 3addf2fe37..a6d7914bc5 100644
 --- a/bfd/targets.c
 +++ b/bfd/targets.c
 @@ -784,6 +784,7 @@ extern const bfd_target m32r_elf32_linux_le_vec;
@@ -1634,7 +1649,7 @@ index 3addf2fe373..a6d7914bc5a 100644
  	&s12z_elf32_vec,
  
 diff --git a/binutils/configure b/binutils/configure
-index 94a0d4a177e..4c89db67ea7 100755
+index 94a0d4a177..4c89db67ea 100755
 --- a/binutils/configure
 +++ b/binutils/configure
 @@ -15676,7 +15676,7 @@ fi
@@ -1647,7 +1662,7 @@ index 94a0d4a177e..4c89db67ea7 100755
  $as_echo "#define USE_BINARY_FOPEN 1" >>confdefs.h
   ;;
 diff --git a/binutils/elfedit.c b/binutils/elfedit.c
-index 76316365b57..05d1d0045e3 100644
+index 76316365b5..05d1d0045e 100644
 --- a/binutils/elfedit.c
 +++ b/binutils/elfedit.c
 @@ -793,7 +793,16 @@ process_file (const char *file_name)
@@ -1669,7 +1684,7 @@ index 76316365b57..05d1d0045e3 100644
        ret = process_object (file_name, file);
  #ifdef HAVE_MMAP
 diff --git a/binutils/objcopy.c b/binutils/objcopy.c
-index a85d26203e9..8de9cef846c 100644
+index a85d26203e..8de9cef846 100644
 --- a/binutils/objcopy.c
 +++ b/binutils/objcopy.c
 @@ -304,6 +304,9 @@ enum long_section_name_handling
@@ -1717,7 +1732,7 @@ index a85d26203e9..8de9cef846c 100644
  
  	case OPTION_KEEP_FILE_SYMBOLS:
 diff --git a/binutils/readelf.c b/binutils/readelf.c
-index 5e4ad6ea6ad..3e54b32be8a 100644
+index 5e4ad6ea6a..3e54b32be8 100644
 --- a/binutils/readelf.c
 +++ b/binutils/readelf.c
 @@ -9563,7 +9563,7 @@ ia64_process_unwind (Filedata * filedata)
@@ -1794,7 +1809,7 @@ index 5e4ad6ea6ad..3e54b32be8a 100644
    switch (filedata->file_header.e_ident[EI_DATA])
      {
 diff --git a/gas/config/tc-m68k.c b/gas/config/tc-m68k.c
-index d04aa1edecd..814a66553ce 100644
+index d04aa1edec..814a66553c 100644
 --- a/gas/config/tc-m68k.c
 +++ b/gas/config/tc-m68k.c
 @@ -4668,9 +4668,12 @@ md_begin (void)
@@ -1815,7 +1830,7 @@ index d04aa1edecd..814a66553ce 100644
  
 diff --git a/gas/config/te-mintelf.h b/gas/config/te-mintelf.h
 new file mode 100644
-index 00000000000..176aa08e8d3
+index 0000000000..176aa08e8d
 --- /dev/null
 +++ b/gas/config/te-mintelf.h
 @@ -0,0 +1,41 @@
@@ -1861,7 +1876,7 @@ index 00000000000..176aa08e8d3
 +#undef  EXTERN_FORCE_RELOC
 +#define EXTERN_FORCE_RELOC 0
 diff --git a/gas/configure.tgt b/gas/configure.tgt
-index 7c66734e362..f21a89a977f 100644
+index 7c66734e36..f21a89a977 100644
 --- a/gas/configure.tgt
 +++ b/gas/configure.tgt
 @@ -302,6 +302,7 @@ case ${generic_target} in
@@ -1873,7 +1888,7 @@ index 7c66734e362..f21a89a977f 100644
    s12z-*-*)				fmt=elf ;;
  
 diff --git a/gprof/corefile.c b/gprof/corefile.c
-index 0ea435fd2db..4c98497e1c0 100644
+index 0ea435fd2d..4c98497e1c 100644
 --- a/gprof/corefile.c
 +++ b/gprof/corefile.c
 @@ -178,6 +178,8 @@ core_init (const char * aout_name)
@@ -1886,7 +1901,7 @@ index 0ea435fd2db..4c98497e1c0 100644
  
    if (!core_bfd)
 diff --git a/ld/Makefile.am b/ld/Makefile.am
-index f9ee05b1400..12390622349 100644
+index f9ee05b140..1239062234 100644
 --- a/ld/Makefile.am
 +++ b/ld/Makefile.am
 @@ -320,6 +320,7 @@ ALL_EMULATION_SOURCES = \
@@ -1898,7 +1913,7 @@ index f9ee05b1400..12390622349 100644
  	emcorepe.c \
  	emn10200.c \
 diff --git a/ld/Makefile.in b/ld/Makefile.in
-index abb0565718f..58f0cc84e36 100644
+index abb0565718..58f0cc84e3 100644
 --- a/ld/Makefile.in
 +++ b/ld/Makefile.in
 @@ -831,6 +831,7 @@ ALL_EMULATION_SOURCES = \
@@ -1918,7 +1933,7 @@ index abb0565718f..58f0cc84e36 100644
  @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/emcorepe.Po@am__quote@
  @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/emmo.Po@am__quote@
 diff --git a/ld/configure b/ld/configure
-index ba1e5e2a215..7d56f6416b2 100755
+index ba1e5e2a21..7d56f6416b 100755
 --- a/ld/configure
 +++ b/ld/configure
 @@ -18741,7 +18741,7 @@ done
@@ -1931,7 +1946,7 @@ index ba1e5e2a215..7d56f6416b2 100755
  $as_echo "#define USE_BINARY_FOPEN 1" >>confdefs.h
   ;;
 diff --git a/ld/configure.tgt b/ld/configure.tgt
-index f937f78b876..66faebbf3d9 100644
+index f937f78b87..66faebbf3d 100644
 --- a/ld/configure.tgt
 +++ b/ld/configure.tgt
 @@ -71,6 +71,7 @@ if test "${ac_default_ld_warn_execstack}" = 2; then
@@ -1954,7 +1969,7 @@ index f937f78b876..66faebbf3d9 100644
  m68*-*-haiku*)		targ_emul=m68kelf
 diff --git a/ld/emulparams/m68kmintelf.sh b/ld/emulparams/m68kmintelf.sh
 new file mode 100644
-index 00000000000..86fe8f3526e
+index 0000000000..86fe8f3526
 --- /dev/null
 +++ b/ld/emulparams/m68kmintelf.sh
 @@ -0,0 +1,25 @@
@@ -1985,7 +2000,7 @@ index 00000000000..86fe8f3526e
 +LDEMUL_OPEN_DYNAMIC_ARCHIVE=NULL
 diff --git a/ld/emultempl/m68kmintelf.em b/ld/emultempl/m68kmintelf.em
 new file mode 100644
-index 00000000000..debf4ec4c3e
+index 0000000000..debf4ec4c3
 --- /dev/null
 +++ b/ld/emultempl/m68kmintelf.em
 @@ -0,0 +1,267 @@
@@ -2257,7 +2272,7 @@ index 00000000000..debf4ec4c3e
 +LDEMUL_BEFORE_PARSE=m68kmintelf_before_parse
 +LDEMUL_FINISH=m68kmintelf_finish
 diff --git a/ld/ldmain.c b/ld/ldmain.c
-index e90c2021b33..9bf663bf232 100644
+index e90c2021b3..9bf663bf23 100644
 --- a/ld/ldmain.c
 +++ b/ld/ldmain.c
 @@ -687,12 +687,30 @@ get_sysroot (int argc, char **argv)
@@ -2293,7 +2308,7 @@ index e90c2021b33..9bf663bf232 100644
    for (i = 1; i < argc; i++)
      {
 diff --git a/ld/po/BLD-POTFILES.in b/ld/po/BLD-POTFILES.in
-index b346e203aa8..f1775a16e7b 100644
+index b346e203aa..f1775a16e7 100644
 --- a/ld/po/BLD-POTFILES.in
 +++ b/ld/po/BLD-POTFILES.in
 @@ -256,6 +256,7 @@ em68hc12elf.c
@@ -2306,7 +2321,7 @@ index b346e203aa8..f1775a16e7b 100644
  emmo.c
 diff --git a/ld/scripttempl/m68kmintelf.sc b/ld/scripttempl/m68kmintelf.sc
 new file mode 100644
-index 00000000000..d43829d9174
+index 0000000000..d43829d917
 --- /dev/null
 +++ b/ld/scripttempl/m68kmintelf.sc
 @@ -0,0 +1,194 @@
