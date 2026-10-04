@@ -134,7 +134,7 @@ helpers_package(libvpx)
 # Disable NTLM since it requires fork which is not supported in tvOS
 # This is never used anyway
 COPY --from=apple-common /lib-helpers/packages/curl lib-helpers/packages/curl
-helpers_package(curl, --without-openssl --with-secure-transport --disable-ntlm, CFLAGS="-m`'XOS_PLATFORM`'os-version-min=XOS_DEPLOYMENT_TARGET")
+helpers_package(curl, --without-openssl --with-secure-transport --disable-ntlm, CFLAGS="-m`'XOS_PLATFORM`'os-version-min=XOS_DEPLOYMENT_TARGET" ac_cv_func_pipe2="no")
 
 helpers_package(freetype)
 
