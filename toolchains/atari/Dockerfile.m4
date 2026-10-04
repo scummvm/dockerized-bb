@@ -36,6 +36,9 @@ local_sdk_package(vasm)
 
 COPY m68k-atari-mintelf-pkg-config ${ATARI_TOOLCHAIN}/bin
 
+COPY atari.platform ${ATARI_TOOLCHAIN}/
+COPY Platform ${ATARI_TOOLCHAIN}/Platform/
+
 ENV HOST=m68k-atari-mintelf
 ENV PREFIX=$ATARI_TOOLCHAIN/$HOST/sysroot/usr
 
@@ -95,6 +98,8 @@ helpers_package(m5475, freetype)
 # No fribidi
 
 helpers_package(m68020-60 m5475, libsdl1.2, --disable-video-opengl --disable-threads)
+
+local_package(m68020-60, nfm)
 
 # No SDL_Net
 

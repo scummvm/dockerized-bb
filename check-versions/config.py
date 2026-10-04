@@ -233,6 +233,11 @@ VERSIONS = {
         'check': 'svn commit',
         'repository': 'https://svn.code.sf.net/p/ldg/code/trunk',
     },
+    ('./toolchains/atari/packages/nfm/build.sh', 'NFM'): {
+        'check': 'git tag',
+        'repository': 'https://framagit.org/nokturnal/nfm.git',
+        'pattern': r'\d+\.\d+\.\d+$',
+    },
     ('./toolchains/atari/packages/toolchain/build.sh', 'BINUTILS'): 'ignore',
     ('./toolchains/atari/packages/toolchain/build.sh', 'GCC'): 'ignore',
     ('./toolchains/atari/packages/toolchain/build.sh', 'MINTLIB'): {

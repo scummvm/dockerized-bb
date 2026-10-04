@@ -15,8 +15,7 @@ __do_configure_atari () {
 
 __do_cmake_atari () {
 	__do_cmake \
-		-DCMAKE_SYSTEM_NAME=Generic \
-		-DCMAKE_SYSTEM_PROCESSOR=m68k \
+		-DCMAKE_TOOLCHAIN_FILE=${ATARI_TOOLCHAIN}/atari.platform \
 		-DCMAKE_INSTALL_LIBDIR=${PREFIX}/lib/${TARGET} \
 		-DCMAKE_INSTALL_BINDIR=${PREFIX}/bin/${TARGET} \
 		"$@"
