@@ -11,9 +11,14 @@ do_make_bdir
 do_svn_fetch ldg https://svn.code.sf.net/p/ldg/code/trunk/ldg -r"$LDG_VERSION"
 
 cd src/devel
+# All makefiles share the same object directory: clean it between CPU variants
+# so that objects built for one CPU are not reused for another
 do_make -f gcc.mak CC=${HOST}-gcc AR=${HOST}-ar
+do_make -f gcc.mak clean
 do_make -f gccm68020-60.mak CC=${HOST}-gcc AR=${HOST}-ar
+do_make -f gccm68020-60.mak clean
 do_make -f gccm5475.mak CC=${HOST}-gcc AR=${HOST}-ar
+do_make -f gccm5475.mak clean
 cd -
 
 cp -ra include ${PREFIX}
