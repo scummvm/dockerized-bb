@@ -1,8 +1,6 @@
 #! /bin/sh
 
-VASM_VERSION=2.0b
-# Commit of release ${VASM_VERSION} in the vasm-mirror repository
-VASM_COMMIT=7db75ca16f3f528463ae9846fd057040737d826b
+VASM_VERSION=2_0f
 
 PACKAGE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 HELPERS_DIR=$PACKAGE_DIR/../..
@@ -10,7 +8,7 @@ HELPERS_DIR=$PACKAGE_DIR/../..
 
 do_make_bdir
 
-do_http_fetch vasm "https://github.com/StarWolf3000/vasm-mirror/archive/${VASM_COMMIT}.tar.gz" 'tar xf'
+do_http_fetch vasm "http://phoenix.owl.de/tags/vasm${VASM_VERSION}.tar.gz" 'tar xzf'
 do_make CPU=m68k SYNTAX=mot
 install -s vasmm68k_mot "${ATARI_TOOLCHAIN}/bin"
 

@@ -261,7 +261,11 @@ VERSIONS = {
         'repository': 'https://github.com/mikrosk/usound.git',
         'branch': 'main',
     },
-    ('./toolchains/atari/packages/vasm/build.sh', 'VASM'): 'ignore',
+    ('./toolchains/atari/packages/vasm/build.sh', 'VASM'): {
+        'check': 'scrape',
+        'url': 'http://phoenix.owl.de/tags/',
+        'filter pattern': r'"vasm(?P<version>\d+_\d+[a-z]*)\.tar\.gz"',
+    },
 
     ('./toolchains/common/packages/discord-rpc/build.sh', 'DISCORD_RPC'): discord_rpc_check,
     ('./toolchains/common/packages/fluidlite/build.sh', 'FLUIDLITE'): {
