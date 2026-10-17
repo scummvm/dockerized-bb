@@ -263,7 +263,7 @@ appletv()
 
 def atari(target, cpu_dir, env_target, backend,
           defines, configure_args,
-          packaging, description = None):
+          packaging, pkg_folder = None, description = None):
     platform = Platform(target)
     platform.workerimage = "atari"
     platform.compatibleBuilds = (builds.ScummVMBuild, )
@@ -305,7 +305,7 @@ def atari(target, cpu_dir, env_target, backend,
     }
 
     platform.built_files = {
-        builds.ScummVMBuild: [ "scummvm-*-{0}/*".format(target) ],
+        builds.ScummVMBuild: [ "scummvm-*-{0}/*".format(pkg_folder or target) ],
     }
     platform.archiveext = "zip"
 
@@ -315,13 +315,13 @@ def atari(target, cpu_dir, env_target, backend,
 
 atari("atari-full", "m68020-60", "M68020_60", "atari",
       "-DUSE_MOVE16 -DUSE_SUPERVIDEL -DUSE_SV_BLITTER -DDISABLE_LAUNCHERDISPLAY_GRID", [],
-      "atarifulldist", "Atari Full")
+      "atarifulldist", description="Atari Full")
 atari("atari-lite", "m68020-60", "M68030", "atari",
       "-DDISABLE_FANCY_THEMES -DDISABLE_DOSBOX_OPL -DDISABLE_MAME_OPL", ["--disable-highres", "--disable-bink"],
-      "atarilitedist", "Atari Lite")
+      "atarilitedist", description="Atari Lite")
 atari("firebee", "m5475", "M5475", "sdl",
       "", [],
-      "fbdist", "FireBee")
+      "fbdist", "atari-m5475", "FireBee")
 
 def debian(name_suffix, image_suffix, host,
         package=True,
