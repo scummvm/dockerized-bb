@@ -465,6 +465,7 @@ class ScummVMBuild(StandardBuild):
         "dists/engine-data/drascula.dat",
         "dists/engine-data/fonts.dat",
         "dists/engine-data/freescape.dat",
+        "dists/engine-data/hollywood.dat",
         "dists/engine-data/hugo.dat",
         "dists/engine-data/kyra.dat",
         "dists/engine-data/lure.dat",
